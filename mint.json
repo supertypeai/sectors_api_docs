@@ -1,51 +1,49 @@
 {
-  "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "Sectors API",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/sectors_logo.svg",
+    "light": "/logo/sectors_logo.svg",
+    "href": "https://sectors.app/"
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
-    "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
+    "primary": "#f97316",
+    "light": "#fb923c",
+    "dark": "#c2410c",
+    "background": {
+      "light": "#ffffff",
+      "dark": "#000000"
     }
   },
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:sectors@supertype.ai"
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "Sectors API Page",
+    "url": "https://sectors.app/api"
   },
+  "versions": [
+    "v1"
+  ],
   "tabs": [
     {
-      "name": "API Reference",
-      "url": "api-reference"
+      "name": "API Playground",
+      "url": "api-playground"
     }
   ],
   "anchors": [
     {
-      "name": "Documentation",
+      "name": "Recipes",
       "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+      "url": "https://github.com/supertypeai/sectors-kb/tree/main/recipe"
     },
     {
       "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "icon": "discord",
+      "url": "https://discord.com/invite/TAnZMmNS4X"
     }
   ],
   "navigation": [
@@ -53,39 +51,18 @@
       "group": "Get Started",
       "pages": [
         "introduction",
-        "quickstart",
-        "development"
-      ]
-    },
-    {
-      "group": "Essentials",
-      "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
+        "quickstart"
       ]
     },
     {
       "group": "API Documentation",
       "pages": [
-        "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        "api-playground/introduction"
       ]
     }
   ],
   "footerSocials": {
-    "x": "https://x.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "instagram": "https://www.instagram.com/sectorsapp/",
+    "linkedin": "https://www.linkedin.com/showcase/sectorsapp/"
   }
 }
