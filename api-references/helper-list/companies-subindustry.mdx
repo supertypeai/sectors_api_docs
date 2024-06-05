@@ -1,0 +1,37 @@
+---
+title: "Companies by Subindustry"
+api: "GET /companies/"
+description: "Return list of companies from a subindustry"
+---
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="sub_industry" type="string" initialValue="timber" required>
+  Subindustry from which the list of companies is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sub_industry">
+      Get the available `sub_industry` from the [Subindustries](./subindustries)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sub_industry">
+      `business-support-services`, `electric-utilities`,
+      `heavy-constructions-civil-engineering`, `road-transportation`, `timber`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_industry` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Usage
+
+This list can be used for the following endpoint:
+
+- [Company Report](../report/company)

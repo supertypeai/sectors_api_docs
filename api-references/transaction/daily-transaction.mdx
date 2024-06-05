@@ -1,0 +1,63 @@
+---
+title: "Daily Transaction Data"
+api: "GET /daily/{ticker}/"
+description: "Return daily transaction data of a given ticker on a certain interval (**up to 90 days**)"
+---
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Path
+
+<ParamField path="ticker" type="string" initialValue="BBCA" required>
+  Ticker of the company for which the daily transaction data is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available ticker">
+      Get the available `ticker` from the [Companies by
+      Subsector](../helper-list/companies-subsector) or the [Companies by
+      Subindustry](../helper-list/companies-subindustry) endpoints.
+    </Accordion>
+    <Accordion title="Examples of the ticker">
+      `ASII`, `BBCA`, `BBRI`, `BMRI`, `BYAN`
+    </Accordion>
+    <Accordion title="Format">
+      A valid `ticker` consists of 4 letters, optionally followed by '.jk', and
+      is **case-insensitive**.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="start" type="string" required>
+  Start date for which the daily transaction data of a given ticker is to be
+  retrieved.
+  <AccordionGroup>
+    <Accordion title="Format">
+      The API endpoint only accepts `start` date in the `YYYY-MM-DD` format.
+    </Accordion>
+    <Accordion title="Earliest date">
+      The `start` date must be **no earlier than 90 days before the `end`
+      date**. If a date earlier than this is provided, only the most recent 90
+      days of data will be retrieved.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+<ParamField query="end" type="string" required>
+  End date for which the daily transaction data of a given ticker is to be
+  retrieved.
+  <AccordionGroup>
+    <Accordion title="Format">
+      The API endpoint only accepts `end` date in the `YYYY-MM-DD` format.
+    </Accordion>
+    <Accordion title="Latest date">
+      The `end` date must be **no later than 90 days after the `start` date**.
+      If a date later than this is provided, only the most recent 90 days of
+      data will be retrieved.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>

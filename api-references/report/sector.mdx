@@ -1,0 +1,54 @@
+---
+title: "Sector Report"
+api: "GET /sector/report/{sector}/"
+description: "Return report of a given sector, organized into distinct sections"
+---
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Path
+
+<ParamField path="sector" type="string" initialValue="insurance" required>
+  Sector for which the report is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sector">
+      Get the available `sector` from the
+      [Subsectors](../helper-list/subsectors) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sector">
+      `bank`, `financing-service`, `insurance`, `retailing`, `tobacco`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Query Parameters
+
+<ParamField
+  query="sections"
+  type="string"
+  default="all"
+  initialValue="statistics"
+>
+  Sections of the sector report that is to be retrieved (default to all).
+  <AccordionGroup>
+    <Accordion title="Available sections">
+      `statistics`, `market_cap`, `stability`, `valuation`, `growth`,
+      `companies`, `idx`
+    </Accordion>
+    <Accordion title="Format">
+      Use comma to separate each section when retrieving data of more than one
+      section.
+    </Accordion>
+    <Accordion title="API call consumption">
+      One section consumes one API call.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>

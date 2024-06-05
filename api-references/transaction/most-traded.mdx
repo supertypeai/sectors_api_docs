@@ -1,0 +1,50 @@
+---
+title: "Most Traded Tickers"
+api: "GET /most-traded/"
+description: "Return a list of the most traded tickers based on transaction volume on a certain interval (**up to 90 days**)"
+---
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="start" type="string" required>
+  Start date for which the list of the most traded tickers is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Format">
+      The API endpoint only accepts `start` date in the `YYYY-MM-DD` format.
+    </Accordion>
+    <Accordion title="Earliest date">
+      The `start` date must be **no earlier than 90 days before the `end`
+      date**. If a date earlier than this is provided, only the most recent 90
+      days of data will be retrieved.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+<ParamField query="end" type="string" required>
+  End date for which the list of the most traded tickers is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Format">
+      The API endpoint only accepts `end` date in the `YYYY-MM-DD` format.
+    </Accordion>
+    <Accordion title="Latest date">
+      The `end` date must be **no later than 90 days after the `start` date**.
+      If a date later than this is provided, only the most recent 90 days of
+      data will be retrieved.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+<ParamField query="n_stock" type="integer" default="5">
+  Number of tickers to be retrieved (defaults to 5, with a maximum of 10).
+</ParamField>
+
+<ParamField query="adjusted" type="boolean" default="false">
+  Default to "false". If set to "true", the returned list will be sorted based
+  on transaction volume multiplied by closing price.
+</ParamField>

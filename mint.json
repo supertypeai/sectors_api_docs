@@ -1,11 +1,11 @@
 {
   "name": "Sectors API",
   "logo": {
-    "dark": "/logo/sectors_logo.svg",
-    "light": "/logo/sectors_logo.svg",
+    "dark": "/logo/sectors_logo_wide.png",
+    "light": "/logo/sectors_logo_wide.png",
     "href": "https://sectors.app/"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "/logo/sectors_logo.svg",
   "colors": {
     "primary": "#f97316",
     "light": "#fb923c",
@@ -15,29 +15,23 @@
       "dark": "#000000"
     }
   },
+  "backgroundImage": "/images/background.png",
+  "search": {
+    "prompt": "Search..."
+  },
   "topbarLinks": [
     {
       "name": "Support",
       "url": "mailto:sectors@supertype.ai"
     }
   ],
-  "topbarCtaButton": {
-    "name": "Sectors API Page",
-    "url": "https://sectors.app/api"
-  },
   "versions": [
     "v1"
-  ],
-  "tabs": [
-    {
-      "name": "API Playground",
-      "url": "api-playground"
-    }
   ],
   "anchors": [
     {
       "name": "Recipes",
-      "icon": "book-open-cover",
+      "icon": "lightbulb",
       "url": "https://github.com/supertypeai/sectors-kb/tree/main/recipe"
     },
     {
@@ -50,19 +44,55 @@
     {
       "group": "Get Started",
       "pages": [
-        "introduction",
-        "quickstart"
+        "get-started/overview",
+        "get-started/quickstart"
       ]
     },
     {
-      "group": "API Documentation",
+      "group": "API References",
       "pages": [
-        "api-playground/introduction"
+        {
+          "group": "Helper List",
+          "icon": "list-check",
+          "pages": [
+            "api-references/helper-list/subsectors",
+            "api-references/helper-list/subindustries",
+            "api-references/helper-list/companies-subsector",
+            "api-references/helper-list/companies-subindustry"
+          ]
+        },
+        {
+          "group": "IPO",
+          "icon": "chart-line",
+          "pages": [
+            "api-references/ipo/listing-performance"
+          ]
+        },
+        {
+          "group": "Report",
+          "icon": "file-contract",
+          "pages": [
+            "api-references/report/company",
+            "api-references/report/sector"
+          ]
+        },
+        {
+          "group": "Transaction",
+          "icon": "money-bill-transfer",
+          "pages": [
+            "api-references/transaction/daily-transaction",
+            "api-references/transaction/most-traded",
+            "api-references/transaction/top-tickers"
+          ]
+        }
       ]
     }
   ],
   "footerSocials": {
     "instagram": "https://www.instagram.com/sectorsapp/",
     "linkedin": "https://www.linkedin.com/showcase/sectorsapp/"
+  },
+  "api": {
+    "baseUrl": "https://api.sectors.app/v1"
   }
 }

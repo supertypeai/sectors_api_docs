@@ -1,0 +1,37 @@
+---
+title: "Top Tickers"
+api: "GET /companies/top/"
+description: "Return a list of top tickers in a given year based on certain classification (dividend yield, total dividend, revenue, or earnings)"
+---
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="classifications" type="string" default="all" initialValue="dividend_yield">
+  Classification for ranking the top tickers in a given year (default to all).
+  <AccordionGroup>
+    <Accordion title="Available classifications">
+      `dividend_yield`, `total_dividend`, `revenue`, `earnings`
+    </Accordion>
+    <Accordion title="Format">
+      Use comma to separate each classification when retrieving data of more than one classification.
+    </Accordion>
+    <Accordion title="API call consumption">
+      One classification consumes one API call.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+
+<ParamField query="n_stock" type="integer" default="5">
+  Number of tickers to be retrieved (defaults to 5, with a maximum of 10).
+</ParamField>
+
+<ParamField query="year" type="integer" default="current year">
+  Year for which the list of top tickers is to be retrieved (default to the current year).
+</ParamField>

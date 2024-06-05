@@ -1,0 +1,36 @@
+---
+title: "Listing Performance"
+api: "GET /listing-performance/{ticker}/"
+description: "Return percentage gain since listing date of a given ticker"
+---
+
+### Notes
+
+Listing performance data is accessible only for tickers listed **after May 2005**.
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Path
+
+<ParamField path="ticker" type="string" initialValue="BBCA" required>
+  Ticker of the company for which the percentage gain since listing date is to
+  be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available ticker">
+      Get the available `ticker` from the [Companies by
+      Subsector](../helper-list/companies-subsector) or the [Companies by
+      Subindustry](../helper-list/companies-subindustry) endpoints.
+    </Accordion>
+    <Accordion title="Examples of the ticker">
+      `ARTO`, `ASLI`, `BREN`, `BUKA`, `GOTO`
+    </Accordion>
+    <Accordion title="Format">
+      A valid `ticker` consists of 4 letters, optionally followed by '.jk', and
+      is **case-insensitive**.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>

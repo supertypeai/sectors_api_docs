@@ -1,0 +1,55 @@
+---
+title: "Company Report"
+api: "GET /company/report/{ticker}/"
+description: "Return report of a given ticker, organized into distinct sections"
+---
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Path
+
+<ParamField path="ticker" type="string" initialValue="BBCA" required>
+  Ticker of the company for which the report is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available ticker">
+      Get the available `ticker` from the [Companies by
+      Subsector](../helper-list/companies-subsector) or the [Companies by
+      Subindustry](../helper-list/companies-subindustry) endpoints.
+    </Accordion>
+    <Accordion title="Examples of the ticker">
+      `ASII`, `BBCA`, `BBRI`, `BMRI`, `BYAN`
+    </Accordion>
+    <Accordion title="Format">
+      A valid `ticker` consists of 4 letters, optionally followed by '.jk', and
+      is **case-insensitive**.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Query Parameters
+
+<ParamField
+  query="sections"
+  type="string"
+  default="all"
+  initialValue="overview"
+>
+  Sections of the company report that is to be retrieved (default to all).
+  <AccordionGroup>
+    <Accordion title="Available sections">
+      `overview`, `valuation`, `future`, `peers`, `financials`, `dividend`,
+      `management`, `ownership`
+    </Accordion>
+    <Accordion title="Format">
+      Use comma to separate each section when retrieving data of more than one
+      section.
+    </Accordion>
+    <Accordion title="API call consumption">
+      One section consumes one API call.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
