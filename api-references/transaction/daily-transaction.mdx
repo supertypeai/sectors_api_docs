@@ -32,7 +32,7 @@ description: "Return daily transaction data of a given ticker on a certain inter
 
 ### Query Parameters
 
-<ParamField query="start" type="string" required>
+<ParamField query="start" type="string">
   Start date for which the daily transaction data of a given ticker is to be
   retrieved.
   <AccordionGroup>
@@ -44,10 +44,16 @@ description: "Return daily transaction data of a given ticker on a certain inter
       date**. If a date earlier than this is provided, only the most recent 90
       days of data will be retrieved.
     </Accordion>
+    <Accordion title="Default value">
+      When only `end` date is provided, the default value of `start` date is **30 days before the `end` date**.
+
+      When `start` and `end` dates are not provided, the default value of `start` date is **30 days before today**.
+    </Accordion>
+
   </AccordionGroup>
 </ParamField>
 
-<ParamField query="end" type="string" required>
+<ParamField query="end" type="string">
   End date for which the daily transaction data of a given ticker is to be
   retrieved.
   <AccordionGroup>
@@ -59,5 +65,11 @@ description: "Return daily transaction data of a given ticker on a certain inter
       If a date later than this is provided, only the most recent 90 days of
       data will be retrieved.
     </Accordion>
+    <Accordion title="Default value">
+      When only `start` date is provided, the default value of `end` date is **30 days after the `start` date**.
+
+      When `start` and `end` dates are not provided, the default value of `end` date is **today**.
+    </Accordion>
+
   </AccordionGroup>
 </ParamField>
