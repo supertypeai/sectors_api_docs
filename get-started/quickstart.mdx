@@ -58,15 +58,16 @@ icon: "bolt"
 
     ```r R
     library(httr)
+    library(jsonlite)
 
     # Replace the URL with a URL from the API References
     url <- "https://api.sectors.app/v1/.../"
     api_key <- "API key acquired from the previous step"
     headers <- c(Authorization = api_key)
 
-    data <- GET(url, headers) |>
-      content("text", encoding="utf-8") |>
-      jsonlite::fromJSON(flatten = TRUE)
+    data <- GET(url, add_headers(headers))
+
+    df <- fromJSON(content(data, "text", encoding="utf-8"),flatten=TRUE)
     ```
     </CodeGroup>
 
