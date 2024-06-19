@@ -14,6 +14,8 @@ Listing performance data is accessible only for tickers listed **after May 2005*
   Authorization header that should be filled with your Sectors API key.
 </ParamField>
 
+
+
 ### Path
 
 <ParamField path="ticker" type="string" initialValue="BBCA" required>
@@ -34,3 +36,47 @@ Listing performance data is accessible only for tickers listed **after May 2005*
     </Accordion>
   </AccordionGroup>
 </ParamField>
+
+### Response
+
+<ResponseField name="payload" type="object" required>
+  <Expandable title="properties">
+    <ResponseField name="symbol" type="string" required>
+      The ticker of the listed performance data
+    </ResponseField>
+    <ResponseField name="chg_7d" type="float" required>
+      The price change in the last 7 days
+    </ResponseField>
+    <ResponseField name="chg_30d" type="float" required>
+      The price change in the last 30 days
+    </ResponseField>
+    <ResponseField name="chg_90d" type="float" required>
+      The price change in the last 90 days
+    </ResponseField>
+    <ResponseField name="chg_365d" type="float" required>
+      The price change in the last 365 days
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json 200
+{
+  "symbol": "GOTO.JK",
+  "chg_7d": -0.0104712,
+  "chg_30d": -0.418848,
+  "chg_90d": -0.115183,
+  "chg_365d": -0.740838
+}
+```
+
+```json 400
+{
+  "error": "Given stock ticker does not exist for this data."
+}
+```
+
+```json 429
+{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
+```
+</ResponseExample>

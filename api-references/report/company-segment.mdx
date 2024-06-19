@@ -29,3 +29,68 @@ description: "Return revenue and cost segments of a given ticker"
     </Accordion>
   </AccordionGroup>
 </ParamField>
+
+### Query Parameters
+
+<ParamField query="financial_year" type="int">
+  Fetch company segment for given financial year. If not provided, it will return the latest company segment data.
+  <AccordionGroup>
+    <Accordion title="Get the available financial_year">
+      Get the available `financial_year` from the [Companies Segment List](../helper-list/companies-segment-list)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the financial_year">
+      `2022`, `2023`
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="symbol" type="string" required>
+  The ticker of the company segment
+</ResponseField>
+
+<ResponseField name="financial_year" type="int" required>
+  The financial year for the company segment
+</ResponseField>
+
+<ResponseField name="revenue_breakdown" type="object[]" required>
+  <Expandable title="properties">
+    <ResponseField name="value" type="float" required>
+      The revenue/cost breakdown value in IDR
+    </ResponseField>
+    <ResponseField name="source" type="string" required>
+      The source node
+    </ResponseField>
+    <ResponseField name="target" type="target" required>
+      The target node
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json 200
+{
+  "symbol": "BUMI.JK",
+  "financial_year": 2022,
+  "revenue_breakdown": [
+    {
+      "value": 15733248939797.021,
+      "source": "Coal (Export)",
+      "target": "Total Revenue"
+    }
+  ]
+}
+```
+
+```json 400
+{
+  "error": "Invalid stock ticker and/or data for the specified financial year does not exist."
+}
+```
+
+```json 429
+{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
+```
+</ResponseExample>

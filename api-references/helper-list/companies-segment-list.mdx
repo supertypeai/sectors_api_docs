@@ -12,10 +12,10 @@ description: "Return list of companies with revenue and cost segments, and list 
 
 ### Response
 
-<ResponseField name="<ticker>" type="object">
+<ResponseField name="<ticker>" type="object" required>
   `<ticker>` is the company's ticker in uppercase and `.JK` postfix format. For example: `BBRI.JK`, `TLKM.JK`, etc.
   <Expandable title="properties">
-    <ResponseField name="financial_year" type="int[]">
+    <ResponseField name="financial_year" type="int[]" required>
       Array of available report year for a particular ticker
     </ResponseField>
   </Expandable>

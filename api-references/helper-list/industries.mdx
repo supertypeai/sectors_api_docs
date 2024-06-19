@@ -12,13 +12,13 @@ description: "Return list of all available industries"
 
 ### Response
 
-<ResponseField name="payload" type="Industry[]">
+<ResponseField name="payload" type="Industry[]" required>
   <Expandable title="properties">
-    <ResponseField name="Industry.subsector" type="string">
+    <ResponseField name="Industry.subsector" type="string" required>
       A specific classification within a sector
     </ResponseField>
 
-    <ResponseField name="Industry.industry" type="string">
+    <ResponseField name="Industry.industry" type="string" required>
       A broad classification of companies in similar economic activities
     </ResponseField>
   </Expandable>

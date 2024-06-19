@@ -12,13 +12,13 @@ description: "Return list of all available subsectors"
 
 ### Response
 
-<ResponseField name="payload" type="Subsector[]">
+<ResponseField name="payload" type="Subsector[]" required>
   <Expandable title="properties">
-    <ResponseField name="Subsector.sector" type="string">
+    <ResponseField name="Subsector.sector" type="string" required>
       A broad classification of companies in similar economic areas
     </ResponseField>
 
-    <ResponseField name="Subsector.subsector" type="string">
+    <ResponseField name="Subsector.subsector" type="string" required>
       A specific classification within a sector
     </ResponseField>
   </Expandable>
