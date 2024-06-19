@@ -10,8 +10,37 @@ description: "Return list of all available subindustries"
   Authorization header that should be filled with your Sectors API key.
 </ParamField>
 
+### Response
+
+<ResponseField name="payload" type="Subindustry[]">
+  <Expandable title="properties">
+    <ResponseField name="Subindustry.industry" type="string">
+      A broad classification of companies in similar economic activities
+    </ResponseField>
+
+    <ResponseField name="Subindustry.sub_industry" type="string">
+      A specific classification within an industry
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
 ### Usage
 
 This list can be used for the following endpoint:
 
 - [Companies by Subindustry](./companies-subindustry)
+
+<ResponseExample>
+```json 200
+[
+  {
+    "industry": "metals-minerals",
+    "sub_industry": "diversified-metals-minerals"
+  }
+]
+```
+
+```json 429
+{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
+```
+</ResponseExample>

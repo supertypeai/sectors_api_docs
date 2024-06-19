@@ -29,8 +29,34 @@ description: "Return list of companies from a subsector"
   </AccordionGroup>
 </ParamField>
 
+### Response
+
+<ResponseField name="payload" type="string[]">
+  Array of ticker of companies in given subsector
+</ResponseField>
+
 ### Usage
 
 This list can be used for the following endpoint:
 
 - [Company Report](../report/company)
+
+<ResponseExample>
+```json 200
+[
+  "BALI.JK",
+  "BTEL.JK",
+  "CENT.JK",
+]
+```
+
+```json 400
+[
+  "The requested sub_sector does not exist."
+]
+```
+
+```json 429
+{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
+```
+</ResponseExample>

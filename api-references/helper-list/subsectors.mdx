@@ -10,9 +10,39 @@ description: "Return list of all available subsectors"
   Authorization header that should be filled with your Sectors API key.
 </ParamField>
 
+### Response
+
+<ResponseField name="payload" type="Subsector[]">
+  <Expandable title="properties">
+    <ResponseField name="Subsector.sector" type="string">
+      A broad classification of companies in similar economic areas
+    </ResponseField>
+
+    <ResponseField name="Subsector.subsector" type="string">
+      A specific classification within a sector
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+
 ### Usage
 
 This list can be used for the following endpoints:
 
 - [Companies by Subsector](./companies-subsector)
 - [Sector Report](../report/sector)
+
+<ResponseExample>
+```json 200
+[
+  {
+    "sector": "infrastructures",
+    "subsector": "telecommunication"
+  }
+]
+```
+
+```json 429
+{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
+```
+</ResponseExample>
