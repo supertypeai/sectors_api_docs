@@ -66,7 +66,7 @@ Here is the glimpse result of the API endpoint that we have called and processed
 | 2024-02-20   | DEWA.JK | 509467700 |
 | 2024-02-20   | DOOH.JK | 489452400 |
 
-You can also use [this dataset](/recipes/animated-plots-in-r/dataset/most_traded_stocks.csv) for this task, it is the same with the data that we called from the API, and it's accessible on [Sectors](https://sectors.app).
+You can also use [this dataset](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/dataset/most_traded_stocks.csv) for this task, it is the same with the data that we called from the API, and it's accessible on [Sectors](https://sectors.app).
 
 ## Data Manipulation
 We will start our data manipulation process by calculating the cumulative sum for each stock from the beginning of 2024 until now. Additionally, we will select only the top 10 stocks with the highest cumulative sum to include in the plot. This can be accomplished using the functions available in the tidyverse package in R.
@@ -212,6 +212,6 @@ anim <- staticplot + transition_states(date, transition_length = 4, state_length
 
 and here is the result of the gif
 
-![Most Traded Stocks in 2024](/recipes/animated-plots-in-r/images/most_traded_stocks.gif)
+![Most Traded Stocks in 2024](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/images/most_traded_stocks.gif?raw=true)
 
 In our latest experiment, we dove into the world of animated plots using data from [Sectors](https://sectors.app) with R. Stay tuned for more exciting recipes featuring Sectors data!
