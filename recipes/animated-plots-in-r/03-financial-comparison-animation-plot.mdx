@@ -86,7 +86,7 @@ The code above will fetch the historical valuation data from the top 8 major ban
 | BBNI.JK            | 2023 | 9.30000  | 1.3000000 | 13.15047     | 0.7844267	  |
 | BBRI.JK            | 2020 | 27.30000 | 2.2400000 | 27.29648     | 1.2624248   |
 
-Additionally, I also already provide the [dataset](../dataset/banks_valuation.csv) in case you haven't subscribe to [Sector's API plan](https://sectors.app/pricing). The data that is used here is provided by [Sectors](https://sectors.app). However, don't forget to register and subcribe to [Sector's API](https://sectors.app/api) for more effective way of doing stock market (especially Indonesia's Stock Market) analysis. 
+Additionally, I also already provide the [dataset](/recipes/animated-plots-in-r/dataset/banks_valuation.csv) in case you haven't subscribe to [Sector's API plan](https://sectors.app/pricing). The data that is used here is provided by [Sectors](https://sectors.app). However, don't forget to register and subcribe to [Sector's API](https://sectors.app/api) for more effective way of doing stock market (especially Indonesia's Stock Market) analysis. 
 
 ## Data Manipulation
 
@@ -174,7 +174,7 @@ bbca_plot
 
 Using the code above, the image below is the plot result. From the plot we can see that in 2023 BBCA.JK had the highest PBV ratio but also had the lowest PBV ratio. We can use this for further analysis determine the value of BBCA.JK.
 
-![BBCA.JK PE vs PBV Comparison](../image/bbca_pe_pbv.png)
+![BBCA.JK PE vs PBV Comparison](/recipes/animated-plots-in-r/images/bbca_pe_pbv.png)
 
 ### Sector's plot
 Another analysis that we can use to determine a value of a stock is by compare it to another stock in the same sector or compare it to the sector's average. The code below will make a plot that enable that analysis.
@@ -197,7 +197,7 @@ banks_2023
 
 and here is the result of the code above
 
-![Banks Sub-sector PE vs PBV Comparison in 2023](../image/banks_pbv_pe_2023.png)
+![Banks Sub-sector PE vs PBV Comparison in 2023](/recipes/animated-plots-in-r/images/banks_pbv_pe_2023.png)
 
 ### Animation Plot
 
@@ -234,7 +234,7 @@ animate(anim, 200, fps = 8, width = 1200, height = 1000,
 
 and here is the final result of our plot
 
-![Financial Comparisons of Top 8 Major Banks in Indonesia](../image/bank_subsector.gif)
+![Financial Comparisons of Top 8 Major Banks in Indonesia](/recipes/animated-plots-in-r/images/bank_subsector.gif)
 
 Therefore, by examining the above plot, we can assess the evolution of valuation for each company in the banking sector over time, both in comparison to other companies within the industry and against the sector/industry as a whole. It is hoped that this article has provided you with insights and perhaps inspired you to create your own animated plot. 
 

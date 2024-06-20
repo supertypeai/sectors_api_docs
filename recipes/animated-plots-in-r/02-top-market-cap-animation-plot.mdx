@@ -77,9 +77,9 @@ df_daily_hist <- df_daily_hist %>%
   rename("market_cap"="last_market_cap")
 ```
 
-Or if you haven't subscribe to the [Sector's API](https://sectors.app/api), I already upload [the dataset](../dataset/historical_marketcap.csv) for this analysis in this repository and it is provided by [Sectors](https://sectors.app), who have already compiled and curated the data for our use in this analysis, simplifying the process for us. The dataset is consist of the monthly market capitalization for each companies since December 2020, and using this data we will create a animated plot to see the top 10 stocks with highest market capitalization on Indonesia Stock Exchange.
+Or if you haven't subscribe to the [Sector's API](https://sectors.app/api), I already upload [the dataset](/recipes/animated-plots-in-r/dataset/historical_marketcap.csv) for this analysis in this repository and it is provided by [Sectors](https://sectors.app), who have already compiled and curated the data for our use in this analysis, simplifying the process for us. The dataset is consist of the monthly market capitalization for each companies since December 2020, and using this data we will create a animated plot to see the top 10 stocks with highest market capitalization on Indonesia Stock Exchange.
 
-Here is the glimpse of the data which you can directly fetch from [Sector's API](https://sectors.app/api) or you can directly access the data from [here](../dataset/historical_marketcap.csv) which is directly from [Sectors](https://sectors.app). But be sure to subscribe to [Sector's API](https://sectors.app/api) for more flexible data retrieval options and the opportunity to expand your analytical data sources.
+Here is the glimpse of the data which you can directly fetch from [Sector's API](https://sectors.app/api) or you can directly access the data from [here](/recipes/animated-plots-in-r/dataset/historical_marketcap.csv) which is directly from [Sectors](https://sectors.app). But be sure to subscribe to [Sector's API](https://sectors.app/api) for more flexible data retrieval options and the opportunity to expand your analytical data sources.
 
 |  date        | symbol  | market_cap   |
 | ------------ | ------- | ------------ |
@@ -227,6 +227,6 @@ animate(anim, 300, fps = 8, width = 1200, height = 1000,
 
 and here is the result of the gif
 
-![Stock with Highest Market Capitalization](../image/top_market_cap.gif)
+![Stock with Highest Market Capitalization](/recipes/animated-plots-in-r/images/top_market_cap.gif)
 
 Looking at the plot, it's clear that `BBCA.JK` consistently maintains the highest market capitalization on the Indonesia Stock Exchange since December 2020, while other positions fluctuate. For deeper insights into the market capitalization of companies or sectors on the Indonesia Stock Exchange, check out [Sectors](https://sectors.app). Also, stay tune to our next recipes!
