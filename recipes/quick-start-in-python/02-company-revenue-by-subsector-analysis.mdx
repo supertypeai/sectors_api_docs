@@ -55,7 +55,7 @@ else:
 You should see an output like this
 
 ```
-['HMSP.JK', 'ITIC.JK', 'GGRM.JK', 'WIIM.JK']
+['GGRM.JK', 'HMSP.JK', 'ITIC.JK', 'WIIM.JK']
 ```
 
 These are the list of all companies under one subsector which in this recipe, we use tobacco subsectors.
@@ -95,13 +95,15 @@ for company in list_companies_by_subsectors:
 If you run the code and try to print the `data` the output should look like this
 
 ```
-[['HMSP.JK', 'HM Sampoerna Tbk', 2019, 106055176000000, 13721513000000],
- ['HMSP.JK', 'HM Sampoerna Tbk', 2020, 92425210000000, 8581378000000],
- ['HMSP.JK', 'HM Sampoerna Tbk', 2021, 98874784000000, 7137097000000],
- ['HMSP.JK', 'HM Sampoerna Tbk', 2022, 111211321000000, 6323744000000],
+[
+ ['GGRM.JK', 'Gudang Garam Tbk', 2019, 110523819000000, 10880701000000],
+ ['GGRM.JK', 'Gudang Garam Tbk', 2020, 114477311000000, 7647725000000],
+ ['GGRM.JK', 'Gudang Garam Tbk', 2021, 124881266000000, 5605315000000],
+ ['GGRM.JK', 'Gudang Garam Tbk', 2022, 124682692000000, 2779739000000],
  ...,
- ['ITIC.JK', 'PT Indonesian Tobacco Tbk.', 2019, 166565000000, -7000000000],
- ['ITIC.JK', 'PT Indonesian Tobacco Tbk.', 2020, 197414000000, 6120000000]]
+ ['WIIM.JK', 'Wismilak Inti Makmur Tbk', 2022, 3704350294106, 249331695478],
+ ['WIIM.JK', 'Wismilak Inti Makmur Tbk', 2023, 4874784628824, 494312833186]
+]
 ```
 
 Now lets transform the data to pandas dataframe so we can do further analysis and visualization to it.
@@ -136,7 +138,7 @@ chart = alt.Chart(df_filtered).mark_line().encode(
 chart.display()
 ```
 
-![ITIC.JK Revenue](../image/ITIC_JK_Revenue.png)
+![ITIC.JK Revenue](../../images/recipes/ITIC_JK_Revenue.png)
 
 Now we can see that PT Indonesian Tobacco Tbk have a consistent increase in the revenue, this is a good insight. Now let’s take a look at the bigger picture, let’s compare all the company in Tobacco Subsector and also make it much prettier.
 
@@ -168,7 +170,7 @@ text = label.mark_text(align='left', dx=4)
 line + text
 ```
 
-![Company Revenue Comparison](../image/company_revenue_comparison.png)
+![Company Revenue Comparison](../../images/recipes/company_revenue_comparison.png)
 
 Upon comparing the revenue of all companies, it's evident that Gudang Garam Tbk consistently outperforms with the highest revenue. This valuable insight could significantly enhance your investment decision-making process.
 
@@ -176,7 +178,7 @@ Upon comparing the revenue of all companies, it's evident that Gudang Garam Tbk 
 
 To compare earnings between companies, you can easily modify the previous code by replacing `revenue` with `earnings`. We won't repeat the code here as it remains largely the same, and we trust in your ability to make this straightforward change.
 
-![Company Earnings Comparison](../image/company_earnings_comparison.png)
+![Company Earnings Comparison](../../images/recipes/company_earnings_comparison.png)
 
 We see that HM Sampoerna Tbk consistently have the highest earning compared to all companies.
 

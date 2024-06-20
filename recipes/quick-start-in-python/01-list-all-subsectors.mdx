@@ -39,7 +39,8 @@ else:
 If you try to print the `data_all_subsectors` you'll see a list that look like this:
 
 ```
-[{'sector': 'infrastructures', 'subsector': 'telecommunication'},
+[
+ {'sector': 'infrastructures', 'subsector': 'telecommunication'},
  {'sector': 'energy', 'subsector': 'oil-gas-coal'},
  {'sector': 'financials', 'subsector': 'financing-service'},
  {'sector': 'financials', 'subsector': 'investment-service'},
@@ -132,7 +133,8 @@ print(result_data)
 The code above basically retrieves all the list of companies from all subsectors. You should be able to see the output like below:
 
 ```
-[['telecommunication', 'BALI.JK'], 
+[
+ ['telecommunication', 'BALI.JK'], 
  ['telecommunication', 'BTEL.JK'], 
  ['telecommunication', 'CENT.JK'],
  ['telecommunication', 'DATA.JK'], 
@@ -181,7 +183,7 @@ chart = alt.Chart(df_grouped).mark_bar().encode(
 chart.display()
 ```
 
-![basic_visualization](../../images/total_companies_by_subsector_basic.png)
+![basic_visualization](../../images/recipes/total_companies_by_subsector_basic.png)
 
 Well now we have done a very basic bar chart visualization using Altair, but it looks really long and messy! Let's reduce the number to be top 5 biggest subsector by company and do some adjustment on the visualization.
 
@@ -214,7 +216,7 @@ chart = chart.configure_title(fontSize=20, anchor='start', color='black').config
 chart.display()
 ```
 
-![Better Visualization](../../images/top_5_companies_by_subsector.png)
+![Better Visualization](../../images/recipes/top_5_companies_by_subsector.png)
 
 And now we have a much better visualization we can show our boss! :wink:
 
