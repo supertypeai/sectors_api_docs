@@ -10,9 +10,9 @@ description: "By: [Aidityas Adhakim](https://www.github.com/aidityasadhakim) · 
 - Install [pandas](https://pypi.org/project/pandas/) to do some data exploratory
 - In this recipe we will use [altair](https://pypi.org/project/matplotlib/) to do the data visualization, if you are unfamiliar with altair, try to watch this playlist [Altair Tutorial](https://youtube.com/playlist?list=PLXsFtK46HZxXBddVC0FqmbGdlvbDbaqzx&si=cWtD0cFtwKg0b75v)
 
-```python
-pip install requests pandas altair
-```
+  ```python
+  pip install requests pandas altair
+  ```
 
 ## Accessing List of All Subsectors
 
@@ -59,11 +59,7 @@ df = df.drop(["sector"], axis=1)
 df.head()
 ```
 
-<br />
-
-The results will look like the following.
-
-<br />
+The results will look like the following:
 
 |     | subsectors           |
 | --- | -------------------- |
@@ -71,11 +67,11 @@ The results will look like the following.
 | 1   | oil-gas-coal         |
 | 2   | financing-service    |
 | 3   | investment-service   |
-| 4   | apparel-luxury-Goods |
+| 4   | apparel-luxury-goods |
 
 ### Processing the data
 
-As you can see, the subsector’s naming standard is not user-friendly, lets fix that too before doing the visualization, you just need to add two lines of code to make it more readable!
+As you can see, the subsector’s naming standard is not user-friendly, let's fix that too before doing the visualization, you just need to add two lines of code to make it more readable!
 
 ```python
 df["subsector"] = df["subsector"].str.replace("-"," ")
@@ -95,9 +91,9 @@ After the data processing, now it should look more readable.
 
 ## Data Visualization
 
-Now lets try to visualize all the subsectors using altair!
+Now let's try to visualize all the subsectors using altair!
 
-### Lets look at another API
+### Let's look at another API
 
 The list of all subsectors API only returns a list of subsectors. This is not terribly insightful, so let's shift our focus onto another Sectors API that lists all companies within each subsector. That will give us more data to work with and lay the foundation for our data visualization later.
 
@@ -140,7 +136,7 @@ The code above basically retrieves all the list of companies from all subsectors
 ]
 ```
 
-Now since we already join the data lets do some data processing and visualize the data.
+Now since we already join the data let's do some data processing and visualize the data.
 
 ### Total Companies by Subsector
 
@@ -215,6 +211,6 @@ chart.display()
 
 ![Better Visualization](/recipes/quick-start-in-python/images/top_5_companies_by_subsector.png)
 
-And now we have a much better visualization we can show our boss! :wink:
+And now we have a much better visualization we can show our boss! 😉
 
 In this recipe, we've pulled the data from [Sectors](https://sectors.app) and do a little bit data processing and some simple data visualization! Now you can take a look at another API and try to build your own visualization based on your needs or you can simply follow along the rest of this cookbook to see more recipes that you can try!

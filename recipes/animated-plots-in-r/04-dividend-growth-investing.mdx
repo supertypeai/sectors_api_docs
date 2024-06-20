@@ -4,9 +4,10 @@ sidebarTitle: "0.4 Dividend Growth Investing"
 description: "By: [Gerald Bryan](https://github.com/geraldbryan) · May 16, 2024"
 ---
 
-Welcome to the new chapter of [Sector's](https://sectors.app) animation plot series! In the last three chapter we already learned how to create animation plot using bar chart, and scatter plot. Now, let's learn how to do it for line chart. Reminder, we will still use R for this chapter. Also since, some of the charts produce in this series are used in [Sector's Instagram](https://www.instagram.com/sectorsapp/) content, don't forget to follow and support it!
+Welcome to the new chapter of [Sectors](https://sectors.app) animation plot series! In the last three chapter we already learned how to create animation plot using bar chart, and scatter plot. Now, let's learn how to do it for line chart. Reminder, we will still use R for this chapter. Also since, some of the charts produce in this series are used in [Sectors Instagram](https://www.instagram.com/sectorsapp/) content, don't forget to follow and support it!
 
-# Dividend Growth Investing Strategy
+## Dividend Growth Investing Strategy
+
 Before diving into the coding section, it's crucial to understand the dividend growth investing strategy and the key metrics essential for its application in daily stock market activities.
 
 Firstly, let's grasp the concept of dividends. Dividends are profits that a company distributes to its shareholders, indicating financial stability and maturity. Unlike growth-oriented firms that reinvest earnings, dividend-paying companies offer shareholders a portion of their profits.
@@ -19,10 +20,11 @@ The key advantage of dividend growth investing lies in its ability to provide a 
 
 Moreover, this strategy is viewed as a conservative approach compared to others. By targeting companies with a history of stable dividend growth, investors can potentially reduce exposure to market volatility while benefiting from equities' long-term growth potential. Patience and discipline are vital, as the compounding effects of dividend growth may take time to materialize.
 
-# Plot Creation
-Based on the explanation of dividend growth, we must analyze the dividend of each company to know which company is suitable to be bought if we use the dividend growth investing strategy. Therefore, we can use the [Sector's API](https://sectors.app/api) to directly get the dividend of each company. In this recipe, I'll show you the dividend growth analysis of 7 majors companies in Indonesia.
+## Plot Creation
 
-## Data Fetching
+Based on the explanation of dividend growth, we must analyze the dividend of each company to know which company is suitable to be bought if we use the dividend growth investing strategy. Therefore, we can use the [Sectors API](https://sectors.app/api) to directly get the dividend of each company. In this recipe, I'll show you the dividend growth analysis of 7 majors companies in Indonesia.
+
+### Data Fetching
 
 ```r
 library(httr)
@@ -44,18 +46,18 @@ cleaned_stocks <- sub(".JK", "", stocks)
 for (i in cleaned_stocks) {
   # Replace the URL with a URL from the Available Endpoints section
   url <- paste0("https://api.sectors.app/v1/company/report/", i, "/?sections=dividend")
-  
+
   headers <- c(Authorization = api_key)
-  
+
   response <- GET(url, add_headers(headers))
-  
+
   if (status_code(response) == 200) {
     df <- fromJSON(content(response, "text"),flatten=TRUE)
     df <- df$dividend$historical_dividends
     df$symbol <- paste0(i,".JK")
-    
+
     df <- df %>% select(symbol,year,total_dividend)
-    
+
     df_div <- rbind(df_div,df)
   } else {
     # Handle error
@@ -69,17 +71,17 @@ df_div
 
 Using the code above, here is the glimpse of the data:
 
-| symbol  | year | total_dividend   |
-| ------- | ---- | ---------------- |
-| BBCA.JK | 2019 | 71.0000	        |
-| BBRI.JK | 2019 | 120.1560	        |
-| BYAN.JK | 2019 | 127.0530	        |
-| BMRI.JK | 2019 | 120.6080 	    |
-| TLKM.JK | 2019 | 54.6075		    |
+| symbol  | year | total_dividend |
+| ------- | ---- | -------------- |
+| BBCA.JK | 2019 | 71.0000        |
+| BBRI.JK | 2019 | 120.1560       |
+| BYAN.JK | 2019 | 127.0530       |
+| BMRI.JK | 2019 | 120.6080       |
+| TLKM.JK | 2019 | 54.6075        |
 
-In case, you haven't had any subscription to [Sector's API](https://sectors.app/api), I put the data (it is sourced from [Sector](https://sectors.app)) in the repository too, and you can used it to code along in this series. But don't forget to subscribe to the [Sector's API](https://sectors.app/api) plan, so you can freely analyze the other companies as you wish!
+In case, you haven't had any subscription to [Sectors API](https://sectors.app/api), I put the data (it is sourced from [Sectors](https://sectors.app)) in the repository too, and you can used it to code along in this series. But don't forget to subscribe to the [Sectors API](https://sectors.app/api) plan, so you can freely analyze the other companies as you wish!
 
-## Data Manipulation
+### Data Manipulation
 
 The other advantages of using the API is the data is already quite clean and we don't need to do a lot of data manipulation especially in this recipe. We only need to calculate the dividend growth per symbol each year and then we can directly make a plot from that data. We can calculate and create a new column for `dividend_growth` value using the code below.
 
@@ -87,22 +89,22 @@ The other advantages of using the API is the data is already quite clean and we 
 # Shift the 'value' column within each 'symbol' group
 df_div <- df_div %>%
   group_by(symbol) %>%
-  mutate(shifted_value = lag(total_dividend)) %>% 
-  mutate(percentage_growth = round(((total_dividend-shifted_value)/shifted_value)*100,2)) %>% 
+  mutate(shifted_value = lag(total_dividend)) %>%
+  mutate(percentage_growth = round(((total_dividend-shifted_value)/shifted_value)*100,2)) %>%
   drop_na()
 ```
 
-and here is the glimpse of the data that are ready to be plotted
+and here is the glimpse of the data that are ready to be plotted:
 
-| symbol  | year | total_dividend   | shifted_value | percentage_growth |
-| ------- | ---- | ---------------- | ------------- | ----------------- |
-| BBCA.JK | 2020 | 110.6000 	    | 71.0000	    | 55.77             |
-| BBRI.JK | 2020 | 152.9080         | 120.1560	    | 27.26             |
-| BYAN.JK | 2020 | 29.5080          | 127.0530	    | -76.78            |
-| BMRI.JK | 2020 | 176.6710		    | 120.6080	    | 46.48             |
-| TLKM.JK | 2020 | 154.0680 	    | 54.6075	    | 182.14            |
+| symbol  | year | total_dividend | shifted_value | percentage_growth |
+| ------- | ---- | -------------- | ------------- | ----------------- |
+| BBCA.JK | 2020 | 110.6000       | 71.0000       | 55.77             |
+| BBRI.JK | 2020 | 152.9080       | 120.1560      | 27.26             |
+| BYAN.JK | 2020 | 29.5080        | 127.0530      | -76.78            |
+| BMRI.JK | 2020 | 176.6710       | 120.6080      | 46.48             |
+| TLKM.JK | 2020 | 154.0680       | 54.6075       | 182.14            |
 
-## Data Visualization
+### Data Visualization
 
 In this recipe I also use the custom theme that I created, so you can skip the code below if you don't want to use my theme or already create it from the previous recipe in this series.
 
@@ -132,7 +134,7 @@ custom_theme <- theme(
 )
 ```
 
-### Static Plot
+#### Static Plot
 
 ```r
 library(scales)
@@ -152,25 +154,26 @@ plot <- ggplot(
 plot
 ```
 
-The code above is to create the static line plot and the result is in the image below
+The code above is to create the static line plot and the result is in the image below:
 
 ![Yearly Dividend Growth](/recipes/animated-plots-in-r/images/dividend_growth.png)
 
-### Animation Plot
-To make the plot more lively and more interesting, we can use the animation, we can shown the line chart each year one by one using the code below and directly save it into .gif file
+#### Animation Plot
+
+To make the plot more lively and more interesting, we can use the animation, we can shown the line chart each year one by one using the code below and directly save it into `.gif` file:
 
 ```r
-anim <- plot + 
+anim <- plot +
   geom_point(size=6) +
   geom_text(aes(label=symbol), hjust=-0.1, size=8)+
   transition_reveal(year)
-  
+
 animate(anim, 200, fps = 8, width = 1400, height = 1000,
         renderer = gifski_renderer("gganim_10.gif"))
 ```
 
 ![Yearly Dividend Growth](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/images/dividend_growth.gif?raw=true)
 
-Using this plot, we can see which company have a consistent record of increasing dividends annually, and apply your dividend growth investing strategy. If you want to analyze other companies's dividend, you can directly subscribe to the [Sector's API](https://sectors.app/api) subscription plan! Plus you can visit [Sector's Website](https://sectors.app) for other analysis!
+Using this plot, we can see which company have a consistent record of increasing dividends annually, and apply your dividend growth investing strategy. If you want to analyze other companies's dividend, you can directly subscribe to the [Sectors API](https://sectors.app/api) subscription plan! Plus you can visit [Sectors Website](https://sectors.app) for other analysis!
 
 See you on the next recipe!

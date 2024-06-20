@@ -4,17 +4,16 @@ sidebarTitle: "0.2 Top Market Cap Animation Plot"
 description: "By: [Gerald Bryan](https://github.com/geraldbryan) · April 25, 2024"
 ---
 
-# Animating the Top Stocks by Market Capitalization on IDX
+## Animating the Top Stocks by Market Capitalization on IDX
 
-Market capitalization, often referred to as market cap, is a measure of a company's total value in the stock market. It is calculated by multiplying the current share price by the total number of outstanding shares. In a way, it is the market's consensus on the value of a company, reflecting both the company's size and its perceived growth prospects. In Indonesia, it is well observed that the top companies by market capitalization (and hence, value) are the largest banks that command a household level of trust and brand recognition. 
+Market capitalization, often referred to as market cap, is a measure of a company's total value in the stock market. It is calculated by multiplying the current share price by the total number of outstanding shares. In a way, it is the market's consensus on the value of a company, reflecting both the company's size and its perceived growth prospects. In Indonesia, it is well observed that the top companies by market capitalization (and hence, value) are the largest banks that command a household level of trust and brand recognition.
 
-# Analysis
+## Analysis
 
-Given the significance of market capitalization in stock assessment, we will examine the evolving rankings of stocks based on their market capitalization values since December 2020 on the Indonesia Stock Exchange. We can directly fetch the historical market capitalization using the [Sector's API](https://sectors.app/api). To access the API you only need to go to the [Sector's website](https://sectors.app), subscribe to the plan and call the API directly from your script or notebook.
+Given the significance of market capitalization in stock assessment, we will examine the evolving rankings of stocks based on their market capitalization values since December 2020 on the Indonesia Stock Exchange. We can directly fetch the historical market capitalization using the [Sectors API](https://sectors.app/api). To access the API you only need to go to the [Sectors website](https://sectors.app), subscribe to the plan and call the API directly from your script or notebook.
 
-Below is the code how to fetch the historical market capitalization data using the [Sector's API](https://sectors.app/api).
+Below is the code how to fetch the historical market capitalization data using the [Sectors API](https://sectors.app/api).
 
-```r
 ```{r}
 # Load necessary libraries
 library(httr)
@@ -39,17 +38,17 @@ for (i in stocks_list) {
       start_date <- date[[j]][1] + 1
       end_date <- date[[j + 1]][1]
     }
-    
+
     # Format the dates as strings
     start_date <- format(start_date, "%Y-%m-%d")
     end_date <- format(end_date, "%Y-%m-%d")
-    
+
     # Construct the URL
     url <- paste0("https://api.sectors.app/v1/daily/", i, "/?start=", start_date, "&end=", end_date)
-    
+
     # Make the API request
     response <- GET(url, add_headers(Authorization = api_key))
-    
+
     # Check if the request was successful
     if (status_code(response) == 200) {
       data <- content(response, "text")
@@ -59,7 +58,7 @@ for (i in stocks_list) {
       # Handle error
       print(status_code(response))
     }
-    
+
     print(paste("Finish collecting data for stock", i, "from", start_date, "to", end_date))
   }
 }
@@ -67,31 +66,31 @@ for (i in stocks_list) {
 df_daily_hist$month <- month(df_daily_hist$date)
 df_daily_hist$year <- year(df_daily_hist$date)
 
-df_daily_hist <- df_daily_hist %>% 
-  filter(date>"2020-12-01") %>% 
-  arrange(date) %>% 
-  group_by(symbol,year,month) %>% 
-  summarize(last_market_cap = last(market_cap), .groups = 'drop') 
+df_daily_hist <- df_daily_hist %>%
+  filter(date>"2020-12-01") %>%
+  arrange(date) %>%
+  group_by(symbol,year,month) %>%
+  summarize(last_market_cap = last(market_cap), .groups = 'drop')
 
 df_daily_hist <- df_daily_hist %>%
   rename("market_cap"="last_market_cap")
 ```
 
-Or if you haven't subscribe to the [Sector's API](https://sectors.app/api), I already upload [the dataset](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/dataset/most_traded_stocks.csv) for this analysis in this repository and it is provided by [Sectors](https://sectors.app), who have already compiled and curated the data for our use in this analysis, simplifying the process for us. The dataset is consist of the monthly market capitalization for each companies since December 2020, and using this data we will create a animated plot to see the top 10 stocks with highest market capitalization on Indonesia Stock Exchange.
+Or if you haven't subscribe to the [Sectors API](https://sectors.app/api), I already upload [the dataset](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/dataset/most_traded_stocks.csv) for this analysis in this repository and it is provided by [Sectors](https://sectors.app), who have already compiled and curated the data for our use in this analysis, simplifying the process for us. The dataset is consist of the monthly market capitalization for each companies since December 2020, and using this data we will create a animated plot to see the top 10 stocks with highest market capitalization on Indonesia Stock Exchange.
 
-Here is the glimpse of the data which you can directly fetch from [Sector's API](https://sectors.app/api) or you can directly access the data from [here](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/dataset/historical_marketcap.csv) which is directly from [Sectors](https://sectors.app). But be sure to subscribe to [Sector's API](https://sectors.app/api) for more flexible data retrieval options and the opportunity to expand your analytical data sources.
+Here is the glimpse of the data which you can directly fetch from [Sectors API](https://sectors.app/api) or you can directly access the data from [here](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/dataset/historical_marketcap.csv) which is directly from [Sectors](https://sectors.app). But be sure to subscribe to [Sectors API](https://sectors.app/api) for more flexible data retrieval options and the opportunity to expand your analytical data sources.
 
-|  date        | symbol  | market_cap   |
-| ------------ | ------- | ------------ |
-| 2023-08-31   | ADMR.JK | 5.560000e+13	|
-| 2023-08-31   | ADRO.JK | 8.540300e+13 |
-| 2023-08-31   | AIMS.JK | 6.300000e+10 |
-| 2023-08-31   | AKRA.JK | 2.810300e+13	|
-| 2023-08-31   | APEX.JK | 4.390000e+11	|
+| date       | symbol  | market_cap   |
+| ---------- | ------- | ------------ |
+| 2023-08-31 | ADMR.JK | 5.560000e+13 |
+| 2023-08-31 | ADRO.JK | 8.540300e+13 |
+| 2023-08-31 | AIMS.JK | 6.300000e+10 |
+| 2023-08-31 | AKRA.JK | 2.810300e+13 |
+| 2023-08-31 | APEX.JK | 4.390000e+11 |
 
-## Data Wrangling
+### Data Wrangling
 
-If you have followed [the top_stock_volume_animation_plot recipe](./01_top_stock_volume_animation_plot.md), the code below is more or less the same like the one in that recipe. The differences are the data source and the data cleansing part, since in this recipe the data manipulation parts won't be that complicated. 
+If you have followed the [Top Stock Volume Animation Plot](./01-top-stock-volume-animation-plot) recipe, the code below is more or less the same like the one in that recipe. The differences are the data source and the data cleansing part, since in this recipe the data manipulation parts won't be that complicated.
 
 ```r
 df_daily_hist$month <- month(df_daily_hist$date)
@@ -104,15 +103,15 @@ First, we will extract the month and year from the date value. This is necessary
 2. Create a `Rank` variable to annotate the position of each stock each month.
 3. Finally, arrange the dataset by date and market capitalization value in ascending order.
 
-All of the three steps that I have explained above will be executed using the code below
+All of the three steps that I have explained above will be executed using the code below:
 
 ```r
-df_daily_hist <- df_daily_hist %>% 
-  group_by(month,year) %>% 
-  top_n(10,market_cap) %>% 
+df_daily_hist <- df_daily_hist %>%
+  group_by(month,year) %>%
+  top_n(10,market_cap) %>%
   arrange(year,month, market_cap)
 
-df_daily_hist <- df_daily_hist %>% 
+df_daily_hist <- df_daily_hist %>%
   mutate(rank = rank(-market_cap))
 ```
 
@@ -121,7 +120,7 @@ To enhance readability, we will format the `market_cap` value using the previous
 ```r
 formatNumber <- function(number) {
   absNumber <- abs(number)
-  
+
   if (absNumber > 1e12) {
     return(paste0(format(round(number / 1e12, 2), nsmall = 2), "T"))
   } else if (absNumber > 1e9) {
@@ -140,29 +139,28 @@ df_finished <- df_daily_hist %>%
 
 location = "../chart_logo/"
 
-df_finished <- df_finished %>% 
+df_finished <- df_finished %>%
   mutate(image = paste0(location,symbol, ".png"))
 
 df_finished$date_formatted <- paste0(df_finished$year,"-",df_finished$month)
 ```
 
-Here is a preview of the processed data, prepared and ready for visualization.
+Here is a preview of the processed data, prepared and ready for visualization:
 
-|  date        | symbol  | market_cap   | month | year | rank | market_cap_text | image                       |
-| ------------ | ------- | ------------ | ----- | ---- | ---- | --------------- | --------------------------- |
-| 2020-12-31   | ICBP.JK | 1.116630e+14	| 12    | 2020 | 10   | 111.66T         | "../chart_logo/ICBP.JK.png" |
-| 2020-12-31   | BBNI.JK | 1.140040e+14 | 12    | 2020 | 9    | 114.00T         | "../chart_logo/BBNI.JK.png" |
-| 2020-12-31   | TPIA.JK | 1.618390e+14 | 12    | 2020 | 8    | 161.84T         | "../chart_logo/TPIA.JK.png" |
-| 2020-12-31   | HMSP.JK | 1.750590e+14 | 12    | 2020 | 7    | 175.06T         | "../chart_logo/HMSP.JK.png" |
-| 2020-12-31   | ASII.JK | 2.439130e+14 | 12    | 2020 | 6    | 243.91T         | "../chart_logo/ASII.JK.png" |
-| 2020-12-31   | UNVR.JK | 2.804030e+14 | 12    | 2020 | 5    | 280.40T         | "../chart_logo/UNVR.JK.png" |
-| 2020-12-31   | BMRI.JK | 2.922150e+14 | 12    | 2020 | 4    | 292.21T         | "../chart_logo/BMRI.JK.png" |
-| 2020-12-31   | TLKM.JK | 3.278960e+14 | 12    | 2020 | 3    | 327.90T         | "../chart_logo/TLKM.JK.png" |
-| 2020-12-31   | BBRI.JK | 5.092090e+14 | 12    | 2020 | 2    | 509.21T         | "../chart_logo/BBRI.JK.png" |
-| 2020-12-31   | BBCA.JK | 8.262260e+14 | 12    | 2020 | 1    | 826.23T         | "../chart_logo/BBCA.JK.png" |
+| date       | symbol  | market_cap   | month | year | rank | market_cap_text | image                       |
+| ---------- | ------- | ------------ | ----- | ---- | ---- | --------------- | --------------------------- |
+| 2020-12-31 | ICBP.JK | 1.116630e+14 | 12    | 2020 | 10   | 111.66T         | "../chart_logo/ICBP.JK.png" |
+| 2020-12-31 | BBNI.JK | 1.140040e+14 | 12    | 2020 | 9    | 114.00T         | "../chart_logo/BBNI.JK.png" |
+| 2020-12-31 | TPIA.JK | 1.618390e+14 | 12    | 2020 | 8    | 161.84T         | "../chart_logo/TPIA.JK.png" |
+| 2020-12-31 | HMSP.JK | 1.750590e+14 | 12    | 2020 | 7    | 175.06T         | "../chart_logo/HMSP.JK.png" |
+| 2020-12-31 | ASII.JK | 2.439130e+14 | 12    | 2020 | 6    | 243.91T         | "../chart_logo/ASII.JK.png" |
+| 2020-12-31 | UNVR.JK | 2.804030e+14 | 12    | 2020 | 5    | 280.40T         | "../chart_logo/UNVR.JK.png" |
+| 2020-12-31 | BMRI.JK | 2.922150e+14 | 12    | 2020 | 4    | 292.21T         | "../chart_logo/BMRI.JK.png" |
+| 2020-12-31 | TLKM.JK | 3.278960e+14 | 12    | 2020 | 3    | 327.90T         | "../chart_logo/TLKM.JK.png" |
+| 2020-12-31 | BBRI.JK | 5.092090e+14 | 12    | 2020 | 2    | 509.21T         | "../chart_logo/BBRI.JK.png" |
+| 2020-12-31 | BBCA.JK | 8.262260e+14 | 12    | 2020 | 1    | 826.23T         | "../chart_logo/BBCA.JK.png" |
 
-
-## Data Visualization
+### Data Visualization
 
 ```r
 custom_theme <- theme(
@@ -187,7 +185,7 @@ custom_theme <- theme(
 )
 ```
 
-The code above is used to define a `theme` for the plot, which does not affect the underlying data. This code is solely for configuring the visual appearance of the chart. While we can start to create the animated plot by creating the static plot using the code below
+The code above is used to define a `theme` for the plot, which does not affect the underlying data. This code is solely for configuring the visual appearance of the chart. While we can start to create the animated plot by creating the static plot using the code below:
 
 ```r
 colors <- c("#f87171", "#fb923c","#fbbf24", "#facc15",
@@ -212,7 +210,7 @@ staticplot <- ggplot(df_finished, aes(rank,market_cap/2, group = symbol)) +
   custom_theme
 ```
 
-Now that we've created the static plot, we can begin to make the animation and save it as .gif file
+Now that we've created the static plot, we can begin to make the animation and save it as `.gif` file:
 
 ```r
 anim <- staticplot + transition_states(date_formatted, transition_length = 4, state_length = 1) +
@@ -225,7 +223,7 @@ animate(anim, 300, fps = 8, width = 1200, height = 1000,
         renderer = gifski_renderer("top_market_cap.gif"))
 ```
 
-and here is the result of the gif
+and here is the result of the gif:
 
 ![Stock with Highest Market Capitalization](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/images/top_market_cap.gif?raw=true)
 

@@ -4,18 +4,18 @@ sidebarTitle: "0.1 Top Stock Volume Animation Plot"
 description: "By: [Gerald Bryan](https://github.com/geraldbryan) · April 23, 2024"
 ---
 
-
 Have you ever thought about creating an animated plot that evolves over time, perfect for sharing on Instagram Reels or other content platforms? Well, now you can achieve that using R and data from the [Sectors](https://sectors.app). In this recipe, I'll guide you to create the animated plot of the most traded stocks on Indonesia Stock Exchange in 2024.
 
 ## Install Libraries
 
-Before we dive into the project, let's set up our environment by installing essential packages. We'll use the 'tidyverse' package for data manipulation in R, along with 'ggplot' and 'gganimate' libraries to craft our visualization and animated plot.
+Before we dive into the project, let's set up our environment by installing essential packages. We'll use the `tidyverse` package for data manipulation in R, along with `ggplot` and `gganimate` libraries to craft our visualization and animated plot.
 
 ```r
 install.packages(c("tidyverse","gganimate"))
 ```
 
 ## Load Library
+
 ```r
 library(tidyverse)
 library(gganimate)
@@ -23,7 +23,7 @@ library(gganimate)
 
 ## Data Source
 
-After installing the necessary packages and loading the libraries, we can start fetching the data from the [Sector's API](https://sectors.app/api). To access the API you only need to go to the [Sector's website](https://sectors.app), subscribe to the plan and call the API directly from your markdown. Here is how we fetch the most-traded stock data from R using the endpoint that has been created by Sector's team.
+After installing the necessary packages and loading the libraries, we can start fetching the data from the [Sectors API](https://sectors.app/api). To access the API you only need to go to the [Sectors website](https://sectors.app), subscribe to the plan and call the API directly from your markdown. Here is how we fetch the most-traded stock data from R using the endpoint that has been created by Sectors team.
 
 ```r
 library(httr)
@@ -58,56 +58,57 @@ df <- do.call(rbind, lapply(names(data), function(date) {
 
 Here is the glimpse result of the API endpoint that we have called and processed. We will use this data to create a animation bar chart in this recipe
 
-|  date        | symbol  | volume    |
-| ------------ | ------- | --------- |
-| 2024-02-20   | GOTO.JK | 1033123000|
-| 2024-02-20   | BUMI.JK | 998119800 |
-| 2024-02-20   | CARE.JK | 673579200 |
-| 2024-02-20   | DEWA.JK | 509467700 |
-| 2024-02-20   | DOOH.JK | 489452400 |
+| date       | symbol  | volume     |
+| ---------- | ------- | ---------- |
+| 2024-02-20 | GOTO.JK | 1033123000 |
+| 2024-02-20 | BUMI.JK | 998119800  |
+| 2024-02-20 | CARE.JK | 673579200  |
+| 2024-02-20 | DEWA.JK | 509467700  |
+| 2024-02-20 | DOOH.JK | 489452400  |
 
 You can also use [this dataset](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/dataset/most_traded_stocks.csv) for this task, it is the same with the data that we called from the API, and it's accessible on [Sectors](https://sectors.app).
 
 ## Data Manipulation
+
 We will start our data manipulation process by calculating the cumulative sum for each stock from the beginning of 2024 until now. Additionally, we will select only the top 10 stocks with the highest cumulative sum to include in the plot. This can be accomplished using the functions available in the tidyverse package in R.
 
 ```r
-df_filter <- df %>% 
+df_filter <- df %>%
   group_by(symbol) %>%
   arrange(date) %>%
   mutate(accumulated_volume = cumsum(volume))
 
-df_finished <- df_filter %>% 
-  group_by(date) %>% 
-  top_n(10,accumulated_volume) %>% 
+df_finished <- df_filter %>%
+  group_by(date) %>%
+  top_n(10,accumulated_volume) %>%
   arrange(date,accumulated_volume)
 
-df_finished <- df_finished %>% 
-  group_by(date) %>% 
+df_finished <- df_finished %>%
+  group_by(date) %>%
   mutate(rank = rank(-accumulated_volume))
 ```
 
 With the provided code, the data will be transformed as shown in the table below. This table will include the ranking and cumulative sum up until the most recent date, which is essential for creating the plot.
 
-|  date        | symbol  | volume     | accumulated_volume | rank |
-| ------------ | ------- | ---------- | ------------------ | ---- |
-| 2024-01-02   | MPXL.JK | 213109100  | 213109100          | 10   |
-| 2024-01-02   | BAPA.JK | 282855200  | 282855200          | 9    |
-| 2024-01-02   | BIPI.JK | 300042500  | 300042500          | 8    |
-| 2024-01-02   | STRK.JK | 328691100  | 328691100          | 7    |
-| 2024-01-02   | NATO.JK | 454095300  | 454095300          | 6    |
-| 2024-01-02   | DOOH.JK | 489452400  | 489452400          | 5    |
-| 2024-01-02   | DEWA.JK | 509467700  | 509467700          | 4    |
-| 2024-01-02   | CARE.JK | 673579200  | 673579200          | 3    |
-| 2024-01-02   | BUMI.JK | 998119800  | 998119800          | 2    |
-| 2024-01-02   | GOTO.JK | 1033123000 | 1033123000         | 1    |
+| date       | symbol  | volume     | accumulated_volume | rank |
+| ---------- | ------- | ---------- | ------------------ | ---- |
+| 2024-01-02 | MPXL.JK | 213109100  | 213109100          | 10   |
+| 2024-01-02 | BAPA.JK | 282855200  | 282855200          | 9    |
+| 2024-01-02 | BIPI.JK | 300042500  | 300042500          | 8    |
+| 2024-01-02 | STRK.JK | 328691100  | 328691100          | 7    |
+| 2024-01-02 | NATO.JK | 454095300  | 454095300          | 6    |
+| 2024-01-02 | DOOH.JK | 489452400  | 489452400          | 5    |
+| 2024-01-02 | DEWA.JK | 509467700  | 509467700          | 4    |
+| 2024-01-02 | CARE.JK | 673579200  | 673579200          | 3    |
+| 2024-01-02 | BUMI.JK | 998119800  | 998119800          | 2    |
+| 2024-01-02 | GOTO.JK | 1033123000 | 1033123000         | 1    |
 
 To finalize the data preparation for the plot, we will format the accumulated volume to enhance readability. This formatting will make the numbers easier for people to interpret.
 
 ```r
 formatNumber <- function(number) {
   absNumber <- abs(number)
-  
+
   if (absNumber > 1e12) {
     return(paste0(format(round(number / 1e12, 2), nsmall = 2), "T"))
   } else if (absNumber > 1e9) {
@@ -126,23 +127,22 @@ df_finished <- df_finished %>%
   mutate(accumulated_volume_text = formatNumber(accumulated_volume))
 ```
 
-|  date        | symbol  | volume     | accumulated_volume | rank | accumulated_volume_text |
-| ------------ | ------- | ---------- | ------------------ | ---- | ----------------------- |
-| 2024-01-02   | MPXL.JK | 213109100  | 213109100          | 10   | 213.11M                 |
-| 2024-01-02   | BAPA.JK | 282855200  | 282855200          | 9    | 282.86M                 |
-| 2024-01-02   | BIPI.JK | 300042500  | 300042500          | 8    | 300.04M                 |
-| 2024-01-02   | STRK.JK | 328691100  | 328691100          | 7    | 328.69M                 |
-| 2024-01-02   | NATO.JK | 454095300  | 454095300          | 6    | 454.10M                 |
-| 2024-01-02   | DOOH.JK | 489452400  | 489452400          | 5    | 489.45M                 |
-| 2024-01-02   | DEWA.JK | 509467700  | 509467700          | 4    | 509.47M                 |
-| 2024-01-02   | CARE.JK | 673579200  | 673579200          | 3    | 673.58M                 |
-| 2024-01-02   | BUMI.JK | 998119800  | 998119800          | 2    | 998.12M                 |
-| 2024-01-02   | GOTO.JK | 1033123000 | 1033123000         | 1    | 1033.12M                |
-
+| date       | symbol  | volume     | accumulated_volume | rank | accumulated_volume_text |
+| ---------- | ------- | ---------- | ------------------ | ---- | ----------------------- |
+| 2024-01-02 | MPXL.JK | 213109100  | 213109100          | 10   | 213.11M                 |
+| 2024-01-02 | BAPA.JK | 282855200  | 282855200          | 9    | 282.86M                 |
+| 2024-01-02 | BIPI.JK | 300042500  | 300042500          | 8    | 300.04M                 |
+| 2024-01-02 | STRK.JK | 328691100  | 328691100          | 7    | 328.69M                 |
+| 2024-01-02 | NATO.JK | 454095300  | 454095300          | 6    | 454.10M                 |
+| 2024-01-02 | DOOH.JK | 489452400  | 489452400          | 5    | 489.45M                 |
+| 2024-01-02 | DEWA.JK | 509467700  | 509467700          | 4    | 509.47M                 |
+| 2024-01-02 | CARE.JK | 673579200  | 673579200          | 3    | 673.58M                 |
+| 2024-01-02 | BUMI.JK | 998119800  | 998119800          | 2    | 998.12M                 |
+| 2024-01-02 | GOTO.JK | 1033123000 | 1033123000         | 1    | 1033.12M                |
 
 ## Data Visualization
 
-Let's begin by designing the theme for our plot! You don't necessarily have to create a custom theme from scratch; there are pre-built themes available for use in ggplot that are free. However, in this instance, I've created a custom theme to ensure that the final content aligns with other `Sectors` content.
+Let's begin by designing the theme for our plot! You don't necessarily have to create a custom theme from scratch; there are pre-built themes available for use in ggplot that are free. However, in this instance, I've created a custom theme to ensure that the final content aligns with other Sectors content.
 
 ```r
 custom_theme <- theme(
@@ -190,17 +190,17 @@ staticplot <- ggplot(df_finished, aes(rank,accumulated_volume/2, group = symbol)
   #Set the xticker label
   geom_text(aes(y = 0, label = paste(symbol, " "), color="white"), vjust = 0.2, hjust = 1,size=7) +
   #Set the bar chart (accumulated volume label)
-  geom_text(aes(y=accumulated_volume,label = paste0(" ",accumulated_volume_text),color="white", hjust=0),size=4) + 
+  geom_text(aes(y=accumulated_volume,label = paste0(" ",accumulated_volume_text),color="white", hjust=0),size=4) +
   coord_flip(clip = "off", expand = FALSE) +
   #Add the logo of the company in each bar
-  geom_image(aes(image=image),size=0.05, asp=1.5) + 
+  geom_image(aes(image=image),size=0.05, asp=1.5) +
   scale_y_continuous(labels = scales::comma) +
   scale_x_reverse() +
   guides(color = FALSE, fill = FALSE) +
   custom_theme
 ```
 
-After finishing create the static plot, we can directly convert it into a gif by using this code
+After finishing create the static plot, we can directly convert it into a gif by using this code:
 
 ```r
 anim <- staticplot + transition_states(date, transition_length = 4, state_length = 1) +
@@ -210,7 +210,7 @@ anim <- staticplot + transition_states(date, transition_length = 4, state_length
        caption  = "Source: https://sectors.app")
 ```
 
-and here is the result of the gif
+and here is the result of the gif:
 
 ![Most Traded Stocks in 2024](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/images/most_traded_stocks.gif?raw=true)
 

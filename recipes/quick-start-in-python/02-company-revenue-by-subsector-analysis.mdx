@@ -11,7 +11,7 @@ Suppose you have some spare cash—often referred to as "cold money"—that you'
 - Install the [requests](https://requests.readthedocs.io/en/latest/) library to make HTTP Requests
 - Install [pandas](https://pypi.org/project/pandas/) to do some data exploratory
 - In this recipe we will use [altair](https://pypi.org/project/matplotlib/) to do the data visualization, if you are unfamiliar with altair, try to watch this playlist [Altair Tutorial](https://youtube.com/playlist?list=PLXsFtK46HZxXBddVC0FqmbGdlvbDbaqzx&si=cWtD0cFtwKg0b75v)
-- This is not a library, but you will need your [API Keys](https://www.subsectors.app/api) for this recipe
+- This is not a library, but you will need your [API Keys](https://sectors.app/api) for this recipe
 
 ```python
 pip install requests pandas altair
@@ -24,11 +24,11 @@ In this recipe we will use a few API from Sectors, here are the following API:
 - List of Companies by Subsector API to retrieve all the companies in a subsector
 - Individual Company Report per Section API to retrieve the financial data for each company
 
-Using this API we will get the data we need and do some nice visualization on it. You should take a look at [List All Subsectors Recipe](./01_list_all_subsectors.md) also if you need a simple example of data exploration on Sectors Api.
+Using this API we will get the data we need and do some nice visualization on it. You should take a look at [List All Subsectors Recipe](./01-list-all-subsectors) also if you need a simple example of data exploration on Sectors API.
 
-### List all company by subsectors
+### List all companies by subsectors
 
-Lets take a look at list of companies under the tobacco subsectors
+Let's take a look at list of companies under the tobacco subsectors
 
 ```python
 import requests
@@ -49,7 +49,7 @@ else:
     print("Error Status :",response.status_code)
 ```
 
-You should see an output like this
+You should see an output like this:
 
 ```
 ['GGRM.JK', 'HMSP.JK', 'ITIC.JK', 'WIIM.JK']
@@ -59,7 +59,7 @@ These are the list of all companies under one subsector which in this recipe, we
 
 ### Individual Company Report Per Section
 
-After retrieving the list of companies under the tobacco subsector, the next step is to obtain the financial report for each company. With the help of the [Sectors](sectors.app), you can easily access the Company Report, which provides comprehensive information beyond just financial. The available sections of the report include:
+After retrieving the list of companies under the tobacco subsector, the next step is to obtain the financial report for each company. With the help of [Sectors](https://sectors.app/), you can easily access the Company Report, which provides comprehensive information beyond just financial. The available sections of the report include:
 
 - Overview
 - Valuation
@@ -103,7 +103,7 @@ If you run the code and try to print the `data` the output should look like this
 ]
 ```
 
-Now lets transform the data to pandas dataframe so we can do further analysis and visualization to it.
+Now let's transform the data to pandas dataframe so we can do further analysis and visualization to it.
 
 ```python
 df = pd.DataFrame(data, columns=['symbol','company_name','year','revenue','earnings'])

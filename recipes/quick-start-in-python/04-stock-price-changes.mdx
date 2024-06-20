@@ -8,7 +8,7 @@ Stock price data provides a valuable time series that allows us to analyze price
 
 ## The Moving Average and Beyond
 
-Traders often rely on moving averages to understand trends and make informed decisions. If you're unfamiliar with moving averages, my colleagues have covered them in detail in the [03_simple_moving_average](03_simple_moving_average.md) recipe. However, today, we'll explore a different angle: how stock prices react to specific events.
+Traders often rely on moving averages to understand trends and make informed decisions. If you're unfamiliar with moving averages, my colleague has covered them in detail in the [Simple Moving Average](./03-simple-moving-average) recipe. However, today, we'll explore a different angle: how stock prices react to specific events.
 
 ## Visualizing Price Movements
 
@@ -30,7 +30,7 @@ While Starlink isn't a direct competitor to all companies, its presence can indi
 
 Our analysis begins with the first rumors of Starlink's availability in Indonesia on early May 2024. We'll then examine stock price movements following the official announcement by the Indonesian government and Elon Musk during an event in Bali on May 19, 2024.
 
-# Data Fetching
+## Data Fetching
 
 Before diving into data fetching and processing, we’ll start by importing the necessary packages for this recipe. The libraries listed below are the ones we’ll be using. If you haven’t already installed them, make sure to do so before proceeding!
 
@@ -43,7 +43,7 @@ import requests
 import matplotlib.pyplot as plt
 ```
 
-Our focus today is the **Daily Transaction API Endpoint**. If you haven’t subscribed to the [Sector's API](https://sectors.app/api) yet, don’t hesitate! Visit the [Sector's website](https://sectors.app) and explore the available endpoints and subscribe to their plan. Whether you’re a seasoned trader or a curious data enthusiast, there’s something there for everyone. 
+Our focus today is the **Daily Transaction API Endpoint**. If you haven’t subscribed to the [Sectors API](https://sectors.app/api) yet, don’t hesitate! Visit the [Sector's website](https://sectors.app) and explore the available endpoints and subscribe to their plan. Whether you’re a seasoned trader or a curious data enthusiast, there’s something there for everyone.
 
 Let’s get practical. Below, you’ll find the code snippet to fetch stock market data from April 1, 2024, until today’s date. Buckle up—we’re about to embark on an exciting journey of exploration and analysis!
 
@@ -74,18 +74,18 @@ for i in ["TLKM.JK","ISAT.JK","EXCL.JK","KBLV.JK"]:
         if j==0:
             start_date = date[j]
             start_date = start_date.strftime('%Y-%m-%d')
-            
+
             end_date = date[j+1]
             end_date = end_date.strftime('%Y-%m-%d')
         else:
             start_date = date[j]+ timedelta(days=1)
             start_date = start_date.strftime('%Y-%m-%d')
-            
+
             end_date = date[j+1]
             end_date = end_date.strftime('%Y-%m-%d')
 
         url = f"https://api.sectors.app/v1/daily/{i}/?start={start_date}&end={end_date}"
-        
+
 
         headers = {
             "Authorization": api_key
@@ -104,15 +104,15 @@ for i in ["TLKM.JK","ISAT.JK","EXCL.JK","KBLV.JK"]:
         print(f"Finish collect data for stock {i} from {start_date} to {end_date}")
 ```
 
-Using the code above, we will have a daily transaction data of those 4 companies which we will to do the analysis. Here is the glimpse of the data.
+Using the code above, we will have a daily transaction data of those 4 companies which we will to do the analysis. Here is the glimpse of the data:
 
-| symbol   | date       | close | volume    | market_cap      |
-|----------|------------|-------|-----------|-----------------|
-| TLKM.JK  | 2024-04-01 | 3510  | 248116300 | 347708338470912 |
-| TLKM.JK  | 2024-04-02 | 3490  | 233071700 | 345727083479040 |
-| TLKM.JK  | 2024-04-03 | 3420  |1502657000 | 338792724561920 |
-| TLKM.JK  | 2024-04-04 | 3450  | 205184000 | 348760504795136 |
-| TLKM.JK  | 2024-04-05 | 3460  | 116057100 | 339783352057856 |
+| symbol  | date       | close | volume     | market_cap      |
+| ------- | ---------- | ----- | ---------- | --------------- |
+| TLKM.JK | 2024-04-01 | 3510  | 248116300  | 347708338470912 |
+| TLKM.JK | 2024-04-02 | 3490  | 233071700  | 345727083479040 |
+| TLKM.JK | 2024-04-03 | 3420  | 1502657000 | 338792724561920 |
+| TLKM.JK | 2024-04-04 | 3450  | 205184000  | 348760504795136 |
+| TLKM.JK | 2024-04-05 | 3460  | 116057100  | 339783352057856 |
 
 Since the data is already clean enough, we can directly go into the data visualization process.
 
@@ -134,7 +134,8 @@ plt.ylabel('Value')
 plt.title('TLKM.JK Daily Price Since 1 April 2024')
 plt.tight_layout()
 ```
-Using the code above, here are the result of the plot.
+
+Using the code above, here are the result of the plot:
 
 ![TLKM.JK Daily price](/recipes/quick-start-in-python/images/tlkm_price.png)
 
@@ -151,7 +152,7 @@ yellow_date = pd.Timestamp('2024-05-02')
 red_date = pd.Timestamp('2024-05-19')
 
 # Plotting the data with conditional coloring
-plt.style.use('dark_background') 
+plt.style.use('dark_background')
 plt.figure(figsize=(14, 10))
 
 # Plot each segment with the appropriate color
@@ -164,7 +165,7 @@ for i in range(len(df_tlkm) - 1):
         color = 'yellow'
     else:
         color = 'white'
-    
+
     plt.plot(df_tlkm['date'].iloc[i:i+2], df_tlkm['close'].iloc[i:i+2], color=color, linewidth=2)
 
 # Formatting the plot
@@ -186,11 +187,10 @@ plt.legend(handles=[blue_line, yellow_line, red_line])
 plt.show()
 ```
 
-and here is the plot result of the code above.
+and here is the plot result of the code above:
 
 ![TLKM.JK Daily Price Event](/recipes/quick-start-in-python/images/tlkm_daily_price.png)
 
 In the previous plot, we directly observed TLKM.JK’s price movements following specific events related to Starlink’s announcement. Armed with this information, you can conduct your analysis and make informed trading decisions. But why stop there? Extend this approach to other companies mentioned earlier or explore different events for further insights.
 
-Therefore, don't forget to subscribe to the [Sector's API](https://sectors.app/api) to open more possibility of analysis using the data and endpoints that [Sectors](sectors.app) have! Remember, the stock market is a dynamic arena, and every plot tells a story. Happy analyzing!
-
+Therefore, don't forget to subscribe to the [Sectors API](https://sectors.app/api) to open more possibility of analysis using the data and endpoints that [Sectors](https://sectors.app/) have! Remember, the stock market is a dynamic arena, and every plot tells a story. Happy analyzing!

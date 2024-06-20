@@ -106,7 +106,8 @@
         {
           "group": "0.1 SectorScan",
           "pages": [
-             "recipes/build-python-app/sectorscan/01-sectorscan-part1"
+             "recipes/build-python-app/sectorscan/01-sectorscan-part1",
+             "recipes/build-python-app/sectorscan/02-sectorscan-part2"
           ]
         }
       ]
