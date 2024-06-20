@@ -62,19 +62,19 @@ df = df.drop(["sector"], axis=1)
 df.head()
 ```
 
-<br/>
+<br />
 
 The results will look like the following.
 
-<br/>
+<br />
 
-|     | subsectors                    |
-| --- | ----------------------------- |
-| 0   | telecommunication             |
-| 1   | oil-gas-coal                  |
-| 2   | financing-service             |
-| 3   | investment-service            |
-| 4   | apparel-luxury-Goods          |
+|     | subsectors           |
+| --- | -------------------- |
+| 0   | telecommunication    |
+| 1   | oil-gas-coal         |
+| 2   | financing-service    |
+| 3   | investment-service   |
+| 4   | apparel-luxury-Goods |
 
 ### Processing the data
 
@@ -88,13 +88,13 @@ df.head()
 
 After the data processing, now it should look more readable.
 
-|     | subsectors                    |
-| --- | ----------------------------- |
-| 0   | Telecommunication             |
-| 1   | Oil Gas Coal                  |
-| 2   | Financing Service             |
-| 3   | Investment Service            |
-| 4   | Apparel Luxury Goods          |
+|     | subsectors           |
+| --- | -------------------- |
+| 0   | Telecommunication    |
+| 1   | Oil Gas Coal         |
+| 2   | Financing Service    |
+| 3   | Investment Service   |
+| 4   | Apparel Luxury Goods |
 
 ## Data Visualization
 
@@ -134,10 +134,10 @@ The code above basically retrieves all the list of companies from all subsectors
 
 ```
 [
- ['telecommunication', 'BALI.JK'], 
- ['telecommunication', 'BTEL.JK'], 
+ ['telecommunication', 'BALI.JK'],
+ ['telecommunication', 'BTEL.JK'],
  ['telecommunication', 'CENT.JK'],
- ['telecommunication', 'DATA.JK'], 
+ ['telecommunication', 'DATA.JK'],
  ['telecommunication', 'EXCL.JK'],
  ...
 ]
@@ -183,7 +183,7 @@ chart = alt.Chart(df_grouped).mark_bar().encode(
 chart.display()
 ```
 
-![basic_visualization](../../images/recipes/total_companies_by_subsector_basic.png)
+![basic_visualization](/recipes/quick-start-in-python/images/total_companies_by_subsector_basic.png)
 
 Well now we have done a very basic bar chart visualization using Altair, but it looks really long and messy! Let's reduce the number to be top 5 biggest subsector by company and do some adjustment on the visualization.
 
@@ -216,7 +216,7 @@ chart = chart.configure_title(fontSize=20, anchor='start', color='black').config
 chart.display()
 ```
 
-![Better Visualization](../../images/recipes/top_5_companies_by_subsector.png)
+![Better Visualization](/recipes/quick-start-in-python/images/top_5_companies_by_subsector.png)
 
 And now we have a much better visualization we can show our boss! :wink:
 
