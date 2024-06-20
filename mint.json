@@ -93,7 +93,11 @@
     {
       "group": "Quick Start in Python",
       "pages": [
-        "recipes/quick-start-in-python/00-your-first-request"
+        "recipes/quick-start-in-python/00-your-first-request",
+        "recipes/quick-start-in-python/01-list-all-subsectors",
+        "recipes/quick-start-in-python/02-company-revenue-by-subsector-analysis",
+        "recipes/quick-start-in-python/03-simple-moving-average",
+        "recipes/quick-start-in-python/04-stock-price-changes"
       ]
     },
     {
