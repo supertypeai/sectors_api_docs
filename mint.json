@@ -114,7 +114,11 @@
     {
       "group": "Animated Plots in R",
       "pages": [
-        "recipes/animated-plots-in-r/00-telling-stories-w-ggplot"
+        "recipes/animated-plots-in-r/00-telling-stories-w-ggplot",
+        "recipes/animated-plots-in-r/01-top-stock-volume-animation-plot",
+        "recipes/animated-plots-in-r/02-top-market-cap-animation-plot",
+        "recipes/animated-plots-in-r/03-financial-comparison-animation-plot",
+        "recipes/animated-plots-in-r/04-dividend-growth-investing"
       ]
     }
   ],
