@@ -1,7 +1,7 @@
 ---
-title: "Sector Report"
-api: "GET /sector/report/{sector}/"
-description: "Return report of a given sector, organized into distinct sections"
+title: "Subsector Report"
+api: "GET /sector/report/{sub_sector}/"
+description: "Return report of a given subsector, organized into distinct sections"
 ---
 
 ### Header
@@ -12,18 +12,18 @@ description: "Return report of a given sector, organized into distinct sections"
 
 ### Path
 
-<ParamField path="sector" type="string" initialValue="insurance" required>
-  Sector for which the report is to be retrieved.
+<ParamField path="sub_sector" type="string" initialValue="insurance" required>
+  Subsector for which the report is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available sector">
-      Get the available `sector` from the
+      Get the available `sub_sector` from the
       [Subsectors](../helper-list/subsectors) endpoint.
     </Accordion>
-    <Accordion title="Examples of the sector">
-      `bank`, `financing-service`, `insurance`, `retailing`, `tobacco`
+    <Accordion title="Examples of the subsector">
+      `banks`, `basic-materials`, `food-beverage`
     </Accordion>
     <Accordion title="Format">
-      The API endpoint only accepts `sector` in the **kebab case** format
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
       (lowercase and separated by "-").
     </Accordion>
   </AccordionGroup>
@@ -52,3 +52,208 @@ description: "Return report of a given sector, organized into distinct sections"
     </Accordion>
   </AccordionGroup>
 </ParamField>
+
+### Response
+
+<ResponseField name="sector" type="string" required>
+  The sector of the report
+</ResponseField>
+
+<ResponseField name="sub_sector" type="string" required>
+  The subsector of the report
+</ResponseField>
+
+<ResponseField name="statistics" type="object">
+  The statistics for the subsector
+</ResponseField>
+
+<ResponseField name="market_cap" type="object">
+  The market capitalization data for the subsector
+</ResponseField>
+
+<ResponseField name="stability" type="object">
+  The stability metrics for the subsector
+</ResponseField>
+
+<ResponseField name="valuation" type="object">
+  The valuation data for the subsector
+</ResponseField>
+
+<ResponseField name="growth" type="object">
+  The growth metrics for the subsector
+</ResponseField>
+
+<ResponseField name="companies" type="object">
+  The data for top companies in this subsector
+</ResponseField>
+
+<ResponseField name="idx" type="object">
+  The IDX data for this subsector
+</ResponseField>
+
+<ResponseExample>
+```json 200
+{
+    "sector": "Financials",
+    "sub_sector": "Banks",
+    "statistics": {
+        "total_companies": 0,
+        "filtered_median_pe": 0,
+        "filtered_weighted_avg_pe": 0,
+        "min_company_pe": 0,
+        "max_company_pe": 0
+    },
+    "market_cap": {
+        "total_market_cap": 0.0,
+        "avg_market_cap": 0.555,
+        "quarterly_market_cap": {
+            "prev_ttm_mcap": {
+                "2022.Q2": 0,
+                "2022.Q3": 0,
+                "2022.Q4": 0,
+                "2023.Q1": 0
+            },
+            "current_ttm_mcap": {
+                "2023.Q2": 0,
+                "2023.Q3": 0,
+                "2023.Q4": 0,
+                "2024.Q1": 0
+            },
+            "current_ttm_mcap_pavg": {
+                "2023.Q2": 0.0,
+                "2023.Q3": 0.0,
+                "2023.Q4": 0.0,
+                "2024.Q1": 0.0
+            }
+        },
+        "mcap_summary": {
+            "mcap_change": {
+                "1w": -0.0,
+                "1y": -0.0,
+                "ytd": -0.0
+            },
+            "monthly_performance": {
+                "2023-07-31": 0.0,
+                "2023-08-31": 0.0
+            },
+            "performance_quantile": 0.0
+        }
+    },
+    "stability": {
+        "weighted_max_drawdown": -0.0,
+        "weighted_rsd_close": 0.0
+    },
+    "valuation": {
+        "historical_valuation": [
+            {
+                "pb": 0.0,
+                "pe": 0.0,
+                "ps": 0.0,
+                "pcf": 0.0,
+                "year": 2020
+            },
+            {
+                "pb": 0.0,
+                "pe": 0.00,
+                "ps": 0.0,
+                "pcf": 0.0,
+                "year": 2024,
+                "pb_rank": 0,
+                "pe_rank": 0,
+                "ps_rank": 0,
+                "pcf_rank": 0
+            }
+        ]
+    },
+    "growth": {
+        "avg_yoy_q_earnings_growth": 0.0,
+        "avg_yoy_q_revenue_growth": 0.0,
+        "weighted_avg_growth_data": [
+            {
+                "year": 2018,
+                "avg_annual_earning_growth": null,
+                "avg_annual_revenue_growth": null
+            },
+            {
+                "year": 2023,
+                "avg_annual_earning_growth": 0,
+                "avg_annual_revenue_growth": 0
+            }
+        ],
+        "growth_forecasts": [
+            {
+                "base_year": 2023,
+                "eps_growth": 0,
+                "estimate_year": 2024,
+                "revenue_growth": 0
+            }
+        ]
+    },
+    "companies": {
+        "top_companies": {
+            "top_mcap": [
+                {
+                    "symbol": "BBCA.JK",
+                    "market_cap": 0
+                }
+            ],
+            "top_growth": [
+                {
+                    "symbol": "MAYA.JK",
+                    "revenue_growth": 0
+                }
+            ],
+            "top_profit": [
+                {
+                    "symbol": "BBRI.JK",
+                    "profit_ttm": 0
+                }
+            ],
+            "top_revenue": [
+                {
+                    "symbol": "BBRI.JK",
+                    "revenue_ttm": 0
+                }
+            ]
+        },
+        "top_change_companies": [
+            {
+                "pe": 0,
+                "1yr": 0.0,
+                "1mth": 0.0,
+                "name": "Bank Pan Indonesia Tbk",
+                "symbol": "PNBN.JK",
+                "last_close": 0
+            }
+        ]
+    },
+    "idx": {
+        "idx_cap": 0,
+        "idx_pe": [
+            {
+                "weighted_avg_pe": 0,
+                "unweighted_avg_pe": 0,
+                "median_pe": 0
+            }
+        ],
+        "idx_resilience": [
+            {
+                "weighted_avg_drawdown": 0,
+                "median_drawdown": 0,
+                "weighted_avg_rsd": 0,
+                "median_rsd": 0
+            }
+        ],
+        "idx_yield": 0
+    }
+}
+```
+
+```json 400
+{"error": "Sector does not exist."}
+```
+
+```json 429
+{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
+```
+</ResponseExample>

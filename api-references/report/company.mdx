@@ -53,3 +53,271 @@ description: "Return report of a given ticker, organized into distinct sections"
     </Accordion>
   </AccordionGroup>
 </ParamField>
+
+### Response
+
+<ResponseField name="symbol" type="string" required>
+  The ticker of the company segment
+</ResponseField>
+
+<ResponseField name="financial_year" type="int" required>
+  The full name of the company
+</ResponseField>
+
+<ResponseField name="overview" type="object">
+  An overview of the company's listing details and key metrics
+</ResponseField>
+
+<ResponseField name="valuation" type="object">
+  Valuation metrics and related information of the company
+</ResponseField>
+
+<ResponseField name="future" type="object">
+  Future forecasts related to the company
+</ResponseField>
+
+<ResponseField name="financials" type="object">
+  Historical financials and key financial ratios of the company
+</ResponseField>
+
+<ResponseField name="dividend" type="object">
+  Historical dividend information
+</ResponseField>
+
+<ResponseField name="management" type="object">
+  Key management and their shareholdings
+</ResponseField>
+
+<ResponseField name="ownership" type="object">
+  Ownership details including major shareholders and transaction
+</ResponseField>
+
+<ResponseField name="peers" type="object">
+  Information about the company's peers
+</ResponseField>
+
+<ResponseExample>
+```json 200
+{
+    "symbol": "BBCA.JK",
+    "company_name": "PT Bank Central Asia Tbk.",
+    "overview": {
+        "listing_board": "Main",
+        "industry": "Banks",
+        "sub_industry": "Banks",
+        "sector": "Financials",
+        "sub_sector": "Banks",
+        "market_cap": 0,
+        "market_cap_rank": 1,
+        "address": "Menara BCA, Grand Indonesia\r\nJalan MH Thamrin No. 1\r\nJakarta 10310",
+        "employee_num": 0,
+        "listing_date": "2000-05-31",
+        "website": "www.bca.co.id",
+        "phone": "021-23588000",
+        "email": "investor_relations@bca.co.id",
+        "last_close_price": 0,
+        "latest_close_date": "2024-06-14",
+        "daily_close_change": 0.0
+    },
+    "valuation": {
+        "last_close_price": 0,
+        "latest_close_date": "2024-06-14",
+        "daily_close_change": 0.0,
+        "forward_pe": 0,
+        "price_cash_flow": 0,
+        "enterprise_to_revenue": null,
+        "enterprise_to_ebitda": 0.0,
+        "peg_ratio": 0,
+        "analyst_rating": 0,
+        "intrinsic_value": 0,
+        "historical_valuation": [
+            {
+                "pb": 0,
+                "pe": 0,
+                "ps": 0,
+                "year": 2020,
+                "pb_peer_avg": 0,
+                "pe_peer_avg": 0,
+                "ps_peer_avg": 0
+            }
+        ]
+    },
+    "future": {
+        "company_value_forecasts": [
+            {
+                "eps_estimate": 0,
+                "estimate_year": 2024,
+                "revenue_estimate": 0
+            }
+        ],
+        "company_growth_forecasts": [
+            {
+                "base_year": 2023,
+                "eps_growth": 0,
+                "estimate_year": 2024,
+                "revenue_growth": 0
+            }
+        ]
+    },
+    "financials": {
+        "historical_financials": [
+            {
+                "tax": 0,
+                "year": 2019,
+                "revenue": 0,
+                "earnings": 0,
+                "cash_only": null,
+                "total_debt": 0,
+                "fixed_assets": null,
+                "gross_profit": null,
+                "total_assets": 0,
+                "total_equity": 0,
+                "operating_pnl": 0,
+                "total_liabilities": 0,
+                "current_liabilities": null,
+                "earnings_before_tax": 0,
+                "cash_and_equivalents": null,
+                "total_cash_and_due_from_banks": 0
+            }
+        ],
+        "interest_coverage_ratio": null,
+        "cash_flow_debt_ratio": null,
+        "der_mrq": null,
+        "dar_mrq": null,
+        "roa_ttm": 0,
+        "roe_ttm": 0,
+        "yoy_quarter_earnings_growth": 0,
+        "yoy_quarter_revenue_growth": 0,
+        "net_profit_margin": 0
+    },
+    "dividend": {
+        "historical_dividends": [
+            {
+                "year": 2019,
+                "breakdown": [
+                    {
+                        "date": "2019-12-06",
+                        "total": 0,
+                        "yield": 0
+                    }
+                ],
+                "total_yield": 0,
+                "total_dividend": 0
+            }
+        ],
+        "annual_yield": [
+            {
+                "year": 2024,
+                "total": 0,
+                "yield": 0
+            }
+        ],
+        "yield_ttm": 0,
+        "dividend_yield_avg": {
+            "period": 5,
+            "avg_yield": 0
+        },
+        "payout_ratio": 0,
+        "cash_payout_ratio": null,
+        "last_ex_dividend_date": "2024-03-25"
+    },
+    "management": {
+        "key_executives": [
+            {
+                "name": "John Doe",
+                "position": "President Director"
+            }
+        ],
+        "executives_shareholdings": [
+            {
+                "name": "John Doe",
+                "position": "Director",
+                "share_amount": 0,
+                "share_percentage": 0
+            }
+        ]
+    },
+    "ownership": {
+        "major_shareholders": [
+            {
+                "name": "Pt Dwimuria Investama Andalan",
+                "share_value": 0,
+                "share_amount": 0,
+                "share_percentage": "0.5"
+            }
+        ],
+        "ownership_percentage": null,
+        "top_transactions": {
+            "date": "2024-01-31",
+            "top_buyers": [
+                {
+                    "name": "Capital Research and Management Company",
+                    "changeAmount": 0
+                }
+            ],
+            "top_sellers": [
+                {
+                    "name": "JPMorgan Asset Management Inc",
+                    "changeAmount": 0
+                }
+            ]
+        },
+        "monthly_net_transactions": [
+            {
+                "date": "2024-01-31",
+                "net_transaction": 0
+            }
+        ]
+    },
+    "peers": [
+        {
+            "peers_info": {
+                "companies": [
+                    {
+                        "group": [
+                            "industry",
+                            "sub_sector",
+                            "sub_industry"
+                        ],
+                        "pb_mrq": 0,
+                        "pe_ttm": 0,
+                        "symbol": "NISP.JK",
+                        "dar_mrq": 0,
+                        "der_mrq": 0,
+                        "roa_ttm": 0,
+                        "roe_ttm": 0,
+                        "market_cap": 0,
+                        "company_name": "PT Bank OCBC NISP Tbk",
+                        "total_assets": 0,
+                        "total_equity": 0,
+                        "total_revenue": 0,
+                        "profit_and_loss": 0,
+                        "yearly_mcap_chg": 0,
+                        "total_liabilities": 0,
+                        "financials_latest_date": "2024-03-31"
+                    }
+                ],
+                "group_name": {
+                    "sector": "Financials",
+                    "industry": "Banks",
+                    "sub_sector": "Banks",
+                    "sub_industry": "Banks"
+                }
+            }
+        }
+    ]
+}
+```
+
+```json 400
+{"error": "Please provide a valid stock ticker."}
+```
+
+```json 400
+{"error": "Given stock ticker does not exist."}
+```
+
+```json 429
+{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
+```
+</ResponseExample>

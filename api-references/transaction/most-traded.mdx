@@ -60,3 +60,37 @@ description: "Return a list of the most traded tickers based on transaction volu
   Default to "false". If set to "true", the returned list will be sorted based
   on transaction volume multiplied by closing price.
 </ParamField>
+
+### Response
+
+<ResponseField name="<date>" type="TradeData[]" required>
+  <Expandable title="properties">
+    <ResponseField name="symbol" type="symbol" required>
+      The ticker symbol of the traded stock
+    </ResponseField>
+    <ResponseField name="volume" type="int" required>
+      The transaction volume
+    </ResponseField>
+    <ResponseField name="price" type="int" required>
+      The transaction price
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json 200
+{
+    "2024-05-21": [
+        {
+            "symbol": "SOLA.JK",
+            "volume": 0,
+            "price": 0
+        }
+    ]
+}
+```
+
+```json 429
+{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
+```
+</ResponseExample>
