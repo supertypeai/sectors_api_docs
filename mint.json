@@ -56,8 +56,8 @@
           "icon": "list-check",
           "pages": [
             "api-references/helper-list/subsectors",
-            "api-references/helper-list/subindustries",
             "api-references/helper-list/industries",
+            "api-references/helper-list/subindustries",
             "api-references/helper-list/companies-subsector",
             "api-references/helper-list/companies-subindustry",
             "api-references/helper-list/companies-segment-list"
@@ -76,7 +76,7 @@
           "pages": [
             "api-references/report/company",
             "api-references/report/company-segment",
-            "api-references/report/sector"
+            "api-references/report/subsector"
           ]
         },
         {

@@ -4,11 +4,42 @@ api: "GET /industries/"
 description: "Return list of all available industries"
 ---
 
+<ResponseExample>
+```json 200
+[
+  {
+    "subsector": "oil-gas-coal",
+    "industry": "oil-gas"
+  }
+]
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
 ### Header
 
 <ParamField header="Authorization" type="string" required>
   Authorization header that should be filled with your Sectors API key.
 </ParamField>
+
+### Response
+
+<ResponseField name="payload" type="Industry[]" required>
+  <Expandable title="properties">
+    <ResponseField name="Industry.subsector" type="string" required>
+      A specific classification within a sector.
+    </ResponseField>
+
+    <ResponseField name="Industry.industry" type="string" required>
+      A specific classification within a subsector.
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
 
 ### Usage
 

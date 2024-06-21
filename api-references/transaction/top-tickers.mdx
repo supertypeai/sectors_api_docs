@@ -4,6 +4,42 @@ api: "GET /companies/top/"
 description: "Return a list of top tickers in a given year based on certain classification (dividend yield, total dividend, revenue, or earnings)"
 ---
 
+<ResponseExample>
+```json 200
+{
+    "dividend_yield": [
+        {
+            "symbol": "SCPI.JK",
+            "dividend_yield": 0
+        }
+    ],
+    "total_dividend": [
+        {
+            "symbol": "SCPI.JK",
+            "total_dividend": 0
+        }
+    ],
+    "revenue": [
+        {
+            "symbol": "ASII.JK",
+            "revenue": 0
+        }
+    ],
+    "earnings": [
+        {
+            "symbol": "BBRI.JK",
+            "earnings": 0
+        }
+    ]
+}
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
 ### Header
 
 <ParamField header="Authorization" type="string" required>
@@ -12,14 +48,20 @@ description: "Return a list of top tickers in a given year based on certain clas
 
 ### Query Parameters
 
-<ParamField query="classifications" type="string" default="all" initialValue="dividend_yield">
+<ParamField
+  query="classifications"
+  type="string"
+  default="all"
+  initialValue="dividend_yield"
+>
   Classification for ranking the top tickers in a given year (default to all).
   <AccordionGroup>
     <Accordion title="Available classifications">
       `dividend_yield`, `total_dividend`, `revenue`, `earnings`
     </Accordion>
     <Accordion title="Format">
-      Use comma to separate each classification when retrieving data of more than one classification.
+      Use comma to separate each classification when retrieving data of more
+      than one classification.
     </Accordion>
     <Accordion title="API call consumption">
       One classification consumes one API call.
@@ -27,11 +69,65 @@ description: "Return a list of top tickers in a given year based on certain clas
   </AccordionGroup>
 </ParamField>
 
-
 <ParamField query="n_stock" type="integer" default="5">
   Number of tickers to be retrieved (defaults to 5, with a maximum of 10).
 </ParamField>
 
 <ParamField query="year" type="integer" default="current year">
-  Year for which the list of top tickers is to be retrieved (default to the current year).
+  Year for which the list of top tickers is to be retrieved (default to the
+  current year).
 </ParamField>
+
+### Response
+
+<ResponseField name="dividend_yield" type="DividendYieldData[]">
+  <Expandable title="properties">
+    <ResponseField name="DividendYieldData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField
+      name="DividendYieldData.dividend_yield"
+      type="float"
+      required
+    >
+      The dividend yield of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="total_dividend" type="TotalDividendData[]">
+  <Expandable title="properties">
+    <ResponseField name="TotalDividendData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField
+      name="TotalDividendData.total_dividend"
+      type="float"
+      required
+    >
+      The total dividend of the company in IDR.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="revenue" type="RevenueData[]">
+  <Expandable title="properties">
+    <ResponseField name="RevenueData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="RevenueData.revenue" type="float" required>
+      The total revenue of the company in IDR.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="earnings" type="EarningsData[]">
+  <Expandable title="properties">
+    <ResponseField name="EarningsData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="EarningsData.earnings" type="float" required>
+      The total earnings of the company in IDR.
+    </ResponseField>
+  </Expandable>
+</ResponseField>

@@ -4,11 +4,39 @@ api: "GET /companies/list_companies_with_segments/"
 description: "Return list of companies with revenue and cost segments, and list of their available financial years"
 ---
 
+<ResponseExample>
+```json 200
+{
+  "TLKM.JK": {
+    "financial_year": [
+      2022
+    ]
+  }
+}
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
 ### Header
 
 <ParamField header="Authorization" type="string" required>
   Authorization header that should be filled with your Sectors API key.
 </ParamField>
+
+### Response
+
+<ResponseField name="<ticker>" type="object" required>
+  `<ticker>` is the ticker in uppercase and `.JK` postfix format. For example: `BBRI.JK`, `TLKM.JK`, etc.
+  <Expandable title="properties">
+    <ResponseField name="financial_year" type="integer[]" required>
+      Array of available report years for the specified ticker.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
 
 ### Usage
 

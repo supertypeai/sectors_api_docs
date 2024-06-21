@@ -4,6 +4,25 @@ api: "GET /companies/"
 description: "Return list of companies from a subindustry"
 ---
 
+<ResponseExample>
+```json 200
+[
+  "BALI.JK",
+  "BTEL.JK",
+  "CENT.JK",
+]
+```
+
+```json 400
+["The requested sub_industry does not exist."]
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
 ### Header
 
 <ParamField header="Authorization" type="string" required>
@@ -29,6 +48,12 @@ description: "Return list of companies from a subindustry"
     </Accordion>
   </AccordionGroup>
 </ParamField>
+
+### Response
+
+<ResponseField name="payload" type="string[]" required>
+  Array of tickers of the given subindustry.
+</ResponseField>
 
 ### Usage
 
