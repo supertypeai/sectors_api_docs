@@ -1,0 +1,35 @@
+---
+title: "Companies by Index"
+api: "GET /index/{index}"
+description: "Return list of stock tickers that belong to certain stock index"
+---
+
+<ResponseExample>
+```json 200
+["ACES.JK", "ADRO.JK", "AKRA.JK", "UNVR.JK"]
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Path
+
+<ParamField path="index" type="string" required>
+  The index name from which the list of companies is to be retrieved. For
+  example: `ftse`, `idxbumn20`, `idxhidiv20`, `kompas100`, `idx30`, `lq45`
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="string[]" required>
+  Array of tickers of the given index.
+</ResponseField>
