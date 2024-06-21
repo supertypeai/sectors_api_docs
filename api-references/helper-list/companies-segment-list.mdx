@@ -4,29 +4,6 @@ api: "GET /companies/list_companies_with_segments/"
 description: "Return list of companies with revenue and cost segments, and list of their available financial years"
 ---
 
-### Header
-
-<ParamField header="Authorization" type="string" required>
-  Authorization header that should be filled with your Sectors API key.
-</ParamField>
-
-### Response
-
-<ResponseField name="<ticker>" type="object" required>
-  `<ticker>` is the company's ticker in uppercase and `.JK` postfix format. For example: `BBRI.JK`, `TLKM.JK`, etc.
-  <Expandable title="properties">
-    <ResponseField name="financial_year" type="int[]" required>
-      Array of available report year for a particular ticker
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-### Usage
-
-This list can be used for the following endpoint:
-
-- [Company Revenue and Cost Segments](../report/company-segment)
-
 <ResponseExample>
 ```json 200
 {
@@ -39,6 +16,30 @@ This list can be used for the following endpoint:
 ```
 
 ```json 429
-{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
 ```
+
 </ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Response
+
+<ResponseField name="<ticker>" type="object" required>
+  `<ticker>` is the ticker in uppercase and `.JK` postfix format. For example: `BBRI.JK`, `TLKM.JK`, etc.
+  <Expandable title="properties">
+    <ResponseField name="financial_year" type="integer[]" required>
+      Array of available report years for the specified ticker.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Usage
+
+This list can be used for the following endpoint:
+
+- [Company Revenue and Cost Segments](../report/company-segment)

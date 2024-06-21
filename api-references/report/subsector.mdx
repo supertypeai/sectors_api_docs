@@ -4,93 +4,6 @@ api: "GET /sector/report/{sub_sector}/"
 description: "Return report of a given subsector, organized into distinct sections"
 ---
 
-### Header
-
-<ParamField header="Authorization" type="string" required>
-  Authorization header that should be filled with your Sectors API key.
-</ParamField>
-
-### Path
-
-<ParamField path="sub_sector" type="string" initialValue="insurance" required>
-  Subsector for which the report is to be retrieved.
-  <AccordionGroup>
-    <Accordion title="Get the available sector">
-      Get the available `sub_sector` from the
-      [Subsectors](../helper-list/subsectors) endpoint.
-    </Accordion>
-    <Accordion title="Examples of the subsector">
-      `banks`, `basic-materials`, `food-beverage`
-    </Accordion>
-    <Accordion title="Format">
-      The API endpoint only accepts `sub_sector` in the **kebab case** format
-      (lowercase and separated by "-").
-    </Accordion>
-  </AccordionGroup>
-</ParamField>
-
-### Query Parameters
-
-<ParamField
-  query="sections"
-  type="string"
-  default="all"
-  initialValue="statistics"
->
-  Sections of the sector report that is to be retrieved (default to all).
-  <AccordionGroup>
-    <Accordion title="Available sections">
-      `statistics`, `market_cap`, `stability`, `valuation`, `growth`,
-      `companies`, `idx`
-    </Accordion>
-    <Accordion title="Format">
-      Use comma to separate each section when retrieving data of more than one
-      section.
-    </Accordion>
-    <Accordion title="API call consumption">
-      One section consumes one API call.
-    </Accordion>
-  </AccordionGroup>
-</ParamField>
-
-### Response
-
-<ResponseField name="sector" type="string" required>
-  The sector of the report
-</ResponseField>
-
-<ResponseField name="sub_sector" type="string" required>
-  The subsector of the report
-</ResponseField>
-
-<ResponseField name="statistics" type="object">
-  The statistics for the subsector
-</ResponseField>
-
-<ResponseField name="market_cap" type="object">
-  The market capitalization data for the subsector
-</ResponseField>
-
-<ResponseField name="stability" type="object">
-  The stability metrics for the subsector
-</ResponseField>
-
-<ResponseField name="valuation" type="object">
-  The valuation data for the subsector
-</ResponseField>
-
-<ResponseField name="growth" type="object">
-  The growth metrics for the subsector
-</ResponseField>
-
-<ResponseField name="companies" type="object">
-  The data for top companies in this subsector
-</ResponseField>
-
-<ResponseField name="idx" type="object">
-  The IDX data for this subsector
-</ResponseField>
-
 <ResponseExample>
 ```json 200
 {
@@ -250,10 +163,98 @@ description: "Return report of a given subsector, organized into distinct sectio
 ```
 
 ```json 400
-{"error": "Sector does not exist."}
+{ "error": "Sector does not exist." }
 ```
 
 ```json 429
-{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
 ```
+
 </ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Path
+
+<ParamField path="sub_sector" type="string" initialValue="insurance" required>
+  Subsector for which the report is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sector">
+      Get the available `sub_sector` from the
+      [Subsectors](../helper-list/subsectors) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the subsector">
+      `banks`, `basic-materials`, `food-beverage`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Query Parameters
+
+<ParamField
+  query="sections"
+  type="string"
+  default="all"
+  initialValue="statistics"
+>
+  Sections of the sector report that is to be retrieved (default to all).
+  <AccordionGroup>
+    <Accordion title="Available sections">
+      `statistics`, `market_cap`, `stability`, `valuation`, `growth`,
+      `companies`, `idx`
+    </Accordion>
+    <Accordion title="Format">
+      Use comma to separate each section when retrieving data of more than one
+      section.
+    </Accordion>
+    <Accordion title="API call consumption">
+      One section consumes one API call.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="sector" type="string" required>
+  The sector of which the given subsector belongs to.
+</ResponseField>
+
+<ResponseField name="sub_sector" type="string" required>
+  The subsector of which the report belongs to.
+</ResponseField>
+
+<ResponseField name="statistics" type="object">
+  The statistics data of the given subsector.
+</ResponseField>
+
+<ResponseField name="market_cap" type="object">
+  The market capitalization data of the given subsector.
+</ResponseField>
+
+<ResponseField name="stability" type="object">
+  The stability metrics of the given subsector.
+</ResponseField>
+
+<ResponseField name="valuation" type="object">
+  The valuation data of the given subsector.
+</ResponseField>
+
+<ResponseField name="growth" type="object">
+  The growth metrics of the given subsector.
+</ResponseField>
+
+<ResponseField name="companies" type="object">
+  The top companies data of the given subsector.
+</ResponseField>
+
+<ResponseField name="idx" type="object">
+  The market capitalization, statistics, stability and yield data of IDX.
+</ResponseField>

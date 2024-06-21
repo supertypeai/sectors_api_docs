@@ -4,6 +4,29 @@ api: "GET /daily/{ticker}/"
 description: "Return daily transaction data of a given ticker on a certain interval (**up to 90 days**)"
 ---
 
+<ResponseExample>
+```json 200
+[
+    {
+        "symbol": "GOTO.JK",
+        "date": "2024-05-21",
+        "close": 0,
+        "volume": 0,
+        "market_cap": 0
+    }
+]
+```
+
+```json 400
+{ "error": "Given stock ticker does not exist in the requested date." }
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
 ### Header
 
 <ParamField header="Authorization" type="string" required>
@@ -79,45 +102,24 @@ description: "Return daily transaction data of a given ticker on a certain inter
 <ResponseField name="payload" type="DailyTransactionData[]" required>
   <Expandable title="properties">
     <ResponseField name="DailyTransactionData.symbol" type="string" required>
-      The company ticker
+      The ticker of the company.
     </ResponseField>
 
     <ResponseField name="DailyTransactionData.date" type="string" required>
-      The date of the transaction
+      The date of the transaction.
     </ResponseField>
 
-    <ResponseField name="DailyTransactionData.close" type="int" required>
-      The closing price of the stock in Rupiah
+    <ResponseField name="DailyTransactionData.close" type="integer" required>
+      The closing price of the given ticker in IDR.
     </ResponseField>
 
-    <ResponseField name="DailyTransactionData.volume" type="int" required>
-      The transaction volume of the stock
+    <ResponseField name="DailyTransactionData.volume" type="integer" required>
+      The transaction volume of the given ticker.
     </ResponseField>
 
-    <ResponseField name="DailyTransactionData.market_cap" type="int" required>
-      The market capitalization of the stock
+    <ResponseField name="DailyTransactionData.market_cap" type="integer" required>
+      The market capitalization of the given ticker in IDR.
     </ResponseField>
+
   </Expandable>
 </ResponseField>
-
-<ResponseExample>
-```json 200
-[
-    {
-        "symbol": "GOTO.JK",
-        "date": "2024-05-21",
-        "close": 0,
-        "volume": 0,
-        "market_cap": 0
-    }
-]
-```
-
-```json 400
-{"error": "Given stock ticker does not exist in the requested date."}
-```
-
-```json 429
-{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
-```
-</ResponseExample>

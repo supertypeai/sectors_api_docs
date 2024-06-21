@@ -4,6 +4,25 @@ api: "GET /companies/"
 description: "Return list of companies from a subsector"
 ---
 
+<ResponseExample>
+```json 200
+[
+  "BALI.JK",
+  "BTEL.JK",
+  "CENT.JK",
+]
+```
+
+```json 400
+["The requested sub_sector does not exist."]
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
 ### Header
 
 <ParamField header="Authorization" type="string" required>
@@ -32,7 +51,7 @@ description: "Return list of companies from a subsector"
 ### Response
 
 <ResponseField name="payload" type="string[]" required>
-  Array of ticker of companies in given subsector
+  Array of tickers of the given subsector.
 </ResponseField>
 
 ### Usage
@@ -40,23 +59,3 @@ description: "Return list of companies from a subsector"
 This list can be used for the following endpoint:
 
 - [Company Report](../report/company)
-
-<ResponseExample>
-```json 200
-[
-  "BALI.JK",
-  "BTEL.JK",
-  "CENT.JK",
-]
-```
-
-```json 400
-[
-  "The requested sub_sector does not exist."
-]
-```
-
-```json 429
-{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
-```
-</ResponseExample>

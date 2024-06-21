@@ -4,98 +4,6 @@ api: "GET /company/report/{ticker}/"
 description: "Return report of a given ticker, organized into distinct sections"
 ---
 
-### Header
-
-<ParamField header="Authorization" type="string" required>
-  Authorization header that should be filled with your Sectors API key.
-</ParamField>
-
-### Path
-
-<ParamField path="ticker" type="string" initialValue="BBCA" required>
-  Ticker of the company for which the report is to be retrieved.
-  <AccordionGroup>
-    <Accordion title="Get the available ticker">
-      Get the available `ticker` from the [Companies by
-      Subsector](../helper-list/companies-subsector) or the [Companies by
-      Subindustry](../helper-list/companies-subindustry) endpoints.
-    </Accordion>
-    <Accordion title="Examples of the ticker">
-      `ASII`, `BBCA`, `BBRI`, `BMRI`, `BYAN`
-    </Accordion>
-    <Accordion title="Format">
-      A valid `ticker` consists of 4 letters, optionally followed by '.jk', and
-      is **case-insensitive**.
-    </Accordion>
-  </AccordionGroup>
-</ParamField>
-
-### Query Parameters
-
-<ParamField
-  query="sections"
-  type="string"
-  default="all"
-  initialValue="overview"
->
-  Sections of the company report that is to be retrieved (default to all).
-  <AccordionGroup>
-    <Accordion title="Available sections">
-      `overview`, `valuation`, `future`, `peers`, `financials`, `dividend`,
-      `management`, `ownership`
-    </Accordion>
-    <Accordion title="Format">
-      Use comma to separate each section when retrieving data of more than one
-      section.
-    </Accordion>
-    <Accordion title="API call consumption">
-      One section consumes one API call.
-    </Accordion>
-  </AccordionGroup>
-</ParamField>
-
-### Response
-
-<ResponseField name="symbol" type="string" required>
-  The ticker of the company segment
-</ResponseField>
-
-<ResponseField name="financial_year" type="int" required>
-  The full name of the company
-</ResponseField>
-
-<ResponseField name="overview" type="object">
-  An overview of the company's listing details and key metrics
-</ResponseField>
-
-<ResponseField name="valuation" type="object">
-  Valuation metrics and related information of the company
-</ResponseField>
-
-<ResponseField name="future" type="object">
-  Future forecasts related to the company
-</ResponseField>
-
-<ResponseField name="financials" type="object">
-  Historical financials and key financial ratios of the company
-</ResponseField>
-
-<ResponseField name="dividend" type="object">
-  Historical dividend information
-</ResponseField>
-
-<ResponseField name="management" type="object">
-  Key management and their shareholdings
-</ResponseField>
-
-<ResponseField name="ownership" type="object">
-  Ownership details including major shareholders and transaction
-</ResponseField>
-
-<ResponseField name="peers" type="object">
-  Information about the company's peers
-</ResponseField>
-
 <ResponseExample>
 ```json 200
 {
@@ -310,14 +218,108 @@ description: "Return report of a given ticker, organized into distinct sections"
 ```
 
 ```json 400
-{"error": "Please provide a valid stock ticker."}
+{ "error": "Please provide a valid stock ticker." }
 ```
 
 ```json 400
-{"error": "Given stock ticker does not exist."}
+{ "error": "Given stock ticker does not exist." }
 ```
 
 ```json 429
-{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
 ```
+
 </ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Path
+
+<ParamField path="ticker" type="string" initialValue="BBCA" required>
+  Ticker of the company for which the report is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available ticker">
+      Get the available `ticker` from the [Companies by
+      Subsector](../helper-list/companies-subsector) or the [Companies by
+      Subindustry](../helper-list/companies-subindustry) endpoints.
+    </Accordion>
+    <Accordion title="Examples of the ticker">
+      `ASII`, `BBCA`, `BBRI`, `BMRI`, `BYAN`
+    </Accordion>
+    <Accordion title="Format">
+      A valid `ticker` consists of 4 letters, optionally followed by '.jk', and
+      is **case-insensitive**.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Query Parameters
+
+<ParamField
+  query="sections"
+  type="string"
+  default="all"
+  initialValue="overview"
+>
+  Sections of the company report that is to be retrieved (default to all).
+  <AccordionGroup>
+    <Accordion title="Available sections">
+      `overview`, `valuation`, `future`, `peers`, `financials`, `dividend`,
+      `management`, `ownership`
+    </Accordion>
+    <Accordion title="Format">
+      Use comma to separate each section when retrieving data of more than one
+      section.
+    </Accordion>
+    <Accordion title="API call consumption">
+      One section consumes one API call.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="symbol" type="string" required>
+  The ticker of the company.
+</ResponseField>
+
+<ResponseField name="company_name" type="string" required>
+  The full name of the company.
+</ResponseField>
+
+<ResponseField name="overview" type="object">
+  An overview of the listing details and key metrics of the given ticker.
+</ResponseField>
+
+<ResponseField name="valuation" type="object">
+  Valuation metrics and related information of the given ticker.
+</ResponseField>
+
+<ResponseField name="future" type="object">
+  Future forecasts related to the given ticker.
+</ResponseField>
+
+<ResponseField name="financials" type="object">
+  Historical financials and key financial ratios of the given ticker.
+</ResponseField>
+
+<ResponseField name="dividend" type="object">
+  Historical dividend information of the given ticker.
+</ResponseField>
+
+<ResponseField name="management" type="object">
+  Key management and their shareholdings of the given ticker.
+</ResponseField>
+
+<ResponseField name="ownership" type="object">
+  Ownership details including major shareholders and transaction of the given
+  ticker.
+</ResponseField>
+
+<ResponseField name="peers" type="object">
+  Information about the peers of the given ticker.
+</ResponseField>

@@ -4,6 +4,25 @@ api: "GET /most-traded/"
 description: "Return a list of the most traded tickers based on transaction volume on a certain interval (**up to 90 days**)"
 ---
 
+<ResponseExample>
+```json 200
+{
+    "2024-05-21": [
+        {
+            "symbol": "SOLA.JK",
+            "volume": 0,
+            "price": 0
+        }
+    ]
+}
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
 ### Header
 
 <ParamField header="Authorization" type="string" required>
@@ -63,34 +82,16 @@ description: "Return a list of the most traded tickers based on transaction volu
 
 ### Response
 
-<ResponseField name="<date>" type="TradeData[]" required>
+<ResponseField name="<date>" type="TradedData[]" required>
   <Expandable title="properties">
-    <ResponseField name="symbol" type="symbol" required>
-      The ticker symbol of the traded stock
+    <ResponseField name="TradedData.symbol" type="string" required>
+      The ticker of the traded stock.
     </ResponseField>
-    <ResponseField name="volume" type="int" required>
-      The transaction volume
+    <ResponseField name="TradedData.volume" type="integer" required>
+      The transaction volume on the specified date.
     </ResponseField>
-    <ResponseField name="price" type="int" required>
-      The transaction price
+    <ResponseField name="TradedData.price" type="integer" required>
+      The transaction price on the specified date in IDR.
     </ResponseField>
   </Expandable>
 </ResponseField>
-
-<ResponseExample>
-```json 200
-{
-    "2024-05-21": [
-        {
-            "symbol": "SOLA.JK",
-            "volume": 0,
-            "price": 0
-        }
-    ]
-}
-```
-
-```json 429
-{"code": 429, "message": "Rate limit exceeded. Consider upgrading."}
-```
-</ResponseExample>
