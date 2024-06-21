@@ -1,10 +1,13 @@
 ---
-title: "Market Cap Analysis on Banking Industry"
-sidebarTitle: "0.5 Market Cap Analysis"
+title: "Market Cap Shares on Banking Industry"
+sidebarTitle: "0.5 Market Cap Shares"
 description: "By: [Juan Christopher Santoso](https://www.github.com/Gulilil) · June 21, 2024"
 ---
 
-Market capitalization, a.k.a market cap, is the total value of a publicly traded company's oustanding common shares owned by stockholders. [Sectors](https://sectors.app/) provides this data so you can conduct the analysis on your own!
+Market capitalization, a.k.a market cap, is the total value of a publicly traded company's oustanding common shares owned by stockholders. 
+To determine whether a stock is considered "good enough", you might want to look at its market cap.
+However, you might need the certain data to conduct the analysis.
+Thus, [Sectors](https://sectors.app/) provides this data so you can do the analysis on your own!
 
 ## Install Required Libraries
 
@@ -16,8 +19,7 @@ Market capitalization, a.k.a market cap, is the total value of a publicly traded
 In order to install the required libraries, you can follow this command
 
 ```
-pip install requests 
-pip install matplotlib
+pip install requests
 pip install pandas
 ```
 
@@ -31,7 +33,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 ```
 
-In this recipe, we will use the **Companies by Subindustry** and **Company Report** from Sectors. 
+In this recipe, we will use the **Companies by Subindustry** and **Company Report** from Sectors.
 First, the **Companies by Subindustry** endpoints is to retrieve all the companies in the bank subindustry. Since we are going to do analysis on the bank industry, we can use the **banks** subindustry.
 
 ```python
@@ -63,11 +65,14 @@ If you try to print the `companies_data`, the displayed data would be look like 
 ```
 
 We are going to need to symbol of each company. So we need to do a little process for the `companies_data` to remove the ".JK" substring.
+
 ```python
 for i in range (len(companies_data)):
   companies_data[i] = companies_data[i].replace(".JK", "")
 ```
+
 If you try to print the `companies_data` again, the displayed data would be look like this.
+
 ```
 ['BNBA',
  'BVIC',
@@ -78,10 +83,10 @@ If you try to print the `companies_data` again, the displayed data would be look
  'BCIC']
 ```
 
-Then, for all the companies in the `companies_data`, we will try to retrieve the market cap data. 
+Then, for all the companies in the `companies_data`, we will try to retrieve the market cap data.
 In this case we will use the **Company Report** endpoint. For the report section, we can use the **overview** section.
-Since we will retrieve a lot of data from the endpoint, we will set **one second timeout** for each request. 
-This is done to **avoid Error 429 responds (Too Many Requests)** from the server. 
+Since we will retrieve a lot of data from the endpoint, we will set **one second timeout** for each request.
+This is done to **avoid Error 429 responds (Too Many Requests)** from the server.
 This process might take up to 1 minute.
 
 ```
@@ -109,7 +114,7 @@ for company in companies_data:
 
 If you try to print the `result_data`, it would some sort of complicated and nested data.  
 Therefore, we would like to process the data first to make it more readable.
-This process will extract the needed data from the `result_data`. In this recipe, we will only use the **symbol**, **market_cap**, and **market_cap_rank** data.
+This process will extract the needed data from the `result_data`. In this recipe, we will only use the **symbol** and **market_cap** data.
 
 ```python
 processed_data = []
@@ -117,26 +122,80 @@ for data in result_data:
   market_cap_data = dict()
   market_cap_data['symbol'] = data['symbol']
   market_cap_data['market_cap'] = data['overview']['market_cap']
-  market_cap_data['market_cap_rank'] = data['overview']['market_cap_rank']
   processed_data.append(market_cap_data)
 ```
 
 If you try to print the `processed_data`, the data will be displayed like this.
+
 ```
-[{'symbol': 'BNBA.JK', 'market_cap': 2049739325440, 'market_cap_rank': 297},
- {'symbol': 'BVIC.JK', 'market_cap': 1004160024576, 'market_cap_rank': 413},
- {'symbol': 'BMAS.JK', 'market_cap': 9413404393472, 'market_cap_rank': 136},
- {'symbol': 'BJTM.JK', 'market_cap': 7730085494784, 'market_cap_rank': 153},
- {'symbol': 'NISP.JK', 'market_cap': 28222718738432, 'market_cap_rank': 63},
+[{'symbol': 'BNBA.JK', 'market_cap': 2049739325440},
+ {'symbol': 'BVIC.JK', 'market_cap': 1004160024576},
+ {'symbol': 'BMAS.JK', 'market_cap': 9413404393472},
+ {'symbol': 'BJTM.JK', 'market_cap': 7730085494784},
+ {'symbol': 'NISP.JK', 'market_cap': 28222718738432},
  ...
 ]
+```
+
+To make the visualization more readable, we need to limit the amount of the data.
+Therefore, in this recipe, we will use the top 5 companies to be visualized.
+In order to get the top 5 data, we need to split the data first. 
+Then, the rest of the data will be combined and grouped as **"Others"**.
+Finally, the data will be concated again after the calculation.
+
+```python
+# To be adjusted
+number = 5
+
+sorted_data = sorted(processed_data, key=lambda x: x['market_cap'], reverse=True)
+sorted_data
+
+# Split the data
+top_data = sorted_data[:number]
+rest_data = sorted_data[number:]
+
+# Combine Data
+accumulative_market_cap = 0
+for data in rest_data:
+  accumulative_market_cap += data['market_cap']
+
+# Concat the calculation result
+top_data.append({"symbol": "Others", "market_cap": accumulative_market_cap})
+```
+
+If you try to print the `top_data`, the data will be displayed like this.
+
+```
+[{'symbol': 'BBCA.JK', 'market_cap': 1161866902503424},
+ {'symbol': 'BBRI.JK', 'market_cap': 643877539151872},
+ {'symbol': 'BMRI.JK', 'market_cap': 555333130911744},
+ {'symbol': 'BBNI.JK', 'market_cap': 163889425678336},
+ {'symbol': 'BRIS.JK', 'market_cap': 113602497347584},
+ {'symbol': 'Others', 'market_cap': 502623818743808}]
 ```
 
 ## Data Visualization
 
 Before visualizing, we are going to transform the data type into a **DataFrame**.
-At the same time, we will sort the data based on the **market_cap_rank** ascendingly.
+
 ```python
-df = pd.DataFrame(processed_data)
-df = df.sort_values(['market_cap_rank'], ascending=True)
+df = pd.DataFrame(top_data)
 ```
+
+Then, we visualize it using **matplotlib** library.
+```python
+plt.pie(df['market_cap'], labels=df['symbol'], autopct='%1.0f%%')
+```
+
+The visualization should be displayed like this.
+![Market Cap Shares](/recipes/quick-start-in-python/images/market_cap_shares.png)
+
+## Conclusion
+With this recipe, you can now perform your own analysis to decide whether a stock is volatile.
+Not only limited to market cap shares, you can do comparative analysis on various data, such as revenues, gross profit, growth, and many more!
+You only need to adjust the data you retrieve from [Sectors](https://sectors.app/).
+
+
+
+
+
