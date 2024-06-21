@@ -1,0 +1,142 @@
+---
+title: "Market Cap Analysis on Banking Industry"
+sidebarTitle: "0.5 Market Cap Analysis"
+description: "By: [Juan Christopher Santoso](https://www.github.com/Gulilil) · June 21, 2024"
+---
+
+Market capitalization, a.k.a market cap, is the total value of a publicly traded company's oustanding common shares owned by stockholders. [Sectors](https://sectors.app/) provides this data so you can conduct the analysis on your own!
+
+## Install Required Libraries
+
+- Install the [requests](https://requests.readthedocs.io/en/latest/) library to make HTTP Requests
+- Install [pandas](https://pypi.org/project/pandas/) to do some data exploratory
+- In this recipe we will use [matplotlib](https://matplotlib.org/) to do the data visualization
+- This is not a library, but you will need your [Sector API Keys](https://sectors.app/api) for this recipe
+
+In order to install the required libraries, you can follow this command
+
+```
+pip install requests 
+pip install matplotlib
+pip install pandas
+```
+
+## Data Exploration
+
+First thing first, we need to import the libraries that we are going to use on this recipe.
+
+```python
+import requests
+import matplotlib.pyplot as plt
+import pandas as pd
+```
+
+In this recipe, we will use the **Companies by Subindustry** and **Company Report** from Sectors. 
+First, the **Companies by Subindustry** endpoints is to retrieve all the companies in the bank subindustry. Since we are going to do analysis on the bank industry, we can use the **banks** subindustry.
+
+```python
+API_KEYS = "Your API Keys"
+headers = {
+    "Authorization": API_KEYS
+}
+
+response = requests.get("https://api.sectors.app/v1/companies/?sub_industry=banks", headers = headers)
+
+if response.status_code == 200:
+    companies_data = response.json()
+else:
+  # Handle error
+  print("Error Status :",response.status_code)
+```
+
+If you try to print the `companies_data`, the displayed data would be look like this.
+
+```
+['BNBA.JK',
+ 'BVIC.JK',
+ 'BMAS.JK',
+ 'BJTM.JK',
+ 'NISP.JK',
+ ...
+ 'BEKS.JK',
+ 'BCIC.JK']
+```
+
+We are going to need to symbol of each company. So we need to do a little process for the `companies_data` to remove the ".JK" substring.
+```python
+for i in range (len(companies_data)):
+  companies_data[i] = companies_data[i].replace(".JK", "")
+```
+If you try to print the `companies_data` again, the displayed data would be look like this.
+```
+['BNBA',
+ 'BVIC',
+ 'BMAS',
+ 'BJTM',
+ ...
+ 'BEKS',
+ 'BCIC']
+```
+
+Then, for all the companies in the `companies_data`, we will try to retrieve the market cap data. 
+In this case we will use the **Company Report** endpoint. For the report section, we can use the **overview** section.
+Since we will retrieve a lot of data from the endpoint, we will set **one second timeout** for each request. 
+This is done to **avoid Error 429 responds (Too Many Requests)** from the server. 
+This process might take up to 1 minute.
+
+```
+import time
+
+headers = {
+    "Authorization": API_KEYS
+}
+
+result_data = []
+for company in companies_data:
+  response = requests.get(f"https://api.sectors.app/v1/company/report/{company}/?sections=overview", headers = headers)
+
+  if response.status_code == 200:
+      data = response.json()
+      result_data.append(data)
+      time.sleep(1)
+  else:
+    # Handle error
+    print("Error Status :",response.status_code)
+
+```
+
+## Data Processing
+
+If you try to print the `result_data`, it would some sort of complicated and nested data.  
+Therefore, we would like to process the data first to make it more readable.
+This process will extract the needed data from the `result_data`. In this recipe, we will only use the **symbol**, **market_cap**, and **market_cap_rank** data.
+
+```python
+processed_data = []
+for data in result_data:
+  market_cap_data = dict()
+  market_cap_data['symbol'] = data['symbol']
+  market_cap_data['market_cap'] = data['overview']['market_cap']
+  market_cap_data['market_cap_rank'] = data['overview']['market_cap_rank']
+  processed_data.append(market_cap_data)
+```
+
+If you try to print the `processed_data`, the data will be displayed like this.
+```
+[{'symbol': 'BNBA.JK', 'market_cap': 2049739325440, 'market_cap_rank': 297},
+ {'symbol': 'BVIC.JK', 'market_cap': 1004160024576, 'market_cap_rank': 413},
+ {'symbol': 'BMAS.JK', 'market_cap': 9413404393472, 'market_cap_rank': 136},
+ {'symbol': 'BJTM.JK', 'market_cap': 7730085494784, 'market_cap_rank': 153},
+ {'symbol': 'NISP.JK', 'market_cap': 28222718738432, 'market_cap_rank': 63},
+ ...
+]
+```
+
+## Data Visualization
+
+Before visualizing, we are going to transform the data type into a **DataFrame**.
+At the same time, we will sort the data based on the **market_cap_rank** ascendingly.
+```python
+df = pd.DataFrame(processed_data)
+df = df.sort_values(['market_cap_rank'], ascending=True)
+```
