@@ -32,7 +32,7 @@
     {
       "name": "Recipes",
       "icon": "lightbulb",
-      "url": "https://github.com/supertypeai/sectors-kb/tree/main/recipe"
+      "url": "recipes"
     },
     {
       "name": "Community",
@@ -88,6 +88,38 @@
             "api-references/transaction/top-tickers"
           ]
         }
+      ]
+    },
+    {
+      "group": "Quick Start in Python",
+      "pages": [
+        "recipes/quick-start-in-python/00-your-first-request",
+        "recipes/quick-start-in-python/01-list-all-subsectors",
+        "recipes/quick-start-in-python/02-company-revenue-by-subsector-analysis",
+        "recipes/quick-start-in-python/03-simple-moving-average",
+        "recipes/quick-start-in-python/04-stock-price-changes"
+      ]
+    },
+    {
+      "group": "Build Python App",
+      "pages": [
+        {
+          "group": "0.1 SectorScan",
+          "pages": [
+             "recipes/build-python-app/sectorscan/01-sectorscan-part1",
+             "recipes/build-python-app/sectorscan/02-sectorscan-part2"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Animated Plots in R",
+      "pages": [
+        "recipes/animated-plots-in-r/00-telling-stories-w-ggplot",
+        "recipes/animated-plots-in-r/01-top-stock-volume-animation-plot",
+        "recipes/animated-plots-in-r/02-top-market-cap-animation-plot",
+        "recipes/animated-plots-in-r/03-financial-comparison-animation-plot",
+        "recipes/animated-plots-in-r/04-dividend-growth-investing"
       ]
     }
   ],
