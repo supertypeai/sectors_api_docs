@@ -58,9 +58,9 @@
             "api-references/helper-list/subsectors",
             "api-references/helper-list/industries",
             "api-references/helper-list/subindustries",
+            "api-references/helper-list/companies-index",
             "api-references/helper-list/companies-subsector",
             "api-references/helper-list/companies-subindustry",
-            "api-references/helper-list/companies-index",
             "api-references/helper-list/companies-segment-list"
           ]
         },

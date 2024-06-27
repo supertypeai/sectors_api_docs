@@ -1,7 +1,7 @@
 ---
 title: "Companies by Index"
-api: "GET /index/{index}"
-description: "Return list of stock tickers that belong to certain stock index"
+api: "GET /index/{index}/"
+description: "Return list of companies from a stock index"
 ---
 
 <ResponseExample>
@@ -15,7 +15,11 @@ description: "Return list of stock tickers that belong to certain stock index"
 
 </ResponseExample>
 
-<Note>Available indices: `ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`, `idxhidiv20`, `idxq30`, `idxv30`, `jii70`, `kompas100`, `lq45`, `sminfra18`, `srikehati`</Note>
+<Note>
+  Available index: `ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`,
+  `idxhidiv20`, `idxq30`, `idxv30`, `jii70`, `kompas100`, `lq45`, `sminfra18`,
+  `srikehati`
+</Note>
 
 ### Header
 
@@ -26,8 +30,11 @@ description: "Return list of stock tickers that belong to certain stock index"
 ### Path
 
 <ParamField path="index" type="string" required>
-  The index name from which the list of companies is to be retrieved. For
-  example: `ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`, `idxhidiv20`, `idxq30`, `idxv30`, `jii70`, `kompas100`, `lq45`, `sminfra18`, `srikehati`.
+  The index name from which the list of companies is to be retrieved.
+  <Accordion title="Available index">
+    `ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`, `idxhidiv20`, `idxq30`,
+    `idxv30`, `jii70`, `kompas100`, `lq45`, `sminfra18`, `srikehati`
+  </Accordion>
 </ParamField>
 
 ### Response
@@ -35,3 +42,9 @@ description: "Return list of stock tickers that belong to certain stock index"
 <ResponseField name="payload" type="string[]" required>
   Array of tickers of the given index.
 </ResponseField>
+
+### Usage
+
+This list can be used for the following endpoint:
+
+- [Company Report](../report/company)
