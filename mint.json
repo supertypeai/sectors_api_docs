@@ -58,6 +58,7 @@
             "api-references/helper-list/subsectors",
             "api-references/helper-list/industries",
             "api-references/helper-list/subindustries",
+            "api-references/helper-list/companies-index",
             "api-references/helper-list/companies-subsector",
             "api-references/helper-list/companies-subindustry",
             "api-references/helper-list/companies-segment-list"
@@ -106,8 +107,8 @@
         {
           "group": "0.1 SectorScan",
           "pages": [
-             "recipes/build-python-app/sectorscan/01-sectorscan-part1",
-             "recipes/build-python-app/sectorscan/02-sectorscan-part2"
+            "recipes/build-python-app/sectorscan/01-sectorscan-part1",
+            "recipes/build-python-app/sectorscan/02-sectorscan-part2"
           ]
         }
       ]
