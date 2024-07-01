@@ -186,7 +186,7 @@ df_mc_hist = pd.DataFrame()
 df_mc_change = pd.DataFrame()
 
 for i in options:
-    url = f"https://api.sectors.app/v1/sector/report/{i}/?sections=market_cap"
+    url = f"https://api.sectors.app/v1/subsector/report/{i}/?sections=market_cap"
     market_cap = fetch_data(url)
     ... # the rest of the code
 ```
@@ -248,7 +248,7 @@ First let's move the code to retrieve valuation data from the last chunk of code
 df_valuation = pd.DataFrame()
 
 for i in options:
-    url = f"https://api.sectors.app/v1/sector/report/{i}/?sections=valuation"
+    url = f"https://api.sectors.app/v1/subsector/report/{i}/?sections=valuation"
     valuation = fetch_data(url)
     ... # the rest of the code
 ```
@@ -317,7 +317,7 @@ df_top_profit = pd.DataFrame()
 df_top_revenue = pd.DataFrame()
 
 for i in options:
-    url = f"https://api.sectors.app/v1/sector/report/{i}/?sections=companies"
+    url = f"https://api.sectors.app/v1/subsector/report/{i}/?sections=companies"
     company = fetch_data(url)
     ... # the rest of the code
 ```
