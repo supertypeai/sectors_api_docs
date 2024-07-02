@@ -7,9 +7,14 @@ description: "Return list of companies from a subsector"
 <ResponseExample>
 ```json 200
 [
-  "BALI.JK",
-  "BTEL.JK",
-  "CENT.JK",
+  {
+    "symbol": "NISP.JK",
+    "company_name": "PT Bank OCBC NISP Tbk"
+  },
+  {
+    "symbol": "PNBN.JK",
+    "company_name": "Bank Pan Indonesia Tbk"
+  }
 ]
 ```
 
@@ -39,7 +44,7 @@ description: "Return list of companies from a subsector"
       endpoint.
     </Accordion>
     <Accordion title="Examples of the sub_sector">
-      `bank`, `financing-service`, `insurance`, `retailing`, `tobacco`
+      `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
     </Accordion>
     <Accordion title="Format">
       The API endpoint only accepts `sub_sector` in the **kebab case** format
@@ -50,8 +55,16 @@ description: "Return list of companies from a subsector"
 
 ### Response
 
-<ResponseField name="payload" type="string[]" required>
-  Array of tickers of the given subsector.
+<ResponseField name="payload" type="Company[]" required>
+  Array of companies of the given subsector.
+  <Expandable title="properties">
+    <ResponseField name="Company.symbol" type="string" required>
+      The company ticker.
+    </ResponseField>
+    <ResponseField name="Company.company_name" type="string" required>
+      The company legal name.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 ### Usage

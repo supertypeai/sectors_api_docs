@@ -7,9 +7,14 @@ description: "Return list of companies from a subindustry"
 <ResponseExample>
 ```json 200
 [
-  "BALI.JK",
-  "BTEL.JK",
-  "CENT.JK",
+  {
+    "symbol": "NISP.JK",
+    "company_name": "PT Bank OCBC NISP Tbk"
+  },
+  {
+    "symbol": "PNBN.JK",
+    "company_name": "Bank Pan Indonesia Tbk"
+  }
 ]
 ```
 
@@ -51,8 +56,16 @@ description: "Return list of companies from a subindustry"
 
 ### Response
 
-<ResponseField name="payload" type="string[]" required>
-  Array of tickers of the given subindustry.
+<ResponseField name="payload" type="Company[]" required>
+  Array of companies of the given subindustry.
+  <Expandable title="properties">
+    <ResponseField name="Company.symbol" type="string" required>
+      The company ticker.
+    </ResponseField>
+    <ResponseField name="Company.company_name" type="string" required>
+      The company legal name.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 ### Usage
