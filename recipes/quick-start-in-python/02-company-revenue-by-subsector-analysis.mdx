@@ -41,12 +41,16 @@ headers = {
 }
 response = requests.get("https://api.sectors.app/v1/companies/?sub_sector=tobacco", headers = headers)
 
+list_companies_by_subsectors = []
 if response.status_code == 200:
-    list_companies_by_subsectors = response.json()
-    print(list_companies_by_subsectors)
+    data = response.json()
+    for company in data:
+        list_companies_by_subsectors.append(company["symbol"])
 else:
     # Handle error
     print("Error Status :",response.status_code)
+
+print(list_companies_by_subsectors)
 ```
 
 You should see an output like this:

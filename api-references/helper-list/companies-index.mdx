@@ -6,7 +6,16 @@ description: "Return list of companies from a stock index"
 
 <ResponseExample>
 ```json 200
-["ACES.JK", "ADRO.JK", "AKRA.JK", "UNVR.JK"]
+[
+  {
+    "symbol": "NISP.JK",
+    "company_name": "PT Bank OCBC NISP Tbk"
+  },
+  {
+    "symbol": "PNBN.JK",
+    "company_name": "Bank Pan Indonesia Tbk"
+  }
+]
 ```
 
 ```json 429
@@ -39,8 +48,16 @@ description: "Return list of companies from a stock index"
 
 ### Response
 
-<ResponseField name="payload" type="string[]" required>
-  Array of tickers of the given index.
+<ResponseField name="payload" type="Company[]" required>
+  Array of companies of the given index.
+  <Expandable title="properties">
+    <ResponseField name="Company.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="Company.company_name" type="string" required>
+      The full name of the company.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 ### Usage

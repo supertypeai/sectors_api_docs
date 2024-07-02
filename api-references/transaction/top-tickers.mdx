@@ -8,28 +8,32 @@ description: "Return a list of top tickers in a given year based on certain clas
 ```json 200
 {
     "dividend_yield": [
-        {
-            "symbol": "SCPI.JK",
-            "dividend_yield": 0
-        }
+      {
+        "symbol": "BJTM.JK",
+        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
+        "dividend_yield": 0
+      }
     ],
     "total_dividend": [
-        {
-            "symbol": "SCPI.JK",
-            "total_dividend": 0
-        }
+      {
+        "symbol": "BJTM.JK",
+        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
+        "total_dividend": 0
+      }
     ],
     "revenue": [
-        {
-            "symbol": "ASII.JK",
-            "revenue": 0
-        }
+      {
+        "symbol": "BJTM.JK",
+        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
+        "revenue": 0
+      }
     ],
     "earnings": [
-        {
-            "symbol": "BBRI.JK",
-            "earnings": 0
-        }
+      {
+        "symbol": "BJTM.JK",
+        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
+        "earnings": 0
+      }
     ]
 }
 ```
@@ -85,6 +89,9 @@ description: "Return a list of top tickers in a given year based on certain clas
     <ResponseField name="DividendYieldData.symbol" type="string" required>
       The ticker of the company.
     </ResponseField>
+    <ResponseField name="DividendYieldData.company_name" type="string" required>
+      The name of the company.
+    </ResponseField>
     <ResponseField
       name="DividendYieldData.dividend_yield"
       type="float"
@@ -99,6 +106,9 @@ description: "Return a list of top tickers in a given year based on certain clas
   <Expandable title="properties">
     <ResponseField name="TotalDividendData.symbol" type="string" required>
       The ticker of the company.
+    </ResponseField>
+    <ResponseField name="TotalDividendData.company_name" type="string" required>
+      The name of the company.
     </ResponseField>
     <ResponseField
       name="TotalDividendData.total_dividend"
@@ -115,6 +125,9 @@ description: "Return a list of top tickers in a given year based on certain clas
     <ResponseField name="RevenueData.symbol" type="string" required>
       The ticker of the company.
     </ResponseField>
+    <ResponseField name="RevenueData.company_name" type="string" required>
+      The name of the company.
+    </ResponseField>
     <ResponseField name="RevenueData.revenue" type="float" required>
       The total revenue of the company in IDR.
     </ResponseField>
@@ -125,6 +138,9 @@ description: "Return a list of top tickers in a given year based on certain clas
   <Expandable title="properties">
     <ResponseField name="EarningsData.symbol" type="string" required>
       The ticker of the company.
+    </ResponseField>
+    <ResponseField name="EarningsData.company_name" type="string" required>
+      The name of the company.
     </ResponseField>
     <ResponseField name="EarningsData.earnings" type="float" required>
       The total earnings of the company in IDR.

@@ -8,11 +8,12 @@ description: "Return a list of the most traded tickers based on transaction volu
 ```json 200
 {
     "2024-05-21": [
-        {
-            "symbol": "SOLA.JK",
-            "volume": 0,
-            "price": 0
-        }
+      {
+        "symbol": "GOTO.JK",
+        "company_name": "PT GoTo Gojek Tokopedia Tbk",
+        "volume": 0,
+        "price": 0
+      }
     ]
 }
 ```
@@ -86,6 +87,9 @@ description: "Return a list of the most traded tickers based on transaction volu
   <Expandable title="properties">
     <ResponseField name="TradedData.symbol" type="string" required>
       The ticker of the traded stock.
+    </ResponseField>
+    <ResponseField name="TradedData.company_name" type="string" required>
+      The company name of the traded stock.
     </ResponseField>
     <ResponseField name="TradedData.volume" type="integer" required>
       The transaction volume on the specified date.
