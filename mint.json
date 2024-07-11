@@ -45,7 +45,8 @@
       "group": "Get Started",
       "pages": [
         "get-started/overview",
-        "get-started/quickstart"
+        "get-started/quickstart",
+        "get-started/changelog"
       ]
     },
     {
