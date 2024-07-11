@@ -85,6 +85,7 @@
           "icon": "money-bill-transfer",
           "pages": [
             "api-references/transaction/daily-transaction",
+            "api-references/transaction/index-daily-transaction",
             "api-references/transaction/most-traded",
             "api-references/transaction/top-tickers"
           ]

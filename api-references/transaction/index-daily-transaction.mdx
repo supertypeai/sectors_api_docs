@@ -1,0 +1,110 @@
+---
+title: "Index Daily Transaction Data"
+api: "GET /index-daily/{index_code}/"
+description: "Return index daily transaction data of a given index code on a certain interval (data available from 2019-01-02)"
+---
+
+<ResponseExample>
+```json 200
+[
+    {
+        "index_code": "IDX30",
+        "date": "2024-01-02",
+        "price": 0.0
+    },
+]
+```
+
+```json 400
+{ "error": "Given index code ticker does not exist in the requested date." }
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
+<Note>
+  Available index: `ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`,
+  `idxhidiv20`, `idxq30`, `idxv30`, `jii70`, `kompas100`, `lq45`, `sminfra18`,
+  `srikehati`, `ihsg`, `sti`
+</Note>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Path
+
+<ParamField path="index_code" type="string" initialValue="idx30" required>
+    Index code of the index for which the daily transaction data is to be retrieved.
+    <Accordion title="Available index">
+    `ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`, `idxhidiv20`, `idxq30`,
+    `idxv30`, `jii70`, `kompas100`, `lq45`, `sminfra18`, `srikehati`, `ihsg`, `sti`
+  </Accordion>
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="start" type="string">
+  Start date for which the daily transaction data of a given ticker is to be
+  retrieved.
+  <AccordionGroup>
+    <Accordion title="Format">
+      The API endpoint only accepts `start` date in the `YYYY-MM-DD` format.
+    </Accordion>
+    <Accordion title="Earliest date">
+      The `start` date must be **no earlier than 90 days before the `end`
+      date**. If a date earlier than this is provided, only the most recent 90
+      days of data will be retrieved.
+    </Accordion>
+    <Accordion title="Default value">
+      When only `end` date is provided, the default value of `start` date is **30 days before the `end` date**.
+
+      When `start` and `end` dates are not provided, the default value of `start` date is **30 days before today**.
+    </Accordion>
+
+  </AccordionGroup>
+</ParamField>
+
+<ParamField query="end" type="string">
+  End date for which the daily transaction data of a given ticker is to be
+  retrieved.
+  <AccordionGroup>
+    <Accordion title="Format">
+      The API endpoint only accepts `end` date in the `YYYY-MM-DD` format.
+    </Accordion>
+    <Accordion title="Latest date">
+      The `end` date must be **no later than 90 days after the `start` date**.
+      If a date later than this is provided, only the most recent 90 days of
+      data will be retrieved.
+    </Accordion>
+    <Accordion title="Default value">
+      When only `start` date is provided, the default value of `end` date is **30 days after the `start` date**.
+
+      When `start` and `end` dates are not provided, the default value of `end` date is **today**.
+    </Accordion>
+
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="IndexDailyTransactionData[]" required>
+  <Expandable title="properties">
+    <ResponseField name="IndexDailyTransactionData.index_code" type="string" required>
+      The index code of the index.
+    </ResponseField>
+
+    <ResponseField name="IndexDailyTransactionData.date" type="string" required>
+      The date of the transaction.
+    </ResponseField>
+
+    <ResponseField name="IndexDailyTransactionData.price" type="float" required>
+      The closing price of the given index code in IDR.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
