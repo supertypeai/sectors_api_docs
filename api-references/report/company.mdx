@@ -36,7 +36,6 @@ description: "Return report of a given ticker, organized into distinct sections"
         "enterprise_to_revenue": null,
         "enterprise_to_ebitda": 0.0,
         "peg_ratio": 0,
-        "analyst_rating": 0,
         "intrinsic_value": 0,
         "historical_valuation": [
             {
@@ -65,7 +64,70 @@ description: "Return report of a given ticker, organized into distinct sections"
                 "estimate_year": 2024,
                 "revenue_growth": 0
             }
-        ]
+        ],
+        "technical_rating_breakdown": {
+          "summary": {
+            "buy": 0,
+            "sell": 0,
+            "neutral": 0,
+            "updated_on": "2024-07-10 08:29:01"
+          },
+          "oscillator": {
+            "buy": 0,
+            "data": [
+              {
+                "name": "Relative Strength Index (14)",
+                "value": "64",
+                "action": "Neutral"
+              },
+              {
+                "name": "Stochastic %K (14, 3, 3)",
+                "value": "92",
+                "action": "Sell"
+              },
+              {
+                "name": "Momentum (10)",
+                "value": "575",
+                "action": "Buy"
+              },
+            ],
+            "sell": 0,
+            "neutral": 0,
+            "updated_on": "2024-07-10 08:29:01"
+          },
+          "moving_average": {
+            "buy": 0,
+            "data": [
+              {
+                "name": "Ichimoku Base Line (9, 26, 52, 26)",
+                "value": "9,638",
+                "action": "Neutral"
+              },
+              {
+                "name": "Volume Weighted Moving Average (20)",
+                "value": "9,647",
+                "action": "Buy"
+              },
+              {
+                "name": "Hull Moving Average (9)",
+                "value": "10,085",
+                "action": "Sell"
+              }
+            ],
+            "sell": 1,
+            "neutral": 1,
+            "updated_on": "2024-07-10 08:29:01"
+          }
+        },
+        "analyst_rating_breakdown": {
+          "buy": 0,
+          "hold": 0,
+          "sell": 0,
+          "n_analyst": 0,
+          "strong_buy": 0,
+          "updated_on": "2024-07-10 00:39:51",
+          "strong_sell": 0
+        }
     },
     "financials": {
         "historical_financials": [
