@@ -45,7 +45,8 @@
       "group": "Get Started",
       "pages": [
         "get-started/overview",
-        "get-started/quickstart"
+        "get-started/quickstart",
+        "get-started/changelog"
       ]
     },
     {
@@ -65,14 +66,14 @@
           ]
         },
         {
-          "group": "IPO",
+          "group": "Since IPO Performance",
           "icon": "chart-line",
           "pages": [
             "api-references/ipo/listing-performance"
           ]
         },
         {
-          "group": "Report",
+          "group": "Detailed Reports",
           "icon": "file-contract",
           "pages": [
             "api-references/report/company",
@@ -81,12 +82,19 @@
           ]
         },
         {
-          "group": "Transaction",
+          "group": "Company Ranking by Dimensions",
+          "icon": "ranking-star",
+          "pages": [
+            "api-references/ranking/most-traded",
+            "api-references/ranking/top-tickers"
+          ]
+        },
+        {
+          "group": "Transaction Data",
           "icon": "money-bill-transfer",
           "pages": [
             "api-references/transaction/daily-transaction",
-            "api-references/transaction/most-traded",
-            "api-references/transaction/top-tickers"
+            "api-references/transaction/index-daily-transaction"
           ]
         }
       ]

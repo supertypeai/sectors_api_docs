@@ -1,21 +1,22 @@
 ---
-title: "Most Traded Tickers"
-api: "GET /most-traded/"
-description: "Return a list of the most traded tickers based on transaction volume on a certain interval (**up to 90 days**)"
+title: "Index Daily Transaction Data"
+api: "GET /index-daily/{index_code}/"
+description: "Return daily transaction data of a given index code on a certain interval  (**up to 90 days**)"
 ---
 
 <ResponseExample>
 ```json 200
-{
-    "2024-05-21": [
-      {
-        "symbol": "GOTO.JK",
-        "company_name": "PT GoTo Gojek Tokopedia Tbk",
-        "volume": 0,
-        "price": 0
-      }
-    ]
-}
+[
+    {
+        "index_code": "IDX30",
+        "date": "2024-01-02",
+        "price": 0.0
+    },
+]
+```
+
+```json 400
+{ "error": "Given index does not exist in the requested date." }
 ```
 
 ```json 429
@@ -24,16 +25,38 @@ description: "Return a list of the most traded tickers based on transaction volu
 
 </ResponseExample>
 
+<Note>
+  Available index: `ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`,
+  `idxhidiv20`, `idxq30`, `idxv30`, `ihsg`, `jii70`, `kompas100`, `lq45`,
+  `sminfra18`, `srikehati`, `sti`
+</Note>
+
+### Notes
+
+Index daily transaction data is only available from **January 2nd, 2019**.
+
 ### Header
 
 <ParamField header="Authorization" type="string" required>
   Authorization header that should be filled with your Sectors API key.
 </ParamField>
 
+### Path
+
+<ParamField path="index_code" type="string" initialValue="idx30" required>
+  Code of the index for which the daily transaction data is to be retrieved.
+  <Accordion title="Available index">
+    `ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`, `idxhidiv20`, `idxq30`,
+    `idxv30`, `ihsg`, `jii70`, `kompas100`, `lq45`, `sminfra18`, `srikehati`,
+    `sti`
+  </Accordion>
+</ParamField>
+
 ### Query Parameters
 
 <ParamField query="start" type="string">
-  Start date for which the list of the most traded tickers is to be retrieved.
+  Start date for which the daily transaction data of a given index code is to be
+  retrieved.
   <AccordionGroup>
     <Accordion title="Format">
       The API endpoint only accepts `start` date in the `YYYY-MM-DD` format.
@@ -53,7 +76,8 @@ description: "Return a list of the most traded tickers based on transaction volu
 </ParamField>
 
 <ParamField query="end" type="string">
-  End date for which the list of the most traded tickers is to be retrieved.
+  End date for which the daily transaction data of a given index code is to be
+  retrieved.
   <AccordionGroup>
     <Accordion title="Format">
       The API endpoint only accepts `end` date in the `YYYY-MM-DD` format.
@@ -72,30 +96,21 @@ description: "Return a list of the most traded tickers based on transaction volu
   </AccordionGroup>
 </ParamField>
 
-<ParamField query="n_stock" type="integer" default="5">
-  Number of tickers to be retrieved (defaults to 5, with a maximum of 10).
-</ParamField>
-
-<ParamField query="adjusted" type="boolean" default="false">
-  Default to "false". If set to "true", the returned list will be sorted based
-  on transaction volume multiplied by closing price.
-</ParamField>
-
 ### Response
 
-<ResponseField name="<date>" type="TradedData[]" required>
+<ResponseField name="payload" type="IndexDailyTransactionData[]" required>
   <Expandable title="properties">
-    <ResponseField name="TradedData.symbol" type="string" required>
-      The ticker of the traded stock.
+    <ResponseField name="IndexDailyTransactionData.index_code" type="string" required>
+      The code of the index.
     </ResponseField>
-    <ResponseField name="TradedData.company_name" type="string" required>
-      The company name of the traded stock.
+
+    <ResponseField name="IndexDailyTransactionData.date" type="string" required>
+      The date of the transaction.
     </ResponseField>
-    <ResponseField name="TradedData.volume" type="integer" required>
-      The transaction volume on the specified date.
+
+    <ResponseField name="IndexDailyTransactionData.price" type="float" required>
+      The closing price of the given index code in IDR.
     </ResponseField>
-    <ResponseField name="TradedData.price" type="integer" required>
-      The transaction price on the specified date in IDR.
-    </ResponseField>
+
   </Expandable>
 </ResponseField>

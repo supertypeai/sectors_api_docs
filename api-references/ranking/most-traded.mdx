@@ -1,0 +1,101 @@
+---
+title: "Most Traded Stocks by Volume"
+api: "GET /most-traded/"
+description: "Return a list of the most traded tickers based on transaction volume on a certain interval (**up to 90 days**)"
+---
+
+<ResponseExample>
+```json 200
+{
+    "2024-05-21": [
+      {
+        "symbol": "GOTO.JK",
+        "company_name": "PT GoTo Gojek Tokopedia Tbk",
+        "volume": 0,
+        "price": 0
+      }
+    ]
+}
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="start" type="string">
+  Start date for which the list of the most traded tickers is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Format">
+      The API endpoint only accepts `start` date in the `YYYY-MM-DD` format.
+    </Accordion>
+    <Accordion title="Earliest date">
+      The `start` date must be **no earlier than 90 days before the `end`
+      date**. If a date earlier than this is provided, only the most recent 90
+      days of data will be retrieved.
+    </Accordion>
+    <Accordion title="Default value">
+      When only `end` date is provided, the default value of `start` date is **30 days before the `end` date**.
+
+      When `start` and `end` dates are not provided, the default value of `start` date is **30 days before today**.
+    </Accordion>
+
+  </AccordionGroup>
+</ParamField>
+
+<ParamField query="end" type="string">
+  End date for which the list of the most traded tickers is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Format">
+      The API endpoint only accepts `end` date in the `YYYY-MM-DD` format.
+    </Accordion>
+    <Accordion title="Latest date">
+      The `end` date must be **no later than 90 days after the `start` date**.
+      If a date later than this is provided, only the most recent 90 days of
+      data will be retrieved.
+    </Accordion>
+    <Accordion title="Default value">
+      When only `start` date is provided, the default value of `end` date is **30 days after the `start` date**.
+
+      When `start` and `end` dates are not provided, the default value of `end` date is **today**.
+    </Accordion>
+
+  </AccordionGroup>
+</ParamField>
+
+<ParamField query="n_stock" type="integer" default="5">
+  Number of tickers to be retrieved (defaults to 5, with a maximum of 10).
+</ParamField>
+
+<ParamField query="adjusted" type="boolean" default="false">
+  Default to "false". If set to "true", the returned list will be sorted based
+  on transaction volume multiplied by closing price.
+</ParamField>
+
+### Response
+
+<ResponseField name="<date>" type="TradedData[]" required>
+  <Expandable title="properties">
+    <ResponseField name="TradedData.symbol" type="string" required>
+      The ticker of the traded stock.
+    </ResponseField>
+    <ResponseField name="TradedData.company_name" type="string" required>
+      The company name of the traded stock.
+    </ResponseField>
+    <ResponseField name="TradedData.volume" type="integer" required>
+      The transaction volume on the specified date.
+    </ResponseField>
+    <ResponseField name="TradedData.price" type="integer" required>
+      The transaction price on the specified date in IDR.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
