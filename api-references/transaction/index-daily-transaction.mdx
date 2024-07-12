@@ -1,7 +1,7 @@
 ---
 title: "Index Daily Transaction Data"
 api: "GET /index-daily/{index_code}/"
-description: "Return index daily transaction data of a given index code on a certain interval (data available from 2019-01-02)"
+description: "Return daily transaction data of a given index code on a certain interval  (**up to 90 days**)"
 ---
 
 <ResponseExample>
@@ -16,7 +16,7 @@ description: "Return index daily transaction data of a given index code on a cer
 ```
 
 ```json 400
-{ "error": "Given index code ticker does not exist in the requested date." }
+{ "error": "Given index does not exist in the requested date." }
 ```
 
 ```json 429
@@ -27,9 +27,13 @@ description: "Return index daily transaction data of a given index code on a cer
 
 <Note>
   Available index: `ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`,
-  `idxhidiv20`, `idxq30`, `idxv30`, `jii70`, `kompas100`, `lq45`, `sminfra18`,
-  `srikehati`, `ihsg`, `sti`
+  `idxhidiv20`, `idxq30`, `idxv30`, `ihsg`, `jii70`, `kompas100`, `lq45`,
+  `sminfra18`, `srikehati`, `sti`
 </Note>
+
+### Notes
+
+Index daily transaction data is only available from **January 2nd, 2019**.
 
 ### Header
 
@@ -40,17 +44,18 @@ description: "Return index daily transaction data of a given index code on a cer
 ### Path
 
 <ParamField path="index_code" type="string" initialValue="idx30" required>
-    Index code of the index for which the daily transaction data is to be retrieved.
-    <Accordion title="Available index">
+  Code of the index for which the daily transaction data is to be retrieved.
+  <Accordion title="Available index">
     `ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`, `idxhidiv20`, `idxq30`,
-    `idxv30`, `jii70`, `kompas100`, `lq45`, `sminfra18`, `srikehati`, `ihsg`, `sti`
+    `idxv30`, `ihsg`, `jii70`, `kompas100`, `lq45`, `sminfra18`, `srikehati`,
+    `sti`
   </Accordion>
 </ParamField>
 
 ### Query Parameters
 
 <ParamField query="start" type="string">
-  Start date for which the daily transaction data of a given ticker is to be
+  Start date for which the daily transaction data of a given index code is to be
   retrieved.
   <AccordionGroup>
     <Accordion title="Format">
@@ -71,7 +76,7 @@ description: "Return index daily transaction data of a given index code on a cer
 </ParamField>
 
 <ParamField query="end" type="string">
-  End date for which the daily transaction data of a given ticker is to be
+  End date for which the daily transaction data of a given index code is to be
   retrieved.
   <AccordionGroup>
     <Accordion title="Format">
@@ -96,7 +101,7 @@ description: "Return index daily transaction data of a given index code on a cer
 <ResponseField name="payload" type="IndexDailyTransactionData[]" required>
   <Expandable title="properties">
     <ResponseField name="IndexDailyTransactionData.index_code" type="string" required>
-      The index code of the index.
+      The code of the index.
     </ResponseField>
 
     <ResponseField name="IndexDailyTransactionData.date" type="string" required>
@@ -106,5 +111,6 @@ description: "Return index daily transaction data of a given index code on a cer
     <ResponseField name="IndexDailyTransactionData.price" type="float" required>
       The closing price of the given index code in IDR.
     </ResponseField>
+
   </Expandable>
 </ResponseField>
