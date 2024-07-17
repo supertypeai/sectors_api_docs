@@ -122,6 +122,12 @@
         "recipes/animated-plots-in-r/03-financial-comparison-animation-plot",
         "recipes/animated-plots-in-r/04-dividend-growth-investing"
       ]
+    },
+    {
+      "group": "Using API in Non-Programming Tools",
+      "pages": [
+        "recipes/non-programmatical-tools/00-excel"
+      ]
     }
   ],
   "footerSocials": {

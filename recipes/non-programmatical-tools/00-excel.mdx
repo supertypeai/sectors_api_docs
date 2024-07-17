@@ -1,0 +1,182 @@
+---
+title: "Microsoft Excel"
+description: "By: [Vincentius C. Calvin](https://www.github.com/vccalvin33) · July 13, 2024"
+---
+
+APIs (Application Programming Interfaces) are powerful tools that allow us to fetch up-to-date data from various online services. However, APIs often return data in JSON (JavaScript Object Notation) format, which can be complex and difficult to handle without programming knowledge. Fortunately, Excel offers a fantastic feature called Power Query, which lets you import, transform, and analyze this data with ease—all without writing a single line of code. This series of recipes are designed specifically for users who prefer to use non-programmatical tools but want to harness the power of [Sectors API](https://sectors.app/api) data.
+
+## Overview
+In this recipe, you will learn how to:
+
+- Connect to Sectors API using Excel's Power Query.
+- Import and transform JSOn data into Excel tables.
+- Handle and expand complex nested JSON structures.
+- Shape the data for simple analysis.
+
+## Prerequisite
+
+To follow this recipe, you need the following prerequisites:
+
+- Microsoft Excel
+- Valid API keys from Sectors API, which you can acquire from your [Sectors App](https://sectors.app/api) account
+
+## Connect to the API
+- Open Excel.
+- Navigate to the "Data" tab on the ribbon.
+- Click on "Get Data" > "From Other Sources" > "From Web".
+
+    ![Step_1](/recipes/non-programmatical-tools/00-images/step1.png)
+
+- Choose the `Advanced` option, since you need to add HTTP request header for Authorization.
+- Enter the URL of the API endpoint. 
+
+    For this first request, we are going to use the endpoint to track the daily trading data of a company (I will use BBCA for my example).
+    Here is the url: `https://api.sectors.app/v1/daily/bbca`
+
+    For the HTTP request header parameters, fill in `Authorization` on the left cell, and then your `<API Key>` on the right cell. Afterwards, click OK.
+
+    ![Step_2](/recipes/non-programmatical-tools/00-images/step2.png)
+
+- If it gives you this kind of issue:
+
+    ![Credentials Error](/recipes/non-programmatical-tools/00-images/error1.png)
+
+    You can follow the workaround that I will provide in the next few steps, otherwise it should launch your Power Query editor -- and I will guide you more after.
+- Click `Back` and let's change the API url to `https://api.sectors.app/health/`. Leave the header and your API key as it is, as this is necessary.
+
+    ![Step_3](/recipes/non-programmatical-tools/00-images/step3.png)
+
+    Now when you click OK it should successfully establish a query connection, and will launch the Power Query Editor like this:
+    ![Step_4](/recipes/non-programmatical-tools/00-images/step4.png)
+
+    If you have reached this point, everything should be fine so far. However, remember that our original goal is to get the daily trading data of a company, and what's being returned as of the moment is simply `OK` from the `/health/` endpoint.
+    Go to `View` tab > `Advanced Editor`, and this editor will pop up:
+    ![Step_5](/recipes/non-programmatical-tools/00-images/step5.png)
+
+    Don't worry, as I promised, this recipe doesn't require any programming steps. All you need to do is replace the url `https://api.sectors.app/health/` to `https://api.sectors.app/v1/daily/bbca`, and click Done!
+    This is the "code" block:
+
+    ```
+    let
+        Source = Json.Document(Web.Contents("https://api.sectors.app/v1/daily/bbca", [Headers=[Authorization="<API Key>"]]))
+    in
+        Source
+    ```
+    If the same error still persists, you will need to repeat the whole process again. As per the time of this recipe release date, unfortunately I can't find any other better ways to bypass this issue yet.
+    I would be glad to update this once I am aware of a more elegant and convenient way, or feel free to reach out to us if you know something we don't!
+- Finally, our very first query connection to the Sectors API is successful, and we shall proceed to the next step.
+    ![Step_6](/recipes/non-programmatical-tools/00-images/step6.png)
+
+## Transform the JSON Data
+- Convert the JSON data to a table:
+
+    Click `To Table` on the `Transform` tab. If a prompt box open out, select `None` as the delimiter. You can adjust this as needed in accordance to your returned JSON data, but putting it to None would be the common default-to-go -- and don't worry if you need to change it later as it is doable.
+    You will now see in the right bar on `Applied Steps` that we have added a new subsequent step `Converted to Table`:
+    ![Step_7](/recipes/non-programmatical-tools/00-images/step7.png)
+
+- Expand the main JSON object:
+
+    Click the expand icon (two arrows) in the column header of the JSON object column (usually labeled "Column1" or similar). Check the fields you want to expand, you can select only the column you need but I will use all of them as I want to track both the closing price, trading volume, and market cap. 
+    Finally, click "OK".
+    ![Step_8](/recipes/non-programmatical-tools/00-images/step8.png)
+
+    The current state of the Power Query should look like this:
+    ![Step_9](/recipes/non-programmatical-tools/00-images/step9.png)
+    Feel free to edit the column names if you want to -- simply double click the header you want to edit and enter the desired name you want.
+    After you're done, click `Close & Load` on the top left of the Power Query.
+    ![Result_1](/recipes/non-programmatical-tools/00-images/result1.png)
+    Congratulations! You have successfully loaded your first API into your Excel sheet.
+
+## Handle Nested JSON Structures
+
+If your JSON data contains nested objects or arrays, you will see in the preview columns with `[Record]` or `[List]` entries. If you leave them as they are, it will get displayed as a string after you load the query.
+
+    ![Error_2](/recipes/non-programmatical-tools/00-images/error2.png)
+
+Obviously, we don't want this to happen as we will be losing valuable informations contained in the data. Unfortunately, Excel's Power Query doesn't expand these structures out of the box, but instead we can add steps that handle these according to our usecases as well.
+To start, create a new sheet. We can name it `Company Report Query`, then establish a new connection to the API just like what we just did on the previous section.
+Our target url for this will be: `https://api.sectors.app/v1/company/report/bbca/`.
+
+- Our starting point would look like this:
+
+    ![Step_10](/recipes/non-programmatical-tools/00-images/step10.png)
+    As beforementioend, almost all of the entries are either `[Record]` or `[List]` since the returned JSON is nested.
+
+- Handling records is relatively easier, you simply need to click on one of the row which you want to expand, like the one next to `overview`. It should automatically add another step which is to called `Navigation`
+    ![Step_11](/recipes/non-programmatical-tools/00-images/step11.png)
+    At this point, we can already click on the `Into Table` button on the top left of Power Query, and modify the table as needed like what you just did in the previous section.
+    ![Step_12](/recipes/non-programmatical-tools/00-images/step12.png)
+
+    If we stop here and click `Close & Load`, it will create you a table just for the `overview` key, while we still have other data in the original JSON that we want to expand as well. 
+    Instead, click the first step which is `Source`, move on to the next `[Record]` entry > right click > `As new query`.
+    
+    ![Step_13](/recipes/non-programmatical-tools/00-images/step13.png)
+     This will establish a new query and you can convert the data to a different table. Repeat this process as much as you need to until all the needed record entries have been expanded.
+    ![Step_14](/recipes/non-programmatical-tools/00-images/step14.png)
+
+- Handling list is slightly more "nested" but they are pretty much the same. As a reference, the `peers` JSON structure look like this:
+    ```
+    "peers": [
+            {
+                "peers_info": {
+                    "companies": [
+                        {
+                            "group": [
+                                "sub_sector",
+                                "sector",
+                                "industry",
+                                "sub_industry"
+                            ],
+                            "pb_mrq": 0.874056870326003,
+                            "pe_ttm": 6.80030672274856,
+                            "symbol": "BNGA.JK",
+                            "dar_mrq": 0.0265205201419848,
+                            "der_mrq": 0.171900552646426,
+                            "roa_ttm": 0.019768254215725055,
+                            "roe_ttm": 0.12813375478101982,
+                            "market_cap": 44764426665984,
+                            "company_name": "PT Bank CIMB Niaga Tbk",
+                            "total_assets": 332993846000000,
+                            "total_equity": 51373715000000,
+                            "total_revenue": 19029474000000,
+                            "profit_and_loss": 6582707000000,
+                            "yearly_mcap_chg": 0.0646029933881279,
+                            "total_liabilities": 281620131000000,
+                            "financials_latest_date": "2024-03-31"
+                        },
+                    ],
+                    "group_name": {
+                        "sector": "Financials",
+                        "industry": "Banks",
+                        "sub_sector": "Banks",
+                        "sub_industry": "Banks"
+                    }
+                }
+            }
+        ]
+    ```
+    The information we want to extract is under `peers_info` > `companies`, and our starting point looks like this:
+
+    ![Step_15](/recipes/non-programmatical-tools/00-images/step15.png)
+    We simply need to click on the entry we need to expand, which is `companies`.
+
+    ![Step_16](/recipes/non-programmatical-tools/00-images/step16.png)
+
+    Once we are here, we have reached the desired stopping point, and we can convert this `to table`.
+
+    ![Step_17](/recipes/non-programmatical-tools/00-images/step17.png)
+
+    And as always, once it's detected as a table, we can now expand the whole thing:
+
+    ![Step_18](/recipes/non-programmatical-tools/00-images/step18.png)
+
+    We are almost done! However, as you can see the first column which is `group` is still a `[List]` and thus can be expanded to show what kind of peer group does each company share with BBCA. 
+    Click on the expand button on the header, and choose `Extract values..`. It will open a prompt that tells you to choose what kind of delimiter you want to concatenate the values with. I personally prefer using Comma here.
+
+    ![Step_19](/recipes/non-programmatical-tools/00-images/step19.png)
+
+    Once everything is done, we can now `Close & Load` and all of our queries should now be displayed as table in different sheets (one sheet represents each unique query).
+    ![Final](/recipes/non-programmatical-tools/00-images/final.png)
+
+Once you have reached this point, you can now periodically refresh your data using the `Refresh` on Query tab, and you can perform futher analyzing using your favourite Excel tools.
+![Refresh](/recipes/non-programmatical-tools/00-images/refresh.png)
