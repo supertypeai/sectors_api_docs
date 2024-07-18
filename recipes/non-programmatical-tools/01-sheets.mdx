@@ -1,0 +1,166 @@
+---
+title: "Using data from API on Google Sheets"
+sidebarTitle: "Google Sheets"
+description: "By: [Vincentius C. Calvin](https://www.github.com/vccalvin33) · July 19, 2024"
+---
+
+## Overview
+In this recipe, you will learn how to:
+
+- Connect to Sectors API using Extensions (API Connector).
+- Connect to Sectors API on Google Sheets' Apps Script.
+- Schedule API runs.
+
+## Prerequisite
+
+To follow this recipe, you need the following prerequisites:
+
+- Valid API keys from Sectors API, which you can acquire from your [Sectors App](https://sectors.app/api) account
+- Google Sheets
+
+## API Connector
+[API Connector](https://mixedanalytics.com/knowledge-base/api-connector-quick-start/) is an extension available in the Google Sheets. For a disclaimer, Supertype is *not* affiliated with API Connector, and we are not responsible for anything that happens because of the usage of the respective extension.
+I, however, have personally used the extension for my personal experiment and I think this extension is super solid. Before you begin, you can click [here](https://workspace.google.com/marketplace/app/api_connector/95804724197) to install the `API Connector`extension from the Google Marketplace.
+
+Alternatively, you can also start by opening up a new Google Sheet file, go to `Extensions` > `Add ons` > `Get add-ons` and then look for `API Connector` there. Once you have finished downloading, it will show you the extension under the tab alongside with your other enabled extensions.
+
+![Start_0](/recipes/non-programmatical-tools/01-images/start0.png)
+
+- Now, to start, click `API Connector` > `Open`.
+- A sidebar will open on the right side of your worksheets, and you can click on `Create request` to establish our very first connection to the API.
+
+    ![Step_1](/recipes/non-programmatical-tools/01-images/step1.png)
+
+    Similar with how we created a connection in Excel, all we need to do is change the `Request URL` and add the headers with `Authorization` and value of your `<API Key>`.
+    For the first trial, we are going to use `https://api.sectors.app/v1/daily/bbca` and track the daily trading data of BBCA.JK. Feel free to change the ticker with your personal watchlist!
+
+    ![Step_2](/recipes/non-programmatical-tools/01-images/step2.png)
+
+- Next, if you scroll down a bit, there is this section `OUTPUT SETTINGS` where you can setup a few things. First, you can set which `sheet` and `cell` you would like to load the table to. For this recipe, I will just use the `Set current` option and  it will load the data to the current active sheet and cell A1.
+    ![Step_3](/recipes/non-programmatical-tools/01-images/step3.png)
+    There are a few handy options that you can explore yourself which you can refer to their official documentation. For example, on `Output mode` selection, since this request is going to be the very first, we can just use `overwrite`. If you're looking to populate more data of another tickers, then you can create a separate request and uses the option `append` to automatically add on the first empty rows on the destined place.
+    Another tip is when you use `append`, make sure that you check the `Remove header row` option.
+    ![Step_4](/recipes/non-programmatical-tools/01-images/step4.png)
+
+- Finally, after you have configured everything, you are ready to establish your connection. Optionally you can also save this request and add a name to it, so that you can revisit this request in case there are changes in the configuration that you would like to make.
+    
+    Click `Run`!
+
+    ![Step_5](/recipes/non-programmatical-tools/01-images/step5.png)
+
+    Bam! Your data is successfully loaded.
+
+    ![Result_1](/recipes/non-programmatical-tools/01-images/result1.png)
+
+- Using Excel, handling nested JSON is quite complex since it requires you to expand the values one by one as needed. In contrast, `API Connector` is able to automatically expand your nested JSON objects and explode them to new columns per values.
+    Try creating a new request to `https://api.sectors.app/v1/company/report/bbca/`! 
+
+    ![Step_6](/recipes/non-programmatical-tools/01-images/step6.png)
+
+- FInal tips: If you want to refresh all of your requests, you can go to the `Extensions` tab > `API Connector` > `Refresh All Now`.
+    ![Step_7](/recipes/non-programmatical-tools/01-images/step7.png)
+
+    Additionally, you can also schedule the requests either hourly or daily, but this feature is currently only available for paid subscription, and is beyond the scope of this recipe.
+
+## Apps Script
+Google Apps Script is a cloud-based JavaScript platform provided by Google that allows users to automate tasks across Google Workspace applications and other services. 
+It offers a powerful yet easy-to-use environment for developing scripts to enhance the functionality of Google Sheets, Google Docs, Google Forms, Google Drive, Gmail, and more. 
+The platform is accessible directly within Google Sheets, making it convenient to develop and deploy scripts without requiring any additional software or hosting infrastructure.
+
+- To start creating your custom script, click on `Extensions` > `Apps Script`.
+
+    This will redirect you to the Apps Script code editor, and by default they provide you with `Code.gs` file. 
+
+- Replace the code in the script editor with this [importJSON](https://github.com/bradjasper/ImportJSON/blob/master/ImportJSON.gs) open source code.
+    As specified in their code, `importJSON` includes these main fuctions:
+    > **ImportJSON**:        For use by end users to import a JSON feed from a URL 
+
+    > **ImportJSONFromSheet**:  For use by end users to import JSON from one of the Sheets
+
+    > **ImportJSONViaPost**:     For use by end users to import a JSON feed from a URL using POST parameters
+
+    > **ImportJSONAdvanced**:   For use by script developers to easily extend the functionality of this library
+
+    > **ImportJSONBasicAuth**:  For use by end users to import a JSON feed from a URL with HTTP Basic Auth (added by Karsten Lettow)
+
+- On the top of the editor page, you can now create your own functions that extend the provided functions. I am gonna provide you with some examples:
+    ```JavaScript
+    function ImportDailyData(ticker, query, parseOptions) {
+        var header = {headers: {Authorization: <API key>}}
+        var url = "https://api.sectors.app/v1/daily/" + ticker;
+        var jsondata = UrlFetchApp.fetch(url, header);
+        var object   = JSON.parse(jsondata.getContentText());
+        
+        return parseJSONObject_(object, query, parseOptions, includeXPath_, defaultTransform_);
+    }
+
+    function ImportCompanyReport(ticker, section, query, parseOptions) {
+        var header = {headers: {Authorization: <API key>}}
+        var url = "https://api.sectors.app/v1/company/report/" + ticker;
+        var jsondata = UrlFetchApp.fetch(url, header);
+        var object   = JSON.parse(jsondata.getContentText());
+
+        object = object[section]
+        
+        return parseJSONObject_(object, query, parseOptions, includeXPath_, defaultTransform_);
+    };
+    ```
+    Save the script by clicking on the disk icon or by pressing `Ctrl + S`.
+- You can now use the custom functions in your sheet. In a cell where you want to display the data, enter the following formula:
+    ```scss
+    =ImportDailyData('bbca')
+    ```
+
+    ![Result_2](/recipes/non-programmatical-tools/01-images/result2.png)
+
+    ```scss
+    =ImportCompanyReport('bbca', 'peers')
+    ```
+
+    ![Result_3](/recipes/non-programmatical-tools/01-images/result3.png)
+
+    You can change the parameters to any tickers and/or section that you would like. Additionally, you can create more functions which handle fetch requests to all **Sectors API** available endpoints.
+
+## Schedule API runs using Triggers
+
+To help ease your analysis, you might want to run a certain endpoint on a scheduled basis. Scheduling functions to run automatically in Google Apps Script can be done using triggers, 
+a feature of Google Apps Script that allow your script to run at specified times or in response to specific events. If we want to schedule run the functions which we have created in the previous section, we'll need to modify them sligthly.
+Reason is that Google Apps Script's built-in triggers don't support passing parameters directly. Instead, you can create a wrapper function without parameters that calls your original function with the necessary arguments.
+
+- Create the wrapper functions:
+    ```JavaScript
+    function RunDailyDataBBCA() {
+        ImportDailyData('bbca')
+    }
+
+    function RunCompanyReportBBCAPeers() {
+        ImportCompanyReport('bbca', 'peers')
+    }
+    ```
+
+- In the Apps Script editor, you then click on the clock icon (**Triggers**) located in the left sidebar. Click on `+ Add Trigger`.
+    Choose the wrapper function (e.g., `RunDailyDataBBCA`) from the function dropdown, and choose `Time-driven` from the event source dropdown.
+
+    Select the type of time-based trigger you want (in this case: daily):
+    > **Specific date and time**
+
+    > **Minutes** timer: Runs every X minutes.
+        
+    > **Hour** timer: Runs every X hours.
+
+    > **Day** timer: Runs once a day at a specific time.
+
+    > **Week** timer: Runs once a week on a specific day and time.
+
+    > **Month** timer: Runs once a month on a specific day and time.
+
+    Then, specify the time of the day you would like the trigger to run at.
+
+    ![Trigger](/recipes/non-programmatical-tools/01-images/trigger.png)
+
+- You can then monitor the executions of this scheduled functions too.
+    ![Monitor](/recipes/non-programmatical-tools/01-images/monitor.png)
+
+In conclusion, Google Sheets can be a powerful tool that, when combined with **Sectors API** data, opens up a world of possibilities for you to creat your personalized financial analysis, tailored to your needs and preferences.
+You can even connect Google Sheets directly to Looker, and create a beautiful dashboard using these data.
+

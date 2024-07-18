@@ -124,9 +124,10 @@
       ]
     },
     {
-      "group": "Using API in Non-Programming Tools",
+      "group": "Using API in Spreadsheets",
       "pages": [
-        "recipes/non-programmatical-tools/00-excel"
+        "recipes/non-programmatical-tools/00-excel",
+        "recipes/non-programmatical-tools/01-sheets"
       ]
     }
   ],
