@@ -130,6 +130,13 @@
         "recipes/animated-plots-in-r/03-financial-comparison-animation-plot",
         "recipes/animated-plots-in-r/04-dividend-growth-investing"
       ]
+    },
+    {
+      "group": "Using API in Spreadsheets",
+      "pages": [
+        "recipes/non-programmatical-tools/00-excel",
+        "recipes/non-programmatical-tools/01-sheets"
+      ]
     }
   ],
   "footerSocials": {
