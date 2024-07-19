@@ -134,8 +134,8 @@
     {
       "group": "Using API in Spreadsheets",
       "pages": [
-        "recipes/non-programmatical-tools/00-excel",
-        "recipes/non-programmatical-tools/01-sheets"
+        "recipes/non-programmatical-tools/00-excel/00-excel",
+        "recipes/non-programmatical-tools/01-sheets/01-sheets"
       ]
     }
   ],
