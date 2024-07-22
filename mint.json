@@ -5,7 +5,7 @@
     "light": "/logo/sectors_logo_wide.png",
     "href": "https://sectors.app/"
   },
-  "favicon": "/logo/sectors_logo.svg",
+  "favicon": "/logo/favicon.svg",
   "colors": {
     "primary": "#f97316",
     "light": "#fb923c",

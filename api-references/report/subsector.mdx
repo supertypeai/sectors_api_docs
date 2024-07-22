@@ -139,25 +139,6 @@ description: "Return report of a given subsector, organized into distinct sectio
                 "last_close": 0
             }
         ]
-    },
-    "idx": {
-        "idx_cap": 0,
-        "idx_pe": [
-            {
-                "weighted_avg_pe": 0,
-                "unweighted_avg_pe": 0,
-                "median_pe": 0
-            }
-        ],
-        "idx_resilience": [
-            {
-                "weighted_avg_drawdown": 0,
-                "median_drawdown": 0,
-                "weighted_avg_rsd": 0,
-                "median_rsd": 0
-            }
-        ],
-        "idx_yield": 0
     }
 }
 ```
@@ -209,7 +190,7 @@ description: "Return report of a given subsector, organized into distinct sectio
   <AccordionGroup>
     <Accordion title="Available sections">
       `statistics`, `market_cap`, `stability`, `valuation`, `growth`,
-      `companies`, `idx`
+      `companies`
     </Accordion>
     <Accordion title="Format">
       Use comma to separate each section when retrieving data of more than one
@@ -253,8 +234,4 @@ description: "Return report of a given subsector, organized into distinct sectio
 
 <ResponseField name="companies" type="object">
   The top companies data of the given subsector.
-</ResponseField>
-
-<ResponseField name="idx" type="object">
-  The market capitalization, statistics, stability and yield data of IDX.
 </ResponseField>
