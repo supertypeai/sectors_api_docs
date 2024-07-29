@@ -110,13 +110,24 @@
       ]
     },
     {
-      "group": "Build Python App",
+      "group": "Build a Python Web App",
       "pages": [
         {
-          "group": "0.1 SectorScan",
+          "group": "SectorScan",
           "pages": [
             "recipes/build-python-app/sectorscan/01-sectorscan-part1",
             "recipes/build-python-app/sectorscan/02-sectorscan-part2"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Generative AI in Python",
+      "pages": [
+        {
+          "group": "Retrieval Augmented Generation",
+          "pages": [
+            "recipes/generative-ai-python/01-background"
           ]
         }
       ]
