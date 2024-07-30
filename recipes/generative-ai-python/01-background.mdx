@@ -1,6 +1,6 @@
 ---
 title: "Generative AI for Finance"
-sidebarTitle: "0.0 Background: Generative AI for Finance"
+sidebarTitle: "1. Background: Generative AI for Finance"
 description: "By: [Samuel Chan](https://www.github.com/onlyphantom) · August 1, 2024"
 ---
 
@@ -216,13 +216,25 @@ financially sensitive or requires a high degree of accuracy.
     User -- 1. Writes prompt --> Orchestrator
     Orchestrator -- 2. Queries knowledge store --> Retriever
     Retriever -- 3. Retrieve information --> llm
-    Retriever --> db["Sectors API Platform, other API"]
+    Retriever --> db["Sectors API Platform"]
     llm --->|4. Generate Response| User
 ```
 
 As seen from the diagram above, the orchestrator is the central component that connects the user to the retriever and the LLM. The orchestrator is responsible for
 taking the user's input, determining the appropriate retrieval strategy, and passing the query to the retriever. The retriever then retrieves the relevant information
-from Sectors financial data layer, and passes this information back to the LLM for response generation. 
+from Sectors financial data layer, and passes this information back to the LLM for response generation. Because of how 
+controlled this environment is, a great advantage of this API-based retrieval system is that it allows for a high degree of control over the information that the LLM
+has access to, and can be used to ensure that the LLM generates responses that are accurate, up-to-date, and relevant to the user's query. 
+
+<Icon icon="check" iconType="solid" /> Up to date financial data, directly from the database
+
+<Icon icon="check" iconType="solid" /> Secured access to financial data, compared to pushing data over to a public LLM
+
+<Icon icon="check" iconType="solid" /> Ability to control the information that the LLM has access to compared to a text-to-sql LLM model
+
+<Icon icon="check" iconType="solid" /> Avoid the risk of hallucination or overly generic response with no financial context or specificity 
+
+<Icon icon="check" iconType="solid" /> Avoid prompt hijacking or other adversarial attacks that commonly exploit a general-purpose LLM's prompt system
 
 When using a framework such as LangChain, the orchestrator can be configured with a variety of RAG-specific prompting strategies as well as 
 different Large Language Models in a fairly modular, plug-and-play fashion. This allows for a high degree of flexibility in the design of the RAG system, which 
