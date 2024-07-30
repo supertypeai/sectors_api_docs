@@ -127,7 +127,8 @@
         {
           "group": "Retrieval Augmented Generation",
           "pages": [
-            "recipes/generative-ai-python/01-background"
+            "recipes/generative-ai-python/01-background",
+            "recipes/generative-ai-python/02-tool-use"
           ]
         }
       ]
