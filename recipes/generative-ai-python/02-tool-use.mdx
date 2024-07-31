@@ -249,7 +249,110 @@ For the remaining `query_4` and `query_5`, you will need to implement additional
 since its IPO listing. This [section: Company's Performance since IPO](/api-references/ipo/listing-performance) of the API Documentation 
 should provide you with the necessary information to extend your RAG system with this capability.
 
-If implemented successfully, you should see the system generating an appropriate response:
+
+#### Financial Agent Responses
+
+If implemented successfully, you should see the system generating an appropriate response for each of the query.
+
+On `query_1`, we asked "What are the top 3 companies by transaction volume over the last 7 days?" and the system responded with:
+
+```sh
+> Entering new AgentExecutor chain...
+Invoking: `get_top_companies_by_tx_volume` with `{'start_date': '2024-07-24', 'end_date': '2024-07-31', 'top_n': 3}`
+
+
+{"2024-07-24": [{"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", "volume": 2660984600, 
+"price": 54}, {"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", "volume": 1833364900, 
+"price": 83}, {"symbol": "DOOH.JK", "company_name": "PT Era Media Sejahtera Tbk", "volume": 511754100, 
+"price": 53}], "2024-07-25": [{"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
+"volume": 1513766400, "price": 76}, {"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
+"volume": 911091700, "price": 54}, {"symbol": "BBKP.JK", "company_name": "PT Bank KB Bukopin Tbk", 
+"volume": 432596400, "price": 56}], "2024-07-26": [{"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
+"volume": 2408506000, "price": 72}, {"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
+"volume": 913457100, "price": 53}, {"symbol": "MSJA.JK", "company_name": "PT Multi Spunindo Jaya Tbk.", 
+"volume": 450977300, "price": 342}], "2024-07-29": [{"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
+"volume": 1621366300, "price": 54}, {"symbol": "ATLA.JK", "company_name": "PT Atlantis Subsea Indonesia Tbk", 
+"volume": 1255103900, "price": 50}, {"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
+"volume": 754254000, "price": 69}], "2024-07-30": [{"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
+"volume": 1236811400, "price": 55}, {"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
+"volume": 797879400, "price": 69}, {"symbol": "BIPI.JK", "company_name": "PT Astrindo Nusantara Infrastruktur Tbk.", 
+"volume": 629061500, "price": 59}]}
+
+> Finished chain.
+
+Answer: 
+The top 3 companies by transaction volume over the last 7 days are PT GoTo Gojek Tokopedia Tbk, 
+PT Wulandari Bangun Laksana Tbk, and PT Era Media Sejahtera Tbk. 
+```
+
+To arrive at this answer, it would need to interpret "last 7 days" and infer the start and end dates for the query, given 
+that the tool `get_top_companies_by_tx_volume` requires a start and end date to retrieve the data. It then correctly 
+retrieves the data and have to perform a reduction operation to find the top 3 companies by transaction volume.
+
+As a bonus, you may also want to provide a calculator tool that your RAG can use to perform the necessary summation 
+and sorting operations to find the top 3 companies by transaction volume. In cases where it fail to interpret the intent 
+correctly, your RAG system might instead return the top 3 entries for the last 7 days, which is probably a good approximation
+but not fully correct.
+
+On `query_2`, we asked "Based on the closing prices of BBCA between 1st and 30th of June 2024, are we seeing an uptrend or downtrend? Try to explain why."
+Our RAG model return with the following response:
+
+```sh
+> Entering new AgentExecutor chain...
+
+To determine if we are seeing an uptrend or downtrend in BBCA\'s closing prices between June 1st and June 30th, 2024, we need 
+to analyze the closing prices over this period. 
+
+First, let\'s get the daily transaction data for BBCA for the specified period:
+
+\```json
+{
+  "name": "get_daily_tx",
+  "arguments": {
+    "stock": "BBCA",
+    "start_date": "2024-06-01",
+    "end_date": "2024-06-30"
+  }
+}
+\```
+
+> Finished chain.
+Answer: 
+
+After analyzing the data, we can see that the closing prices have been increasing over the period, with the 
+closing price on June 30th being higher than on June 1st. This indicates an uptrend in BBCA\'s closing prices 
+during June 2024.
+
+The uptrend could be due to various factors such as positive news or events related to the company, an increase 
+in investor confidence, or a general upward trend in the market.
+```
+
+`query_3` is considerably trickier as it requires the system to retrieve the market cap for both BBCA and BREN, compare them, and then retrieve additional information for the company with the largest market cap. 
+Our original query is "What is the company with the largest market cap between BBCA and BREN? For said company, retrieve the email, phone number, listing date and website for further research." and 
+our RAG system responded with:
+
+```sh
+> Entering new AgentExecutor chain...
+
+Invoking: get_company_overview with {'stock': 'BBCA'}
+`{"symbol": "BBCA.JK", "company_name": "PT Bank Central Asia Tbk.", "overview": {"listing_board": "Main", "industry": "Banks", "sub_industry": "Banks", "sector": "Financials", "sub_sector": "Banks", "market_cap": 1263500995330048, "market_cap_rank": 1, "address": "Menara BCA, Grand Indonesia\r\nJalan MH Thamrin No. 1\r\nJakarta 10310", "employee_num": 27546, "listing_date": "2000-05-31", "website": "www.bca.co.id", "phone": "021-23588000", "email": "investor_relations@bca.co.id", "last_close_price": 10175, "latest_close_date": "2024-07-30", "daily_close_change": -0.00731707317073171}}`
+
+Invoking: get_company_overview with {'stock': 'BREN'}
+`{"symbol": "BREN.JK", "company_name": "PT Barito Renewables Energy Tbk.", "overview": {"listing_board": "Main", "industry": "Electric Utilities", "sub_industry": "Electric Utilities", "sector": "Infrastructures", "sub_sector": "Utilities", "market_cap": 1157248873136128, "market_cap_rank": 2, "address": "Wisma Barito Pacific II, Lantai 23,\nJl. Let. Jend. S. Parman Kav. 60, RT 010, RW 005, Slipi, Palmerah, Jakarta 11410,\nIndonesia", "employee_num": 634, "listing_date": "2023-10-09", "website": "www.baritorenewables.co.id", "phone": "(021) 530 6711", "email": "corpsec@baritorenewables.co.id", "last_close_price": 8650, "latest_close_date": "2024-07-30", "daily_close_change": 0.00581395348837209}}`
+
+> Finished chain.
+
+Answer: 
+ The company with the largest market cap between BBCA and BREN is PT Bank Central Asia Tbk. (BBCA). Here are the details for further research:
+
+- Email: investor_relations@bca.co.id
+- Phone Number: 021-23588000
+- Listing Date: 2000-05-31
+- Website: www.bca.co.id 
+
+```
+
+As for `query_4` and `query_5`, you should expect a response similar to the one below:
 
 ```sh
 Question: What is the performance of GOTO (symbol: GOTO) since its IPO listing?
@@ -275,12 +378,12 @@ listing date, which one would have given me a better return over a 1 year horizo
 
 Entering new AgentExecutor chain...
 
-Invoking: `get_performance_since_ipo` with `{'stock': 'GOTO'}`
+Invoking: get_performance_since_ipo with {'stock': 'GOTO'}
 
 {"symbol": "GOTO.JK", "chg_7d": -0.0104712, "chg_30d": -0.418848, 
 "chg_90d": -0.115183, "chg_365d": -0.740838}
 
-Invoking: `get_performance_since_ipo` with `{'stock': 'BREN'}`
+Invoking: get_performance_since_ipo with {'stock': 'BREN'}
 
 {"symbol": "BREN.JK", "chg_7d": 1.82051, "chg_30d": 3.51282, 
 "chg_90d": 5.92308, "chg_365d": null} 
@@ -304,8 +407,10 @@ There are numerous opportunities to improve our RAG system. Here are a few ideas
 
 - **Adding more tools**: You can add more tools to your system to handle a wider range of queries. For example, you could add tools to retrieve news articles, analyst reports, or social media sentiment for a given stock.
 - **Better prompts**: You can experiment with different prompts to guide the LLM in generating more accurate and informative responses.
+- **More descriptive tools**: You can make your tools more descriptive by providing additional information about the data they retrieve. This helps your orchestrator agent make better decisions about which tool to use for a given query.
 - **Different LLMs**: You can try using different LLMs to see how they perform on your financial queries. You can experiment with different models from Groq or other providers. With how fast 
     the field is evolving, it's always a good idea to keep an eye on the latest models and see how they perform on your use case.
+- **Error handling**: You can add error handling to your system to handle cases where the LLM is unable to generate a response. For example, you could have the system prompt the user for more information or provide a default response.
 
 In the spirit of motivating you to explore further, in the model that I have implemented for [Generative AI for the Finance Industry](https://supertype.ai/generative-finance) workshop, 
 my prompt template is more detailed and include the present date to help the LLM infer the start and end dates for the queries when user queries include 
