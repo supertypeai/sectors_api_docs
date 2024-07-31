@@ -9,3 +9,23 @@ icon: newspaper
 - Added Index Daily Transaction endpoint.
 - Removed `analyst_rating` properties on company report endpoint.
 - Added `analyst_rating_breakdown` and `technical_rating_reakdown` properties on company report endpoint inside `future` section.
+
+## 2024-07-31
+
+- Added new query parameters to support finding companies by industries
+    - https://api.sectors.app/v1/companies/?sub_industry={sub_industry}
+
+- Added companies list by index
+    - https://api.sectors.app/v1/index/{index}/
+
+- Added new endpoint to support finding companies with revenue and cost segments
+    - https://api.sectors.app/v1/companies/list_companies_with_segments/
+
+- Added `company_name` to the return value of most API endpoints 
+    - https://api.sectors.app/v1/companies/
+    - https://api.sectors.app/v1/companies/top/
+    - https://api.sectors.app/v1/most-traded/
+    - These endpoints now return `company_name` in addition to `symbol` 
+
+- Change `sector/report` to `subsector/report`
+    - https://api.sectors.app/v1/subsector/report/{sub_sector}/

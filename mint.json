@@ -11,15 +11,26 @@
     "light": "#fb923c",
     "dark": "#c2410c",
     "background": {
-      "light": "#ffffff",
+      "light": "#f5f5f4",
       "dark": "#000000"
+    },
+    "anchors": {
+      "from": "#f97316",
+      "to": "#f43f5e"
     }
   },
-  "backgroundImage": "/images/background.png",
   "search": {
     "prompt": "Search..."
   },
+  "topbarCtaButton": {
+    "name": "Sign up for Sectors",
+    "url": "https://sectors.app/auth"
+  },
   "topbarLinks": [
+    {
+      "name": "Discord",
+      "url": "https://discord.com/invite/TAnZMmNS4X"
+    },
     {
       "name": "Support",
       "url": "mailto:sectors@supertype.ai"
@@ -33,6 +44,11 @@
       "name": "Recipes",
       "icon": "lightbulb",
       "url": "recipes"
+    },
+    {
+      "name": "Generative AI Series",
+      "icon": "microchip-ai",
+      "url": "recipes/generative-ai-python"
     },
     {
       "name": "Community",
@@ -157,5 +173,10 @@
   },
   "api": {
     "baseUrl": "https://api.sectors.app/v1"
+  },
+  "analytics": {
+    "ga4": {
+      "measurementId": "G-3CS7QC5CFR"
+    }
   }
 }
