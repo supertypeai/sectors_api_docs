@@ -106,7 +106,8 @@ You can test the function by retrieving the sectors data and display it as a tex
 
 ```python
 url = "https://api.sectors.app/v1/subsectors/"
-sectors = fetch_data(url)
+data = fetch_data(url)
+sectors = [item['subsector'] for item in data]
 sectors.sort() # sort the list based on the sector's name to make it tidier
 st.write(sectors)
 ```

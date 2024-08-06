@@ -106,9 +106,10 @@
           ]
         },
         {
-          "group": "Transaction Data",
+          "group": "Historical Market Cap & Transaction Data",
           "icon": "money-bill-transfer",
           "pages": [
+            "api-references/transaction/idx-mc",
             "api-references/transaction/daily-transaction",
             "api-references/transaction/index-daily-transaction"
           ]

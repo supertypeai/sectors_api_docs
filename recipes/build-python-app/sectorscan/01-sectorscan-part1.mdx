@@ -67,7 +67,7 @@ So, we just need to call the URL using our function and save the data into a new
 
 ```python
 url = "https://api.sectors.app/v1/subsectors/"
-sectors = fetch_data(url)
+data = fetch_data(url)
 ```
 
 If you try to access the variable, it should look like the followings:
@@ -277,35 +277,38 @@ for i in range(3):
 In this first visualization, we want to compare the total market cap of each sector. But to make the visualization more robust, we will compare the percentage market cap of each sector from the total IDX market cap. Thus, we will need to first combine our `df_mc_curr` with the IDX market cap data that we can obtain using the following endpoint:
 
 ```
-GET https://api.sectors.app/v1/subsector/report/{sector}/?sections=idx
+GET https://api.sectors.app/v1/idx-total/
 ```
 
 Call it using our function,
 
 ```python
-url = f"https://api.sectors.app/v1/subsector/report/{sectors[0]}/?sections=idx"
+today = datetime.today()
+yesterday = today - timedelta(days=1)
+formatted_yesterday = yesterday.strftime('%Y-%m-%d')
+url = f"https://api.sectors.app/v1/idx-total/?start={formatted_yesterday}"
 idx = fetch_data(url)
 ```
 
 The result looks like the following:
 
 ```
-{
-    'sector': 'Financials',
-    'sub_sector': 'Financing Service',
-    'idx': {
-        'idx_cap': 12446331317641984,
-        'idx_pe': [...],
-        'idx_resilience': [...],
-        'idx_yield': 0.0344827586206897
-    }
-}
+[
+  {
+    "date": "yesterday_date",
+    "idx_total_market_cap": 11741696124656268
+  },
+  {
+    "date": "today_date",
+    "idx_total_market_cap": 11682715125038308
+  }
+]
 ```
 
-What we need is only the `idx_cap`, so let's save it to new variable called `idx_mc`:
+What we need is only today's market cap data, so let's save it to new variable called `idx_mc`:
 
 ```python
-idx_mc = idx["idx"]["idx_cap"]
+idx_mc = idx[-1]["idx_total_market_cap"]
 ```
 
 Now let's modify `df_mc_curr` to meet our needs for the visualization:
@@ -621,6 +624,7 @@ the result will be as the following:
         'top_companies': {
             'top_mcap': [
                 {
+                    'name': 'BFI Finance Indonesia Tbk',
                     'symbol': 'BFIN.JK',
                     'market_cap': 15716172431360
                 },
@@ -628,6 +632,7 @@ the result will be as the following:
             ],
             'top_growth': [
                 {
+                    'name': 'PT Fuji Finance Indonesia Tbk.',
                     'symbol': 'FUJI.JK',
                     'revenue_growth': 0.486621562597492
                 },
@@ -635,6 +640,7 @@ the result will be as the following:
             ],
             'top_profit': [
                 {
+                    'name': 'BFI Finance Indonesia Tbk',
                     'symbol': 'BFIN.JK',
                     'profit_ttm': 1496543000000
                 },
@@ -642,6 +648,7 @@ the result will be as the following:
             ],
             'top_revenue': [
                 {
+                    'name': 'BFI Finance Indonesia Tbk',
                     'symbol': 'BFIN.JK',
                     'revenue_ttm': 6060888000000
                 },
@@ -686,19 +693,11 @@ profit = dfs["top_profit"]
 revenue = dfs["top_revenue"]
 
 # Rename the columns
-mc.columns = ["Symbol", "Market Cap", "Sector"]
-growth.columns = ["Symbol", "Revenue Growth", "Sector"]
-profit.columns = ["Symbol", "Profit", "Sector"]
-revenue.columns = ["Symbol", "Revenue", "Sector"]
+mc.columns = ["Name", "Symbol", "Market Cap", "Sector"]
+growth.columns = ["Name", "Symbol", "Revenue Growth", "Sector"]
+profit.columns = ["Name", "Symbol", "Profit", "Sector"]
+revenue.columns = ["Name", "Symbol", "Revenue", "Sector"]
 ```
-
-Your `mc` data frame should look like this:
-| | Symbol | Market Cap | Sector |
-|----|---------|-------------------|-------------------|
-| 0 | BFIN.JK | 15716172431360 | Financing Service |
-| 1 | ADMF.JK | 12449999749120 | Financing Service |
-| 2 | MFIN.JK | 8320999489536 | Financing Service |
-| ...| ... | ... | ... |
 
 Let's use looping to combine the above data for the first three sectors in our list:
 
@@ -725,10 +724,10 @@ for i in range(3):
   df_top_profit = pd.concat([df_top_profit, dfs["top_profit"]], ignore_index=True)
   df_top_revenue = pd.concat([df_top_revenue, dfs["top_revenue"]], ignore_index=True)
 
-df_top_mc.columns = ["Symbol", "Market Cap", "Sector"]
-df_top_growth.columns = ["Symbol", "Revenue Growth", "Sector"]
-df_top_profit.columns = ["Symbol", "Profit", "Sector"]
-df_top_revenue.columns = ["Symbol", "Revenue", "Sector"]
+df_top_mc.columns = ["Name", "Symbol", "Market Cap", "Sector"]
+df_top_growth.columns = ["Name", "Symbol", "Revenue Growth", "Sector"]
+df_top_profit.columns = ["Name", "Symbol", "Profit", "Sector"]
+df_top_revenue.columns = ["Name", "Symbol", "Revenue", "Sector"]
 ```
 
 #### Top companies based on market cap visualization
@@ -738,14 +737,6 @@ We just need to slightly modify the `df_top_mc` before it's ready to be visualiz
 ```python
 df_top_mc["Market Cap (Trillion IDR)"] = df_top_mc["Market Cap"]/10**12
 ```
-
-The final data frame should look like this:
-| | Symbol | Market Cap | Sector | Market Cap (Trillion IDR) |
-|----|---------|-------------------|-------------------|--------------------------|
-| 0 | BFIN.JK | 16242552340480 | Financing Service | 16.242552 |
-| 1 | ADMF.JK | 11749999771648 | Financing Service | 11.750000 |
-| 2 | MFIN.JK | 8400499376128 | Financing Service | 8.400499 |
-| ...| ... | ... | ... | ... |
 
 Now, we'll use bar chart (`.mark_bar()`) to visualize the `df_top_mc`:
 
@@ -776,19 +767,11 @@ Here is the result:
 
 #### Top companies based on revenue growth visualization
 
-Slightly change the revenue growth from decimal to percentage,
+Slightly change the revenue growth from decimal to percentage:
 
 ```python
 df_top_growth["Revenue Growth (%)"] = df_top_growth["Revenue Growth"] * 100
 ```
-
-give us the final data frame as the followings:
-| | Symbol | Revenue Growth | Sector | Revenue Growth (%) |
-|----|---------|----------------|-------------------|---------------------|
-| 0 | FUJI.JK | 0.486622 | Financing Service | 48.662156 |
-| 1 | BBLD.JK | 0.265922 | Financing Service | 26.592242 |
-| 2 | TIFA.JK | 0.245378 | Financing Service | 24.537828 |
-| ...| ... | ... | ... | ... |
 
 The code to visualize it is as follows:
 
@@ -825,14 +808,6 @@ For profit, we want to change the unit of measurement from IDR to Billion IDR:
 df_top_profit["Profit (Billion IDR)"] = df_top_profit["Profit"]/10**9
 ```
 
-Our final data frame looks like:
-| | Symbol | Profit | Sector | Profit (Billion IDR) |
-|----|---------|-----------------|-------------------|-----------------------|
-| 0 | BFIN.JK | 1496543000000 | Financing Service | 1496.543000 |
-| 1 | CFIN.JK | 796014035000 | Financing Service | 796.014035 |
-| 2 | ADMF.JK | 432112000000 | Financing Service | 432.112000 |
-| ...| ... | ... | ... | ... |
-
 Let's visualize it using the following code:
 
 ```python
@@ -867,14 +842,6 @@ Last one, we'll first add new column for the revenue in trillion IDR using the f
 ```python
 df_top_revenue["Revenue (Trillion IDR)"] = df_top_revenue["Revenue"]/10**12
 ```
-
-The final data frame looks like:
-| | Symbol | Revenue | Sector | Revenue (Trillion IDR) |
-|----|---------|-----------------|-------------------|------------------------|
-| 0 | BFIN.JK | 6060888000000 | Financing Service | 6.060888 |
-| 1 | MFIN.JK | 2149695000000 | Financing Service | 2.149695 |
-| 2 | ADMF.JK | 1998907000000 | Financing Service | 1.998907 |
-| ...| ... | ... | ... | ... |
 
 Similar with the other top companies visualization, we'll also use bar chart for this one:
 
