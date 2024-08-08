@@ -81,6 +81,23 @@ description: "Return a list of the most traded tickers based on transaction volu
   on transaction volume multiplied by closing price.
 </ParamField>
 
+<ParamField query="sub_sector" type="string">
+  Subsector from which the list of most traded company data is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sub_sector">
+      Get the available `sub_sector` from the [Subsectors](./subsectors)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sub_sector">
+      `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
 ### Response
 
 <ResponseField name="<date>" type="TradedData[]" required>
