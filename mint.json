@@ -103,7 +103,8 @@
           "pages": [
             "api-references/ranking/most-traded",
             "api-references/ranking/top-tickers",
-            "api-references/ranking/top-changes"
+            "api-references/ranking/top-changes",
+            "api-references/ranking/top-growth"
           ]
         },
         {
