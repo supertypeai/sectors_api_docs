@@ -34,7 +34,17 @@ description: "Return a list of top tickers in a given year based on certain clas
         "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
         "earnings": 0
       }
-    ]
+    ],
+    "market_cap": [
+    {
+      "symbol": "BBCA.JK",
+      "market_cap": 2
+    },
+    {
+      "symbol": "BBRI.JK",
+      "market_cap": 1
+    }
+  ]
 }
 ```
 
@@ -61,7 +71,7 @@ description: "Return a list of top tickers in a given year based on certain clas
   Classification for ranking the top tickers in a given year (default to all).
   <AccordionGroup>
     <Accordion title="Available classifications">
-      `dividend_yield`, `total_dividend`, `revenue`, `earnings`
+      `dividend_yield`, `total_dividend`, `revenue`, `earnings`, `market_cap`
     </Accordion>
     <Accordion title="Format">
       Use comma to separate each classification when retrieving data of more
@@ -80,6 +90,23 @@ description: "Return a list of top tickers in a given year based on certain clas
 <ParamField query="year" type="integer" default="current year">
   Year for which the list of top tickers is to be retrieved (default to the
   current year).
+</ParamField>
+
+<ParamField query="sub_sector" type="string">
+  Subsector from which the list of top companies is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sub_sector">
+      Get the available `sub_sector` from the [Subsectors](./subsectors)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sub_sector">
+      `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
 </ParamField>
 
 ### Response
@@ -144,6 +171,17 @@ description: "Return a list of top tickers in a given year based on certain clas
     </ResponseField>
     <ResponseField name="EarningsData.earnings" type="float" required>
       The total earnings of the company in IDR.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="market_cap" type="MarketCapData[]">
+  <Expandable title="properties">
+    <ResponseField name="MarketCapData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="MarketCapData.market_cap" type="int" required>
+      The total market cap of the company in IDR.
     </ResponseField>
   </Expandable>
 </ResponseField>
