@@ -4,11 +4,12 @@ sidebarTitle: Changelog
 icon: newspaper
 ---
 
-## 2024-07-11
+## 2024-08-08
 
-- Added Index Daily Transaction endpoint.
-- Removed `analyst_rating` properties on company report endpoint.
-- Added `analyst_rating_breakdown` and `technical_rating_reakdown` properties on company report endpoint inside `future` section.
+- Added new query parameters to support finding top companies by subsector
+    - https://api.sectors.app/v1/companies/top/?sub_sector={sub_sector}
+
+- Added `market_cap` classification in top companies endpoint.
 
 ## 2024-07-31
 
@@ -30,9 +31,8 @@ icon: newspaper
 - Change `sector/report` to `subsector/report`
     - https://api.sectors.app/v1/subsector/report/{sub_sector}/
 
-## 2024-08-08
+## 2024-07-11
 
-- Added new query parameters to support finding top companies by subsector
-    - https://api.sectors.app/v1/companies/top/?sub_sector={sub_sector}
-
-- Added `market_cap` classification in top companies endpoint.
+- Added Index Daily Transaction endpoint.
+- Removed `analyst_rating` properties on company report endpoint.
+- Added `analyst_rating_breakdown` and `technical_rating_reakdown` properties on company report endpoint inside `future` section.
