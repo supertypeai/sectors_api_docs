@@ -102,7 +102,8 @@
           "icon": "ranking-star",
           "pages": [
             "api-references/ranking/most-traded",
-            "api-references/ranking/top-tickers"
+            "api-references/ranking/top-tickers",
+            "api-references/ranking/top-changes"
           ]
         },
         {
