@@ -6,40 +6,56 @@ icon: newspaper
 
 ## 2024-08-13
 
-- Added new query parameters to support finding top companies by subsector
-    - https://api.sectors.app/v1/companies/top/?sub_sector={sub_sector}
+- Added `market_cap` classification in top companies endpoint
 
-- Added `market_cap` classification in top companies endpoint.
+  - [https://api.sectors.app/v1/companies/top/?classifications=market_cap](../api-references/ranking/top-tickers)
 
-- Added `top company changes` endpoint.
+- Added new endpoint to get top company movers
 
-- Added `top company growth` endpoint.
+  -[https://api.sectors.app/v1/companies/top-changes/](../api-references/ranking/top-changes)
 
-- Added new query parameters to support finding most traded companies by subsector
-    - https://api.sectors.app/v1/most-traded/?sub_sector={sub_sector}
+- Added new endpoint to get the top companies by growth metrics
+
+  - [https://api.sectors.app/v1/companies/top-growth/](../api-references/ranking/top-growth)
+
+- Added new query parameters to support finding the following data by subsector
+
+  - [https://api.sectors.app/v1/companies/top/?sub_sector=\{sub_sector}](../api-references/ranking/top-tickers)
+  - [https://api.sectors.app/v1/most-traded/?sub_sector=\{sub_sector}](../api-references/ranking/most-traded)
 
 ## 2024-07-31
 
 - Added new query parameters to support finding companies by industries
-    - https://api.sectors.app/v1/companies/?sub_industry={sub_industry}
 
-- Added companies list by index
-    - https://api.sectors.app/v1/index/{index}/
+  - [https://api.sectors.app/v1/companies/?sub_industry=\{sub_industry}](../api-references/helper-list/companies-subindustry)
+
+- Added new endpoint to support finding companies by index
+
+  - [https://api.sectors.app/v1/index/\{index}/](../api-references/helper-list/companies-index)
 
 - Added new endpoint to support finding companies with revenue and cost segments
-    - https://api.sectors.app/v1/companies/list_companies_with_segments/
 
-- Added `company_name` to the return value of most API endpoints 
-    - https://api.sectors.app/v1/companies/
-    - https://api.sectors.app/v1/companies/top/
-    - https://api.sectors.app/v1/most-traded/
-    - These endpoints now return `company_name` in addition to `symbol` 
+  - [https://api.sectors.app/v1/companies/list_companies_with_segments/](../api-references/helper-list/companies-segment-list)
+
+- Added `company_name` to the return value of most API endpoints
+
+  - [https://api.sectors.app/v1/companies/](../api-references/helper-list/companies-subsector)
+  - [https://api.sectors.app/v1/companies/top/](../api-references/ranking/top-tickers)
+  - [https://api.sectors.app/v1/most-traded/](../api-references/ranking/most-traded)
+  - These endpoints now return `company_name` in addition to `symbol`
 
 - Change `sector/report` to `subsector/report`
-    - https://api.sectors.app/v1/subsector/report/{sub_sector}/
+
+  - [https://api.sectors.app/v1/subsector/report/\{sub_sector}/](../api-references/report/subsector)
 
 ## 2024-07-11
 
-- Added Index Daily Transaction endpoint.
+- Added new endpoint to get daily transaction of an index
+
+  - [https://api.sectors.app/v1/index-daily/\{index_code}/](../api-references/transaction/index-daily-transaction)
+
 - Removed `analyst_rating` properties on company report endpoint.
-- Added `analyst_rating_breakdown` and `technical_rating_reakdown` properties on company report endpoint inside `future` section.
+
+- Added `analyst_rating_breakdown` and `technical_rating_reakdown` properties on company report endpoint inside `future` section
+
+  - [https://api.sectors.app/v1/company/report/\{ticker}/?sections=future](../api-references/report/company)

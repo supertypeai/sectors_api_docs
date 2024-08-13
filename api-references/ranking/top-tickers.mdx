@@ -1,48 +1,45 @@
 ---
 title: "Top Companies Ranked"
 api: "GET /companies/top/"
-description: "Return a list of top tickers in a given year based on certain classification (dividend yield, total dividend, revenue, or earnings)"
+description: "Return a list of top tickers in a given year based on certain classification (dividend yield, total dividend, revenue, earnings, or market cap)"
 ---
 
 <ResponseExample>
 ```json 200
 {
-    "dividend_yield": [
-      {
-        "symbol": "BJTM.JK",
-        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
-        "dividend_yield": 0
-      }
-    ],
-    "total_dividend": [
-      {
-        "symbol": "BJTM.JK",
-        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
-        "total_dividend": 0
-      }
-    ],
-    "revenue": [
-      {
-        "symbol": "BJTM.JK",
-        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
-        "revenue": 0
-      }
-    ],
-    "earnings": [
-      {
-        "symbol": "BJTM.JK",
-        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
-        "earnings": 0
-      }
-    ],
-    "market_cap": [
+  "dividend_yield": [
     {
-      "symbol": "BBCA.JK",
-      "market_cap": 2
-    },
+      "symbol": "BJTM.JK",
+      "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
+      "dividend_yield": 0.100722221091942
+    }
+  ],
+  "total_dividend": [
     {
-      "symbol": "BBRI.JK",
-      "market_cap": 1
+      "symbol": "ITMG.JK",
+      "company_name": "Indo Tambangraya Megah Tbk",
+      "total_dividend": 1747
+    }
+  ],
+  "revenue": [
+    {
+      "symbol": "HEXA.JK",
+      "company_name": "Hexindo Adiperkasa Tbk",
+      "revenue": 9733050640014
+    }
+  ],
+  "earnings": [
+    {
+      "symbol": "HEXA.JK",
+      "company_name": "Hexindo Adiperkasa Tbk",
+      "earnings": 885551723663
+    }
+  ],
+  "market_cap": [
+    {
+      "symbol": "BREN.JK",
+      "company_name": "Barito Renewables Energy Tbk",
+      "market_cap": 1331170755215360
     }
   ]
 }
@@ -179,6 +176,9 @@ description: "Return a list of top tickers in a given year based on certain clas
   <Expandable title="properties">
     <ResponseField name="MarketCapData.symbol" type="string" required>
       The ticker of the company.
+    </ResponseField>
+    <ResponseField name="MarketCapData.company_name" type="string" required>
+      The name of the company.
     </ResponseField>
     <ResponseField name="MarketCapData.market_cap" type="int" required>
       The total market cap of the company in IDR.

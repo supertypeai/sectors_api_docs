@@ -1,7 +1,7 @@
 ---
-title: "Top Company Changes Ranked"
+title: "Top Company Movers"
 api: "GET /companies/top-changes/"
-description: "Return a list of top tickers changes in a given period based on certain classification (top_gainers or top_losers)"
+description: "Return a list of tickers that have experienced the most significant changes in a given period, based on certain classification (top gainers or top losers)"
 ---
 
 <ResponseExample>
@@ -10,11 +10,11 @@ description: "Return a list of top tickers changes in a given period based on ce
   "top_gainers": {
     "1d": [
       {
-        "name": "Gowa Makassar Tourism Development Tbk",
-        "symbol": "GMTD.JK",
-        "price_change": 0,
-        "last_close_price": 5525,
-        "latest_close_date": "2024-08-07"
+        "name": "Dian Swastatika Sentosa Tbk",
+        "symbol": "DSSA.JK",
+        "price_change": 0.182965299684543,
+        "last_close_price": 37500,
+        "latest_close_date": "2024-08-12"
       }
     ],
     "7d": [],
@@ -25,11 +25,11 @@ description: "Return a list of top tickers changes in a given period based on ce
   "top_losers": {
     "1d": [
       {
-        "name": "PT MSIG Life Insurance Indonesia Tbk.",
-        "symbol": "LIFE.JK",
-        "price_change": 0,
-        "last_close_price": 0,
-        "latest_close_date": "2024-08-07"
+        "name": "PT Amman Mineral Internasional Tbk.",
+        "symbol": "AMMN.JK",
+        "price_change": -0.0563063063063063,
+        "last_close_price": 10475,
+        "latest_close_date": "2024-08-12"
       }
     ],
     "7d": [],
@@ -54,12 +54,9 @@ description: "Return a list of top tickers changes in a given period based on ce
 
 ### Query Parameters
 
-<ParamField
-  query="classifications"
-  type="string"
-  default="all"
->
-  Classification for ranking the top changes in a given period (default to all).
+<ParamField query="classifications" type="string" default="all">
+  Classification for ranking the top company movers in a given period (default
+  to all).
   <AccordionGroup>
     <Accordion title="Available classifications">
       `top_gainers`, `top_losers`
@@ -78,19 +75,15 @@ description: "Return a list of top tickers changes in a given period based on ce
   Number of tickers to be retrieved (defaults to 5, with a maximum of 10).
 </ParamField>
 
-<ParamField
-  query="periods"
-  type="string"
-  default="all"
->
-  Periods for ranking the top changes.
+<ParamField query="periods" type="string" default="all">
+  Period for ranking the top company movers.
   <AccordionGroup>
     <Accordion title="Available periods">
       `1d`, `7d`, `14d`, `30d`, `365d`
     </Accordion>
     <Accordion title="Format">
-      Use comma to separate each period when retrieving data of more
-      than one period.
+      Use comma to separate each period when retrieving data of more than one
+      period.
     </Accordion>
     <Accordion title="API call consumption">
       One period consumes one API call.
@@ -99,7 +92,7 @@ description: "Return a list of top tickers changes in a given period based on ce
 </ParamField>
 
 <ParamField query="sub_sector" type="string">
-  Subsector from which the list of top company changes is to be retrieved.
+  Subsector from which the list of top company movers is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available sub_sector">
       Get the available `sub_sector` from the [Subsectors](./subsectors)
@@ -120,19 +113,19 @@ description: "Return a list of top tickers changes in a given period based on ce
 <ResponseField name="top_gainers" type="PeriodData">
   <Expandable title="properties">
     <ResponseField name="PeriodData.1d" type="Data[]">
-      The top company changes data for 1d period
+      The top company movers data for 1d period.
     </ResponseField>
     <ResponseField name="PeriodData.7d" type="Data[]">
-      The top company changes data for 7d period
+      The top company movers data for 7d period.
     </ResponseField>
     <ResponseField name="PeriodData.14d" type="Data[]">
-      The top company changes data for 14d period
+      The top company movers data for 14d period.
     </ResponseField>
     <ResponseField name="PeriodData.30d" type="Data[]">
-      The top company changes data for 30d period
+      The top company movers data for 30d period.
     </ResponseField>
     <ResponseField name="PeriodData.365d" type="Data[]">
-      The top company changes data for 365d period
+      The top company movers data for 365d period.
     </ResponseField>
   </Expandable>
 </ResponseField>
@@ -140,19 +133,19 @@ description: "Return a list of top tickers changes in a given period based on ce
 <ResponseField name="top_losers" type="PeriodData">
   <Expandable title="properties">
     <ResponseField name="PeriodData.1d" type="Data[]">
-      The top company changes data for 1d period
+      The top company movers data for 1d period.
     </ResponseField>
     <ResponseField name="PeriodData.7d" type="Data[]">
-      The top company changes data for 7d period
+      The top company movers data for 7d period.
     </ResponseField>
     <ResponseField name="PeriodData.14d" type="Data[]">
-      The top company changes data for 14d period
+      The top company movers data for 14d period.
     </ResponseField>
     <ResponseField name="PeriodData.30d" type="Data[]">
-      The top company changes data for 30d period
+      The top company movers data for 30d period.
     </ResponseField>
     <ResponseField name="PeriodData.365d" type="Data[]">
-      The top company changes data for 365d period
+      The top company movers data for 365d period.
     </ResponseField>
   </Expandable>
 </ResponseField>
@@ -160,19 +153,19 @@ description: "Return a list of top tickers changes in a given period based on ce
 <ResponseField name="data" type="Data">
   <Expandable title="properties">
     <ResponseField name="Data.name" type="strubg">
-      The top company name
+      The name of the company.
     </ResponseField>
     <ResponseField name="Data.symbol" type="string">
-      The top company symbol
+      The ticker of the company.
     </ResponseField>
     <ResponseField name="Data.price_change" type="float">
-      The top company price change
+      The price change of the company in the given period.
     </ResponseField>
     <ResponseField name="Data.last_close_price" type="integer">
-      The top company last close price
+      The last close price of the company.
     </ResponseField>
     <ResponseField name="Data.latest_close_date" type="string">
-      The top company lastest close date
+      The latest close date of the company.
     </ResponseField>
   </Expandable>
 </ResponseField>
