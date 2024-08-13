@@ -1,48 +1,38 @@
 ---
 title: "Top Company Growth Ranked"
-api: "GET /companies/top/"
+api: "GET /companies/top-growth/"
 description: "Return a list of top tickers in a given year based on certain classification (top company earning growth gainers/ losers and top company revenue growth gainers/ losers)"
 ---
 
 <ResponseExample>
 ```json 200
 {
-    "dividend_yield": [
-      {
-        "symbol": "BJTM.JK",
-        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
-        "dividend_yield": 0
-      }
-    ],
-    "total_dividend": [
-      {
-        "symbol": "BJTM.JK",
-        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
-        "total_dividend": 0
-      }
-    ],
-    "revenue": [
-      {
-        "symbol": "BJTM.JK",
-        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
-        "revenue": 0
-      }
-    ],
-    "earnings": [
-      {
-        "symbol": "BJTM.JK",
-        "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk",
-        "earnings": 0
-      }
-    ],
-    "market_cap": [
+  "top_earnings_growth_gainers": [
     {
-      "symbol": "BBCA.JK",
-      "market_cap": 2
-    },
+      "symbol": "SCMA.JK",
+      "company_name": "Surya Citra Media Tbk",
+      "yoy_quarter_earnings_growth": 0
+    }
+  ],
+  "top_earnings_growth_losers": [
     {
-      "symbol": "BBRI.JK",
-      "market_cap": 1
+      "symbol": "IBST.JK",
+      "company_name": "Inti Bangun Sejahtera Tbk",
+      "yoy_quarter_earnings_growth": 0
+    }
+  ],
+  "top_revenue_growth_gainers": [
+    {
+      "symbol": "PNLF.JK",
+      "company_name": "Panin Financial Tbk",
+      "yoy_quarter_revenue_growth": 0
+    }
+  ],
+  "top_revenue_growth_losers": [
+    {
+      "symbol": "PALM.JK",
+      "company_name": "PT Provident Investasi Bersama Tbk",
+      "yoy_quarter_revenue_growth": 0
     }
   ]
 }
@@ -105,77 +95,67 @@ description: "Return a list of top tickers in a given year based on certain clas
 
 ### Response
 
-<ResponseField name="dividend_yield" type="DividendYieldData[]">
+<ResponseField name="top_earnings_growth_gainers" type="EarningGrowthData[]">
   <Expandable title="properties">
-    <ResponseField name="DividendYieldData.symbol" type="string" required>
+    <ResponseField name="EarningGrowthData.symbol" type="string" required>
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="DividendYieldData.company_name" type="string" required>
+    <ResponseField name="EarningGrowthData.company_name" type="string" required>
       The name of the company.
     </ResponseField>
     <ResponseField
-      name="DividendYieldData.dividend_yield"
+      name="EarningGrowthData.yoy_quarter_earnings_growth"
       type="float"
       required
     >
-      The dividend yield of the company.
+      The year on year quarter earning growth.
     </ResponseField>
   </Expandable>
 </ResponseField>
 
-<ResponseField name="total_dividend" type="TotalDividendData[]">
+<ResponseField name="top_earnings_growth_losers" type="EarningGrowthData[]">
   <Expandable title="properties">
-    <ResponseField name="TotalDividendData.symbol" type="string" required>
+    <ResponseField name="EarningGrowthData.symbol" type="string" required>
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="TotalDividendData.company_name" type="string" required>
+    <ResponseField name="EarningGrowthData.company_name" type="string" required>
       The name of the company.
     </ResponseField>
     <ResponseField
-      name="TotalDividendData.total_dividend"
+      name="EarningGrowthData.yoy_quarter_earnings_growth"
       type="float"
       required
     >
-      The total dividend of the company in IDR.
+      The year on year quarter earning growth.
     </ResponseField>
   </Expandable>
 </ResponseField>
 
-<ResponseField name="revenue" type="RevenueData[]">
+<ResponseField name="top_revenue_growth_gainers" type="RevenueGrowthData[]">
   <Expandable title="properties">
-    <ResponseField name="RevenueData.symbol" type="string" required>
+    <ResponseField name="RevenueGrowthData.symbol" type="string" required>
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="RevenueData.company_name" type="string" required>
+    <ResponseField name="RevenueGrowthData.company_name" type="string" required>
       The name of the company.
     </ResponseField>
-    <ResponseField name="RevenueData.revenue" type="float" required>
-      The total revenue of the company in IDR.
+    <ResponseField name="RevenueGrowthData.yoy_quarter_revenue_growth" type="float" required>
+      The year on year quarter revenue growth.
     </ResponseField>
   </Expandable>
 </ResponseField>
 
-<ResponseField name="earnings" type="EarningsData[]">
+<ResponseField name="top_revenue_growth_losers" type="RevenueGrowthData[]">
   <Expandable title="properties">
-    <ResponseField name="EarningsData.symbol" type="string" required>
+    <ResponseField name="RevenueGrowthData.symbol" type="string" required>
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="EarningsData.company_name" type="string" required>
+    <ResponseField name="RevenueGrowthData.company_name" type="string" required>
       The name of the company.
     </ResponseField>
-    <ResponseField name="EarningsData.earnings" type="float" required>
-      The total earnings of the company in IDR.
+    <ResponseField name="RevenueGrowthData.yoy_quarter_revenue_growth" type="float" required>
+      The year on year quarter revenue growth.
     </ResponseField>
   </Expandable>
 </ResponseField>
 
-<ResponseField name="market_cap" type="MarketCapData[]">
-  <Expandable title="properties">
-    <ResponseField name="MarketCapData.symbol" type="string" required>
-      The ticker of the company.
-    </ResponseField>
-    <ResponseField name="MarketCapData.market_cap" type="int" required>
-      The total market cap of the company in IDR.
-    </ResponseField>
-  </Expandable>
-</ResponseField>
