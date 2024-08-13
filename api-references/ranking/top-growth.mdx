@@ -1,0 +1,165 @@
+---
+title: "Top Companies by Growth Metrics"
+api: "GET /companies/top-growth/"
+description: "Return a list of top tickers based on certain growth classification (earning growth gainers / losers or revenue growth gainers / losers)"
+---
+
+<ResponseExample>
+```json 200
+{
+  "top_earnings_growth_gainers": [
+    {
+      "symbol": "SCMA.JK",
+      "company_name": "Surya Citra Media Tbk",
+      "yoy_quarter_earnings_growth": 0
+    }
+  ],
+  "top_earnings_growth_losers": [
+    {
+      "symbol": "IBST.JK",
+      "company_name": "Inti Bangun Sejahtera Tbk",
+      "yoy_quarter_earnings_growth": 0
+    }
+  ],
+  "top_revenue_growth_gainers": [
+    {
+      "symbol": "PNLF.JK",
+      "company_name": "Panin Financial Tbk",
+      "yoy_quarter_revenue_growth": 0
+    }
+  ],
+  "top_revenue_growth_losers": [
+    {
+      "symbol": "PALM.JK",
+      "company_name": "PT Provident Investasi Bersama Tbk",
+      "yoy_quarter_revenue_growth": 0
+    }
+  ]
+}
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors API key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="classifications" type="string" default="all">
+  Classification for ranking the top tickers (default to all).
+  <AccordionGroup>
+    <Accordion title="Available classifications">
+      `top_earnings_growth_gainers`, `top_earnings_growth_losers`,
+      `top_revenue_growth_gainers`, `top_revenue_growth_losers`
+    </Accordion>
+    <Accordion title="Format">
+      Use comma to separate each classification when retrieving data of more
+      than one classification.
+    </Accordion>
+    <Accordion title="API call consumption">
+      One classification consumes one API call.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+<ParamField query="n_stock" type="integer" default="5">
+  Number of tickers to be retrieved (defaults to 5, with a maximum of 10).
+</ParamField>
+
+<ParamField query="sub_sector" type="string">
+  Subsector from which the list of top tickers is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sub_sector">
+      Get the available `sub_sector` from the [Subsectors](./subsectors)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sub_sector">
+      `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="top_earnings_growth_gainers" type="EarningGrowthData[]">
+  <Expandable title="properties">
+    <ResponseField name="EarningGrowthData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="EarningGrowthData.company_name" type="string" required>
+      The name of the company.
+    </ResponseField>
+    <ResponseField
+      name="EarningGrowthData.yoy_quarter_earnings_growth"
+      type="float"
+      required
+    >
+      The year on year quarter earning growth.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="top_earnings_growth_losers" type="EarningGrowthData[]">
+  <Expandable title="properties">
+    <ResponseField name="EarningGrowthData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="EarningGrowthData.company_name" type="string" required>
+      The name of the company.
+    </ResponseField>
+    <ResponseField
+      name="EarningGrowthData.yoy_quarter_earnings_growth"
+      type="float"
+      required
+    >
+      The year on year quarter earning growth.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="top_revenue_growth_gainers" type="RevenueGrowthData[]">
+  <Expandable title="properties">
+    <ResponseField name="RevenueGrowthData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="RevenueGrowthData.company_name" type="string" required>
+      The name of the company.
+    </ResponseField>
+    <ResponseField
+      name="RevenueGrowthData.yoy_quarter_revenue_growth"
+      type="float"
+      required
+    >
+      The year on year quarter revenue growth.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="top_revenue_growth_losers" type="RevenueGrowthData[]">
+  <Expandable title="properties">
+    <ResponseField name="RevenueGrowthData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="RevenueGrowthData.company_name" type="string" required>
+      The name of the company.
+    </ResponseField>
+    <ResponseField
+      name="RevenueGrowthData.yoy_quarter_revenue_growth"
+      type="float"
+      required
+    >
+      The year on year quarter revenue growth.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
