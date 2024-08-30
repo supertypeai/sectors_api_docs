@@ -40,6 +40,10 @@ description: "Return a list of tickers that have experienced the most significan
 }
 ```
 
+```json 204
+// no content. consider adjust min_mcap_billion query param value
+```
+
 ```json 429
 { "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
 ```
@@ -73,6 +77,10 @@ description: "Return a list of tickers that have experienced the most significan
 
 <ParamField query="n_stock" type="integer" default="5">
   Number of tickers to be retrieved (defaults to 5, with a maximum of 10).
+</ParamField>
+
+<ParamField query="min_mcap_billion" type="integer" default="5000">
+  Minimum market caps of the retrieved companies in billion IDR.
 </ParamField>
 
 <ParamField query="periods" type="string" default="all">
