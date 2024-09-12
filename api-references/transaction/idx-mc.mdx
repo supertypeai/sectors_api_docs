@@ -18,11 +18,19 @@ description: "Return historical data of IDX market cap on a certain interval (**
 ]
 ```
 
+```json 204
+// no content. consider adjust start and end query params values
+```
+
 ```json 429
 { "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
 ```
 
 </ResponseExample>
+
+### Notes
+
+The earliest data available for this endpoint is from **January 2021 onward**.
 
 ### Header
 
