@@ -41,6 +41,27 @@ description: "Return a list of top tickers in a given year based on certain clas
       "company_name": "Barito Renewables Energy Tbk",
       "market_cap": 1331170755215360
     }
+  ],
+  "pb": [
+    {
+      "symbol": "SIMP.JK",
+      "company_name": "Salim Ivomas Pratama Tbk",
+      "pb": 0.353609154167041
+    }
+  ], 
+  "pe": [
+    {
+      "symbol": "ABMM.JK",
+      "company_name": "ABM Investama Tbk",
+      "pe": 3.34535382315737
+    }
+  ], 
+  "ps": [
+    {
+      "symbol": "ERAA.JK",
+      "company_name": "Erajaya Swasembada Tbk",
+      "ps": 0.111830819088361
+    }
   ]
 }
 ```
@@ -68,7 +89,8 @@ description: "Return a list of top tickers in a given year based on certain clas
   Classification for ranking the top tickers in a given year (default to all).
   <AccordionGroup>
     <Accordion title="Available classifications">
-      `dividend_yield`, `total_dividend`, `revenue`, `earnings`, `market_cap`
+      `dividend_yield`, `total_dividend`, `revenue`, `earnings`, `market_cap`,
+      `pb`, `pe`, `ps`
     </Accordion>
     <Accordion title="Format">
       Use comma to separate each classification when retrieving data of more
@@ -84,9 +106,8 @@ description: "Return a list of top tickers in a given year based on certain clas
   Number of tickers to be retrieved (defaults to 5, with a maximum of 10).
 </ParamField>
 
-<ParamField query="year" type="integer" default="current year">
-  Year for which the list of top tickers is to be retrieved (default to the
-  current year).
+<ParamField query="min_mcap_billion" type="integer" default="5000">
+  Minimum market cap of the retrieved companies in billion IDR.
 </ParamField>
 
 <ParamField query="sub_sector" type="string">
@@ -104,6 +125,11 @@ description: "Return a list of top tickers in a given year based on certain clas
       (lowercase and separated by "-").
     </Accordion>
   </AccordionGroup>
+</ParamField>
+
+<ParamField query="year" type="integer" default="current year">
+  Year for which the list of top tickers is to be retrieved (default to the
+  current year).
 </ParamField>
 
 ### Response
@@ -182,6 +208,48 @@ description: "Return a list of top tickers in a given year based on certain clas
     </ResponseField>
     <ResponseField name="MarketCapData.market_cap" type="int" required>
       The total market cap of the company in IDR.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pb" type="PBData[]">
+  <Expandable title="properties">
+    <ResponseField name="PBData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="PBData.company_name" type="string" required>
+      The name of the company.
+    </ResponseField>
+    <ResponseField name="PBData.pb" type="int" required>
+      The price to book value ratio of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pe" type="PEData[]">
+  <Expandable title="properties">
+    <ResponseField name="PEData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="PEData.company_name" type="string" required>
+      The name of the company.
+    </ResponseField>
+    <ResponseField name="PEData.pe" type="int" required>
+      The price to earning ratio of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="ps" type="PSData[]">
+  <Expandable title="properties">
+    <ResponseField name="PSData.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="PSData.company_name" type="string" required>
+      The name of the company.
+    </ResponseField>
+    <ResponseField name="PSData.ps" type="int" required>
+      The price to sales ratio of the company.
     </ResponseField>
   </Expandable>
 </ResponseField>
