@@ -1,0 +1,553 @@
+---
+title: "Structured Output with Tool Use LLMs"
+sidebarTitle: "3. Structured Output AIs"
+description: "By: [Samuel Chan](https://www.github.com/onlyphantom) · October 1, 2024"
+---
+
+<Note>
+    This article is part 3 of the Generative AI for Finance series, and is written using LangChain 0.3.0 (released on 14th September 2024). 
+    
+    For continuity purposes, I will point out the key differences between the current version (featuring `ReAct-style agent) and the older implementations featuring `AgentExecutor` (in [chapter 1](./01-background.mdx) and [chapter 2](./02-tool-use.mdx)).
+</Note>
+
+## Schema-aware RAG Systems
+We've learned in previous chapters how language models on their own are incapable of performing any action beyond generating text. Thus, the core innovation is the introduction of agents -- specifically Agentic RAG systems. 
+
+We equip the agents with tools, pick a language model that is fine-tuned for tool use, and orchestrate the interaction between the user, the language model, and the tools. This allows the language model to call upon tools to perform actions and retrieve data, and then use that data to generate a response, as we [have seen in the previous chapter](02-tool-use.mdx).
+
+Since this system require the language model to interact with external data sources, we might need to introduce some schema to the output of our tools. The schema constrains the output of each tool to a specific format, making it possible for a downstream tool to understand and process the output of an upstream tool. At the furthest end of the chain, the language model can then use the structured output to generate a response to the user's query, optionally conforming to a predefined structure or schema if so desired. 
+
+```mermaid
+  flowchart LR
+    subgraph Agent
+        direction TB
+        top1[constraints] --- llm[llm]
+        top2[prompt examples] --- llm
+    end
+
+    User -- (1. Writes prompt) --> Agent
+    llm -- (2. NL to Structured query) --> Retriever
+    Retriever -- (3. A structured request) --> db["Sectors API Platform"]
+    db -- (4. A structured response) --> downstream["Tool 2"]
+    downstream -- (5. A structured response) --> llm
+    llm -- (6. Generate Response) --> User
+```
+
+In the diagram above, we observe that:
+
+1. In (2) and (3), the language model converts the user's natural language query into a structured query that can be understood by the retriever. This retrievel is implemented as a tool in our RAG (Retrieval-Augmented Generation) system, with its primary focus on retrieving data from an external data source or knowledge base. In our case, it's the Sectors Financial API. API services like Sectors provide a structured interface for querying financial data, and typically but not always, return data in a structured format like JSON.
+
+2. In (4), this structured response is then passed to the downstream tool, which can be another tool in the RAG system that performs additional actions such as translation, summarization, or analysis on the retrieved data. A constraint can be imposed on the output of the retriever to ensure that the downstream tool can understand and process the data correctly, and predictably.
+
+3. In (5), the downstream tool in turn generates a structured response that is passed back to the language model. This structured response can be used by the language model to generate a response to the user's query. For example, in the context of a robo-advisor, this response must contain a Python list of stock symbols and their corresponding prices, or a dictionary of stock symbols and their corresponding market caps.
+
+In code, these constraints might be implemented through `typing` annotations in Python. For example, the `get_top_companies_by_tx_volume` tool might have the following signature:
+
+```python
+from typing import List, Dict
+
+def get_top_companies_by_tx_volume(
+    start_date: str, end_date: str, top_n: int = 5
+) -> List[Dict[str, str]]:
+    """
+    Get top companies by transaction volume
+    """
+    ...
+```
+
+If you take the above examples further, our tool might even implement some automated trading strategies, where the output of the tool is used in a downstream tool to place bids and offers on the stock market. When a trade is executed, another tool might be used to generate a report on the trade, or insert the trade into a database for record-keeping purposes.
+
+In both of these scenarios, a specific schema is not only helpful but necessary to ensure that the output of each tool matches the input requirements of:
+- (1) the trading tool that places the bid or offer, and
+- (2) the reporting tool that generates a report from structured data
+- (3) the database insertion tool that inserts the trade into a database following a specific schema
+
+```mermaid
+graph TD
+    A[Input Data] -->|Uses Schema| B[Trading Tool]
+    B -->|Executes Trade| C[Reporting Tool]
+    B --> D[Database Insertion Tool]
+    
+    C -->|Generates Report| E[Report]
+    D -->|Inserts Trade| F[Database]
+    
+    F -->|Stores Trade Data| G[Trade Record]
+    
+    subgraph Schema
+        H[Trading Schema]
+        I[Reporting Schema]
+        J[Database Schema]
+    end
+    
+    A -->|Matches Trading Schema| H
+    B -->|Produces Structured Data| I
+    D -->|Follows Database Schema| J
+    
+    classDef toolStyle fill:#f43f5e,stroke:#333,stroke-width:2px;
+    classDef schemaStyle fill:#f97316,stroke:#333,stroke-width:2px;
+    
+    class A,B,C,D,E,F,G toolStyle;
+    class H,I,J schemaStyle;
+```
+
+
+## Implementing Schema Constraints to AI Agents
+Let's begin with a simple Python class, `Stock`, that represents a stock and its attributes. We are inheriting from `BaseModel` from the `pydantic` library, a popular data validation library in Python.
+
+```python
+from typing import Optional, List
+from pydantic import BaseModel, Field
+
+class Stock(BaseModel):
+    """Information about a company's stock"""
+
+    symbol: str = Field(description="The stock symbol")
+    name: str = Field(description="The name of the company for which the stock symbol represents")
+    sector: Optional[str] = Field(default=None, description="The sector of the company")
+    industry: Optional[str] = Field(default=None, description="The industry of the company")
+    market_cap: Optional[int] = Field(default=None, description="The market capitalization of the company")
+```
+
+
+
+
+
+## API-based RAG systems architecture
+
+Broadly speaking, the system consists of three main components:
+1. **Orchestrator**: We will be implementing this is Python using the LangChain framework. This script will be responsible for taking in the user's input and passing it to the retriever and LLM components along with some pre-defined constraints.
+2. **Retriever**: We will create tools that retrieve data from Sector's, a financial API platform. These retrievers are in the form of some Python functions that take in some parameters and retrieve data accordingly from our data source ("Sectors API").
+3. **LLM**: The language model we will be using is `llama3-groq-70b-8192-tool-use-preview`, which is [state-of-the-art and finetuned](https://wow.groq.com/introducing-llama-3-groq-tool-use-models/) specifically for tool use.
+
+> Llama-3-Groq-70B-Tool-Use is the highest performing model on the Berkeley Function Calling Leaderboard (BFCL), outperforming all other open source and proprietary models.
+> Our models have achieved remarkable results, setting new benchmarks for Large Language Models with tool use capabilities:
+> - Llama-3-Groq-70B-Tool-Use: 90.76% overall accuracy (#1 on BFCL at the time of publishing)
+> - Llama-3-Groq-8B-Tool-Use: 89.06% overall accuracy (#3 on BFCL at the time of publishing)
+
+<Accordion title="Tip: Other tool-use models" icon="lightbulb">
+ Other state-of-the-art Groq models that support tool use:
+- llama-3.1-405b-reasoning
+- llama-3.1-70b-versatile
+- llama-3.1-8b-instant
+- llama3-70b-8192
+- llama3-8b-8192
+- mixtral-8x7b-32768
+- gemma-7b-it
+- gemma2-9b-it
+</Accordion>
+
+## Practice: Building a RAG System
+
+<Card title="Available as a Colab notebook" horizontal icon="notebook" href="https://colab.research.google.com/drive/1PjCGECqB37_TDD3kLHYl3IljlWxPNoXe?usp=sharing">
+  This tutorial is also available as a Colab notebook. Click here to access it.
+</Card>
+
+For the remainder of this section, you will need to set up your environment along with the 
+necessary dependencies. You can do this by running the following commands:
+
+
+
+```bash
+pip install requests
+pip install langchain
+pip install langchain-groq
+```
+
+In a new Python file, you should be able to initiate a request with your key:
+```python
+import requests
+
+headers = {
+    # your Sectors API key
+    "Authorization": "7c39xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+
+def get_overview(stock: str, section: str) -> requests:
+    url = f"https://api.sectors.app/v1/company/report/{stock}/?sections={section}"
+    response = requests.get(url, headers=headers)
+    return response
+
+response = get_overview("BBRI", "financials")
+print(response.json())
+```
+
+Since we'll be using a model hosted on Groq, we'll also need an API key obtained from Groq. You can sign up for a free account [here](https://console.groq.com/keys).
+With both keys in hand, you can start setting up our script and load the keys into our environment.
+
+I'm using `dotenv` to load my keys from a `.env` file. You can install it by running `pip install python-dotenv` and create a `.env` file in the same directory as your Python script with the following content:
+```bash
+GROQ_API_KEY=your_groq_api_key
+SECTORS_API_KEY=your_sectors_api_key
+```
+
+And our Python script should look like this:
+```python
+import os
+import json
+import requests
+from dotenv import load_dotenv
+
+load_dotenv() # load your .env file
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+SECTORS_API_KEY = os.getenv("SECTORS_API_KEY")
+
+def retrieve_from_endpoint(url: str) -> dict:
+    headers = {"Authorization": SECTORS_API_KEY}
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+    except requests.exceptions.HTTPError as err:
+        raise SystemExit(err)
+    return json.dumps(data)
+```
+
+Notice that `retrieve_from_endpoint` is just a convenience function 
+that we can use to retrieve data from the Sectors API. We are creating 
+an abstraction layer so we can re-use this function throughout our script.
+
+### Building tools for our tool-use model
+Now that we have our data retrieval function, we can start building a set of 
+tools, each tool specializing in handling a specific type of queries. 
+For example, we can create a tool that retrieves financial data for a given stock, 
+another tool that retrieves news articles for a given stock, and yet another 
+tool might retrieve the financial reports for a given stock.
+
+`langchain` provides a `Tool` class as well as a `tool` decorator that we can use to
+wrap any Python function and turn it into a tool. Here's how we use it to create a grand 
+total of three tools:
+
+```python
+from langchain_core.tools import tool
+
+@tool
+def get_company_overview(stock: str) -> str:
+    """
+    Get company overview
+    """
+    url = f"https://api.sectors.app/v1/company/report/{stock}/?sections=overview"
+
+    return retrieve_from_endpoint(url)
+
+@tool
+def get_top_companies_by_tx_volume(
+    start_date: str, end_date: str, top_n: int = 5
+) -> str:
+    """
+    Get top companies by transaction volume
+    """
+    url = f"https://api.sectors.app/v1/most-traded/?start={start_date}&end={end_date}&n_stock={top_n}"
+
+    return retrieve_from_endpoint(url)
+
+@tool
+def get_daily_tx(stock: str, start_date: str, end_date: str) -> str:
+    """
+    Get daily transaction for a stock
+    """
+    url = f"https://api.sectors.app/v1/daily/{stock}/?start={start_date}&end={end_date}"
+
+    return retrieve_from_endpoint(url)
+
+
+tools = [
+    get_company_overview,
+    get_top_companies_by_tx_volume,
+    get_daily_tx
+]
+```
+
+### Orchestrating our RAG system
+We'll be using the `llama3-groq-70b-8192-tool-use-preview` model from Groq. Not only 
+is this model state-of-the-art and specializes in tool use, it is also open source and 
+more easily accessible than other proprietary models. 
+
+In the following code, we instantiate a `ChatGroq` object with the model name and the Groq API key.
+This provides us with the `llm` object that we'll pass, along with `tools` created earlier, to our 
+orchestrator agent. What's missing is the a prompt template that we'll use to 
+specify some system constraints and provide some overall guidance to the LLM. 
+
+
+```python
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_groq import ChatGroq
+from langchain.agents import create_tool_calling_agent, AgentExecutor
+
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """Answer the following queries, being as factual and analytical 
+            as you can. If you need the start and end dates but they are not 
+            explicitly provided, infer from the query. Whenever you return a 
+            list of names, return also the corresponding values for each name. 
+            If the volume was about a single day, the start and end 
+            parameter should be the same."""
+        ),
+        ("human", "{input}"),
+        # msg containing previous agent tool invocations 
+        # and corresponding tool outputs
+        MessagesPlaceholder("agent_scratchpad"),
+    ]
+)
+
+llm = ChatGroq(
+    temperature=0,
+    model_name="llama3-groq-70b-8192-tool-use-preview",
+    groq_api_key=GROQ_API_KEY,
+)
+
+agent = create_tool_calling_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+```
+
+From top to bottom, we're performing a few key steps:
+
+1. We're creating a `ChatPromptTemplate` object that contains a message for the system and a message for the user. The system message provides some guidance to the LLM on how to respond to the user's input.
+2. We're instantiating our LLM model. This LLM is responsible for interpreting the user's input and choosing the right tool among the candidates to 
+    best respond to the user's query.
+3. We combine `llm`, `tools`, and `prompt` into an `agent` object. This agent is responsible for orchestrating the interaction between the user, the LLM, and the tools.
+4. Finally, we create an `AgentExecutor` object that will execute the agent and handle the interaction between the user and the system. Setting `verbose` to 
+    `True` will print out the system's responses to the user's queries and additional messages that the system might generate.
+
+### Financial Queries with a custom RAG
+Now is where the magic happens. We can start querying our system with financial queries and see how it responds. Each of the question is 
+set up to require some form of tool use and actual data retrieval, failing which the system will not be able to generate a response. 
+
+```python
+query_1 = "What are the top 3 companies by transaction volume over the last 7 days?"
+query_2 = "Based on the closing prices of BBCA between 1st and 30th of June 2024, are we seeing an uptrend or downtrend? Try to explain why."
+query_3 = "What is the company with the largest market cap between BBCA and BREN? For said company, retrieve the email, phone number, listing date and website for further research."
+query_4 = "What is the performance of GOTO (symbol: GOTO) since its IPO listing?"
+query_5 = "If i had invested into GOTO vs BREN on their respective IPO listing date, which one would have given me a better return over a 90 day horizon?"
+
+queries = [query_1, query_2, query_3, query_4, query_5]
+
+for query in queries:
+    print("Question:", query)
+    result = agent_executor.invoke({"input": query})
+    print("Answer:", "\n", result["output"], "\n\n======\n\n")
+```
+
+The first 3 queries should be relatively straightforward given the tools we've created in earlier steps. 
+
+For the remaining `query_4` and `query_5`, you will need to implement additional tools that can retrieve historical performance of a stock 
+since its IPO listing. This [section: Company's Performance since IPO](/api-references/ipo/listing-performance) of the API Documentation 
+should provide you with the necessary information to extend your RAG system with this capability.
+
+
+#### Financial Agent Responses
+
+If implemented successfully, you should see the system generating an appropriate response for each of the query.
+
+On `query_1`, we asked "What are the top 3 companies by transaction volume over the last 7 days?" and the system responded with:
+
+```sh
+> Entering new AgentExecutor chain...
+Invoking: `get_top_companies_by_tx_volume` with `{'start_date': '2024-07-24', 'end_date': '2024-07-31', 'top_n': 3}`
+
+
+{"2024-07-24": [{"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", "volume": 2660984600, 
+"price": 54}, {"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", "volume": 1833364900, 
+"price": 83}, {"symbol": "DOOH.JK", "company_name": "PT Era Media Sejahtera Tbk", "volume": 511754100, 
+"price": 53}], "2024-07-25": [{"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
+"volume": 1513766400, "price": 76}, {"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
+"volume": 911091700, "price": 54}, {"symbol": "BBKP.JK", "company_name": "PT Bank KB Bukopin Tbk", 
+"volume": 432596400, "price": 56}], "2024-07-26": [{"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
+"volume": 2408506000, "price": 72}, {"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
+"volume": 913457100, "price": 53}, {"symbol": "MSJA.JK", "company_name": "PT Multi Spunindo Jaya Tbk.", 
+"volume": 450977300, "price": 342}], "2024-07-29": [{"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
+"volume": 1621366300, "price": 54}, {"symbol": "ATLA.JK", "company_name": "PT Atlantis Subsea Indonesia Tbk", 
+"volume": 1255103900, "price": 50}, {"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
+"volume": 754254000, "price": 69}], "2024-07-30": [{"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
+"volume": 1236811400, "price": 55}, {"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
+"volume": 797879400, "price": 69}, {"symbol": "BIPI.JK", "company_name": "PT Astrindo Nusantara Infrastruktur Tbk.", 
+"volume": 629061500, "price": 59}]}
+
+> Finished chain.
+
+Answer: 
+The top 3 companies by transaction volume over the last 7 days are PT GoTo Gojek Tokopedia Tbk, 
+PT Wulandari Bangun Laksana Tbk, and PT Era Media Sejahtera Tbk. 
+```
+
+To arrive at this answer, it would need to interpret "last 7 days" and infer the start and end dates for the query, given 
+that the tool `get_top_companies_by_tx_volume` requires a start and end date to retrieve the data. It then correctly 
+retrieves the data and have to perform a reduction operation to find the top 3 companies by transaction volume.
+
+As a bonus, you may also want to provide a calculator tool that your RAG can use to perform the necessary summation 
+and sorting operations to find the top 3 companies by transaction volume. In cases where it fail to interpret the intent 
+correctly, your RAG system might instead return the top 3 entries for the last 7 days, which is probably a good approximation
+but not fully correct.
+
+On `query_2`, we asked "Based on the closing prices of BBCA between 1st and 30th of June 2024, are we seeing an uptrend or downtrend? Try to explain why."
+Our RAG model return with the following response:
+
+```sh
+> Entering new AgentExecutor chain...
+
+To determine if we are seeing an uptrend or downtrend in BBCA\'s closing prices between June 1st and June 30th, 2024, we need 
+to analyze the closing prices over this period. 
+
+First, let\'s get the daily transaction data for BBCA for the specified period:
+
+\```json
+{
+  "name": "get_daily_tx",
+  "arguments": {
+    "stock": "BBCA",
+    "start_date": "2024-06-01",
+    "end_date": "2024-06-30"
+  }
+}
+\```
+
+> Finished chain.
+Answer: 
+
+After analyzing the data, we can see that the closing prices have been increasing over the period, with the 
+closing price on June 30th being higher than on June 1st. This indicates an uptrend in BBCA\'s closing prices 
+during June 2024.
+
+The uptrend could be due to various factors such as positive news or events related to the company, an increase 
+in investor confidence, or a general upward trend in the market.
+```
+
+`query_3` is considerably trickier as it requires the system to retrieve the market cap for both BBCA and BREN, compare them, and then retrieve additional information for the company with the largest market cap. 
+Our original query is "What is the company with the largest market cap between BBCA and BREN? For said company, retrieve the email, phone number, listing date and website for further research." and 
+our RAG system responded with:
+
+```sh
+> Entering new AgentExecutor chain...
+
+Invoking: get_company_overview with {'stock': 'BBCA'}
+`{"symbol": "BBCA.JK", "company_name": "PT Bank Central Asia Tbk.", "overview": {"listing_board": "Main", "industry": "Banks", "sub_industry": "Banks", "sector": "Financials", "sub_sector": "Banks", "market_cap": 1263500995330048, "market_cap_rank": 1, "address": "Menara BCA, Grand Indonesia\r\nJalan MH Thamrin No. 1\r\nJakarta 10310", "employee_num": 27546, "listing_date": "2000-05-31", "website": "www.bca.co.id", "phone": "021-23588000", "email": "investor_relations@bca.co.id", "last_close_price": 10175, "latest_close_date": "2024-07-30", "daily_close_change": -0.00731707317073171}}`
+
+Invoking: get_company_overview with {'stock': 'BREN'}
+`{"symbol": "BREN.JK", "company_name": "PT Barito Renewables Energy Tbk.", "overview": {"listing_board": "Main", "industry": "Electric Utilities", "sub_industry": "Electric Utilities", "sector": "Infrastructures", "sub_sector": "Utilities", "market_cap": 1157248873136128, "market_cap_rank": 2, "address": "Wisma Barito Pacific II, Lantai 23,\nJl. Let. Jend. S. Parman Kav. 60, RT 010, RW 005, Slipi, Palmerah, Jakarta 11410,\nIndonesia", "employee_num": 634, "listing_date": "2023-10-09", "website": "www.baritorenewables.co.id", "phone": "(021) 530 6711", "email": "corpsec@baritorenewables.co.id", "last_close_price": 8650, "latest_close_date": "2024-07-30", "daily_close_change": 0.00581395348837209}}`
+
+> Finished chain.
+
+Answer: 
+ The company with the largest market cap between BBCA and BREN is PT Bank Central Asia Tbk. (BBCA). Here are the details for further research:
+
+- Email: investor_relations@bca.co.id
+- Phone Number: 021-23588000
+- Listing Date: 2000-05-31
+- Website: www.bca.co.id 
+
+```
+
+As for `query_4` and `query_5`, you should expect a response similar to the one below:
+
+```sh
+Question: What is the performance of GOTO (symbol: GOTO) since its IPO listing?
+
+
+Entering new AgentExecutor chain...
+Invoking: get_performance_since_ipo with `{'stock': 'GOTO'}`
+
+{"symbol": "GOTO.JK", "chg_7d": -0.0104712, "chg_30d": -0.418848, 
+"chg_90d": -0.115183, "chg_365d": -0.740838}
+
+Finished chain.
+Answer: 
+ The performance of GOTO (symbol: GOTO) since its IPO listing shows 
+ a change of -0.418848 in the last 30 days, -0.740838 in the last 365 days, 
+ -0.0104712 in the last 7 days, and -0.115183 in the last 90 days. 
+
+======
+
+Question: If i had invested into GOTO vs BREN on their respective IPO 
+listing date, which one would have given me a better return over a 1 year horizon?
+
+
+Entering new AgentExecutor chain...
+
+Invoking: get_performance_since_ipo with {'stock': 'GOTO'}
+
+{"symbol": "GOTO.JK", "chg_7d": -0.0104712, "chg_30d": -0.418848, 
+"chg_90d": -0.115183, "chg_365d": -0.740838}
+
+Invoking: get_performance_since_ipo with {'stock': 'BREN'}
+
+{"symbol": "BREN.JK", "chg_7d": 1.82051, "chg_30d": 3.51282, 
+"chg_90d": 5.92308, "chg_365d": null} 
+
+Finished chain.
+Answer: 
+ Based on the performance data since their respective IPO listing dates, 
+ BREN would have given you a better return over a 90-day horizon. 
+ BREN had a 90-day change of 5.92308, while GOTO had a 90-day change 
+ of -0.115183. 
+======
+```
+
+## Going Further: Improving the RAG System
+
+<Card title="Available as a Colab notebook" horizontal icon="notebook" href="https://colab.research.google.com/drive/1PjCGECqB37_TDD3kLHYl3IljlWxPNoXe?usp=sharing">
+  This tutorial is also available as a Colab notebook. Click here to access it.
+</Card>
+
+There are numerous opportunities to improve our RAG system. Here are a few ideas to get you started:
+
+- **Adding more tools**: You can add more tools to your system to handle a wider range of queries. For example, you could add tools to retrieve news articles, analyst reports, or social media sentiment for a given stock.
+- **Better prompts**: You can experiment with different prompts to guide the LLM in generating more accurate and informative responses.
+- **More descriptive tools**: You can make your tools more descriptive by providing additional information about the data they retrieve. This helps your orchestrator agent make better decisions about which tool to use for a given query.
+- **Different LLMs**: You can try using different LLMs to see how they perform on your financial queries. You can experiment with different models from Groq or other providers. With how fast 
+    the field is evolving, it's always a good idea to keep an eye on the latest models and see how they perform on your use case.
+- **Error handling**: You can add error handling to your system to handle cases where the LLM is unable to generate a response. For example, you could have the system prompt the user for more information or provide a default response.
+
+In the spirit of motivating you to explore further, in the model that I have implemented for [Generative AI for the Finance Industry](https://supertype.ai/generative-finance) workshop, 
+my prompt template is more detailed and include the present date to help the LLM infer the start and end dates for the queries when user queries include 
+time-sensitive information framed as "last 7 days", or "since the start of the month" etc.
+
+Here is my implementation:
+
+```python
+def get_today_date() -> str:
+    """
+    Get today's date
+    """
+    from datetime import date
+
+    today = date.today()
+    return today.strftime("%Y-%m-%d")
+
+
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """
+            Answer the following queries, being as factual and analytical as you can. 
+            If you need the start and end dates but they are not explicitly provided, 
+            infer from the query. Whenever you return a list of names, return also the 
+            corresponding values for each name. If the volume was about a single day, 
+            the start and end parameter should be the same. Note that the endpoint for 
+            performance since IPO has only one required parameter, which is the stock. 
+            Today's date is 
+            """
+            + get_today_date(),
+        ),
+        ("human", "{input}"),
+        # msg containing previous agent tool invocations and corresponding tool outputs
+        MessagesPlaceholder("agent_scratchpad"),
+    ]
+)
+```
+
+### Challenge
+
+<Card title="Earn a Certificate" horizontal icon="award" href="https://github.com/onlyphantom/llm-python/discussions/19">
+ There is an associated challenge with this chapter. Successful completion of this challenge will earn you a certificate
+ of completion and possibly extra rewards if you're among the top performers.
+</Card>
+
+If you're up for a challenge, I have created two exercises that you can participate by making
+a copy of the [Colab notebook](https://colab.research.google.com/drive/1PjCGECqB37_TDD3kLHYl3IljlWxPNoXe?usp=sharing) and start working on them.
+
+When you're done, submit your work [following this guide](https://github.com/onlyphantom/llm-python/discussions/19) and I will be grading them.
+
+ 
