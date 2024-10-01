@@ -69,7 +69,7 @@ with knowledge of the customer's investment history and preferences.
 > - Incorporation of actual financial data in the training process might be limited due to confidentiality concerns, and 
 >   the model's ability to interact with uploaded financial data also poses a security risk.
 > - Generating inaccurate responses due to terminology confusion (we'll see an example below regarding the abbreviation "p.e"), or 
->   presenting generic information wher users expect financial-specific, current information.
+>   presenting generic information where users expect financial-specific, current information.
 
 But before you go off and start connecting your database to a public, general-purpose LLM, you should be aware of the
 risks and limitations of using these models in a financial context. First of all, there's the issue of **privacy and 
@@ -80,7 +80,7 @@ A general-purpose LLM might occasionally generate text that sounds plausible, bu
 really wrong and **could lead to disastrous consequences**.
 
 Thirdly, if your application of Generative AI requires up-to-date, real-time data that **sits in a proprietary database**, you 
-might find that general-purpose LLMs publically available (e.g. ChatGPT) extremely limited in their utility as a financial advisory 
+might find that general-purpose LLMs publicly available (e.g. ChatGPT) extremely limited in their utility as a financial advisory 
 or data retrieval tool. This is because these models are trained on a fixed dataset and typically do not have the ability to 
 interact with external data sources or update their training data in real-time, relying on their **knowledge cutoff dates**, or the
 latest date at which the information was used to train the model.
@@ -162,13 +162,13 @@ It's an essential tool for comparing companies within the same industry and for 
 
 
 ## Retrieval Augmented Generation (RAG)
-Retrieval Augmented Generation (RAG) refers to a set of strategy that address LLm hallucinations and the aforementioned knowledge cutoff problem 
+Retrieval Augmented Generation (RAG) refers to a set of strategy that address LLM hallucinations and the aforementioned knowledge cutoff problem 
 by **augmenting the model with an information retrieval system**. By pairing the typical generative capabilities of an LLM with a retrieval system and 
 calibrated system prompts, the LLM model are able to generate responses using precise, up-to-date information retrieved from an 
 external knowledge store. 
 
 Unlike the domain-specific or task-specific LLMs, RAG isn't necessarily a model in itself, as its training data might still be based on a general-purpose LLM and 
-remained unaltered. Instead, it extends existing LLMs by providing getways to external knowledge sources, such as a database, so a knowledge base can form 
+remained unaltered. Instead, it extends existing LLMs by providing gateways to external knowledge sources, such as a database, so a knowledge base can form 
 the basis of the model's responses without the need for incremental training or domain-specific data.
 
 **Disadvantages**: Successful implementation of RAG requires a reliable, up-to-date and often-times pre-determined knowledge store that can be queried by the model. 
