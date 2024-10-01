@@ -92,10 +92,12 @@ graph TD
 
 
 ## Implementing Schema Constraints to AI Agents
-Let's begin with a simple Python class, `Stock`, that represents a stock and its attributes. We are inheriting from `BaseModel` from the `pydantic` library, a popular data validation library in Python.
+
+### Structured AI w/ Pydantic
+Let's begin with a simple Python class, `Stock`, that represents a stock and its attributes. We are inheriting from `BaseModel` of the `pydantic` library, a popular data validation library in Python.
 
 ```python
-from typing import Optional, List
+from typing import Optional
 from pydantic import BaseModel, Field
 
 class Stock(BaseModel):
@@ -108,33 +110,205 @@ class Stock(BaseModel):
     market_cap: Optional[int] = Field(default=None, description="The market capitalization of the company")
 ```
 
+Supposed we want our large language model to generate a response that always generate an output adhering to the schema of our `Stock` class, we can count on `pydantic` to validate the output of our tools and call the `.with_structured_output()` on the LLM to obtain structured outputs. 
+
+The `.with_structured_output()` method always takes a schema as input, respecting the names, types and descriptions of the fields, or attributes, of the schema. It then returns objects that conform to the schema (instead of strings), which can be used in downstream tools when orchestrated in a chain-like fashion.
+
+When using Pydantic, the model-generated output will be validated against the schema, with Pydantic raising an error if the output does not match the schema (e.g. required fields missing, or fields of the wrong type). Below is an example of creating a structured LLM with Pydantic. I'm choosing to use the `llama3-groq-70b-8192-tool-use-preview` model from Groq, which is fine-tuned for tool use. 
+
+```python
+import os
+from dotenv import load_dotenv
+from typing import Optional
+
+from pydantic import BaseModel, Field
+
+from langchain_groq import ChatGroq
+
+load_dotenv()
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+class Stock(BaseModel): 
+    """Information about a company's stock"""
+
+    symbol: str = Field(description="The stock symbol")
+    name: str = Field(description="The name of the company for which the stock symbol represents")
+    sector: Optional[str] = Field(default=None, description="The sector of the company")
+    industry: Optional[str] = Field(default=None, description="The industry of the company")
+    market_cap: Optional[int] = Field(default=None, description="The market capitalization of the company")
 
 
+llm = ChatGroq(
+    temperature=0,
+    model_name="llama3-groq-70b-8192-tool-use-preview",
+    groq_api_key=GROQ_API_KEY,
+)
+
+structured_llm = llm.with_structured_output(Stock)
+print(type(structured_llm))
+
+# output:
+# <class 'langchain_core.runnables.base.RunnableSequence'>
+```
+
+<Tip>
+    The name of the Pydantic class, the docstring, the names of the fields, and the descriptions of the fields are all **very important**. `with_structured_output` is most commonly used in tool-use scenarios (i.e. function-calling, or tool-calling) and these 
+    information essentially act as model prompts to guide the language model in generating structured outputs.
+</Tip>
+
+Let's use this structured LLM to retrieve information from unstructured text, and see how it generates structured outputs that conform to the schema of the `Stock` class.
+
+```python
+text = """
+    Bank Central Asia (BCA) is a bank in Indonesia and is part of the finance sector.
+    It is in the banking industry and has a market capitalization of $85 billion.
+    It trades under the symbol BBCA on the Indonesia Stock Exchange.
+    """
+out = structured_llm.invoke(text)
+print(out)
+# Stock(symbol='BBCA', name='Bank Central Asia', sector='finance', industry='banking', market_cap=85000000000)
+```
+
+In the case of extracting structured data from unstructured text, the language model is able to generate structured outputs that conform to the schema of the `Stock` class. One can imagine a common use case being a chatbot that can extract information about companies from news articles, press releases, PDF documents or other unstructured text sources into a structured format adhering to the schema of the `Stock` class ready for database insertion.
+
+We can similarly use the LLM to generate structured outputs from natural language prompts. We specify our instructions, and the structured LLM will respect the schema of the `Stock` class when generating the output.
+
+```python
+create = "Create a fictitious company called Supertype Inc. that is in the technology sector and has a market capitalization of $10 million. It trades under the symbol SUPA."
+generated = structured_llm.invoke(create)
+print(generated)
+# Stock(symbol='SUPA', name='Supertype Inc.', sector='technology', industry=None, market_cap=10000000)
+```
+
+### LangChain Expression Language (LCEL) 
+We're making a small detour to introduce LangChain's new syntax for creating chains through composition. Directly from the Announcement:
+
+> Chaining can mean making multiple LLM calls in a sequence. Language models are often non deterministic and can make errors, so making multiple calls to check previous outputs or to break down larger tasks into bite-sized steps can improve results.
+>
+> **Constructing the Input to LLMs**
+> 
+> Chaining can mean combining data transformation with a call to an LLM. For example, formatting a prompt template with user input or using retrieval to look up additional information to insert into the prompt template
+> Using the Output of LLMs
+> 
+> Another form of chaining refers to passing the output of an LLM call to a downstream application. For example, using the LLM to generate Python code and then running that code; using the LLM to generate SQL and then executing that against a SQL database.
+
+The essential functionalities are:
+- `|` (pipe) operator to chain multiple functions together
+- `.invoke()` to call the LLM
+- `.batch()` to run the chain against a list of inputs
+- `.stream()` to return an iterable 
+
+Consider the following example:
+
+```python
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate
+
+model = ChatOpenAI() # use any LLM model here
+prompt = ChatPromptTemplate.from_template("give me information for the stock: {symbol}")
+chain = prompt | model
+
+chain.invoke({"symbol": "BBCA"})
+# output:
+#  {"symbol": "BBCA.JK", "company_name": "PT Bank Central Asia Tbk.", "overview": {"listing_board": "Main", "industry": "Banks", "sub_industry": "Banks", "sector": "Financials", "sub_sector": "Banks", "market_cap": 1303633169743872, "market_cap_rank": 1, "address": "Menara BCA, Grand Indonesia\r\nJalan MH Thamrin No. 1\r\nJakarta 10310", "employee_num": 27547, "listing_date": "2000-05-31", "website": "www.bca.co.id", "phone": "021-23588000", "email": "investor_relations@bca.co.id", "last_close_price": 10700, "latest_close_date": "2024-09-26", "daily_close_change": -0.0138248847926267}}
+```
+
+`.batch()` takes a list of inputs and will perform optimizations such as batching calls to LLM providers when possible.
+
+```python
+chain.batch([{"symbol": "BBCA"}, {"symbol": "BBRI"}])
+```
+
+`.stream()` returns an iterable:
+```python
+for s in chain.stream({"symbol": "BMRI"}):
+    print(s.content, end="")
+```
+
+### Structured AI w/ Multiple Schemas
+We're going to make some slight improvements to our AI agent by:
+- Creating a new schema, `Stocks` that represents a list of `Stock` objects
+- Creating a new schema, `ConversationalResponse` that represents a response to a conversational query (e.g "how are you?", "what's your name?")
+- Combine these schemas to a new schema, called `FinalResponse` that represents the final response of our AI agent
+- Just to demonstrate the use of LCEL, we'll create a `prompt` object and use the chaining syntax to construct our `RunnableSequence`
+
+Here are the additions:
+
+```python
+class Stocks(BaseModel):
+    """Extrated data about stocks"""
+
+    stocks:List[Stock] 
+
+class ConversationalResponse(BaseModel):
+    """Respond in a conversation manner. Be nice and sweet."""
+    response: str = Field(description="A helpful response to the user's query")
+
+class FinalResponse(BaseModel):
+    """Final response to the user's query"""
+    output: Union[Stocks, ConversationalResponse]
+
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "You are an expert extraction algorithm, "
+            "Extract relevant information from the text. "
+            "If you do not know the value of an attribute asked to extract, "
+            "return null for the attribute's value.",
+        ),
+        ("human", "{text}"),
+    ]
+)
+
+runnable = prompt | llm.with_structured_output(schema=FinalResponse)
+```
+
+Notice the introduction of a `FinalResponse` schema that can either contain a list of `Stock` objects or a `ConversationalResponse` object. This is a common pattern in AI systems where the output can be of different types depending on the context of the query.
+
+Pay attention to the use of `|` operator as well. This is the chaining syntax that allows us to compose multiple functions together, composing the final chain ("runnable sequence") that can be executed by calling `.invoke()`.
+
+In fact, let's now call `.invoke()` to run the chain and see how the AI agent generates structured outputs with our new schemas:
+
+```python
+text = """
+    Bank Central Asia (BCA) is a bank in Indonesia and is part of the finance sector.
+    It is in the banking industry and has a market capitalization of $85 billion.
+    It trades under the symbol BBCA on the Indonesia Stock Exchange.
+    
+    Bank Rakyat Indonesia (BRI) is the oldest bank in Indonesia, tracing back since 1895. It 
+    has a market capital of $52 billion and is an important player in the country's finance sector. It 
+    trades as BBRI on the Indonesia Stock Exchange.
+    """
+
+out = runnable.invoke({"text": text})
+# in FinalResponse schema, the return value is stored in an attribute called `output`
+out_list = list(out.output.stocks)
+
+print(out_list[0])
+# Stock(symbol='BBCA', name='Bank Central Asia', sector='finance', industry='banking', market_cap=85000000000)
+
+print(out_list[1])
+# Stock(symbol='BBRI', name='Bank Rakyat Indonesia', sector='finance', industry='banking', market_cap=52000000000)
+```
+
+Our chain is now capable of handling a wider range of queries, with the LLM capable of handling all existing use-cases as well as new ones that require a conversational response.
+
+```python
+create = "Create two fictional companies that contain the word 'Super' in their name and operating in the technology sector. Make up the other details about the companies."
+generated = runnable.invoke(create)
+print(generated.output)
+# Stocks(stocks=[Stock(symbol='SPR', name='SuperTech Innovations', sector='Technology', industry='Technology', market_cap=500000000), Stock(symbol='SUP', name='SuperNet Solutions', sector='Technology', industry='Technology', market_cap=750000000)])
+
+question = "how are you this evening?"
+generic = runnable.invoke(question)
+print(generic.output)
+# response="I'm doing well, thank you for asking. How can I assist you further this evening?"
+```
+
+### JSON Output Parsers
 
 
-## API-based RAG systems architecture
-
-Broadly speaking, the system consists of three main components:
-1. **Orchestrator**: We will be implementing this is Python using the LangChain framework. This script will be responsible for taking in the user's input and passing it to the retriever and LLM components along with some pre-defined constraints.
-2. **Retriever**: We will create tools that retrieve data from Sector's, a financial API platform. These retrievers are in the form of some Python functions that take in some parameters and retrieve data accordingly from our data source ("Sectors API").
-3. **LLM**: The language model we will be using is `llama3-groq-70b-8192-tool-use-preview`, which is [state-of-the-art and finetuned](https://wow.groq.com/introducing-llama-3-groq-tool-use-models/) specifically for tool use.
-
-> Llama-3-Groq-70B-Tool-Use is the highest performing model on the Berkeley Function Calling Leaderboard (BFCL), outperforming all other open source and proprietary models.
-> Our models have achieved remarkable results, setting new benchmarks for Large Language Models with tool use capabilities:
-> - Llama-3-Groq-70B-Tool-Use: 90.76% overall accuracy (#1 on BFCL at the time of publishing)
-> - Llama-3-Groq-8B-Tool-Use: 89.06% overall accuracy (#3 on BFCL at the time of publishing)
-
-<Accordion title="Tip: Other tool-use models" icon="lightbulb">
- Other state-of-the-art Groq models that support tool use:
-- llama-3.1-405b-reasoning
-- llama-3.1-70b-versatile
-- llama-3.1-8b-instant
-- llama3-70b-8192
-- llama3-8b-8192
-- mixtral-8x7b-32768
-- gemma-7b-it
-- gemma2-9b-it
-</Accordion>
 
 ## Practice: Building a RAG System
 
