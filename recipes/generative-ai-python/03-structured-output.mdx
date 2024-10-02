@@ -306,422 +306,326 @@ print(generic.output)
 # response="I'm doing well, thank you for asking. How can I assist you further this evening?"
 ```
 
-### JSON Output Parsers
+<Check>
+    Large Language models generate text. In times where we want these language models to generate more structured information than just raw text, we use schemas to constrain the output of the model. In the following section, we will see another approach using output parsers that come with LangChain.
+</Check>
 
+## Output Parsers
+### `PydanticOutputParser`
+Consider the `Stock` model that we have created earlier. We will add two `model_validator` as class methods to the `Stock` class, used to validate the output of the model. We will then create a `parser` object which we can include in the downstream of our chain. 
 
+These are the changes we need to make to the `Stock` class:
 
-## Practice: Building a RAG System
+```python
+class Stock(BaseModel): 
+    """Information about a company's stock"""
 
-<Card title="Available as a Colab notebook" horizontal icon="notebook" href="https://colab.research.google.com/drive/1PjCGECqB37_TDD3kLHYl3IljlWxPNoXe?usp=sharing">
-  This tutorial is also available as a Colab notebook. Click here to access it.
-</Card>
+    symbol: str = Field(description="The stock symbol")
+    name: str = Field(description="The name of the company for which the stock symbol represents")
+    sector: Optional[str] = Field(default=None, description="The sector of the company")
+    industry: Optional[str] = Field(default=None, description="The industry of the company")
+    market_cap: Optional[int] = Field(default=None, description="The market capitalization of the company")
 
-For the remainder of this section, you will need to set up your environment along with the 
-necessary dependencies. You can do this by running the following commands:
+    @model_validator(mode="before")
+    @classmethod
+    def validate_symbol_4_letters(cls, values: dict) -> dict:
+        symbol = values["symbol"]
+        
+        if len(symbol) != 4:
+            raise ValueError("Symbol must be 4 letters long")
+        return values
 
+    @model_validator(mode="before")
+    @classmethod
+    def validate_market_cap(cls, values: dict) -> dict:
+        market_cap = values["market_cap"]
+        
+        if market_cap < 0:
+            raise ValueError("Market cap must be a positive number")
+        return values   
+```
 
+And we'll also create the `parser` object:
+
+```python
+parser = PydanticOutputParser(pydantic_object=Stock)
+```
+
+Let us execute `get_format_instructions` to see what the output generated for us by `PydanticOutputParser` looks like:
 
 ```bash
-pip install requests
-pip install langchain
-pip install langchain-groq
+>>> parser.get_format_instructions()
+'The output should be formatted as a JSON instance that conforms to the JSON schema below.\n\nAs an example, for the schema {"properties": {"foo": {"title": "Foo", "description": "a list of strings", "type": "array", "items": {"type": "string"}}}, "required": ["foo"]}\nthe object {"foo": ["bar", "baz"]} is a well-formatted instance of the schema. The object {"properties": {"foo": ["bar", "baz"]}} is not well-formatted.\n\nHere is the output schema:\n```\n{"description": "Information about a company\'s stock", "properties": {"symbol": {"description": "The stock symbol", "title": "Symbol", "type": "string"}, "name": {"description": "The name of the company for which the stock symbol represents", "title": "Name", "type": "string"}, "sector": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "description": "The sector of the company", "title": "Sector"}, "industry": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": null, "description": "The industry of the company", "title": "Industry"}, "market_cap": {"anyOf": [{"type": "integer"}, {"type": "null"}], "default": null, "description": "The market capitalization of the company", "title": "Market Cap"}}, "required": ["symbol", "name"]}\n```'
 ```
 
-In a new Python file, you should be able to initiate a request with your key:
+We observe that this method only returns a string containing instructions for how the output should be formatted. If we had so desired, this could be an instruction string that we write out from scratch.
+
+We will now use `PromptTemplate` to create a prompt and chain it with our LLM and the `parser` object:
+
 ```python
-import requests
+prompt = PromptTemplate(
+    template="Answer the user query.\n{format_instructions}\n{query}\n",
+    input_variables=["query"],
+    partial_variables={"format_instructions": parser.get_format_instructions()},
+)
 
-headers = {
-    # your Sectors API key
-    "Authorization": "7c39xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-
-def get_overview(stock: str, section: str) -> requests:
-    url = f"https://api.sectors.app/v1/company/report/{stock}/?sections={section}"
-    response = requests.get(url, headers=headers)
-    return response
-
-response = get_overview("BBRI", "financials")
-print(response.json())
+runnable = prompt | llm | parser
+# execute with runnable.invoke("...")
 ```
 
-Since we'll be using a model hosted on Groq, we'll also need an API key obtained from Groq. You can sign up for a free account [here](https://console.groq.com/keys).
-With both keys in hand, you can start setting up our script and load the keys into our environment.
+The final line, `prompt | llm | parser` uses LCEL syntax and `runnable.invoke()` is equivalent to:
 
-I'm using `dotenv` to load my keys from a `.env` file. You can install it by running `pip install python-dotenv` and create a `.env` file in the same directory as your Python script with the following content:
-```bash
-GROQ_API_KEY=your_groq_api_key
-SECTORS_API_KEY=your_sectors_api_key
-```
-
-And our Python script should look like this:
 ```python
+prompt_and_llm = prompt | llm
+output = prompt_and_llm.invoke("...")
+parser.invoke(output)
+```
+
+Invoking the chain (regardless of which syntax you use) will return a structured output that conforms to the schema of the `Stock` class.
+
+```python
+create = "Create a fictional company that contain the word 'Super' in their name and operating in the technology sector. Make up the other details about the company."
+generated = runnable.invoke(create)
+print(generated)
+# output:
+# Stock(symbol='SUPR', name='SuperTech', sector='Technology', industry='Software', market_cap=5000000000)
+```
+
+Not only does the `PydanticOutputParser` validate the output of the model, it also provides instructions on how the output should be formatted and uses `model_validator` to ensure that the output meets our expectations and conforms to the schema of the `Stock` class.
+
+In the optional exercises below, you will be tasked with writing a test for the `PydanticOutputParser` to ensure that it raises a `ValueError` when the market capitalization is negative.
+
+### `SimpleJsonOutputParser`
+In this section, we will take a look at the `SimpleJsonOutputParser` which is a simpler output parser that does not use Pydantic. It is useful when you do not need to validate the output of the model against a schema, but still want to generate structured outputs in JSON format.
+
+```python
+class Stock(BaseModel): 
+    ...
+
+class Data(BaseModel):
+    """Extrated data about stocks"""
+
+    stocks:List[Stock] 
+    followup_question: Optional[str] = Field(default=None, description="A follow-up question to ask the user")   
+
+llm = ChatGroq(
+    temperature=0,
+    model_name="llama3-groq-70b-8192-tool-use-preview",
+    groq_api_key=GROQ_API_KEY,
+    model_kwargs={ "response_format": { "type": "json_object" } },
+)
+```
+The `Stock` and `Data` classes are the same as before, but we have added a `followup_question` field to the `Data` class. We will use this field to ask the user a follow-up question after extracting the data about the stocks. 
+
+<Tip>
+JSON-mode is [not supported by all LLM models](https://python.langchain.com/docs/integrations/chat/#advanced-features), but when it is, it allows the model to return a JSON object instead of a string. This is useful when you want to generate structured outputs in JSON format.
+</Tip>
+
+The other steps are largely the same as before. We alter the `PromptTemplate` to include the `followup_question` field with some additional instructions, then chain the `PromptTemplate`, the LLM, and the `SimpleJsonOutputParser` together.
+
+```python
+# switch out: 
+# from langchain_core.output_parsers import PydanticOutputParser
+# replace with:
+from langchain.output_parsers.json import SimpleJsonOutputParser
+
+prompt = PromptTemplate.from_template(
+   """
+   Extract relevant information from the text. For the followup_question key, generate a follow-up question to ask the user,
+   Return a JSON object with the keys 'stocks' and 'followup_question' satisfying the user query: {text}
+   """
+)
+
+runnable = prompt | llm | SimpleJsonOutputParser()
+```
+
+The output of the model is now a JSON object that conforms to the schema of the `Data` class. The `SimpleJsonOutputParser` does not validate the output of the model against a schema, but it does generate structured outputs in JSON format.
+
+```python
+text = """
+    Bank Central Asia (BCA) is a bank in Indonesia and is part of the finance sector.
+    It is in the banking industry and has a market capitalization of $85 billion.
+    It trades under the symbol BBCA on the Indonesia Stock Exchange.
+    
+    Bank Rakyat Indonesia (BRI) is ...
+    """
+
+# assuming 'text' and 'create' are defined as before
+out = runnable.invoke({"text": text})
+print(out.keys()) 
+# dict_keys(['stocks', 'followup_question'])
+
+print(out)
+# {'stocks': [{'name': 'Bank Central Asia', 'symbol': 'BBCA', 'market_capitalization': '$85 billion', 'industry': 'banking', 'sector': 'finance'}, {'name': 'Bank Rakyat Indonesia', 'symbol': 'BBRI', 'market_capitalization': '$52 billion', 'industry': 'banking', 'sector': 'finance'}], 'followup_question': 'Would you like more detailed information on any of these banks?'}
+```
+Sure enough, the `out.keys()` call returns a dictionary with the keys `stocks` and `followup_question`, with the extration to structured data matching the schema of the `Data` class.
+
+A caveat with this approach is that the `SimpleJsonOutputParser`, as mentioned above, **does not validate the output of the model against a schema**, so this is a task that you will have to perform manually (better prompts, few-shot prompting, or any useful techniques) perhaps implemented as a downstream tool. This is especially important if you are generating structured outputs with a strict schema that you want to enforce.
+
+```python
+create = "Create 2 fictitious companies that contain the word 'Super' in their company name and operate in the Technology sector. Make up the other details about the company."
+generated = runnable.invoke(create)
+print(generated)
+
+# {'stocks': [{'company_name': 'SuperTech Innovations', 'industry': 'Technology', 'location': 'Silicon Valley, California', 'product': 'Advanced AI systems'}, {'company_name': 'SuperNet Solutions', 'industry': 'Technology', 'location': 'Bangalore, India', 'product': 'High-speed internet services'}], 'followup_question': 'Would you like more information on any of these companies?'}
+```
+
+Notice that the generative output contains a list of two companies with the attributes `company_name`, `industry`, `location`, and `product`, which, while structured, are not validated against our schema.
+
+### Putting it together
+
+
+<CodeGroup>
+
+```python PydanticOutputParser
 import os
-import json
-import requests
 from dotenv import load_dotenv
+from typing import Optional
 
-load_dotenv() # load your .env file
+from pydantic import BaseModel, Field, model_validator
+
+from langchain_openai import OpenAI
+from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.prompts import PromptTemplate
+
+load_dotenv()
+SECTORS_API_KEY = os.getenv("SECTORS_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+llm = OpenAI(model_name="gpt-3.5-turbo-instruct", temperature=0.0)
+
+class Stock(BaseModel): 
+    """Information about a company's stock"""
+
+    symbol: str = Field(description="The stock symbol")
+    name: str = Field(description="The name of the company for which the stock symbol represents")
+    sector: Optional[str] = Field(default=None, description="The sector of the company")
+    industry: Optional[str] = Field(default=None, description="The industry of the company")
+    market_cap: Optional[int] = Field(default=None, description="The market capitalization of the company")
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_symbol_4_letters(cls, values: dict) -> dict:
+        symbol = values["symbol"]
+        
+        if len(symbol) != 4:
+            raise ValueError("Symbol must be 4 letters long")
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_market_cap(cls, values: dict) -> dict:
+        market_cap = values["market_cap"]
+        
+        if market_cap < 0:
+            raise ValueError("Market cap must be a positive number")
+        return values   
+
+parser = PydanticOutputParser(pydantic_object=Stock)
+
+prompt = PromptTemplate(
+    template="Answer the user query.\n{format_instructions}\n{query}\n",
+    input_variables=["query"],
+    partial_variables={"format_instructions": parser.get_format_instructions()},
+)
+
+runnable = prompt | llm | parser
+
+create = "Create a fictional company that contain the word 'Super' in their name and operating in the technology sector. Make up the other details about the company."
+generated = runnable.invoke(create)
+```
+
+```python SimpleJsonOutputParser
+import os
+from dotenv import load_dotenv
+from typing import Optional, List
+
+from pydantic import BaseModel, Field
+
+from langchain_core.prompts import PromptTemplate
+from langchain_groq import ChatGroq 
+from langchain.output_parsers.json import SimpleJsonOutputParser
+
+load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 SECTORS_API_KEY = os.getenv("SECTORS_API_KEY")
 
-def retrieve_from_endpoint(url: str) -> dict:
-    headers = {"Authorization": SECTORS_API_KEY}
+class Stock(BaseModel): 
+    """Information about a company's stock"""
 
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        data = response.json()
-    except requests.exceptions.HTTPError as err:
-        raise SystemExit(err)
-    return json.dumps(data)
-```
+    symbol: str = Field(description="The stock symbol")
+    name: str = Field(description="The name of the company for which the stock symbol represents")
+    sector: Optional[str] = Field(default=None, description="The sector of the company")
+    industry: Optional[str] = Field(default=None, description="The industry of the company")
+    market_cap: Optional[int] = Field(default=None, description="The market capitalization of the company")
 
-Notice that `retrieve_from_endpoint` is just a convenience function 
-that we can use to retrieve data from the Sectors API. We are creating 
-an abstraction layer so we can re-use this function throughout our script.
+class Data(BaseModel):
+    """Extrated data about stocks"""
 
-### Building tools for our tool-use model
-Now that we have our data retrieval function, we can start building a set of 
-tools, each tool specializing in handling a specific type of queries. 
-For example, we can create a tool that retrieves financial data for a given stock, 
-another tool that retrieves news articles for a given stock, and yet another 
-tool might retrieve the financial reports for a given stock.
+    stocks:List[Stock] 
+    followup_question: Optional[str] = Field(default=None, description="A follow-up question to ask the user")   
 
-`langchain` provides a `Tool` class as well as a `tool` decorator that we can use to
-wrap any Python function and turn it into a tool. Here's how we use it to create a grand 
-total of three tools:
-
-```python
-from langchain_core.tools import tool
-
-@tool
-def get_company_overview(stock: str) -> str:
-    """
-    Get company overview
-    """
-    url = f"https://api.sectors.app/v1/company/report/{stock}/?sections=overview"
-
-    return retrieve_from_endpoint(url)
-
-@tool
-def get_top_companies_by_tx_volume(
-    start_date: str, end_date: str, top_n: int = 5
-) -> str:
-    """
-    Get top companies by transaction volume
-    """
-    url = f"https://api.sectors.app/v1/most-traded/?start={start_date}&end={end_date}&n_stock={top_n}"
-
-    return retrieve_from_endpoint(url)
-
-@tool
-def get_daily_tx(stock: str, start_date: str, end_date: str) -> str:
-    """
-    Get daily transaction for a stock
-    """
-    url = f"https://api.sectors.app/v1/daily/{stock}/?start={start_date}&end={end_date}"
-
-    return retrieve_from_endpoint(url)
-
-
-tools = [
-    get_company_overview,
-    get_top_companies_by_tx_volume,
-    get_daily_tx
-]
-```
-
-### Orchestrating our RAG system
-We'll be using the `llama3-groq-70b-8192-tool-use-preview` model from Groq. Not only 
-is this model state-of-the-art and specializes in tool use, it is also open source and 
-more easily accessible than other proprietary models. 
-
-In the following code, we instantiate a `ChatGroq` object with the model name and the Groq API key.
-This provides us with the `llm` object that we'll pass, along with `tools` created earlier, to our 
-orchestrator agent. What's missing is the a prompt template that we'll use to 
-specify some system constraints and provide some overall guidance to the LLM. 
-
-
-```python
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_groq import ChatGroq
-from langchain.agents import create_tool_calling_agent, AgentExecutor
-
-prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            """Answer the following queries, being as factual and analytical 
-            as you can. If you need the start and end dates but they are not 
-            explicitly provided, infer from the query. Whenever you return a 
-            list of names, return also the corresponding values for each name. 
-            If the volume was about a single day, the start and end 
-            parameter should be the same."""
-        ),
-        ("human", "{input}"),
-        # msg containing previous agent tool invocations 
-        # and corresponding tool outputs
-        MessagesPlaceholder("agent_scratchpad"),
-    ]
+prompt = PromptTemplate.from_template(
+   """
+   Extract relevant information from the text. For the followup_question key, generate a follow-up question to ask the user,
+   Return a JSON object with the keys 'stocks' and 'followup_question' satisfying the user query: {text}
+   """
 )
 
 llm = ChatGroq(
     temperature=0,
     model_name="llama3-groq-70b-8192-tool-use-preview",
     groq_api_key=GROQ_API_KEY,
+    model_kwargs={ "response_format": { "type": "json_object" } },
 )
 
-agent = create_tool_calling_agent(llm, tools, prompt)
-agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
-```
+runnable = prompt | llm | SimpleJsonOutputParser()
 
-From top to bottom, we're performing a few key steps:
-
-1. We're creating a `ChatPromptTemplate` object that contains a message for the system and a message for the user. The system message provides some guidance to the LLM on how to respond to the user's input.
-2. We're instantiating our LLM model. This LLM is responsible for interpreting the user's input and choosing the right tool among the candidates to 
-    best respond to the user's query.
-3. We combine `llm`, `tools`, and `prompt` into an `agent` object. This agent is responsible for orchestrating the interaction between the user, the LLM, and the tools.
-4. Finally, we create an `AgentExecutor` object that will execute the agent and handle the interaction between the user and the system. Setting `verbose` to 
-    `True` will print out the system's responses to the user's queries and additional messages that the system might generate.
-
-### Financial Queries with a custom RAG
-Now is where the magic happens. We can start querying our system with financial queries and see how it responds. Each of the question is 
-set up to require some form of tool use and actual data retrieval, failing which the system will not be able to generate a response. 
-
-```python
-query_1 = "What are the top 3 companies by transaction volume over the last 7 days?"
-query_2 = "Based on the closing prices of BBCA between 1st and 30th of June 2024, are we seeing an uptrend or downtrend? Try to explain why."
-query_3 = "What is the company with the largest market cap between BBCA and BREN? For said company, retrieve the email, phone number, listing date and website for further research."
-query_4 = "What is the performance of GOTO (symbol: GOTO) since its IPO listing?"
-query_5 = "If i had invested into GOTO vs BREN on their respective IPO listing date, which one would have given me a better return over a 90 day horizon?"
-
-queries = [query_1, query_2, query_3, query_4, query_5]
-
-for query in queries:
-    print("Question:", query)
-    result = agent_executor.invoke({"input": query})
-    print("Answer:", "\n", result["output"], "\n\n======\n\n")
-```
-
-The first 3 queries should be relatively straightforward given the tools we've created in earlier steps. 
-
-For the remaining `query_4` and `query_5`, you will need to implement additional tools that can retrieve historical performance of a stock 
-since its IPO listing. This [section: Company's Performance since IPO](/api-references/ipo/listing-performance) of the API Documentation 
-should provide you with the necessary information to extend your RAG system with this capability.
-
-
-#### Financial Agent Responses
-
-If implemented successfully, you should see the system generating an appropriate response for each of the query.
-
-On `query_1`, we asked "What are the top 3 companies by transaction volume over the last 7 days?" and the system responded with:
-
-```sh
-> Entering new AgentExecutor chain...
-Invoking: `get_top_companies_by_tx_volume` with `{'start_date': '2024-07-24', 'end_date': '2024-07-31', 'top_n': 3}`
-
-
-{"2024-07-24": [{"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", "volume": 2660984600, 
-"price": 54}, {"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", "volume": 1833364900, 
-"price": 83}, {"symbol": "DOOH.JK", "company_name": "PT Era Media Sejahtera Tbk", "volume": 511754100, 
-"price": 53}], "2024-07-25": [{"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
-"volume": 1513766400, "price": 76}, {"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
-"volume": 911091700, "price": 54}, {"symbol": "BBKP.JK", "company_name": "PT Bank KB Bukopin Tbk", 
-"volume": 432596400, "price": 56}], "2024-07-26": [{"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
-"volume": 2408506000, "price": 72}, {"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
-"volume": 913457100, "price": 53}, {"symbol": "MSJA.JK", "company_name": "PT Multi Spunindo Jaya Tbk.", 
-"volume": 450977300, "price": 342}], "2024-07-29": [{"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
-"volume": 1621366300, "price": 54}, {"symbol": "ATLA.JK", "company_name": "PT Atlantis Subsea Indonesia Tbk", 
-"volume": 1255103900, "price": 50}, {"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
-"volume": 754254000, "price": 69}], "2024-07-30": [{"symbol": "GOTO.JK", "company_name": "PT GoTo Gojek Tokopedia Tbk", 
-"volume": 1236811400, "price": 55}, {"symbol": "BSBK.JK", "company_name": "PT Wulandari Bangun Laksana Tbk", 
-"volume": 797879400, "price": 69}, {"symbol": "BIPI.JK", "company_name": "PT Astrindo Nusantara Infrastruktur Tbk.", 
-"volume": 629061500, "price": 59}]}
-
-> Finished chain.
-
-Answer: 
-The top 3 companies by transaction volume over the last 7 days are PT GoTo Gojek Tokopedia Tbk, 
-PT Wulandari Bangun Laksana Tbk, and PT Era Media Sejahtera Tbk. 
-```
-
-To arrive at this answer, it would need to interpret "last 7 days" and infer the start and end dates for the query, given 
-that the tool `get_top_companies_by_tx_volume` requires a start and end date to retrieve the data. It then correctly 
-retrieves the data and have to perform a reduction operation to find the top 3 companies by transaction volume.
-
-As a bonus, you may also want to provide a calculator tool that your RAG can use to perform the necessary summation 
-and sorting operations to find the top 3 companies by transaction volume. In cases where it fail to interpret the intent 
-correctly, your RAG system might instead return the top 3 entries for the last 7 days, which is probably a good approximation
-but not fully correct.
-
-On `query_2`, we asked "Based on the closing prices of BBCA between 1st and 30th of June 2024, are we seeing an uptrend or downtrend? Try to explain why."
-Our RAG model return with the following response:
-
-```sh
-> Entering new AgentExecutor chain...
-
-To determine if we are seeing an uptrend or downtrend in BBCA\'s closing prices between June 1st and June 30th, 2024, we need 
-to analyze the closing prices over this period. 
-
-First, let\'s get the daily transaction data for BBCA for the specified period:
-
-\```json
-{
-  "name": "get_daily_tx",
-  "arguments": {
-    "stock": "BBCA",
-    "start_date": "2024-06-01",
-    "end_date": "2024-06-30"
-  }
-}
-\```
-
-> Finished chain.
-Answer: 
-
-After analyzing the data, we can see that the closing prices have been increasing over the period, with the 
-closing price on June 30th being higher than on June 1st. This indicates an uptrend in BBCA\'s closing prices 
-during June 2024.
-
-The uptrend could be due to various factors such as positive news or events related to the company, an increase 
-in investor confidence, or a general upward trend in the market.
-```
-
-`query_3` is considerably trickier as it requires the system to retrieve the market cap for both BBCA and BREN, compare them, and then retrieve additional information for the company with the largest market cap. 
-Our original query is "What is the company with the largest market cap between BBCA and BREN? For said company, retrieve the email, phone number, listing date and website for further research." and 
-our RAG system responded with:
-
-```sh
-> Entering new AgentExecutor chain...
-
-Invoking: get_company_overview with {'stock': 'BBCA'}
-`{"symbol": "BBCA.JK", "company_name": "PT Bank Central Asia Tbk.", "overview": {"listing_board": "Main", "industry": "Banks", "sub_industry": "Banks", "sector": "Financials", "sub_sector": "Banks", "market_cap": 1263500995330048, "market_cap_rank": 1, "address": "Menara BCA, Grand Indonesia\r\nJalan MH Thamrin No. 1\r\nJakarta 10310", "employee_num": 27546, "listing_date": "2000-05-31", "website": "www.bca.co.id", "phone": "021-23588000", "email": "investor_relations@bca.co.id", "last_close_price": 10175, "latest_close_date": "2024-07-30", "daily_close_change": -0.00731707317073171}}`
-
-Invoking: get_company_overview with {'stock': 'BREN'}
-`{"symbol": "BREN.JK", "company_name": "PT Barito Renewables Energy Tbk.", "overview": {"listing_board": "Main", "industry": "Electric Utilities", "sub_industry": "Electric Utilities", "sector": "Infrastructures", "sub_sector": "Utilities", "market_cap": 1157248873136128, "market_cap_rank": 2, "address": "Wisma Barito Pacific II, Lantai 23,\nJl. Let. Jend. S. Parman Kav. 60, RT 010, RW 005, Slipi, Palmerah, Jakarta 11410,\nIndonesia", "employee_num": 634, "listing_date": "2023-10-09", "website": "www.baritorenewables.co.id", "phone": "(021) 530 6711", "email": "corpsec@baritorenewables.co.id", "last_close_price": 8650, "latest_close_date": "2024-07-30", "daily_close_change": 0.00581395348837209}}`
-
-> Finished chain.
-
-Answer: 
- The company with the largest market cap between BBCA and BREN is PT Bank Central Asia Tbk. (BBCA). Here are the details for further research:
-
-- Email: investor_relations@bca.co.id
-- Phone Number: 021-23588000
-- Listing Date: 2000-05-31
-- Website: www.bca.co.id 
-
-```
-
-As for `query_4` and `query_5`, you should expect a response similar to the one below:
-
-```sh
-Question: What is the performance of GOTO (symbol: GOTO) since its IPO listing?
-
-
-Entering new AgentExecutor chain...
-Invoking: get_performance_since_ipo with `{'stock': 'GOTO'}`
-
-{"symbol": "GOTO.JK", "chg_7d": -0.0104712, "chg_30d": -0.418848, 
-"chg_90d": -0.115183, "chg_365d": -0.740838}
-
-Finished chain.
-Answer: 
- The performance of GOTO (symbol: GOTO) since its IPO listing shows 
- a change of -0.418848 in the last 30 days, -0.740838 in the last 365 days, 
- -0.0104712 in the last 7 days, and -0.115183 in the last 90 days. 
-
-======
-
-Question: If i had invested into GOTO vs BREN on their respective IPO 
-listing date, which one would have given me a better return over a 1 year horizon?
-
-
-Entering new AgentExecutor chain...
-
-Invoking: get_performance_since_ipo with {'stock': 'GOTO'}
-
-{"symbol": "GOTO.JK", "chg_7d": -0.0104712, "chg_30d": -0.418848, 
-"chg_90d": -0.115183, "chg_365d": -0.740838}
-
-Invoking: get_performance_since_ipo with {'stock': 'BREN'}
-
-{"symbol": "BREN.JK", "chg_7d": 1.82051, "chg_30d": 3.51282, 
-"chg_90d": 5.92308, "chg_365d": null} 
-
-Finished chain.
-Answer: 
- Based on the performance data since their respective IPO listing dates, 
- BREN would have given you a better return over a 90-day horizon. 
- BREN had a 90-day change of 5.92308, while GOTO had a 90-day change 
- of -0.115183. 
-======
-```
-
-## Going Further: Improving the RAG System
-
-<Card title="Available as a Colab notebook" horizontal icon="notebook" href="https://colab.research.google.com/drive/1PjCGECqB37_TDD3kLHYl3IljlWxPNoXe?usp=sharing">
-  This tutorial is also available as a Colab notebook. Click here to access it.
-</Card>
-
-There are numerous opportunities to improve our RAG system. Here are a few ideas to get you started:
-
-- **Adding more tools**: You can add more tools to your system to handle a wider range of queries. For example, you could add tools to retrieve news articles, analyst reports, or social media sentiment for a given stock.
-- **Better prompts**: You can experiment with different prompts to guide the LLM in generating more accurate and informative responses.
-- **More descriptive tools**: You can make your tools more descriptive by providing additional information about the data they retrieve. This helps your orchestrator agent make better decisions about which tool to use for a given query.
-- **Different LLMs**: You can try using different LLMs to see how they perform on your financial queries. You can experiment with different models from Groq or other providers. With how fast 
-    the field is evolving, it's always a good idea to keep an eye on the latest models and see how they perform on your use case.
-- **Error handling**: You can add error handling to your system to handle cases where the LLM is unable to generate a response. For example, you could have the system prompt the user for more information or provide a default response.
-
-In the spirit of motivating you to explore further, in the model that I have implemented for [Generative AI for the Finance Industry](https://supertype.ai/generative-finance) workshop, 
-my prompt template is more detailed and include the present date to help the LLM infer the start and end dates for the queries when user queries include 
-time-sensitive information framed as "last 7 days", or "since the start of the month" etc.
-
-Here is my implementation:
-
-```python
-def get_today_date() -> str:
+text = """
+    Bank Central Asia (BCA) is a bank in Indonesia and is part of the finance sector.
+    It is in the banking industry and has a market capitalization of $85 billion.
+    It trades under the symbol BBCA on the Indonesia Stock Exchange.
+    
+    Bank Rakyat Indonesia (BRI) is the oldest bank in Indonesia, tracing back since 1895. It 
+    has a market capital of $52 billion and is an important player in the country's finance sector. It 
+    trades as BBRI on the Indonesia Stock Exchange.
     """
-    Get today's date
-    """
-    from datetime import date
 
-    today = date.today()
-    return today.strftime("%Y-%m-%d")
+out = runnable.invoke({"text": text})
 
-
-prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            """
-            Answer the following queries, being as factual and analytical as you can. 
-            If you need the start and end dates but they are not explicitly provided, 
-            infer from the query. Whenever you return a list of names, return also the 
-            corresponding values for each name. If the volume was about a single day, 
-            the start and end parameter should be the same. Note that the endpoint for 
-            performance since IPO has only one required parameter, which is the stock. 
-            Today's date is 
-            """
-            + get_today_date(),
-        ),
-        ("human", "{input}"),
-        # msg containing previous agent tool invocations and corresponding tool outputs
-        MessagesPlaceholder("agent_scratchpad"),
-    ]
-)
+create = "Create 3 fictitious companies that contain the word 'Super' in their company name and operate in the Technology sector. Make up the other details about the company."
+generated = runnable.invoke(create)
 ```
+</CodeGroup>
 
-### Challenge
+## Challenge
 
 <Card title="Earn a Certificate" horizontal icon="award" href="https://github.com/onlyphantom/llm-python/discussions/19">
  There is an associated challenge with this chapter. Successful completion of this challenge will earn you a certificate
  of completion and possibly extra rewards if you're among the top performers.
 </Card>
 
-If you're up for a challenge, I have created two exercises that you can participate by making
-a copy of the [Colab notebook](https://colab.research.google.com/drive/1PjCGECqB37_TDD3kLHYl3IljlWxPNoXe?usp=sharing) and start working on them.
+Write a `test_parser.py` file that tests the extraction of structured data from unstructured text using the `PydanticOutputParser`. 
 
-When you're done, submit your work [following this guide](https://github.com/onlyphantom/llm-python/discussions/19) and I will be grading them.
+```python
+def test_output_parser_mcap():
+    text = """
+    Bank Central Asia (BCA) is a bank in Indonesia and is part of the finance sector.
+        It is in the banking industry and has a market capitalization of $-8.5 billion.
+    """
+```
+
+`text` above contains a negative market capitalization value. The test should validate that the `PydanticOutputParser` raises a `ValueError` when the market capitalization is negative, instead of continuing with the parsing and feed this output into a downstream tool (i.e. report creation tool, database insertion tool etc).
+
+
+1. Use either `unittest` or `pytest` to write the test. `pytest` needs to be installed with `pip install pytest` if you choose the latter (`unittest` is part of the Python standard library).
+2. Implement the test in `test_parser.py` and run it using `pytest test_parser.py` or `python -m unittest test_parser.py`.
+
+<Card icon="video" title="Learn: Writing Python Unit Test" href="https://youtu.be/wKasoP5bKJk?si=9F_O2pn1INcPiI8v">
+    If you are new to writing Python unit tests, you can watch this video to get an overview of how to write unit tests in Python.   
+</Card>
+
+When you are done, copy and paste your code from `test_parser.py` into a Google Colab notebook along with the result of running the test. Share the link to the Colab notebook in the [discussion thread](https://github.com/onlyphantom/llm-python/discussions/19) for this chapter.
+
 
  
