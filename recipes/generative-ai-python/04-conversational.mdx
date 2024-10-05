@@ -1,6 +1,6 @@
 ---
-title: "Conversational Memory and Tool Use AI Agents"
-sidebarTitle: "4. Conversational Memory AI Agents"
+title: "Conversational Tool-Use AI"
+sidebarTitle: "4. Conversational AI Agents with tools and LangGraph"
 description: "By: [Samuel Chan](https://www.github.com/onlyphantom) · October 10, 2024"
 ---
 
@@ -9,7 +9,7 @@ description: "By: [Samuel Chan](https://www.github.com/onlyphantom) · October 1
     
     For best results, it is recommended to consume the series in order, starting from [chapter 1](/recipes/generative-ai-python/01-background).
     
-    For continuity purposes, I will point out the key differences between the current version (featuring `ReAct-style agent) and the older implementations featuring `AgentExecutor` (in [chapter 1](/recipes/generative-ai-python/01-background) and [chapter 2](/recipes/generative-ai-python/02-tool-use)).
+    For continuity purposes, I will point out the key differences between the current version (featuring ReAct-style agent) and the older implementations featuring `AgentExecutor` (in [chapter 1](/recipes/generative-ai-python/01-background) and [chapter 2](/recipes/generative-ai-python/02-tool-use)).
 </Note>
 
 ## Tool Use LangGraph Agents
@@ -235,6 +235,13 @@ but its official documentation now recommends the use of `ReAct` agents instead.
 ![](recipes/generative-ai-python/images/react.png)
 <small>Source: ReAct: Synergizing Reasoning and Acting in Language Models </small>
 
+An in-depth discussion of the ReAct paper is beyond the scope of this article, I have linked 
+to the papers in the references section<sup>1,2</sup> for interested readers. The authors posit that 
+large language models (LLMs) research has been focused either on reasoning (e.g. chain-of-thought prompting) or acting (e.g. action plan generation), but not together.
+
+Its own abstract reads:
+> We explore the use of LLMs to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for greater synergy between the two: reasoning traces help the model induce, track, and update action plans as well as handle exceptions, while actions allow it to interface with external sources, such as knowledge bases or environments, to gather additional information. 
+> ReAct outperforms imitation and reinforcement learning methods by an absolute success rate of 34% and 10% respectively, while being prompted with only one or two in-context examples. 
 
 
 ### Introduction to pre-built ReAct agents
@@ -325,4 +332,179 @@ def query_app(text: str) -> str:
     # return out["messages"][-1].content
     return out["messages"]
 ```
+
+With the utility function in place, let's query the agent with a few questions and see how it responds:
+
+```python
+out_agent = query_app("Give me an overview of BBRI")
+
+# content of last message from the agent
+print(out_agent[-1].content)
+
+# output:
+# PT Bank Rakyat Indonesia (Persero) Tbk, listed as BBRI.JK, is a bank operating in the financial sector, 
+# specifically in the banks sub-industry. It is headquartered at Gedung BRI I Lantai 20, Jl. Jenderal Sudirman Kav.44-46, Jakarta Pusat 10210. 
+# The company has a market capitalization of 741,808,095,100,928, ranking it 4th in the market. 
+# It has 80,257 employees and is listed on the Main board of the stock exchange since November 10, 2003. 
+# The latest closing price was 4,920 on October 3, 2024, with a daily close change of -0.00404858299595142. 
+# You can contact them via email at humas@bri.co.id or corsec@bri.co.id, or by phone at 021 - 575 1966. Their website is www.bri.co.id.
+```
+
+When invoking the tool directly (without the agent, and without any language models), 
+we would have to manually pass the stock symbol to the `get_company_overview` tool. Even then, the response 
+would be in the original format returned by the API, i.e. a JSON object -- making it less readable for the end-user.
+
+With the ReAct agent, we're now querying in natural language, and getting a far more human-friendly response, generated 
+by the agent. 
+
+We can also query the agent for the top 5 companies ranked by a certain metric:
+
+```python
+query = "Top 5 companies with the highest market cap, along with their full company name and market cap"
+
+out_agent2 = query_app(query)
+
+print(out_agent2[-1].content)
+
+# output:
+# The top 5 companies with the highest market cap are as follows:
+# 1. **PT Bank Central Asia Tbk.** with a market cap of 1285141859139584
+# 2. **PT Barito Renewables Energy Tbk.** with a market cap of 916434083381248
+# 3. **PT Chandra Asri Pacific Tbk.** with a market cap of 763463991296000
+# 4. **PT Bank Rakyat Indonesia (Persero) Tbk** with a market cap of 741808095100928
+# 5. **PT Amman Mineral Internasional Tbk.** with a market cap of 654476713132032
+```
+
+We observe that the agent is able to understand the query, and the instructions in `state_modifier` were also 
+being followed as the agent responded with a markdown-formatted answer (ordered lists, along with bolded text syntax). 
+
+### Streaming the agent's response
+The last section of this chapter will demonstrate the idea of streaming. Streaming is a concept where we want to make our AI 
+feels a bit more human-like and responsive, by having it to stream its response in chunks, with our 
+program yielding each chunk as soon as they are available. This is especially true when the agent can 
+take a long time to process the query, or when the underlying large language models are slow to respond. 
+
+For the purpose of this demonstration, we will be using the same query as the one above. Notice that we are `print`ing the
+the response as they come in, rather than waiting for the entire response to be generated before displaying it. 
+
+```python
+for chunk in app.stream(
+    {
+        "messages": [
+            HumanMessage(
+                content="Top 5 companies with the highest market cap, along with their full company name and market cap"
+            )
+        ]
+    }
+):
+    print(chunk)
+    print("# ----")
+```
+
+<Tip>
+On a given runnable, 
+    - Calling `.invoke()` gets us a final response;
+    - Calling `.stream()` let us stream messages as they occur (useful if agent takes a while, i.e. multiple steps)
+</Tip>
+
+The output of the streaming code will be similar to the one below:
+
+```python
+{'agent': {'messages': [
+    AIMessage(content='', 
+        ...,
+        tool_calls=[{'name': 'get_top_companies_ranked', 'args': {'dimension': 'market_cap'} ... }],
+        ),
+]}}
+
+# ----
+{'tools': {'messages': [
+    ToolMessage(content='{"market_cap": [{"symbol": "BBCA.JK", "company_name": "PT Bank Central Asia Tbk.", "market_cap": 1291305674080256}, {"symbol": "BREN.JK", "company_name": "PT Barito Renewables Energy Tbk.", "market_cap": 929812705181696}, {"symbol": "TPIA.JK", "company_name": "PT Chandra Asri Pacific Tbk", "market_cap": 748324500013056}, {"symbol": "BBRI.JK", "company_name": "PT Bank Rakyat Indonesia (Persero) Tbk", "market_cap": 732761686016000}, {"symbol": "BMRI.JK", "company_name": "PT Bank Mandiri (Persero) Tbk", "market_cap": 648666427686912}]}', 
+        name='get_top_companies_ranked', ... 
+    )]}}
+
+# ----
+
+{'agent': {'messages': [
+    AIMessage(content='Here are the top 5 companies with the highest market cap:\n1. **PT Bank Central Asia Tbk.** - Market Cap: 1,291,305,674,080,256\n2. **PT Barito Renewables Energy Tbk.** - Market Cap: 929,812,705,181,696\n3. **PT Chandra Asri Pacific Tbk** - Market Cap: 748,324,500,013,056\n4. **PT Bank Rakyat Indonesia (Persero) Tbk** - Market Cap: 732,761,686,016,000\n5. **PT Bank Mandiri (Persero) Tbk** - Market Cap: 648,666,427,686,912', 
+        ...
+    )]}}
+```
+
+### Streaming JSON and Structured Output 
+
+
+```
+{}
+{'companies': []}
+{'companies': [{}]}
+{'companies': [{'name': ''}]}
+{'companies': [{'name': 'PT'}]}
+{'companies': [{'name': 'PT Bank'}]}
+{'companies': [{'name': 'PT Bank Central'}]}
+{'companies': [{'name': 'PT Bank Central Asia'}]}
+{'companies': [{'name': 'PT Bank Central Asia T'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': ''}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BC'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': ''}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mand'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri T'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri Tbk'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri Tbk', 'ticker': ''}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri Tbk', 'ticker': 'BM'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri Tbk', 'ticker': 'BMTR'}]}
+...
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri Tbk', 'ticker': 'BMTR'}, {'name': 'PT Bank Rakyat Indonesia Tbk', 'ticker': 'BBRI'}, {'name': 'PT Astra International Tbk', 'ticker': 'ASII'}, {'name': 'PT Unilever Indonesia Tbk', 'ticker': 'UNVR'}, {'name': 'PT Indofood Sukses Makmur Tbk', 'ticker': 'INDF'}, {'name': 'PT Indocement Tunggal Prakarsa Tbk', 'ticker': 'INTP'}, {'name': 'PT United Tractors Tbk', 'ticker': 'UNTR'}, {'name': 'PT Aneka Tambang Tbk', 'ticker': 'ANTM'}, {'name': 'PT Telekomunikasi Indonesia Tbk', 'ticker': 'TLKM'}]}
+```
+
+
+## Challenge
+
+<Card title="Earn a Certificate" horizontal icon="award" href="https://github.com/onlyphantom/llm-python/discussions/19">
+ There is an associated challenge with this chapter. Successful completion of this challenge will earn you a certificate
+ of completion and possibly extra rewards if you're among the top performers.
+</Card>
+
+Implement a ReAct-style agent using the code you've written so far. Use this agent to answer the following questions:
+
+- True to the spirit of value investing, find the top 7 companies based on their P/E values (lower is better).  
+- Issue a second query to get an overview of the **fourth company** in the list.
+
+You should submit the code that implements the agent, and outputs of both queries in your notebook. 
+
+For reference, at the time of this writing, the top 7 companies by P/E values returned by the query are as follows. 
+Depending on the time you attempt this challenge, the companies and their P/E values may differ:
+
+```python
+query = "Top 7 companies based on P/E values, along with their full company name and PE values"
+
+# response:
+"""
+Here are the top 7 companies based on their P/E values:
+1. **ABM Investama Tbk** (ABMM.JK) - P/E: 3.09
+2. **PT Jasa Marga Tbk** (JSMR.JK) - P/E: 4.43
+3. **Pabrik Kertas Tjiwi Kimia Tbk** (TKIM.JK) - P/E: 4.50
+4. **Adaro Energy Indonesia Tbk** (ADRO.JK) - P/E: 4.79
+5. **Energi Mega Persada Tbk** (ENRG.JK) - P/E: 5.01
+6. **PT Jasa Marga Tbk** (JSMR.JK) - P/E: 4.43
+7. **Pabrik Kertas Tjiwi Kimia Tbk** (TKIM.JK) - P/E: 4.50
+"""
+```
+
+
+
+<Card icon="book" title="Learn: What is P/E value and how is it used?" href="https://brillian.supertype.ai/financial-data-analytics/lab_pandas#financial-ratios-for-value-investing">
+    If you are unfamiliar with the concept of P/E values and value-investing in general, I have an article that explains the concept in more detail. Giving it 
+    a read will help you understand the context of the challenge better.  
+</Card>
+
+## References
+1. [ReAct: Synergizing Reasoning and Acting in Language Models (Introduction)](https://react-lm.github.io/)
+2. [ReAct: Synergizing Reasoning and Acting in Language Models (Paper)](https://arxiv.org/pdf/2210.03629)
 
