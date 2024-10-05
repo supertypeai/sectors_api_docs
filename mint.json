@@ -23,7 +23,7 @@
     "prompt": "Search..."
   },
   "topbarCtaButton": {
-    "name": "Sign up for Sectors",
+    "name": "Sectors.app",
     "url": "https://sectors.app/auth"
   },
   "topbarLinks": [
