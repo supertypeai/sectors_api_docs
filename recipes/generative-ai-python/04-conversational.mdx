@@ -1,6 +1,6 @@
 ---
-title: "Conversational Tool-Use AI"
-sidebarTitle: "4. Conversational AI Agents with tools and LangGraph"
+title: "Tool-Use ReAct Conversational Agents"
+sidebarTitle: "4. Tool-Use ReAct Agents w/ Streaming"
 description: "By: [Samuel Chan](https://www.github.com/onlyphantom) · October 10, 2024"
 ---
 
@@ -431,8 +431,53 @@ The output of the streaming code will be similar to the one below:
     )]}}
 ```
 
-### Streaming JSON and Structured Output 
+<Tip>
+    ### `flush` the buffer! 
 
+    Disk write and read operations are slow in comparison to RAM-based operations. One way programs can 
+    speed up their operations is by batching characters in a RAM buffer before writing 
+    them at once to disk, dramatically reducing the number of disk write operations.
+
+    The `flush=True` argument in `print` forces the buffer to be written to disk immediately, thus flushing 
+    the buffer. In the case of streaming responses from our AI agent, this has the benefit of ensuring 
+    our users see the output as soon as it is generated, rather than waiting for the buffer to fill up. 
+</Tip>
+
+
+### Streaming JSON and Structured Output 
+Streaming sounds like a really great idea, but also one that would fail if the output is JSON (or any structured syntax, like xml). If we 
+were to stream a JSON object, and use `json.loads` (or `json.dumps`) on the partial JSON, the parsing would fail due to 
+the incomplete syntax. 
+
+The solution is to apply the parser on the input stream so that it could attempt to auto-complete the partial json into 
+a valid and complete JSON object. 
+
+Here is a simple example of one such implementation:
+
+```python
+from langchain_core.output_parsers import JsonOutputParser
+
+model = ChatGroq(model="llama3-8b-8192")
+app2 = model | JsonOutputParser()
+
+
+async def fetch_companies():
+    max_companies = 10
+
+    if max_companies > 0:
+        async for chunk in app2.astream(
+            "generate a list of companies in indonesia and their corresponding ticker in json format. Use a dict with an outer key of 'companies' which contain a list of companies. Each company should have the key 'name' and 'ticker'. Stop at 10 companies."
+        ):
+            print(chunk, flush=True)
+            max_companies -= 1
+
+
+# Call the async function
+asyncio.run(fetch_companies())
+```
+
+And when we observe the output, we will see that the JSON object is being streamed in chunks, and the parser is able to
+correctly infer a valid JSON object from the partial JSON syntax:
 
 ```
 {}
@@ -446,27 +491,27 @@ The output of the streaming code will be similar to the one below:
 {'companies': [{'name': 'PT Bank Central Asia T'}]}
 {'companies': [{'name': 'PT Bank Central Asia Tbk'}]}
 {'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': ''}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BC'}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': ''}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT'}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank'}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mand'}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri'}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri T'}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri Tbk'}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri Tbk', 'ticker': ''}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri Tbk', 'ticker': 'BM'}]}
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri Tbk', 'ticker': 'BMTR'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'B'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBC'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBCA'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBCA'}, {}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBCA'}, {'name': ''}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBCA'}, {'name': 'PT'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBCA'}, {'name': 'PT Bank'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBCA'}, {'name': 'PT Bank Mand'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBCA'}, {'name': 'PT Bank Mandiri'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBCA'}, {'name': 'PT Bank Mandiri T'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBCA'}, {'name': 'PT Bank Mandiri Tbk'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBCA'}, {'name': 'PT Bank Mandiri Tbk', 'ticker': ''}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BBCA'}, {'name': 'PT Bank Mandiri Tbk', 'ticker': 'BB'}]}
 ...
-{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri Tbk', 'ticker': 'BMTR'}, {'name': 'PT Bank Rakyat Indonesia Tbk', 'ticker': 'BBRI'}, {'name': 'PT Astra International Tbk', 'ticker': 'ASII'}, {'name': 'PT Unilever Indonesia Tbk', 'ticker': 'UNVR'}, {'name': 'PT Indofood Sukses Makmur Tbk', 'ticker': 'INDF'}, {'name': 'PT Indocement Tunggal Prakarsa Tbk', 'ticker': 'INTP'}, {'name': 'PT United Tractors Tbk', 'ticker': 'UNTR'}, {'name': 'PT Aneka Tambang Tbk', 'ticker': 'ANTM'}, {'name': 'PT Telekomunikasi Indonesia Tbk', 'ticker': 'TLKM'}]}
+{'companies': [{'name': 'PT Bank Central Asia Tbk', 'ticker': 'BCA'}, {'name': 'PT Bank Mandiri Tbk', 'ticker': 'BMRI'}, {'name': 'PT Bank Rakyat Indonesia Tbk', 'ticker': 'BBRI'}, {'name': 'PT Astra International Tbk', 'ticker': 'ASII'}, {'name': 'PT Unilever Indonesia Tbk', 'ticker': 'UNVR'}, {'name': 'PT Indofood Sukses Makmur Tbk', 'ticker': 'INDF'}, {'name': 'PT Indocement Tunggal Prakarsa Tbk', 'ticker': 'INTP'}, {'name': 'PT United Tractors Tbk', 'ticker': 'UNTR'}, {'name': 'PT Aneka Tambang Tbk', 'ticker': 'ANTM'}, {'name': 'PT Telekomunikasi Indonesia Tbk', 'ticker': 'TLKM'}]}
 ```
 
 
 ## Challenge
 
-<Card title="Earn a Certificate" horizontal icon="award" href="https://github.com/onlyphantom/llm-python/discussions/19">
+<Card title="Earn a Certificate" horizontal icon="award" href="https://github.com/onlyphantom/llm-python/discussions/39">
  There is an associated challenge with this chapter. Successful completion of this challenge will earn you a certificate
  of completion and possibly extra rewards if you're among the top performers.
 </Card>
@@ -496,8 +541,6 @@ Here are the top 7 companies based on their P/E values:
 7. **Pabrik Kertas Tjiwi Kimia Tbk** (TKIM.JK) - P/E: 4.50
 """
 ```
-
-
 
 <Card icon="book" title="Learn: What is P/E value and how is it used?" href="https://brillian.supertype.ai/financial-data-analytics/lab_pandas#financial-ratios-for-value-investing">
     If you are unfamiliar with the concept of P/E values and value-investing in general, I have an article that explains the concept in more detail. Giving it 

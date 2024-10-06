@@ -94,6 +94,13 @@ graph TD
 
 
 ## Implementing Schema Constraints to AI Agents
+For the Challenge in this chapter, we are going to build an AI agent that can (1) extract information from unstructured 
+text, (2) run validation checks on the extracted data based on schema constraints and business logic rules, and (3) generate a structured response ready 
+for downstream tools to process.
+
+This has many practical applications. You can imagine an assistant chatbot that extract information from loose text such as news, 
+press releases, or even user's conversational queries, and then generate structured responses to be fed into a downstream tool. One might 
+also imagine a chatbot that allow user to upload a document, extract information, and then perform some actions based on the extracted data.
 
 ### Structured AI w/ Pydantic
 Let's begin with a simple Python class, `Stock`, that represents a stock and its attributes. We are inheriting from `BaseModel` of the `pydantic` library, a popular data validation library in Python.
@@ -602,7 +609,7 @@ generated = runnable.invoke(create)
 
 ## Challenge
 
-<Card title="Earn a Certificate" horizontal icon="award" href="https://github.com/onlyphantom/llm-python/discussions/19">
+<Card title="Earn a Certificate" horizontal icon="award" href="https://github.com/onlyphantom/llm-python/discussions/39">
  There is an associated challenge with this chapter. Successful completion of this challenge will earn you a certificate
  of completion and possibly extra rewards if you're among the top performers.
 </Card>
@@ -619,7 +626,6 @@ def test_output_parser_mcap():
 
 `text` above contains a negative market capitalization value. The test should validate that the `PydanticOutputParser` raises a `ValueError` when the market capitalization is negative, instead of continuing with the parsing and feed this output into a downstream tool (i.e. report creation tool, database insertion tool etc).
 
-
 1. Use either `unittest` or `pytest` to write the test. `pytest` needs to be installed with `pip install pytest` if you choose the latter (`unittest` is part of the Python standard library).
 2. Implement the test in `test_parser.py` and run it using `pytest test_parser.py` or `python -m unittest test_parser.py`.
 
@@ -627,7 +633,8 @@ def test_output_parser_mcap():
     If you are new to writing Python unit tests, you can watch this video to get an overview of how to write unit tests in Python.   
 </Card>
 
-When you are done, copy and paste your code from `test_parser.py` into a Google Colab notebook along with the result of running the test. Share the link to the Colab notebook in the [discussion thread](https://github.com/onlyphantom/llm-python/discussions/19) for this chapter.
+Use the provided Google Colab template to submit your answer, showing all output from every cell. You may share the link to your Google Colab 
+in the [discussion thread](https://github.com/onlyphantom/llm-python/discussions/39) for grading and feedback.
 
 
  
