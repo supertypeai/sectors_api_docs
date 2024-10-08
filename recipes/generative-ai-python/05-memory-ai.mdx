@@ -3,6 +3,9 @@ title: "Conversational Memory and Tool Use AI Agents"
 sidebarTitle: "5. Conversational Memory AI Agents"
 description: "By: [Samuel Chan](https://www.github.com/onlyphantom) · October 16, 2024"
 ---
+import {TOC} from '/snippets/generative-ai-toc.mdx';
+
+<TOC title="Conversational Memory AI Agents" />
 
 <Note>
     This article is part 5 of the Generative AI for Finance series, and is written using LangChain 0.3.2. 
@@ -201,9 +204,144 @@ Notice the answers to each prompt are contextually relevant to the conversation 
 could not have understood the question about the "central bank of that country" or "with whom does this country compete with"
 without these information injected into the prompt from the conversation history.
 
-### Conversational Agents through `RunnableWithMessageHistory`
+## Conversational Agents through `RunnableWithMessageHistory`
 If you're going through the Generative AI series on your own, you'd probably be reading this article 
 closer to the end of 2024 or later. In that case, you should be using the `RunnableWithMessageHistory` class
-along with the LCEL (LangChain Expression Language) to build your conversational AI agents. This is covered in 
-[Chapter 4: Tool-Use ReAct Agents](/recipes/generative-ai-python/04-conversational) of the series.
+along with the LCEL (LangChain Expression Language) to build your conversational AI agents. ReAct agents and LCEL 
+are topics covered in [Chapter 4: Tool-Use ReAct Agents](/recipes/generative-ai-python/04-conversational) of the series.
 
+The key changes with LangChain 0.3.2 and above are the use of `RunnableWithMessageHistory` to construct a 
+`runnable` -- consistent with what we've learned in previous chapters of this series -- and a more explictly 
+way of handling message history through `InMemoryChatMessageHistory`. `RunnableWithMessageHistory` wraps around a runnable (like 
+the ones we've seen before) but with the added capability of working with chat message history, thus allowing this 
+runnable to read and update the message history in a conversation. 
+
+Unlike other runnables, `RunnableWithMessageHistory` must always be invoked with a `config` that contains the parameters
+for the chat message history.
+
+Let's start with the imports and set up a runnable chain much like you've done in the previous chapters.
+
+```python
+import os
+from dotenv import load_dotenv
+
+from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
+load_dotenv()
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+llm = ChatGroq(model="llama3-8b-8192")
+
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "You're a financial stock advisor with adept knowledge of the Indonesian stock exchange (IDX) and adept at analysing, summarizing, inferring trends from financial information",
+        ),
+        MessagesPlaceholder(variable_name="history"),
+        ("human", "{question}"),
+    ]
+)
+
+chain = prompt | llm
+```
+
+Again, pay special attention to the variable names in the prompt template. We have decided to call it `history` and `question`, but your use-case may vary.
+The big picture idea isn't much different from the previous examples, where we are creating these variables to allow the memory system to augment the prompt before passing it to the model. 
+Set aside syntactic differences, the key idea is to inject, or "copy-paste", into the prompt past conversational rounds so the prompt is contextually informative.
+
+<Tip>
+In a production environment, you might use a persistent implementation of key-value store for this message history, like 
+[`RedisChatMessageHistory`](https://api.python.langchain.com/en/latest/chat_message_histories/langchain_community.chat_message_histories.redis.RedisChatMessageHistory.html) or [`MongoDBChatMessageHistory`](https://python.langchain.com/api_reference/mongodb/).
+
+View the full list of integration packages and providers on [LangChain Providers](https://python.langchain.com/docs/integrations/platforms/).
+</Tip>
+
+With our runnable `chain` set up, let's now:
+- Create an in-memory dictionary to store the message history based on a unique session id
+- Wrap our `chain` with `RunnableWithMessageHistory` to handle the message history through matching the variables in the prompt template.
+
+```python
+store = {}
+
+def get_session_history_by_id(session_id: str):
+    if session_id not in store:
+        store[session_id] = InMemoryChatMessageHistory()
+    return store[session_id]
+
+with_memory = RunnableWithMessageHistory(
+    chain,
+    get_session_history_by_id,
+    # the two variables in the prompt are named 'question' and 'history'
+    input_messages_key="question",
+    history_messages_key="history",
+)
+```
+
+The `get_session_history_by_id` function retrieves the message history based on a unique session id. 
+If the `session_id` is not found in the store, it means the user has not interacted with the agent before, and 
+so a new `InMemoryChatMessageHistory` object is created and stored in the dictionary.
+
+### Runnable with Message History in Action
+With all of that in place, let us now interact with our `with_memory` runnable to see how it performs in a conversation.
+
+```python
+out = with_memory.invoke(
+    {"question": "What are some investable companies on the Indonesian stock market?"},
+    config={"configurable": {"session_id": "supertype"}},
+)
+```
+
+Because `supertype` is not present in `store`, a new `InMemoryChatMessageHistory` object is created on our memory store under the `supertype` key.
+Subsequent interactions with the agent using this `session_id` will refer to this key (pointing to an object containing the conversation history).
+
+Just as how we initialized `store` as an empty dictionary, `print(store)` will show you that the structure of this dictionary is as follows:
+
+```python
+{
+    "supertype": InMemoryChatMessageHistory(),
+    # other session ids and their respective InMemoryChatMessageHistory objects
+    "another_session_id": InMemoryChatMessageHistory(),
+    ...
+}
+
+print(type(store))
+# output: <class 'dict'>
+```
+
+
+And since our `store` has been updated with this new key, let's also print out the content of this new key-value pair:
+
+```python
+print(store['supertype'])
+
+"""
+Human: What are some investable companies on the Indonesian stock market?
+AI: The Indonesian stock market, also known as the Indonesia Stock Exchange (IDX), offers a wide range of investable companies across various sectors. Here are some of the most popular and attractive companies to consider:
+
+1. Bank Central Asia (BBCA): One of the largest banks in Indonesia, with a strong presence in consumer lending and corporate banking.
+2. Bank Rakyat Indonesia (BBRI): Another major bank in Indonesia, with a focus on microfinance and community development.
+3. Astra International (ASII): A diversified conglomerate with interests in automotive, agribusiness, mining, and infrastructure.
+4. Indocement (INTP): A leading cement producer in Indonesia, with a strong market presence and a focus on sustainability.
+5. Indofood Sukses Makmur (INDF): A food and beverage company with a wide range of products, including instant noodles, coffee, and dairy products.
+6. Unilever Indonesia (UNVR): A consumer goods company with a portfolio of well-known brands, including food, beverages, and personal care products.
+7. Aneka Tambang (ANTM): A mining company with a focus on nickel, gold, and copper production.
+8. Adaro Energy (ADRO): A coal mining and energy company with a strong presence in Indonesia's energy sector.
+9. Gudang Garam (GGRM): A leading tobacco company in Indonesia, with a focus on high-quality cigarette products.
+10. PPB (PPB): A food and beverage company with a focus on instant noodles, coffee, and other packaged goods.
+11. MNC Group (MNCN): A media and entertainment company with interests in television, radio, and film production.
+12. XL Axiata (EXCL): A telecommunications company with a focus on mobile and internet services.
+13. Bank Mandiri (BMTR): A major bank in Indonesia, with a strong presence in consumer and corporate lending.
+14. Bumi Resources (BUMI): A mining company with a focus on coal and iron ore production.
+15. Bakrie & Brothers (BNBR): A conglomerate with interests in energy, mining, and real estate.
+
+These companies are listed on the IDX and are considered to be investable, but it's essential to conduct thorough research and due diligence before making any investment decisions. It's also important to consider factors such as valuation, financial performance, industry trends, and macroeconomic conditions before investing in any company.
+
+In addition to these individual companies, investors may also consider investing in exchange-traded funds (ETFs) or index funds that track the IDX or specific sectors within the market. These types of funds can provide diversification and exposure to a broader range of companies and industries.
+"""
+```
+
+### `SQLChatMessageHistory` 
+
+https://python.langchain.com/v0.2/docs/how_to/message_history/
