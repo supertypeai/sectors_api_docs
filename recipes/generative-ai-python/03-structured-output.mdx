@@ -33,7 +33,7 @@ Since this system require the language model to interact with external data sour
 
     User -- (1. Writes prompt) --> Agent
     llm -- (2. NL to Structured query) --> Retriever
-    Retriever -- (3. A structured request) --> db["Sectors API Platform"]
+    Retriever -- (3. A structured request) --> db["Sectors Financial API"]
     db -- (4. A structured response) --> downstream["Tool 2"]
     downstream -- (5. A structured response) --> llm
     llm -- (6. Generate Response) --> User
