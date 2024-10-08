@@ -342,6 +342,119 @@ In addition to these individual companies, investors may also consider investing
 """
 ```
 
+So far, it's looking good! The agent has provided a detailed, on-point response to the user's question. Now, let's test the agent's memory by asking a follow-up question 
+that relies on the information provided in the previous response.
+
+```python
+out2 = with_memory.invoke(
+    {"question": "Tell me more about the first three companies on the list"},
+    config={"configurable": {"session_id": "supertype"}},
+)
+
+print(out2.content)
+
+"""
+Let me provide you with more information about the first three companies on the list:
+
+**1. Bank Central Asia (BBCA)**
+
+Bank Central Asia (BBCA) is one of the largest banks in Indonesia, with a market capitalization of around IDR 150 trillion (approximately USD 10 billion). The bank was founded in 1958 and is headquartered in Jakarta.
+BBCA is a universal bank that offers a wide range of financial services, including consumer lending, corporate banking, treasury, and investment banking. The bank has a strong presence in Indonesia, with over 1,000 branches and 10,000 ATMs across the country.
+BBCA has a solid financial track record, with a strong capital adequacy ratio and a low non-performing loan (NPL) ratio. The bank has also been recognized for its commitment to corporate social responsibility and sustainability.
+
+Some of the key factors that make BBCA an attractive investment opportunity include:
+
+* Strong brand recognition and market presence
+* Diversified revenue stream from various business segments
+* Robust financial performance, with a strong capital position and low NPL ratio
+* Growing demand for financial services in Indonesia, driven by economic growth and increasing middle-class consumption
+
+**2. Bank Rakyat Indonesia (BBRI)**
+
+Bank Rakyat Indonesia (BBRI) is another major bank in Indonesia, with a market capitalization of around IDR 120 trillion (approximately USD 8 billion). The bank was founded in 1897 and is headquartered in Jakarta.
+BBRI is a commercial bank that focuses on microfinance and community development, with a strong presence in rural areas. The bank has a network of over 1,000 branches and 10,000 ATMs across Indonesia.
+BBRI has a strong commitment to social responsibility and sustainability, and has been recognized for its efforts to promote financial inclusion and entrepreneurship in Indonesia. The bank has also been expanding its digital banking capabilities, with a focus on mobile banking and online services.
+
+Some of the key factors that make BBRI an attractive investment opportunity include:
+
+* Strong commitment to social responsibility and sustainability
+* Diversified revenue stream from various business segments, including microfinance and corporate banking
+* Growing demand for financial services in Indonesia, driven by economic growth and increasing middle-class consumption
+* Strong brand recognition and market presence
+
+**3. Astra International (ASII)**
+
+Astra International (ASII) is a diversified conglomerate with interests in various sectors, including automotive, agribusiness, mining, and infrastructure. The company was founded in 1957 and is headquartered in Jakarta.
+ASII has a strong presence in Indonesia's automotive sector, with a market share of around 50% in the domestic market. The company also has interests in agribusiness, with a focus on palm oil and soybean production. ASII also has a significant presence in mining, with a focus on nickel and coal production.
+ASII has a strong financial track record, with a solid balance sheet and a track record of generating strong profits. The company has also been recognized for its commitment to sustainability and social responsibility.
+
+Some of the key factors that make ASII an attractive investment opportunity include:
+
+* Diversified revenue stream from various business segments
+* Strong presence in Indonesia's automotive and agribusiness sectors
+* Growing demand for infrastructure development in Indonesia, driven by economic growth and urbanization
+* Strong brand recognition and market presence
+
+These three companies offer investors a range of opportunities to participate in Indonesia's growing economy, from financial services to consumer goods and infrastructure development. However, as with any investment, it's essential to conduct thorough research and due diligence before making a decision.
+"""
+```
+
+It does look like our AI agent handled that follow-up question well! It was able to identify which companies were being referred to and provide 
+detailed information about them. Now that our conversation has grown a little longer, let's see if it still maintains context in the next question.
+
+```python
+out3 = with_memory.invoke(
+    {
+        "question": "Which from the original list are not in the financial sector? I have too much exposure to that sector and wish to diversify away from banking"
+    },
+    config={"configurable": {"session_id": "supertype"}},
+)
+
+print(out3.content)
+
+"""
+Based on the original list, the following companies are not in the financial sector:
+
+* Astra International (ASII) - diversified conglomerate with interests in automotive, agribusiness, mining, and infrastructure.
+* Indofood Sukses Makmur (INDF) - food and beverage company with a wide range of products, including instant noodles, coffee, and dairy products.
+* Gudang Garam (GGRM) - leading tobacco company in Indonesia, with a focus on high-quality cigarette products.
+
+These companies operate in different sectors, such as manufacturing, consumer goods, and commodities, which can help you diversify away from the financial sector.
+
+Astra International, as a conglomerate, has a diversified portfolio of businesses, which can provide a buffer against market volatility and sector-specific risks.
+
+Indofood Sukses Makmur is a leading player in Indonesia's food and beverage industry, with a strong brand presence and a wide range of products that cater to various consumer segments.
+
+Gudang Garam is a well-established tobacco company with a strong market presence in Indonesia. While the tobacco industry has its own set of regulatory and reputational risks, Gudang Garam has a strong brand reputation and a diversified product portfolio.
+
+These companies can provide a good starting point for diversifying away from the financial sector..
+"""
+```
+
+It seems that the AI agent performs admirably in this conversation, providing contextually relevant responses based on the conversation history. Just to test 
+its ability to order these message histories sequentially, I've asked it for the second question as well:
+
+```python
+out4 = with_memory.invoke(
+    {
+        "question": "What was the second question i asked you?"
+    },
+    config={"configurable": {"session_id": "supertype"}},
+)
+
+print(out4.content)
+
+# output:
+"""
+Your second question was: "Tell me more about the first three companies on the list"
+"""
+```
+
+For the most part, the AI agent's ability to store and retrieve these message histories, and the quality of this ability, will be largely 
+dependent on the way we set up the memory system as well as the LLM model itself. If you have been following along with your 
+own LLM model, you might notice a difference in the quality of responses compared to the examples above.
+
+
 ### `SQLChatMessageHistory` 
 
 https://python.langchain.com/v0.2/docs/how_to/message_history/
