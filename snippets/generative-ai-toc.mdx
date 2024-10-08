@@ -1,5 +1,5 @@
 
-export const TOC = ({ title }) => (
+export const TOC = ({ step }) => (
 
 <div>
     <Card
@@ -8,8 +8,12 @@ export const TOC = ({ title }) => (
       icon="microchip-ai"
       href="../recipes/generative-ai-python/01-background"
     >
-      **Ongoing (Q4 '24):** <Icon icon="sparkles" iconType="solid" /> 5-part
-      Generative AI Series Create RAG systems and AI agents with Sectors
+      <span>
+      <b>Ongoing (Q4 '24):</b> <Icon icon="sparkles" iconType="solid"/> 5-part
+      Generative AI Series
+      </span>
+      <hr className="my-4"/>
+      Create RAG systems and AI agents with Sectors
       Financial API, LangChain and state-of-the-art LLM models -- capable of
       producing fact-based financial analysis and financial-specific reasoning.
       **Continually updated** to keep up with the latest major versions of the
@@ -19,8 +23,8 @@ export const TOC = ({ title }) => (
     <Accordion title="Table of Content" defaultOpen="true">
     <Steps titleSize="h3">
       <Step 
-        title={title}
-        icon={title === "Generative AI for Finance" ? "chevron-right" : 1}
+        title="Generative AI for Finance"
+        icon={step === 1 ? "chevron-right" : 1}
         iconType="solid"
       >
         <a href="/recipes/generative-ai-python/01-background">
@@ -30,8 +34,8 @@ export const TOC = ({ title }) => (
         and the motivation for retrieval-augmented generation (RAG) systems.
       </Step>
       <Step
-        title={title}
-        icon={title === "Tool-Use Retrieval Augmented Generation (RAG)" ? "chevron-right" : 2}
+        title="Tool-Use Retrieval Augmented Generation (RAG)"
+        icon={step === 2 ? "chevron-right" : 2}
         iconType="solid"
       >
         <a href="/recipes/generative-ai-python/02-tool-use">
@@ -41,8 +45,8 @@ export const TOC = ({ title }) => (
         (known as "tool-use" or "function-calling" in LLM)
       </Step>
       <Step 
-        title={title}
-        icon={title === "Structured Output from AIs" ? "chevron-right" : 3}
+        title="Structured Output from AIs"
+        icon={step === 3 ? "chevron-right" : 3}
         iconType="solid"      
       >
         From{" "}
@@ -53,8 +57,8 @@ export const TOC = ({ title }) => (
         more, we need schema and structure in the AI's output.
       </Step>
       <Step 
-        title={title}
-        icon={title === "Tool-use ReAct Agents w/ Streaming" ? "chevron-right" : 4}
+        title="Tool-use ReAct Agents w/ Streaming"
+        icon={step === 4 ? "chevron-right" : 4}
         iconType="solid"
       >
         Updated for LangChain v0.3.2, we explore{" "}
@@ -65,8 +69,8 @@ export const TOC = ({ title }) => (
         agents.
       </Step>
       <Step 
-        title={title}
-        icon={title === "Conversational Memory AI Agents" ? "chevron-right" : 5}
+        title="Conversational Memory AI Agents"
+        icon={step === 5 ? "chevron-right" : 5}
         iconType="solid"
       >
         Updated for LangChain v0.2.3, we dive into{" "}
