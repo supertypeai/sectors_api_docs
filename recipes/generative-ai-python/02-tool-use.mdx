@@ -3,6 +3,9 @@ title: "Tool Use and Function Calling for Finance LLMs"
 sidebarTitle: "2. Tool Use and Function Calling for Finance LLMs"
 description: "By: [Samuel Chan](https://www.github.com/onlyphantom) · August 1, 2024"
 ---
+import {TOC} from '/snippets/generative-ai-toc.mdx';
+
+<TOC step={2} />
 
 ## API-based RAG systems architecture
 We've learned from the [previous chapter](/recipes/generative-ai-python/01-background) that we can use APIs to retrieve data from the web. In this chapter, we'll learn how to use APIs to retrieve data from the web and use it to build a simple financial model.
@@ -23,7 +26,7 @@ form the basis of their text generation. Let's take one more look at the archite
     User -- 1. Writes prompt --> Orchestrator
     Orchestrator -- 2. Queries knowledge store --> Retriever
     Retriever -- 3. Retrieve information --> llm
-    Retriever --> db["Sectors API Platform"]
+    Retriever --> db["Sectors Financial API"]
     llm --->|4. Generate Response| User
 ```
 

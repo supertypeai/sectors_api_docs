@@ -4,6 +4,10 @@ sidebarTitle: "3. Structured Output AIs"
 description: "By: [Samuel Chan](https://www.github.com/onlyphantom) · October 1, 2024"
 ---
 
+import {TOC} from '/snippets/generative-ai-toc.mdx';
+
+<TOC step={3} />
+
 <Note>
     This article is part 3 of the Generative AI for Finance series, and is written using LangChain 0.3.0 (released on 14th September 2024). 
     
@@ -29,7 +33,7 @@ Since this system require the language model to interact with external data sour
 
     User -- (1. Writes prompt) --> Agent
     llm -- (2. NL to Structured query) --> Retriever
-    Retriever -- (3. A structured request) --> db["Sectors API Platform"]
+    Retriever -- (3. A structured request) --> db["Sectors Financial API"]
     db -- (4. A structured response) --> downstream["Tool 2"]
     downstream -- (5. A structured response) --> llm
     llm -- (6. Generate Response) --> User

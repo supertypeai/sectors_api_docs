@@ -160,7 +160,8 @@
         {
           "group": "Conversational Financial Agents",
           "pages": [
-            "recipes/generative-ai-python/04-conversational"
+            "recipes/generative-ai-python/04-conversational",
+            "recipes/generative-ai-python/05-memory-ai"
           ]
         }
       ]

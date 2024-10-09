@@ -1,3 +1,4 @@
 .env
 recipes/*/*.py
 __pycache__/
+*.db
