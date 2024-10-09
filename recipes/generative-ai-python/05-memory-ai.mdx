@@ -399,8 +399,14 @@ These three companies offer investors a range of opportunities to participate in
 """
 ```
 
-It does look like our AI agent handled that follow-up question well! It was able to identify which companies were being referred to and provide 
-detailed information about them. Now that our conversation has grown a little longer, let's see if it still maintains context in the next question.
+### Different `session_id` for different Conversations
+
+It does look like our AI agent handled that follow-up question well! 
+
+By matching the `session_id`, it was able to identify which companies were being referred to and inject the right 
+context from our memory store.
+
+Now that our conversation has grown a little longer, let's see if it still maintains context in the next question.
 
 ```python
 out3 = with_memory.invoke(
@@ -450,11 +456,479 @@ Your second question was: "Tell me more about the first three companies on the l
 """
 ```
 
-For the most part, the AI agent's ability to store and retrieve these message histories, and the quality of this ability, will be largely 
+For the most part, the AI agent's ability to store and retrieve these message histories, and the quality of this ability, will be  
 dependent on the way we set up the memory system as well as the LLM model itself. If you have been following along with your 
 own LLM model, you might notice a difference in the quality of responses compared to the examples above.
 
+It should come as no surprise that when we try to access a different `session_id`, the agent will not be able to retrieve the conversation history
+from the `store` dictionary and will promptly create a new `InMemoryChatMessageHistory` object for that `session_id`, as implemented in the `get_session_history_by_id` function.
+
+```python
+out2 = with_memory.invoke(
+    {"question": "What was the second question i asked you?"},
+    config={"configurable": {"session_id": "2"}},
+)
+
+print(out2.content)
+# output:
+# I apologize, but this is the beginning of our conversation, and you haven't asked me any questions yet. 
+# I'm here to help, so feel free to ask me anything you'd like!
+```
+
+### Advanced configuration for message histories tracking
+Recall that this is our current implementation carried over from the previous sections:
+
+```python
+with_memory = RunnableWithMessageHistory(
+    chain,
+    get_session_history_by_id,
+    input_messages_key="input", # originally 'question'
+    history_messages_key="history",
+)
+```
+
+This function in fact, also accepts an optional parameter, `history_factory_config` that expects a list of `ConfigurableFieldSpec` objects.
+
+```python
+from langchain_core.runnables import ConfigurableFieldSpec
+
+with_memory = RunnableWithMessageHistory(
+    chain,
+    get_session_history_by_uid_and_convoid,
+    input_messages_key="input",
+    history_messages_key="history",
+    history_factory_config=[
+        ConfigurableFieldSpec(
+            id="user_id",
+            annotation=str,
+            name="User ID",
+            description="Unique identifier for the user.",
+            default="",
+            is_shared=True,
+        ),
+        ConfigurableFieldSpec(
+            id="conversation_id",
+            annotation=str,
+            name="Conversation ID",
+            description="Unique identifier for the conversation.",
+            default="",
+            is_shared=True,
+        ),
+    ],
+)
+```
+
+Notice that I've also changed the `get_session_history` to this new function that I have yet to create, so let's go ahead 
+and create it:
+
+```python
+# Create an in-memory chat history store
+store = {}
+
+
+def get_session_history_by_uid_and_convoid(user_id: str, conversation_id: str):
+    concatenated = f"{user_id}_{conversation_id}"
+
+    if concatenated not in store:
+        store[concatenated] = InMemoryChatMessageHistory()
+    return store[concatenated]
+```
+
+I have also slightly modified my `prompt` for this example, even though it's not necessary for the 
+`history_factory_config` to work. 
+
+```python
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """You're a bilingual financial stock advisor with adept knowledge of the Indonesian stock exchange (IDX). Answer the users queries with respect to his stock holdings. 
+            Answer in the {language} language, but be casual and not too overly formal.
+            The user's holdings are: {holdings}
+            """,
+        ),
+        MessagesPlaceholder(variable_name="history"),
+        ("human", "{input}"),
+    ]
+)
+
+chain = prompt | llm
+```
+
+Now, to invoke our runnable with the new `history_factory_config`, your `config` will have to match 
+the specifications constructed with the `ConfigurableFieldSpec` objects.
+
+```python
+# correct:
+with_memory.invoke(
+    ...,
+    config={
+        "configurable": {
+            "user_id": "001",
+            "conversation_id": "1",
+        }
+    },
+)
+
+# wrong: 'language' is not known in the history_factory_config
+with_memory.invoke(
+    ...,
+    config={
+        "configurable": {
+            "user_id": "001",
+            "conversation_id": "1",
+            "language": "Bahasa Indonesia",
+        }
+    },
+)
+```
+
+We are going to pretend that we have some internal database that provide us with the stocks owned by the respective 
+users, and mock them up for now. Here's my implementation of `_get_stocks_of_user` and `_get_user_settings_preferences`:
+
+```python 
+def chat(user_id: str, input: str, conversation_id: int = 1):
+
+    # you can replace this with your own database query
+    def _get_stocks_of_user(user_id: str):
+        if user_id == "001":
+            return ["BBCA", "ADRO", "BBRI", "GOTO"]
+        if user_id == "002":
+            return ["BBCA", "ADRO", "BBRI"]
+        return []
+
+    # again, replace this with your own database query
+    def _get_user_settings_preferences(user_id):
+        return {
+            "language": "Bahasa Indonesia",
+            "join_date": "2024-11-01",
+        }
+
+    return with_memory.invoke(
+        {
+            "holdings": _get_stocks_of_user(user_id),
+            "language": _get_user_settings_preferences(user_id)["language"],
+            "input": input,
+        },
+        config={
+            "configurable": {
+                "user_id": user_id,
+                "conversation_id": str(conversation_id),
+            }
+        },
+    )
+```
+
+And now I can initiate a chat, first using user Sam (id `001`), and then user Anonymous (id `002`). 
+
+```python
+out = chat(
+    user_id="001",
+    input="hi, my name is Sam. What stocks do i own? I can't remember",
+)
+
+print(out.content)
+# Hi Sam! Tidak apa-apa, kita bisa cek bersama! Kamu memiliki saham dari beberapa perusahaan, yaitu BBCA, ADRO, BBRI, dan GOTO.
+```
+
+Since I did not specify any `conversation_id`, it will default to `1`. This is verified 
+by printing the `store` dictionary after the first chat:
+
+```python
+print(store.keys())
+# output: dict_keys(['001_1'])
+```
+
+Now with the Anonymous user, we are going to issue a `conversation_id` of `1` explicitly, but due to 
+the implementations of `get_session_history_by_uid_and_convoid`, it will still create a new `InMemoryChatMessageHistory` object. 
+Let's verify that asking the AI for the name (user 1 introduces himself as Sam) will not work for user 2.
+
+```python
+out2 = chat(
+    user_id="002",
+    input="hi, what did i say my name was? Also, please print the full name of the companies I own",
+)
+
+# Hi there! You didn't mention your name, so I'll just address you as "teman" (friend) for now.
+
+# As for your stock holdings, you currently own shares of:
+# 1. Bank Central Asia (BBCA) 
+# 2. PT Adaro Energy Tbk (ADRO)
+# 3. Bank Rakyat Indonesia (Persero) Tbk (BBRI)
+```
+
+Notice that even though the `conversation_id` is the same, our function is implemented in such a way that the 
+AI agent will treat it as a separate conversation. 
+
+```python
+print(store.keys())
+# output: dict_keys(['001_1', '002_1'])
+```
+
+Whenever Sam is ready to continue the conversation, he can do so with the same `conversation_id` of `1`:
+
+```python
+out = chat(
+    user_id="001",
+    input="tell me more about the first one on the list?",
+    conversation_id=1, # can omit, default=1 anyway
+)
+
+# out.content
+"""
+"Hey Sam! So, you want to know more about the first one on the list, BBCA? Well, I can tell you that it's one of the largest commercial banks in Indonesia. 
+They offer a range of financial services, from personal banking to corporate banking, and even have a presence in other countries.
+
+As a stock, BBCA has been performing relatively well in recent years, with a steady increase in its stock price. It's considered a relatively stable investment, 
+with a strong brand and a large customer base. However, as with any stock, there are always risks and uncertainties involved.
+
+If you're looking to learn more, I can give you some insights or even provide some analysis on the stock's performance."
+"""
+
+out = chat(
+    user_id="001",
+    input="sure. tell me if i should hold it long term?",
+)
+
+# out.content
+"""
+"Whether you should hold BBCA long-term depends on your investment goals and risk tolerance. As I mentioned earlier, BBCA has been performing relatively well, 
+but it's always important to consider the bigger picture.
+
+From a fundamental perspective, BBCA has a strong financial position, with a solid capital adequacy ratio and a manageable debt level. They've also been making 
+efforts to diversify their revenue streams and improve their digital offerings.
+
+That being said, the banking industry in Indonesia is highly competitive, and BBCA faces intense competition from other major banks like BRI and Mandiri. 
+Additionally, there are always potential risks from macroeconomic factors, such as interest rate changes or currency fluctuations.
+
+If you're looking to hold BBCA long-term, I'd say it's a relatively stable investment with a strong brand and a large customer base. However, it's always 
+important to monitor the stock's performance and adjust your strategy as needed.
+
+If you're willing to take on a bit more risk, you could also consider exploring other stocks in the Indonesian market. There are many exciting companies in 
+various sectors that could potentially provide higher returns over the long term.\n\nWhat do you think, Sam? Are you looking to hold BBCA long-term, 
+or are you considering other options?"
+"""
+```
 
 ### `SQLChatMessageHistory` 
+Memory implementations vary from simple in-memory dictionaries to more complex, persistent storage systems. The exact 
+implementation will depend on your specific use case, requirements, as well as the library you choose. 
 
-https://python.langchain.com/v0.2/docs/how_to/message_history/
+To demonstrate a more persistent memory system, I will show you how to use `SQLChatMessageHistory` with SQLite.
+
+Start with installing the `langchain-community` package, which contains the `SQLChatMessageHistory` class. As always, I 
+recommend doing this in a virtual environment.
+
+```bash
+pip install langchain-community
+```
+
+Now, import the `SQLChatMessageHistory` class and modify your `get_session_history_by_uid_and_convoid` function to use it,
+swapping out `InMemoryChatMessageHistory` for `SQLChatMessageHistory`.
+
+```python
+- from langchain_core.chat_history import InMemoryChatMessageHistory
++ from langchain_community.chat_message_histories import SQLChatMessageHistory
+
+def get_session_history_by_uid_and_convoid(user_id: str, conversation_id: str):
+    concatenated = f"{user_id}_{conversation_id}"
+
+    # if concatenated not in store:
+    #     store[concatenated] = InMemoryChatMessageHistory()
+    # return store[concatenated]
+    return SQLChatMessageHistory(concatenated, "sqlite:///memory.db")
+```
+
+With SQLite, is a database of that name is not found, it will be created for you. There is no 
+separate setup required for the creation of this database. 
+
+The rest of your code should remain the same, but now when we call `chat(user_id, input)` for the 
+first time, it will create a new `memory.db` file in the same directory as your script. 
+
+```bash
+>>> tree
+.
+├── memory.db
+├── .env
+└── your_script.py
+```
+
+Exploring the database, we can see a table named `message_store` being created for us, identical to 
+the following schema:
+
+```sql
+CREATE TABLE message_store (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT,
+    message TEXT,
+);
+```
+
+Executing `SELECT * FROM message_store` will show you the conversation history stored in the database:
+
+```sql
+id	session_id	message
+1	001_1	{"type": "human", "data": {"content": "hi, my name is Sam. What stocks do i own? I can't remember", "additional_kwargs": {}, "response_metadata": {}, "type": "human", "name": null, "id": null, "example": false}}
+2	001_1	{"type": "ai", "data": {"content": "Hai Sam! Jangan khawatir, kita bisa cek bersama. Kamu memiliki saham dari beberapa perusahaan, yaitu BBCA, ADRO, BBRI, dan GOTO.", "additional_kwargs": {}, "response_metadata": {"token_usage": {"completion_tokens": 45, "prompt_tokens": 104, "total_tokens": 149, "completion_time": 0.0375, "prompt_time": 0.011602009, "queue_time": 0.011325890000000002, "total_time": 0.049102009}, "model_name": "llama3-8b-8192", "system_fingerprint": "fp_af05557ca2", "finish_reason": "stop", "logprobs": null}, "type": "ai", "name": null, "id": "run-eeb5b59e-e257-4093-9cbc-fb40b041dc6f-0", "example": false, "tool_calls": [], "invalid_tool_calls": [], "usage_metadata": {"input_tokens": 104, "output_tokens": 45, "total_tokens": 149}}}
+3	002_1	{"type": "human", "data": {"content": "hi, what did i say my name was? Also, please print the full name of the companies I own", "additional_kwargs": {}, "response_metadata": {}, "type": "human", "name": null, "id": null, "example": false}}
+4	002_1	{"type": "ai", "data": {"content": "Halo! You didn't mention your name, so I'll just address you as \"user\" for now.\n\nAnd, no problem! You own shares of:\n\n1. Bank Rakyat Indonesia (BBCA)\n2. Adaro Energy Tbk (ADRO)\n3. PT Bank Rakyat Indonesia (Persero) Tbk (BBRI)\n\nLet me know what's on your mind, and I'll do my best to help you with your stock holdings!", "additional_kwargs": {}, "response_metadata": {"token_usage": {"completion_tokens": 97, "prompt_tokens": 105, "total_tokens": 202, "completion_time": 0.080833333, "prompt_time": 0.01259477, "queue_time": 0.0019365489999999992, "total_time": 0.093428103}, "model_name": "llama3-8b-8192", "system_fingerprint": "fp_a97cfe35ae", "finish_reason": "stop", "logprobs": null}, "type": "ai", "name": null, "id": "run-6e36701d-377f-426f-b44f-02da77304602-0", "example": false, "tool_calls": [], "invalid_tool_calls": [], "usage_metadata": {"input_tokens": 105, "output_tokens": 97, "total_tokens": 202}}}
+```
+
+<Card title="New to SQL and SQLite?" horizontal icon="cauldron" href="https://brillian.supertype.ai/essentials/sql">
+    Once you've run the code above, a new database is created on your behalf by SQLite. This database exists on 
+    your local machine and can be accessed using a SQLite client, or directly queried using SQL commands. 
+    
+    You can learn more about SQL in the [SQL Essentials](https://brillian.supertype.ai/essentials/sql)
+    guide I wrote, but it is beyond the scope of this article. 
+</Card>
+
+
+## Adding memory to prebuilt `ReAct` agents
+We've learned about the [prebuilt `ReAct` agents in the previous chapter](/recipes/generative-ai-python/04-conversational). Adding in-memory 
+capabilities to these agents is actually fairly straightforward, so let's see a bare minimum example of how to do this.
+
+```python
+from langgraph.checkpoint.memory import MemorySaver
+
+@tool
+def get_company_overview(stock: str) -> str:
+    """
+    Get company overview
+    """
+
+    url = f"https://api.sectors.app/v1/company/report/{stock}/?sections=overview"
+
+    return retrieve_from_endpoint(url)
+
+
+llm = ChatGroq(
+    temperature=0,
+    model_name="llama3-groq-70b-8192-tool-use-preview",
+    groq_api_key=GROQ_API_KEY,
+)
+tools = [
+    get_company_overview, 
+    # ... other tools
+    ]
+memory = MemorySaver()
+
+app = create_react_agent(llm, tools, checkpointer=memory)
+```
+
+The key difference here is the addition of the `MemorySaver` class, which LangChain describes as an in-memory checkpoint saver.
+Just like the `store={}` dictionary we used in the previous examples, this class also 
+stores its checkpoints using a `defaultdict` in memory. 
+
+I've mentioned that `create_react_agent` really requires two arguments: the `llm` model and the `tools` list, but 
+accept additional keyword arguments. If you want to, you can also pass in a `state_modifier` that acts almost like 
+a prompt (we've also seen this earlier):
+
+
+```python
+system_message = "You are an expert tool calling agent meant for financial data retriever and summarization. Use tools to get the information you need. If you do not know the answer to a question, say so."
+app = create_react_agent(llm, 
+    tools, 
+    state_modifier=system_message, 
+    checkpointer=memory
+)
+```
+The rest of the code remains the same from earlier chapters.
+
+I will leave it as an exercise for you to implement the other tools using the `@tool` decorator, but 
+this serves as a sufficient example to demonstrate the use of a tool-using ("function calling") ReAct 
+agent with memory capabilities.
+
+```python
+out = app.invoke({
+        "messages": [
+            HumanMessage(
+                content="Give me an overview of ADRO"
+            )
+        ]
+    }, config={"configurable": {"thread_id": "supertype"}})
+
+
+# result:
+print(out["messages"][-1].content)
+
+"""
+Adaro Energy Indonesia Tbk, listed as ADRO.JK, is a coal production company in the energy sector. 
+It is headquartered at Menara Karya 23rd Floor Jl. H.R. Rasuna Said, Block X-5, Kav. 1-2 Jakarta 12950. 
+The company has a market capitalization of 116,883,055,443,968, ranking it 18th in the market. 
+It has 13,180 employees and is listed on the Main board since July 16, 2008. The latest closing price 
+was 3,800 on October 8, 2024, with a daily close change of -0.0231362467866324. For more information, 
+you can visit their website at www.adaro.com or contact them via email at mahardika.putranto@adaro.com 
+or aditya.sudjono@adaro.com, or by phone at 021-25533000.
+"""
+```
+
+A quick glance at [Sectors report on Adaro Energy Indonesia Tbk (ADRO)](https://sectors.app/idx/ADRO) will confirm 
+that the information provided by the AI agent is accurate, and it was able to retrieve this information from the
+`get_company_overview` tool.
+
+In fact, if we so desire, we can also break down each intermediary message contained in the `out['messages']` list for inspection:
+
+```bash
+>>> [type(m) for m in out['messages']]
+
+# output:
+[
+    <class 'langchain_core.messages.human.HumanMessage'>, 
+    <class 'langchain_core.messages.ai.AIMessage'>, 
+    <class 'langchain_core.messages.tool.ToolMessage'>, 
+    <class 'langchain_core.messages.ai.AIMessage'>
+]
+```
+
+- The first message is a `HumanMessage` object, which is the user's input (e.g. "Give me an overview of ADRO").
+- The second message is an `AIMessage`, which reads the user's input and decides on the right tools to call
+- The third message is a `ToolMessage`, which is the tool call itself (e.g. `get_company_overview`)
+- The fourth message is another `AIMessage`, which is the AI agent's response to the user's input, in plain human language
+
+Sequentially, the messages are as follows:
+
+```txt
+-> HumanMessage(content='Give me an overview of ADRO'...)
+-> AIMessage(content='', additional_kwargs={'tool_calls': [{ '
+    function': {'arguments': '{"stock": "ADRO"}', 'name': 'get_company_overview'}, 'type': 'function'}]}
+)
+-> ToolMessage(content='{"symbol": "ADRO.JK", "company_name": "Adaro Energy Indonesia Tbk", "overview": 
+        {"listing_board": "Main", "industry": "Coal", "sub_industry": "Coal Production", "sector": "Energy", "sub_sector": "Oil, Gas & Coal", "market_cap": 116883055443968, 
+        "market_cap_rank": 18, "address": "Menara Karya 23rd Floor Jl. H.R. Rasuna Said, Block X-5, Kav. 1-2 Jakarta 12950", "employee_num": 13180, "listing_date": "2008-07-16", 
+        "website": "www.adaro.com", "phone": "021-25533000", "email": "mahardika.putranto@adaro.com ; aditya.sudjono@adaro.com", "last_close_price": 3800, 
+        "latest_close_date": "2024-10-08", "daily_close_change": -0.0231362467866324}}', name='get_company_overview', ...)
+
+-> AIMessage(content='Adaro Energy Indonesia Tbk, listed as ADRO.JK, is a coal production company in the energy sector. It is headquartered at Menara Karya 23rd Floor Jl. H.R. Rasuna Said, Block X-5, Kav. 1-2 Jakarta 12950. The company has a market capitalization of 116,883,055,443,968, ranking it 18th in the market. It has 13,180 employees and is listed on the Main board since July 16, 2008. The latest closing price was 3,800 on October 8, 2024, with a daily close change of -0.0231362467866324. For more information, you can visit their website at www.adaro.com or contact them via email at mahardika.putranto@adaro.com or aditya.sudjono@adaro.com, or by phone at 021-25533000.', additional_kwargs={}, response_metadata={'token_usage': {'completion_tokens': 203, 'prompt_tokens': 619, 'total_tokens': 822, 'completion_time': 0.651845143, 'prompt_time': 0.063395509, 'queue_time': 0.0008670310000000042, 'total_time': 0.715240652}, 'model_name': 'llama3-groq-70b-8192-tool-use-preview', 'system_fingerprint': 'fp_ee4b521143', 'finish_reason': 'stop', 'logprobs': None}, id='run-2d411070-5abe-41d1-af07-aec558a58093-0', usage_metadata={'input_tokens': 619, 'output_tokens': 203, 'total_tokens': 822})
+```
+
+Given how often we want to be interacting with the AI agent, I've wrapped the invocation logic into `chat()` 
+and we will now proceed to ask a few follow up questions to see the memory in action.
+
+```python
+def chat(session_id: str, input: str) -> str:
+    out = app.invoke(
+        {
+            "messages": [
+                HumanMessage(
+                    content=input,
+                    session_id=session_id,
+                )
+            ]
+        },
+        config=config,
+    )
+    return out["messages"][-1].content
+
+# invoke the chat to ask a follow up question
+chat("supertype", "what is the latest change in closing price? multiply by 100 to get percentage and answer in 2 decimals")
+# output:
+'The latest change in closing price for Adaro Energy Indonesia Tbk is -0.0231362467866324 * 100 = -2.31%.'
+
+
+chat("supertype", "What is the market cap of Adaro again? Answer succinctly and round it up to billions if necessary, with the IDR currency prefix")
+# output:
+'The market capitalization of Adaro Energy Indonesia Tbk is approximately IDR 116.9 billion.'
+```
+
+To both of these follow-up questions, the AI agent was able to access and draw from its memory to provide 
+the contextually relevant and correct responses. 
