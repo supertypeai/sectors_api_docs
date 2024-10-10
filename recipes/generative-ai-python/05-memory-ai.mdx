@@ -790,6 +790,8 @@ capabilities to these agents is actually fairly straightforward, so let's see a 
 ```python
 from langgraph.checkpoint.memory import MemorySaver
 
+# ...assume retrieve_from_endpoint is defined already, following the previous examples
+
 @tool
 def get_company_overview(stock: str) -> str:
     """
@@ -932,3 +934,59 @@ chat("supertype", "What is the market cap of Adaro again? Answer succinctly and 
 
 To both of these follow-up questions, the AI agent was able to access and draw from its memory to provide 
 the contextually relevant and correct responses. 
+
+## Challenge
+
+Using what you've learned in this chapter, try to implement an end-to-end financial agent that is 
+fun to use and can provide you with the latest stock information, company overviews, and even more. 
+
+Here are some ideas to get you started:
+- [ ] Implement 3 or more tools, each leveraging an external API to retrieve financial data
+- [ ] Implement a CLI interface for your agent, or a simple web interface using any tools of your choice
+- [ ] Implement a memory system that can store and retrieve conversation histories, and use it to provide contextually relevant responses
+
+Here is an example conversation of a passing submission for this challenge:
+
+```zsh
+→: hello
+🤖: Hello! How can I assist you with your financial queries today?
+
+→: what tools do you have access to?
+🤖: I have access to several tools that can help retrieve and summarize financial data. 
+These include tools to get company overviews, rank companies based on various dimensions, and provide performance data since a company's IPO.
+
+→: tell me the largest companies on idx based on market cap
+🤖: To provide you with the largest companies on the IDX based on market cap, 
+I'll need to use the "get_top_companies_ranked" tool. Could you specify the number of companies you're interested in?
+
+→: 5
+🤖: Based on the market capitalization, the top 5 companies on the IDX are:
+1. PT Bank Central Asia Tbk. (BBCA.JK) with a market cap of 1,294,387,581,550,592
+2. PT Barito Renewables Energy Tbk. (BREN.JK) with a market cap of 896,366,184,235,008
+3. PT Chandra Asri Pacific Tbk. (TPIA.JK) with a market cap of 774,277,913,640,960
+4. PT Bank Rakyat Indonesia (Persero) Tbk (BBRI.JK) with a market cap of 753,870,040,989,696
+5. PT Bank Mandiri (Persero) Tbk (BMRI.JK) with a market cap of 664,999,785,660,416
+
+→: great, get me the overview of the last company on the list
+🤖: Here's an overview of PT Bank Mandiri (Persero) Tbk (BMRI.JK):
+- Address: Plaza Mandiri, Jl. Jend. Gatot Subroto Kav.36-38, Jakarta 12190
+- Daily Close Change: 2.91%
+- Email: cma@bankmandiri.co.id
+- Employee Number: 38,769
+- Industry: Banks
+- Last Close Price: 7,075
+- Latest Close Date: 2024-10-08
+...
+
+→: comparing its last close price here, is it higher than that of BBCA's last close price?
+🤖: To compare the last close prices, I'll need to get the latest close price for PT Bank Central Asia Tbk. (BBCA.JK). 
+Shall I proceed?
+
+→: yes
+🤖: The last close price for PT Bank Central Asia Tbk. (BBCA.JK) is 10,400. 
+Comparing this to PT Bank Mandiri (Persero) Tbk's last close price of 7,075, BBCA's last close price is higher.
+
+→: quit()
+🤖: Goodbye!
+```
+
