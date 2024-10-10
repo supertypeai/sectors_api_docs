@@ -1,15 +1,15 @@
 ---
 title: "Stock Portfolio Optimization with Python"
-sidebarTitle: "Stock Portfolio Optimization"
-description: "By: [Rian Yan](https://github.com/rianyan9723) · October 8th, 2024"
+sidebarTitle: "Stock Portfolio Optimization with Python"
+description: "By: [Rian Yan](https://github.com/rianyan9723) · October 8, 2024"
 ---
 
-# Quick Introduction
+## Quick Introduction
 
 This notebook is a supplementary resource for the workshop “Stock Portfolio Optimization with Python” using the Sectors API. It covers these topics: stock investment background and understanding the Sectors API, stock selection overview and two stock portfolio optimization models, followed by further recommendations and insights.
 
 
-# Section 1 - Sectors API & Stock Investment Overview
+## Sectors API & Stock Investment Overview
 
 When considering stock investments, individual investors typically focus on key questions such as: Which stocks to buy? How many shares? What’s the price, growth potential, and risk?
 
@@ -36,7 +36,7 @@ In **Section 3**, we will explore how to effectively query this data from the AP
 
 Which index caught your attention? What do you want to choose?
 
-# Section 2 - Where to start?
+## Where to start?
 
 Recommendation: **Match your investment goals with the property of stock index.**
 |index|Criteria|Description|Persona|Recommended Index|
@@ -66,8 +66,8 @@ We will build the following content for our client Indra.
 
 How to choose specific stocks from an index will be discussed in section 4.
 
-# Section 3 - Data Collection from Sectors API
-## Section 3.1 - Stock Price Information
+## Data Collection from Sectors API
+### 1. Stock Price Information
 
 ```python
 # Retreive Stock index from "Companies by Index" API
@@ -121,7 +121,7 @@ start_date = calculate_start_date()
 # Looping API info
 history_sminfra18 = []
 ```
-## Section 3.2 - Company Report Information
+### 2 Company Report Information
 
 ```python
 for i, x in enumerate(response_company_index.json()):
@@ -166,9 +166,9 @@ for i, x in enumerate(response_company_index.json()):
   ]]
   ```
 
-  # Section 4 - Which Stock to choose?
+  ##  Which Stock to choose?
 
-  ## Section 4.1 - Data Preprocessing
+  ### 1. Data Preprocessing
 
   **How to select stocks**?
 
@@ -267,7 +267,7 @@ df_sminfra18_company_report
 |16|TOWR\.JK|Sarana Menara Nusantara Tbk|Wireless Telecommunication Services|Wireless Telecommunication Services|Infrastructures|71\.69|12786000000000|NaN|0\.0890650998756851|24\.1|0\.0254231836646795|
 |17|UNTR\.JK|United Tractors Tbk|Machinery|Construction Machinery & Heavy Vehicles|Industrials|4274\.33|116960000000000|NaN|-0\.0903948432978027|1569\.0|0\.0932280221953988|
 
-## Section 4.2 - Exploratory Data Analysis (EDA)
+### 2. Exploratory Data Analysis (EDA)
 
 Our goal is to select two or three stocks from a list of 18 for Indra to invest in.
 
@@ -333,7 +333,7 @@ correlation_matrix
 |TOWR\.JK|-0\.1865431914048376|-0\.5024009968957216|0\.368385513760562|-0\.48555082430184326|0\.7263731975491599|-0\.3481709027858281|-0\.611387813599545|-0\.7780482202400613|0\.25276026705833704|-0\.04572721689311738|-0\.2351073231029152|-0\.2645797556689458|-0\.731329490242146|-0\.1234804098767969|-0\.3427041441205732|-0\.6245523636918808|1\.0|0\.2112746039676902|
 |UNTR\.JK|-0\.44114813721718016|0\.19039720779418942|0\.4890767740162628|-0\.2679599156589215|0\.5449126714206115|-0\.6040120596524621|-0\.37164800207902904|-0\.17936652807654763|0\.5656059851195705|0\.0714817282407066|0\.2807642116842334|-0\.3187692504527025|-0\.3318282333603005|0\.1928933786126617|0\.047036835947018116|-0\.5185881293077921|0\.2112746039676902|1\.0|
 
-## Section 4.3 - Normalization & Scoring
+### 3. Normalization & Scoring
 
 We will extract all relevant columns (excluding those related to sectors and industries) from the `df_sminfra18_company_report` to evaluate the growth potential and dividend information for the 18 companies. Based on this analysis, we will assign scores to each company to identify the top candidates. Subsequently, we will validate our selections through diversification considerations concerning industry and sector, as well as correlation analysis.
 
@@ -464,7 +464,7 @@ top_5_companies
 |3|TLKM\.JK|0\.4661163911885356|0\.37573219082021125|0\.5638305101071156|0\.753836511522397|2\.1595156036382597|
 |4|BBNI\.JK|0\.494324407735383|0\.5335913464963639|0\.7193840061180052|0\.33497411144007744|2\.0822738717898295|
 
-## Section 4.4 - Stock selection choice
+###  4. Stock selection choice
 
 Based on the results from Section 4.3, we have identified the top five stock tickers that we should consider for selection, as they have received the highest scores.
 
@@ -546,7 +546,7 @@ plt.show()
 ```
 ![Indra's stock performance](images/Indra-stock-analysis.png)
 
-# Section 5 - MVO with Monte Carlos Simulation
+##  MVO with Monte Carlos Simulation
 
 After understanding which stock to invest in, here are some key questions:
 
@@ -555,6 +555,7 @@ After understanding which stock to invest in, here are some key questions:
 
 This is where Mean-Variance Optimization (MVO) comes in. It’s a method to help us find the optimal way to allocate our capital among various stocks - find the optimal weight.
 
+Step 1: Gather useful information
 
 What are the information we need?
 
@@ -598,7 +599,7 @@ Useful math for Portfolio Optimization. [link](https://www.fields.utoronto.ca/pr
 
 Understand basic concepts of mean (return), variance (risk) and how they work in investing. [link](https://smartasset.com/financial-advisor/mean-variance-optimization)
 
-## Section 5.2 - Mean & Variance
+### 1. Mean & Variance
 
 For this section, for a better illustration of the model, we will randomly generate 4 stocks from the sminfra18 to compose a portfolio to optimize.
 
@@ -690,7 +691,7 @@ plt.show()
 ```
 ![Return Distribution](images/return-distribution.png)
 
-## Section 5.3 Monte Carlo Simulation
+### 2. Monte Carlo Simulation
 
 Monte Carlo simulation is a powerful technique used in portfolio optimization to assess the potential outcomes of different investment strategies or different allocations under varying conditions. It involves generating multiple scenarios based on statistical models and random sampling.
 
@@ -783,7 +784,7 @@ for i in range(num_ports):
   #Sharpe ratio
   sharp_arr[i] = (ret_arr[i] - rf) / vol_arr[i]
 ```
-## Section 5.4 - Sharpe Ratio
+### 3. Sharpe Ratio
 
 Sharpe ratio measures the risk-adjusted return by subtracting the risk-free rate. We want the portfolio weight randomly generated by Monte Carlo Simulation with the highest sharp ratio.
 
@@ -818,7 +819,7 @@ Optimal Weights:  [0.47205837 0.51425067 0.01118475 0.00250621]
 Stock List:  ['PGAS.JK' 'UNTR.JK' 'TBIG.JK' 'TLKM.JK']
 ```
 
-## Section 5.5 - Efficient Frontier
+### 4. Efficient Frontier
 
 The efficient frontier rates portfolios on a  coordinate plane. Plotted on the x-axis is the risk, while return is plotted on the y-axis—annualized standard deviation is typically used to measure risk, while compound annual growth rate (CAGR) is used for return.
 
@@ -838,9 +839,9 @@ plt.grid(True, ls=':', lw=1)
 
 The visualization can be seen above for volatility, return and sharpe ratio. The x-axis shows the volatility, y axis shows the return and the colorbar on right shows the sharpe ratio graded colorwise with dark color showing the lowest and light values showing the highest sharpe ratio. The red star shows the highest Sharpe ratio point on the plot.
 
-# Section 6 - MVO with Scipy Minimized Function
+##  MVO with Scipy Minimized Function
 
-## Section 6.1 - Overview on the method
+### 1. Overview on the method
 
 In our next analysis method, we will optimize the same portfolio allocation mathematically using the minimize function in Scipy (a library in Python) and Sharpe ratio.
 
@@ -865,7 +866,7 @@ def ret_vol_sr(weights):
 ```
 
 
-## Section 6.2 - Scipy Minimize Function
+### 2. Scipy Minimize Function
 
 ```python 
 
@@ -954,7 +955,7 @@ Sharpe Ratio:  2.0678015196575585
 ['PGAS.JK' 'UNTR.JK' 'TBIG.JK' 'TLKM.JK']
 Optimal Weights:  [4.13647417e-01 5.86352583e-01 0.00000000e+00 1.06241346e-14]
 ```
-## Section 6.3 - Result Comparison
+### 3. Result Comparison
 
 ```python 
 # Print Result from Monte Carlos Simulation
@@ -1016,7 +1017,7 @@ The Monte Carlo Simulation provides a diversified portfolio with a balanced appr
 
 Overall, the Scipy optimization yields better risk-adjusted returns (higher Sharpe ratio) and expected returns, making it a more favorable strategy in this context. However, the Monte Carlo simulation’s results reflect a more cautious approach to diversification that may suit risk-averse investors.
 
-# Section 7 - Summary & Recommendation
+## Summary & Recommendation
 Workshop Summary
 
 This workshop explored key concepts in portfolio optimization, focusing on sector analysis, stock selection methodologies, and mean-variance optimization (MVO). The main topics included:
