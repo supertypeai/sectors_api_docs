@@ -1,12 +1,12 @@
 ---
 title: "Stock Portfolio Optimization with Python"
-sidebarTitle: "Stock Portfolio Optimization with Python"
-description: "By: [Rian Yan](https://github.com/rianyan9723) · October 8, 2024"
+sidebarTitle: "1. Stock Portfolio Optimization with Python"
+description: "By: [Rian Yan](https://github.com/rianyan9723) · October 10, 2024"
 ---
 
 ## Quick Introduction
 
-This notebook is a supplementary resource for the workshop “Stock Portfolio Optimization with Python” using the Sectors API. It covers these topics: stock investment background and understanding the Sectors API, stock selection overview and two stock portfolio optimization models, followed by further recommendations and insights.
+This tutorial is a supplementary resource for the workshop “Stock Portfolio Optimization with Python” using the Sectors API. It covers these topics: stock investment background and understanding the Sectors API, stock selection overview and two stock portfolio optimization models, followed by further recommendations and insights.
 
 
 ## Sectors API & Stock Investment Overview
@@ -15,7 +15,7 @@ When considering stock investments, individual investors typically focus on key 
 
 Using the Sectors API, investors gain access to valuable data from the “**Companies by Index**” and “**Daily Transaction Data**” endpoints, including stock indexes, dates, closing prices, volumes, and market capitalizations. Next, the “**Company Report**” API provides additional insights such as EPS, dividends, growth metrics, and other relevant financial information.
 
-In **Section 3**, we will explore how to effectively query this data from the API to build a portfolio optimization model. However, before diving into optimization, it’s crucial to **understand the available stock indexes** and their **respective investment purposes**.
+In [Data Collection from Sectors API](01%20-%20Portfolio-Optimization#data-collection-from-sectors-api), we will explore how to effectively query this data from the API to build a portfolio optimization model. However, before diving into optimization, it’s crucial to **understand the available stock indexes** and their **respective investment purposes**.
 
 |index|Index|Focus|Investment Use|
 |---|---|---|---|
@@ -64,7 +64,6 @@ Now let’s assume my client is Indra, an infrastructure expert optimistic about
 
 We will build the following content for our client Indra.
 
-How to choose specific stocks from an index will be discussed in section 4.
 
 ## Data Collection from Sectors API
 ### 1. Stock Price Information
@@ -121,7 +120,7 @@ start_date = calculate_start_date()
 # Looping API info
 history_sminfra18 = []
 ```
-### 2 Company Report Information
+### 2. Company Report Information
 
 ```python
 for i, x in enumerate(response_company_index.json()):
@@ -466,7 +465,7 @@ top_5_companies
 
 ###  4. Stock selection choice
 
-Based on the results from Section 4.3, we have identified the top five stock tickers that we should consider for selection, as they have received the highest scores.
+Based on the results from the section above, we have identified the top five stock tickers that we should consider for selection, as they have received the highest scores.
 
 Next, we will implement our diversification strategy, focusing on industry and sector, as well as correlation analysis, to select two stocks from this group of five high-scoring candidates.
 
