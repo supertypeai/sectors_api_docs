@@ -1,0 +1,578 @@
+---
+title: "Building Financial Dashboard in Looker Studio"
+sidebarTitle: "3. Financial Dashboard in Looker Studio"
+description: "By: [Aurellia Christie](https://www.github.com/AurelliaChristie) · October 23, 2024"
+---
+
+## IDXV30 Index: Monitoring Indonesia's best-performing value stocks
+
+In this recipe, we'll explore how to build a financial dashboard to track the IDX Value30 (IDXV30) index, one of the most notable stock indices on the IDX.
+The IDXV30 tracks the performance of 30 stocks that not only trade at relatively low valuations, as reflected by the lowest PE ratios and PBV ratios, but also demonstrate strong liquidity and solid fundamentals.
+As of October 21, 2024, based on data from [Sectors.app](https://sectors.app/indonesia/indeks), the IDXV30 has recorded the highest year-to-date (YTD) growth among all indices, with a remarkable increase of +12.64%.
+Given this outstanding performance, we'll dive deeper into the IDXV30 and analyze its performance.
+
+## Connecting financial data to Looker Studio
+
+In [the previous recipe](../02-sheets/02-sheets), Calvin has taught you how to connect our [Sectors Financial API](https://sectors.app/api) to the Google Sheets.
+Now, we'll take it a step further by directly using this [Sheets](https://docs.google.com/spreadsheets/d/16Q4-eVVficT2O3miLo3JNksGwBmc1oLVYxB-X5RS2Cg/edit?usp=sharing), which contains data retrieved from the Sectors Financial API, to build our dashboard in Looker Studio.
+To get started, open the sheet and make a copy so that you have your own version. This will allow you to connect it to your personal Looker dashboard.
+
+![copy_sheet](/recipes/non-programmatical-tools/03-looker/images/copy_sheets.png)
+
+To make things even easier, I've created a [dashboard template](https://lookerstudio.google.com/reporting/9afb6847-86b3-4e5b-8d1e-7b3a5b20edaa) that you can duplicate.
+This way, you won't have to worry about designing the basic layout—it’s already set up for you!
+Simply open the template and make a copy to get started.
+
+![copy_looker](/recipes/non-programmatical-tools/03-looker/images/copy_looker.png)
+
+If you're new to Looker Studio, you'll be prompted to enter your basic information when you attempt to make a copy of the dashboard template.
+Once successful, your dashboard should look like the image below. You'll notice that most options are disabled, except for the `Add data` menu.
+
+![copied_looker](/recipes/non-programmatical-tools/03-looker/images/copied_looker.png)
+
+This happens because no data is connected yet. Let's connect it so we can start builiding our dashboard. First, we'll connect the `Index` sheet data:
+
+- Click the `Add data` menu.
+- Select Google Sheets and authorize Looker to connect to your Google Sheets.
+- Select the sheet you previously copied, select the `Index` worksheet, and click the `Add` button:
+
+  ![add_index](/recipes/non-programmatical-tools/03-looker/images/add_index.png)
+
+  After clicking the button, a pop-up warning will appear. Simply click the `Add to report` button to proceed.
+
+- After adding the data, you can add new [fields](https://support.google.com/looker-studio/answer/6299685?hl=en&ref_topic=7570421&sjid=17239154532795037213-AP#zippy=%2Cin-this-article),
+  [parameters](https://support.google.com/looker-studio/answer/9002005?hl=en&ref_topic=10388842&sjid=17239154532795037213-AP#zippy=%2Cin-this-article),
+  or additional data through the `Data` pane:
+
+  ![data_pane](/recipes/non-programmatical-tools/03-looker/images/data_pane.png)
+
+Using the same steps as before, let's add the remaining sheets one by one: `Overview`, `Daily Data`, `Valuation`, and `Financials`.
+Be aware that some fields may have incorrect data types, such as `Daily Close Change`, `Employee Num`, `Last Close Price`, `Market Cap`, and `Market Cap Rank` in the `Overview` data.
+
+![wrong_type](/recipes/non-programmatical-tools/03-looker/images/wrong_type.png)
+
+To address this issue, we can manage the data sources we've added by navigating to `Resource` > `Manage added data sources`.
+
+![resources_data](/recipes/non-programmatical-tools/03-looker/images/resources_data.png)
+
+Here, we can edit, duplicate, or delete any of the added data sources.
+For now, we’ll focus on editing the data types in the `Overview` data. To do this, click the `Edit` button next to the `Overview` data source.
+Then, choose the right data type for each of the field, and click `Done`:
+
+![edit_type](/recipes/non-programmatical-tools/03-looker/images/edit_type.png)
+
+Do the same steps to edit the data type of the remaining data.
+
+## Managing theme, layout, and page in Looker Studio
+
+Before creating visualizations for our dashboard, let's first select the theme and layout we want to use.
+Open the `Theme and layout` menu and choose a theme that suits your design preferences. You can even extract a theme from any image of your choice, by clicking the `Extract theme from image` button.
+
+![theme](/recipes/non-programmatical-tools/03-looker/images/theme.png)
+
+You can further customize the selected theme, by clicking the `Customize` button next to the `Current Theme`:
+
+![custom_theme](/recipes/non-programmatical-tools/03-looker/images/custom_theme.png)
+
+In this section, you can adjust various elements such as the report background, text styles, data styles, and more.
+Take some time to explore these options and set up a theme that matches your design preferences!
+In this part, I only change the font family to `Open Sans`.
+
+Next, you can adjust the layout of your dashboard in the `Layout` section. There are several options you can customize, including:
+
+- View Mode: control how your dashboard appears in View mode, which you can access by clicking the `View` button next to the `Share` button.
+
+  - I typically set the `Header visibility` to `Initially hidden` so users can focus on the dashboard content immediately upon opening it. Header is the section that contains things like the report title, the share button, and edit button.
+  - I prefer `Tab` Navigation because I find it provides a cleaner and more organized appearance.
+  - And to ensure my report is responsive, I usually set the `Display mode` to `Fit to width`.
+
+  ![layout](/recipes/non-programmatical-tools/03-looker/images/layout.png)
+
+- Canvas Size: controls the width and height of your report on the screen, allowing you to customize its dimensions.
+
+- Snap To: helps you easily layout the components of your report.
+
+  - `Smart guides`: display colored lines to assist in aligning, resizing, and spacing the selected components.
+  - `Grid`: Aligns the selected components to the visible grid on the report canvas for precise positioning.
+
+- Grid Settings: controls the grid size. To show or hide the grid on the report canvas, go to `View` > `View grid` menu.
+
+- Report-level Component Position: Determines how report-level components (those set to display on all pages) interact with other components on the page.
+
+  - `Top`: positions report-level components in front of all other components (similar to the `Bring to front` setting).
+  - `Bottom`: positions report-level components behind all other components (similar to the `Send to back` setting).
+
+Finally, you can adjust the page settings by navigating to `Page` > `Manage pages` menu:
+
+![manage_pages](/recipes/non-programmatical-tools/03-looker/images/manage_pages.png)
+
+In this section you can rename, duplicate, delete, hide, change the order of, and even select icon for each of the page.
+
+![edit_page](/recipes/non-programmatical-tools/03-looker/images/edit_page.png)
+
+If you look at the last two screenshots, you’ll notice dots on the dashboard section; these represent the grid, as I enabled the grid view.
+
+## Connecting multiple data sources and creating visualizations
+
+Now that the data and layout are set up, let's begin creating the visualizations!
+
+### IDXV30 overview
+
+In this first section, we'll create visualizations that provide an overview of the IDXV30.
+The data used will come from the `Index`, `Overview`, and `Valuation` sheets.
+We'll also combine data from these sheets to generate the visualizations.
+
+#### 30 days performance
+
+The first visualization will show the index price change over the last 30 days compared to IHSG, using data from the `Index` sheet.
+This is a key metric to analyze when assessing the performance of a stock index in IDX.
+
+- Go to `Add a chart` > `Line chart` menu:
+
+  ![30_line](/recipes/non-programmatical-tools/03-looker/images/30_line.png)
+
+  We use a line chart instead of a time series chart because our dataset doesn't include weekend data, which would result in null values if a time series chart were used.
+
+- Place the line chart in the top left square.
+
+- Choose the `Index` sheet as the data source, and set the fields as follows:
+
+  - Dimension: `Date`
+  - Breakdown Dimension: `Index Code`
+  - Metric: `Change`
+  - Sort: `Date`, ascending
+
+  ![30_fields](/recipes/non-programmatical-tools/03-looker/images/30_fields.png)
+
+  Notice there is a null value on the first date, as there's no `Price D-1` data for that day. To improve the chart's appearance, let's filter out the null value by adding a filter:
+
+  ![30_add_filter](/recipes/non-programmatical-tools/03-looker/images/30_add_filter.png)
+
+  Exclude where the `Change` field `Is Null`, and click the `Save` button:
+
+  ![30_filter](/recipes/non-programmatical-tools/03-looker/images/30_filter.png)
+
+- You can also adjust the data or display format of each field by clicking the edit button next to the field name:
+
+  ![30_edit](/recipes/non-programmatical-tools/03-looker/images/30_edit.png)
+
+  - For the `Date`, I prefer to change its display format to `Date (- separator)`
+
+    ![30_date](/recipes/non-programmatical-tools/03-looker/images/30_date.png)
+
+  - While for the `Change`, I prefer to change its data type to `Percent`, its display format to `Percent(2)`, and rename it to `Price Change`
+
+    ![30_change](/recipes/non-programmatical-tools/03-looker/images/30_change.png)
+
+  If your changes aren’t reflected immediately, especially for the date format, try modifying other aspects of the field (e.g., adding and then removing a drill down option). This usually triggers the changes to take effect.
+
+- Lastly, add a title to the chart:
+
+  ![30_title](/recipes/non-programmatical-tools/03-looker/images/30_title.png)
+
+  and ensure the y-axis title is displayed for better context:
+
+  ![30_yaxis](/recipes/non-programmatical-tools/03-looker/images/30_yaxis.png)
+
+#### Combining `Overview` and `Valuation` sheets
+
+The remaining visualizations in this **IDXV30 Overview** section will be based on data from the `Overview` and `Valuation` sheets.
+To do this, we first need to combine the two datasets. Thankfully, Looker Studio offers an easy way to combine multiple data sources using **blends**.
+
+Follow these steps to create a blend:
+
+- Go to `Resource` > `Manage blends` menu:
+
+  ![blend_manage](/recipes/non-programmatical-tools/03-looker/images/blend_manage.png)
+
+- Click the `Add a blend` button.
+
+- Select the `Overview` sheet as Table 1.
+
+- Click `Join another table` and choose the `Valuation` sheet as Table 2.
+
+- Select the following fields as Dimensions:
+
+  ![blend_field](/recipes/non-programmatical-tools/03-looker/images/blend_field.png)
+
+- Since the `Valuation` data includes multiple years (2020–2024) in the `Historical Valuation Year` field, we’ll add a filter to include only the 2024 valuation year:
+
+  - Click `Add a filter` > `Create a filter` menu of the Table 2:
+
+    ![blend_add_filter](/recipes/non-programmatical-tools/03-looker/images/blend_add_filter.png)
+
+  - Then, set the filter to include `Historical Valuation Year` field that is equal to `2024` and click the `Save` button:
+
+    ![blend_filter](/recipes/non-programmatical-tools/03-looker/images/blend_filter.png)
+
+- Click the `Configure join` button and select the `Left outer` join operator. Ensure the join condition is set to the `Symbol` field for both tables, and click `Save`.
+
+- Add the data source name, hide repeated join fields, and click the `Save` button:
+
+  ![blend_save](/recipes/non-programmatical-tools/03-looker/images/blend_save.png)
+
+- After the blend is saved, click the `Close` button on the top right.
+
+The blend data is ready to be used to generate visualization!
+
+#### IDXV30 index composition
+
+Next, we'll use a treemap to visualize the composition of sectors, subsectors, and companies based on market capitalization and number of companies in the IDXV30 index:
+
+- Go to `Add a chart` > `Treemap` menu and place the treemap in the top right square.
+
+- Select the `Overview_Valuation` blend as the data source, and set the fields as follows:
+
+  - Dimension: `Sector`, `Sub Sector`, `Company Name`
+  - Level to show: `2`
+  - Metric: `Market Cap`
+
+  Since we chose to display only 2 levels, the treemap will show data for `Sector` and `Sub Sector` only.
+  To access the `Company Name` data within the chart, apply the **drill down** feature:
+
+  ![comp_drill](/recipes/non-programmatical-tools/03-looker/images/comp_drill.png)
+
+  You can drill down or drill up by clicking the button on top of the chart to see how the feature works.
+
+- We’ll also add an **optional metric** so that the index composition can be analyzed not only by market capitalization but also by the number of companies:
+
+  ![comp_optmetric](/recipes/non-programmatical-tools/03-looker/images/comp_optmetric.png)
+
+  You can click on the optional metric button at the top of the chart to toggle between the default metric (market capitalization) and the optional metric (number of companies).
+  Let's also rename the `Company Name` optional metric to `Number of Companies` for better clarity:
+
+  ![comp_rename](/recipes/non-programmatical-tools/03-looker/images/comp_rename.png)
+
+- Finally, add `IDXV30 Index Composition` title to the chart, following the same method we used for the previous chart.
+
+#### Top 5 constituents based on PE and PBV ratios
+
+Since the IDXV30 index is composed of 30 stocks selected for having the lowest PE and PBV ratios, we’ll analyze the top 5 constituents based on these metrics.
+
+For the top 5 constituents with the lowest PE ratio:
+
+- Go to `Add a chart` > `Bar chart` menu and place the bar chart in the bottom left square.
+
+- Select the `Overview_Valuation` blend as the data source, and set the fields as follows:
+
+  - Dimension: `Symbol`
+  - Metric: `Historical Valuation Pe` (rename it to `PE Ratio`)
+  - Sort: `Historical Valuation Pe`, ascending
+
+- To display only the top 5 constituents, limit the number of bars in `Style` > `Bars` to 5:
+
+  ![pe5_bar](/recipes/non-programmatical-tools/03-looker/images/pe5_bar.png)
+
+- Then, show the x-axis title and hide the legend:
+
+  ![pe5_legend](/recipes/non-programmatical-tools/03-looker/images/pe5_legend.png)
+
+Copy and paste the previous chart to generate the top 5 constituents with the lowest PBV ratio. Then, change the `Historical Valuation Pe` field to `Historical Valuation Pb` field and rename it to `PBV Ratio`.
+
+Finally, add a text box on top of the 2 charts, to display the `Top 5 Constituents` title:
+
+![pe5_title](/recipes/non-programmatical-tools/03-looker/images/pe5_title.png)
+
+#### Top 5 daily gainers and losers
+
+The last square of the **IDXV30 Overview** page will display tables for the top 5 daily gainers and losers.
+
+For the top 5 daily gainers:
+
+- Go to `Add a chart` > `Table with heatmap` menu:
+
+  ![gainer_table](/recipes/non-programmatical-tools/03-looker/images/gainer_table.png)
+
+- Place the table in the bottom right square.
+
+- Select the `Overview_Valuation` blend as the data source, and set the fields as follows:
+
+  - Dimension: `Symbol`, `Last Close Price` (rename it to `Latest Close`, change its data type to `Currency (IDR)`, and its display format to `Number(0)`)
+  - Metric: `Daily Close Change` (rename it to `Daily Change` and change its data type to `Percent`)
+  - Number of Rows: `Top N` > `Top rows = 5`:
+
+    ![gainer_topn](/recipes/non-programmatical-tools/03-looker/images/gainer_topn.png)
+
+  - Sort: `Daily Close Change`, descending
+
+- Add `Top 5 Daily Gainers` title to the table.
+
+To generate the top 5 daily losers table:
+
+- Copy and paste the top 5 daily gainers table.
+
+- Change the Sort order to ascending.
+
+- Rename the title to `Top 5 Daily Losers`.
+
+With this last step, the final look of the **IDXV30 Overview** page is as follows:
+
+![idxv30_overview](/recipes/non-programmatical-tools/03-looker/images/idxv30_overview.png)
+
+### Deep analysis of IDXV30 companies
+
+In this section, we'll create visualizations that offer a deeper analysis of IDXV30 companies.
+The data will come from the `Overview`, `Daily Data`, `Valuation`, and `Financials` sheets.
+We'll also combine data from these sheets to produce meaningful insights through various visualizations.
+
+#### 30-day price movement & transaction volume
+
+Analyzing the 30-day price movement and transaction volume helps us understand short-term market trends and investor sentiment for IDXV30 companies.
+Price fluctuations over this period can reveal patterns in market behavior, while transaction volume highlights the intensity of trading activity.
+
+Before creating the visualization, we'll first create a blend to combine `Overview` and `Daily Data` sheets:
+
+- Go to `Resource` > `Manage blends` menu and click the `Add a blend` button.
+
+- Select the `Overview` sheet as Table 1.
+
+- Click `Join another table` and choose the `Daily Data` sheet as Table 2.
+
+- Select the following fields as Dimensions:
+
+  ![daily_blend](/recipes/non-programmatical-tools/03-looker/images/daily_blend.png)
+
+- Click the `Configure join` button and select the `Left outer` join operator. Ensure the join condition is set to the `Symbol` field for both tables, and click `Save`.
+
+- Add the data source name: `Overview_Daily`, hide repeated join fields, and click the `Save` button.
+
+- After the blend is saved, click the `Close` button on the top right.
+
+Now let's create a visualization for the 30-day price movement:
+
+- Go to `Add a chart` > `Line chart` menu and place the line chart in the top left square.
+
+- Choose the `Overview_Daily` as the data source, and set the fields as follows:
+
+  - Dimension: `Date` (change its display format to `Date (- separator)`)
+  - Breakdown Dimension: `Symbol`
+  - Metric: `Close` (change its data type to `Currency (IDR)` and its display format to `Number (0)`)
+  - Sort: `Date`, ascending
+
+- You'll notice that the chart appears crowded due to the large number of symbols.
+  To simplify the view, we can limit the number of displayed lines to a maximum of 5.
+  To do this, go to `Style` > `Number of Series`, and set it to `5 series`:
+
+  ![daily_limit](/recipes/non-programmatical-tools/03-looker/images/daily_limit.png)
+
+  This will reduce visual clutter, allowing for a clearer comparison of the most relevant stocks over the 30-day period.
+
+- Add the `30 Days Price Movement` title to the chart.
+
+To create the 30-day transaction volume chart, simply copy the 30-day price movement chart and change the metric field from `Close` to `Volume`.
+This will show the transaction volumes over the past 30 days. Then, rename the chart title to `30 Days Transaction Volume`.
+Place this chart in the bottom left square.
+
+#### Value investing
+
+Next, we'll dive into the value investing analysis, focusing on identifying undervalued stocks.
+This is done by comparing two key financial metrics: PE (Price to Earnings) and PBV (Price to Book Value) ratios.
+By evaluating each company's PE and PBV ratios against the average ratios of its peer group, we can uncover stocks that are potentially trading at a discount.
+These lower valuations, relative to peers, may signal investment opportunities where the market has underpriced fundamentally strong companies with growth potential.
+
+First, we'll create a new blend between `Overview` and `Valuation` sheets:
+
+- Go to `Resource` > `Manage blends` menu and click the `Add a blend` button.
+
+- Select the `Overview` sheet as Table 1.
+
+- Click `Join another table` and choose the `Valuation` sheet as Table 2.
+
+- Select the following fields as Dimensions:
+
+  ![value_blend](/recipes/non-programmatical-tools/03-looker/images/value_blend.png)
+
+  This time, we won’t apply a filter for the `Historical Valuation Year` in the blend. Instead, we’ll allow users to select the year they want to view in the dashboard.
+
+- Click the `Configure join` button and select the `Left outer` join operator. Ensure the join condition is set to the `Symbol` field for both tables, and click `Save`.
+
+- Add the data source name: `Deep_Valuation`, hide repeated join fields, and click the `Save` button.
+
+- After the blend is saved, click the `Close` button on the top right.
+
+Then, follow this steps to create the PE ratio chart:
+
+- Go to `Add a chart` > `Bar chart` menu and place the bar chart in the top right square.
+
+- Select the `Deep_Valuation` blend as the data source, and set the fields as follows:
+
+  - Dimension: `Symbol`
+  - Metric: `Historical Valuation Pe` (rename it to `PE Ratio`), `Historical Valuation Pe Peer Avg` (rename it to `Peers' Avg. PE Ratio`)
+  - Sort: `Historical Valuation Pe`, ascending
+
+- Limit the number of bars in `Style` > `Bars` to 5 as before.
+
+- Then, show the x-axis title.
+
+Copy and paste the PE Ratio chart to create the PBV Ratio chart.
+Then, update the metric fields to `Historical Valuation Pb` (rename it to `PBV Ratio`) and `Historical Valuation Pb Peer Avg` (rename it to `Peers' Avg. PBV Ratio`).
+
+At this point, you may notice that the PE and PBV ratios displayed in the charts are currently showing the sum of the 2020-2024 ratios, which leads to incorrect information.
+To address this, we’ll add a filter that enables users to select the specific year they wish to display, ensuring accurate and relevant data:
+
+- Go to `Add a control` > `Drop-down list` menu:
+
+  ![value_add_filter](/recipes/non-programmatical-tools/03-looker/images/value_add_filter.png)
+
+- Place the filter above the PBV ratio chart.
+
+- Select the `Deep_Valuation` blend as the data source, and set the fields as follows:
+
+  - Control Field: `Historical Valuation Year` (rename it to `Year`)
+  - Default Selection: `2024`
+  - Metric: -
+  - Order: `Historical Valuation Year`, descending
+
+- Since we only want the user to be able to select one year at a time, go to the `Style` menu and tick the `Single-select` option.
+
+  ![value_single](/recipes/non-programmatical-tools/03-looker/images/value_single.png)
+
+To complete the **Value investing** section, add a `Value Investing` title above both charts, and beneath them, include the following explanatory text:
+
+```
+A company with a lower PE or PBV ratio than its peers may be
+undervalued, indicating a potential long-term growth opportunity
+as the market corrects its price.
+```
+
+![value_final](/recipes/non-programmatical-tools/03-looker/images/value_final.png)
+
+#### Profitability metrics and financial performance
+
+In this section, we focus on analyzing key profitability and financial performance metrics such as ROE (Return on Equity), ROA (Return on Assets), and YoY (Year-over-Year) revenue and earnings growth.
+These metrics are essential for evaluating how efficiently a company is using its resources to generate profit and how well it is growing over time.
+
+We will create a blend to join `Overview` and `Financials` sheets before creating the visualizations:
+
+- Go to `Resource` > `Manage blends` menu and click the `Add a blend` button.
+
+- Select the `Overview` sheet as Table 1.
+
+- Click `Join another table` and choose the `Financials` sheet as Table 2.
+
+- Select the following fields as Dimensions:
+
+  ![finance_blend](/recipes/non-programmatical-tools/03-looker/images/finance_blend.png)
+
+- Add a filter to exclude any rows where the `Symbol` field is null:
+
+  ![finance_filter](/recipes/non-programmatical-tools/03-looker/images/finance_filter.png)
+
+- Click the `Configure join` button and select the `Left outer` join operator. Ensure the join condition is set to the `Symbol` field for both tables, and click `Save`.
+
+- Add the data source name: `Overview_Financials`, hide repeated join fields, and click the `Save` button.
+
+- After the blend is saved, click the `Close` button on the top right.
+
+Since the data is ready, let's create the visualization for the profitability metrics:
+
+- Go to `Add a chart` > `Bar chart` menu and place the bar chart in the bottom left square.
+
+- Select the `Overview_Financials` blend as the data source, and set the fields as follows:
+
+  - Dimension: `Symbol`
+  - Metric: `Roe Ttm` (rename it to `ROE TTM`), `Roa Ttm` (rename it to `ROA TTM`)
+  - Sort: `Roe Ttm`, descending
+
+- Limit the number of bars in `Style` > `Bars` to 5 as before.
+
+- Add a `Profitability Metrics` title to the chart and add this note under the chart:
+
+  ```
+  Notes: TTM = Trailing Twelve Months
+  ```
+
+Copy and paste the profitability metrics chart to create the financial performance chart. Then update the fields as follows:
+
+- Dimension: `Symbol`
+- Metric: `Yoy Quarter Revenue Growth` (rename it to `YoY Revenue Growth`), `Yoy Quarter Earnings Growth` (rename it to `YoY Earning Growth`)
+- Sort: `Yoy Quarter Revenue Growth`, descending
+
+Update the title to `Financial Performance` and add the following note below the chart:
+
+```
+Notes: the data used is YoY quarterly growth
+```
+
+#### Adding filters to the dashboard
+
+Now that all visualizations for this page are complete, let’s enhance the page by adding filters.
+These filters will allow users to customize their view by selecting specific sectors, sub sectors, or symbols.
+
+To create a sector filter:
+
+- Navigate to `Add a control` > `Dropdown-list` menu and place the dropdown at the top of the dashboard.
+- Set the data source to `Overview_Daily`, and set the fields as follows:
+
+  - Control Field: `Sector`
+  - Metric: -
+  - Sort: `Sector`, ascending
+
+Repeat the process to add filters for sub sector and symbol:
+
+- For the sub sector filter, select `Sub Sector` as the control field and place it next to the sector filter.
+- For the symbol filter, select `Symbol` as the control field and place it beside the sub sector filter. For this filter, also add `ADRO.JK, ASII.JK, UNTR.JK` as the Default Selection:
+
+  ![filter_default](/recipes/non-programmatical-tools/03-looker/images/filter_default.png)
+
+These controls will allow users to filter data dynamically and focus on specific sectors, sub-sectors, or individual companies within the IDXV30, enabling more tailored and focused analysis.
+
+#### Report-level components and download button
+
+To finalize the **Deep Analysis of IDXV30 Companies** page, we will incorporate some report-level components and a download button.
+Report-level components are elements that remain visible across all pages of the dashboard.
+In this case, these components will include the dashboard title, the [Supertype](https://supertype.ai) logo, and the dashboard footer.
+
+We’ll also add a download button as a report-level component, ensuring that users can easily download the dashboard from any page they are viewing.
+This feature provides convenience and enhances user experience by enabling quick access to export options without navigating to a specific section.
+
+To add report-level components, let's go back to the **IDXV30 Overview** page and follow these steps:
+
+- Right-click on the title of the report.
+- Select the `Make report-level` option from the dropdown menu.
+
+That’s it! You've now set the title as a report-level component, meaning it will appear on all pages of the dashboard. Check the second page if you don't believe me 👀
+
+Repeat these same steps for the Supertype logo and the footer — to make them report-level components.
+
+Finally, let's add the download button:
+
+- Go to `Add a control` > `Button` menu and place the button next to the Supertype logo.
+
+- Set the Button Action Type to `Report Actions`.
+
+- Then, set the Choose a Report Action for the Button to `Download report`:
+
+  ![download_button](/recipes/non-programmatical-tools/03-looker/images/download_button.png)
+
+- Double-click the button and rename the `New button` to `Download`.
+
+- Set the font size, font color, and the background color on the `Style` menu:
+
+  ![download_style](/recipes/non-programmatical-tools/03-looker/images/download_style.png)
+
+- Lastly, set the button as a report-level component.
+
+This is the final look of the dashboard:
+
+![final_1](/recipes/non-programmatical-tools/03-looker/images/final_1.png)
+
+![final_2](/recipes/non-programmatical-tools/03-looker/images/final_2.png)
+
+## Sharing your dashboard
+
+Once you've completed building the dashboard, it's time to share it with others.
+Looker makes it easy to share your dashboard via email, embed it in websites, or generate shareable links for easy access.
+You can also schedule automatic email reports to keep stakeholders updated regularly.
+
+To do those things, you just have to open the `Share` menu and choose which action you want to take:
+
+![share_menu](/recipes/non-programmatical-tools/03-looker/images/share_menu.png)
+
+## Go beyond
+
+Congratulations on finishing your IDXV30 dashboard! You’ve gained valuable experience in creating visualizations, blending data sources, and enhancing interactivity in your analyses.
+Now that you've honed your skills, consider taking on new challenges by exploring the creation of dashboards for other data from [Sectors Financial API](https://sectors.app/api).
+Happy learning!
+
+Note: You can access the final dashboard [here](https://lookerstudio.google.com/reporting/7243b033-af62-4934-949c-1095c2fc0f64).

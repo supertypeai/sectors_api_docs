@@ -1,5 +1,5 @@
 {
-  "name": "Sectors API",
+  "name": "Sectors Financial API",
   "logo": {
     "dark": "/logo/sectors_logo_wide.png",
     "light": "/logo/sectors_logo_wide.png",
@@ -138,7 +138,7 @@
       "group": "Financial Analytics w/ Streamlit",
       "pages": [
         {
-          "group": "Building an interactive WebApp",
+          "group": "Building an Interactive WebApp",
           "pages": [
             "recipes/build-python-app/sectorscan/01-sectorscan-part1",
             "recipes/build-python-app/sectorscan/02-sectorscan-part2"
@@ -177,10 +177,11 @@
       ]
     },
     {
-      "group": "Using API in Spreadsheets",
+      "group": "API in Spreadsheets & BI Tools",
       "pages": [
-        "recipes/non-programmatical-tools/00-excel/00-excel",
-        "recipes/non-programmatical-tools/01-sheets/01-sheets"
+        "recipes/non-programmatical-tools/01-excel/01-excel",
+        "recipes/non-programmatical-tools/02-sheets/02-sheets",
+        "recipes/non-programmatical-tools/03-looker/03-looker"
       ]
     }
   ],
