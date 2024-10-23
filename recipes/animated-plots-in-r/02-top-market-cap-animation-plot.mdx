@@ -10,9 +10,9 @@ Market capitalization, often referred to as market cap, is a measure of a compan
 
 ## Analysis
 
-Given the significance of market capitalization in stock assessment, we will examine the evolving rankings of stocks based on their market capitalization values since December 2020 on the Indonesia Stock Exchange. We can directly fetch the historical market capitalization using the [Sectors API](https://sectors.app/api). To access the API you only need to go to the [Sectors website](https://sectors.app), subscribe to the plan and call the API directly from your script or notebook.
+Given the significance of market capitalization in stock assessment, we will examine the evolving rankings of stocks based on their market capitalization values since December 2020 on the Indonesia Stock Exchange. We can directly fetch the historical market capitalization using the [Sectors Financial API](https://sectors.app/api). To access the API you only need to go to the [Sectors website](https://sectors.app), subscribe to the plan and call the API directly from your script or notebook.
 
-Below is the code how to fetch the historical market capitalization data using the [Sectors API](https://sectors.app/api).
+Below is the code how to fetch the historical market capitalization data using the [Sectors Financial API](https://sectors.app/api).
 
 ```{r}
 # Load necessary libraries
@@ -76,9 +76,9 @@ df_daily_hist <- df_daily_hist %>%
   rename("market_cap"="last_market_cap")
 ```
 
-Or if you haven't subscribe to the [Sectors API](https://sectors.app/api), I already upload [the dataset](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/dataset/most_traded_stocks.csv) for this analysis in this repository and it is provided by [Sectors](https://sectors.app), who have already compiled and curated the data for our use in this analysis, simplifying the process for us. The dataset is consist of the monthly market capitalization for each companies since December 2020, and using this data we will create a animated plot to see the top 10 stocks with highest market capitalization on Indonesia Stock Exchange.
+Or if you haven't subscribe to the [Sectors Financial API](https://sectors.app/api), I already upload [the dataset](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/dataset/most_traded_stocks.csv) for this analysis in this repository and it is provided by [Sectors](https://sectors.app), who have already compiled and curated the data for our use in this analysis, simplifying the process for us. The dataset is consist of the monthly market capitalization for each companies since December 2020, and using this data we will create a animated plot to see the top 10 stocks with highest market capitalization on Indonesia Stock Exchange.
 
-Here is the glimpse of the data which you can directly fetch from [Sectors API](https://sectors.app/api) or you can directly access the data from [here](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/dataset/historical_marketcap.csv) which is directly from [Sectors](https://sectors.app). But be sure to subscribe to [Sectors API](https://sectors.app/api) for more flexible data retrieval options and the opportunity to expand your analytical data sources.
+Here is the glimpse of the data which you can directly fetch from [Sectors Financial API](https://sectors.app/api) or you can directly access the data from [here](https://github.com/supertypeai/sectors_api_docs/blob/feat/recipes/recipes/animated-plots-in-r/dataset/historical_marketcap.csv) which is directly from [Sectors](https://sectors.app). But be sure to subscribe to [Sectors Financial API](https://sectors.app/api) for more flexible data retrieval options and the opportunity to expand your analytical data sources.
 
 | date       | symbol  | market_cap   |
 | ---------- | ------- | ------------ |

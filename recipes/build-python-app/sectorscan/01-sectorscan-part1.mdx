@@ -22,7 +22,7 @@ To follow this recipe, you need the following prerequisites:
 
 - Python installed on your machine
 - Visual Studio Code or an IDE of your choice
-- Valid API keys from Sectors API, which you can acquire from your [Sectors App](https://sectors.app/api) account
+- Valid API keys from Sectors Financial API, which you can acquire from your [Sectors App](https://sectors.app/api) account
 - The [pip](https://pypi.org/project/pip/) management tool
 - `streamlit v.1.35.0` package installed, by running the following code:
 
@@ -34,9 +34,9 @@ To follow this recipe, you need the following prerequisites:
 
 ## Dive into the data
 
-In this section, we'll dive into exploring and visualizing data from the Sectors API, setting the foundation for our app. Feel free to use [Google Colab](https://colab.research.google.com/) or create a `.ipynb` notebook in your IDE to follow along and experiment with the data. We'll start by getting familiar with the data and creating some insightful visualizations.
+In this section, we'll dive into exploring and visualizing data from the Sectors Financial API, setting the foundation for our app. Feel free to use [Google Colab](https://colab.research.google.com/) or create a `.ipynb` notebook in your IDE to follow along and experiment with the data. We'll start by getting familiar with the data and creating some insightful visualizations.
 
-Alright, first things first. Please make sure you already have your API key from your [Sectors App](https://sectors.app/api). And since we'll be calling some endpoints from the Sectors API, let's create a simple function to handle this. This will make our next steps much easier:
+Alright, first things first. Please make sure you already have your API key from your [Sectors App](https://sectors.app/api). And since we'll be calling some endpoints from the Sectors Financial API, let's create a simple function to handle this. This will make our next steps much easier:
 
 ```python
 def fetch_data(url):
@@ -57,7 +57,7 @@ def fetch_data(url):
 
 ### List of All Sectors
 
-Before we can compare data from different sectors, we need to get a list of all available sectors. This can be achieved by using the following endpoint from the Sectors API:
+Before we can compare data from different sectors, we need to get a list of all available sectors. This can be achieved by using the following endpoint from the Sectors Financial API:
 
 ```
 GET https://api.sectors.app/v1/subsectors/
@@ -590,7 +590,7 @@ That will result in this beautiful chart:
 
 For the other metrics, just change all the `Price/Book Ratio` in the code above with the metric: `Price/Earning Ratio`, `Price/Sales Ratio`, or `Price/Cash Flow Ratio`, and you should get a similar visualization as above but with the chosen metric value.
 
-### Top Companies
+### Top companies
 
 The last aspect we'll compare between the sectors is the Top Companies. For this comparison, we'll use four criteria to identify the top companies in each sector:
 

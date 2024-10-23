@@ -1,84 +1,86 @@
-
 export const TOC = ({ step }) => (
 
 <div>
-    <Card
-      horizontal
-      title="Generative AI series"
-      icon="microchip-ai"
-      href="../recipes/generative-ai-python/01-background"
-    >
-      <span>
-      <b>Ongoing (Q4 '24):</b> <Icon icon="sparkles" iconType="solid"/> 5-part
+  <Card
+    horizontal
+    title="Generative AI Series"
+    icon="microchip-ai"
+    href="../recipes/generative-ai-python/01-background"
+    className="mb-0"
+  >
+    <span>
+      <b>Ongoing (Q4 '24):</b> <Icon icon="sparkles" iconType="solid" /> 5-part
       Generative AI Series
-      </span>
-      <hr className="my-4"/>
-      Create RAG systems and AI agents with Sectors
-      Financial API, LangChain and state-of-the-art LLM models -- capable of
-      producing fact-based financial analysis and financial-specific reasoning.
-      **Continually updated** to keep up with the latest major versions of the
-      tools and libraries used in the series.
-    </Card>
-    <h2>Generative AI Series: Table of Contents</h2>
+    </span>
+    <hr className="my-4" />
+    Create RAG systems and AI agents with Sectors Financial API, LangChain and
+    state-of-the-art LLM models -- capable of producing fact-based financial
+    analysis and financial-specific reasoning. **Continually updated** to keep
+    up with the latest major versions of the tools and libraries used in the
+    series.
+  </Card>
+  <div className="ml-6">
+    <h4>Generative AI Series: Table of Contents</h4>
     <Accordion title="Table of Content" defaultOpen="true">
-    <Steps titleSize="h3">
-      <Step 
-        title="Generative AI for Finance"
-        icon={step === 1 ? "chevron-right" : 1}
-        iconType="solid"
-      >
-        <a href="/recipes/generative-ai-python/01-background">
-          An overview of designing Generative AI systems for the finance
-          industry
-        </a>{" "}
-        and the motivation for retrieval-augmented generation (RAG) systems.
-      </Step>
-      <Step
-        title="Tool-Use Retrieval Augmented Generation (RAG)"
-        icon={step === 2 ? "chevron-right" : 2}
-        iconType="solid"
-      >
-        <a href="/recipes/generative-ai-python/02-tool-use">
-          Practical guide to building RAG systems leveraging on information
-          retrieval tools
-        </a>{" "}
-        (known as "tool-use" or "function-calling" in LLM)
-      </Step>
-      <Step 
-        title="Structured Output from AIs"
-        icon={step === 3 ? "chevron-right" : 3}
-        iconType="solid"      
-      >
-        From{" "}
-        <a href="/recipes/generative-ai-python/03-structured-output">
-          using Generative AI to extract from unstructured data
-        </a>{" "}
-        or perform actions like database queries, API calls, JSON parsing and
-        more, we need schema and structure in the AI's output.
-      </Step>
-      <Step 
-        title="Tool-use ReAct Agents w/ Streaming"
-        icon={step === 4 ? "chevron-right" : 4}
-        iconType="solid"
-      >
-        Updated for LangChain v0.3.2, we explore{" "}
-        <a href="/recipes/generative-ai-python/04-conversational">
-          streaming, LCEL expressions and ReAct agents
-        </a>{" "}
-        following the most up-to-date practices for creating conversational AI
-        agents.
-      </Step>
-      <Step 
-        title="Conversational Memory AI Agents"
-        icon={step === 5 ? "chevron-right" : 5}
-        iconType="solid"
-      >
-        Updated for LangChain v0.2.3, we dive into{" "}
-        <a href="/recipes/generative-ai-python/05-memory-ai">
-          Creating AI Agents with Conversational Memory
-        </a>
-      </Step>
-    </Steps>
+      <Steps titleSize="h3">
+        <Step
+          title="Generative AI for Finance"
+          icon={step === 1 ? "chevron-right" : 1}
+          iconType="solid"
+        >
+          <a href="/recipes/generative-ai-python/01-background">
+            An overview of designing Generative AI systems for the finance
+            industry
+          </a>{" "}
+          and the motivation for retrieval-augmented generation (RAG) systems.
+        </Step>
+        <Step
+          title="Tool-Use Retrieval Augmented Generation (RAG)"
+          icon={step === 2 ? "chevron-right" : 2}
+          iconType="solid"
+        >
+          <a href="/recipes/generative-ai-python/02-tool-use">
+            Practical guide to building RAG systems leveraging on information
+            retrieval tools
+          </a>{" "}
+          (known as "tool-use" or "function-calling" in LLM)
+        </Step>
+        <Step
+          title="Structured Output from AIs"
+          icon={step === 3 ? "chevron-right" : 3}
+          iconType="solid"
+        >
+          From{" "}
+          <a href="/recipes/generative-ai-python/03-structured-output">
+            using Generative AI to extract from unstructured data
+          </a>{" "}
+          or perform actions like database queries, API calls, JSON parsing and
+          more, we need schema and structure in the AI's output.
+        </Step>
+        <Step
+          title="Tool-use ReAct Agents w/ Streaming"
+          icon={step === 4 ? "chevron-right" : 4}
+          iconType="solid"
+        >
+          Updated for LangChain v0.3.2, we explore{" "}
+          <a href="/recipes/generative-ai-python/04-conversational">
+            streaming, LCEL expressions and ReAct agents
+          </a>{" "}
+          following the most up-to-date practices for creating conversational AI
+          agents.
+        </Step>
+        <Step
+          title="Conversational Memory AI Agents"
+          icon={step === 5 ? "chevron-right" : 5}
+          iconType="solid"
+        >
+          Updated for LangChain v0.2.3, we dive into{" "}
+          <a href="/recipes/generative-ai-python/05-memory-ai">
+            Creating AI Agents with Conversational Memory
+          </a>
+        </Step>
+      </Steps>
     </Accordion>
   </div>
+</div>
 );

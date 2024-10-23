@@ -1,6 +1,6 @@
-# Sectors API Documentation
+# Sectors Financial API Documentation
 
-Welcome to the official documentation of [Sectors API](https://sectors.app/api).
+Welcome to the official documentation of [Sectors Financial API](https://sectors.app/api).
 
 ### Development
 

@@ -10,7 +10,7 @@ description: "By: [Samuel Chan](https://github.com/onlyphantom) · May 18, 2024"
 
 You should be familiar with the basics of R to make the most out of this series, but prior experience with `ggplot2` isn't expected. Like R, packages such as `ggplot2` and `httr` are open-source and free to use.
 
-We'll also use `httr` to make HTTP requests to the Sectors API. Acting as a wrapper around the `curl` package, it exposes a simple and consistent set of http verbs like `GET`, `POST`, `PUT`, and `DELETE` to interact with modern web APIs.
+We'll also use `httr` to make HTTP requests to the Sectors Financial API. Acting as a wrapper around the `curl` package, it exposes a simple and consistent set of http verbs like `GET`, `POST`, `PUT`, and `DELETE` to interact with modern web APIs.
 
 ### Checklist
 
@@ -20,7 +20,7 @@ To make the most out of this recipe, ensure you have met the following requireme
 - RStudio (recommended) or an IDE of your choice
 - `ggplot2`, `httr`, and `jsonlite` packages installed
   - In R, installing a package is as simple as running `install.packages("package_name")`, e.g., `install.packages("ggplot2")`
-- Valid API keys from Sectors API, which you can acquire from your [Sectors App](https://sectors.app/api) account
+- Valid API keys from Sectors Financial API, which you can acquire from your [Sectors App](https://sectors.app/api) account
 
 ## Background: Barito Renewables (BREN) makes history
 
@@ -38,7 +38,7 @@ Barito Renewables (BREN) significant rise is noteworthy for many reasons:
 
 In the following sections, we'll plot the stock prices of BREN and BBCA to visualize the historic moment when BREN became the most valuable company on IDX.
 
-### From Sectors API to R's data frame
+### From Sectors Financial API to R's data frame
 
 In R, you typically load the libraries you need at the beginning of your script. Here, we'll load `httr` and `jsonlite` to make HTTP requests and parse JSON responses, respectively, along with `ggplot2` for data visualization.
 
@@ -48,7 +48,7 @@ library(jsonlite)
 library(ggplot2)
 ```
 
-You can then make a GET request to the Sectors API to retrieve the stock price data for BREN and BBCA. Sectors API documentation provides the following endpoint to get the stock price data for a specific stock (using `BBCA` as an example):
+You can then make a GET request to the Sectors Financial API to retrieve the stock price data for BREN and BBCA. Sectors Financial API documentation provides the following endpoint to get the stock price data for a specific stock (using `BBCA` as an example):
 
 ```
 GET https://api.sectors.app/v1/daily/BBCA/?start=2024-04-01&end=2024-05-15
@@ -149,4 +149,4 @@ You should have a line plot that looks like the one below:
 
 ### Go beyond
 
-The rest of this series will explore more ways you can combine Sectors API with R's powerful data visualization ecosystem to create insightful and visually appealing plots. You can also explore other endpoints provided by the Sectors API to retrieve different types of data, such as financials, dividends, and stock reports, or even combine data from multiple endpoints to richer narratives.
+The rest of this series will explore more ways you can combine Sectors Financial API with R's powerful data visualization ecosystem to create insightful and visually appealing plots. You can also explore other endpoints provided by the Sectors Financial API to retrieve different types of data, such as financials, dividends, and stock reports, or even combine data from multiple endpoints to richer narratives.
