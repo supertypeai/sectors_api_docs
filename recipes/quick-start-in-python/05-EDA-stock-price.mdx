@@ -1,0 +1,116 @@
+---
+title: "Basic Exploratory Data Analysis for Stock Price"
+sidebarTitle: "6. EDA for Stock Price (Seasonal Decomposition)"
+description: "By: [Jeremya Dharmawan](https://github.com/jejejery) · Nov 01, 2024"
+---
+
+Exploratory Data Analysis (EDA) is an essential first step in understanding stock price data, offering insights into patterns and trends over time. Stock prices represent a dynamic time series, capturing how market conditions and external events impact valuation.  This article explores key EDA techniques to interpret stock price variations, from identifying patterns and anomalies to examining price changes in response to significant events, going further beyond **simple moving averages** from the previous recipes to uncover deeper insights.
+
+## Seasonal Decompose
+
+Seasonal decomposition is a powerful method for breaking down stock price data into its fundamental components, revealing underlying patterns that may not be immediately visible. The technique divides the time series data into three main components:
+
+- **Trend**: This component captures the long-term movement in the data, showing the general direction (upward, downward, or stable) in stock prices over time. The trend can highlight market sentiment and provide insights into sustained patterns that might be associated with company performance or broader economic indicators.
+
+- **Seasonal**: The seasonal component reflects recurring fluctuations or cycles in the data, often influenced by periodic events like earnings announcements, fiscal quarters, or even broader economic cycles. Analyzing seasonality allows us to understand recurring behaviors in stock price movements and anticipate potential cyclic trends.
+
+- **Residual**: Also known as the “remainder” or “noise,” this component captures random fluctuations and irregularities in the data that aren’t explained by trend or seasonality. These variations can result from unexpected events, news releases, or other market anomalies.
+
+### Additive vs. Multiplicative Decomposition
+
+When performing seasonal decomposition, it's essential to understand the distinction between **additive** and **multiplicative** models. These two models define how the components (trend, seasonal, and residual) interact within the time series data.
+
+- **Additive Model**: In an additive model, the components are added together to reconstruct the original time series. This model assumes that the effect of each component is constant over time. It’s most suitable when variations in seasonality and residuals are relatively uniform.  
+  - **Formula**: `Y(t) = Trend(t) + Seasonal(t) + Residual(t)`
+
+- **Multiplicative Model**: In a multiplicative model, the components are multiplied to recreate the time series. This model is typically used when the seasonal variations or noise increase or decrease proportionally with the level of the trend. This approach is effective when the amplitude of seasonal effects grows with stock price changes.  
+  - **Formula**: `Y(t) = Trend(t) * Seasonal(t) * Residual(t)`
+
+Choosing between these models depends on the nature of the stock price data. An additive model suits data with relatively stable seasonality, while a multiplicative model is preferable if seasonality varies with the level of the data.
+
+### Code Implementation
+
+Here’s how we can put this into practice. Below is a code snippet to retrieve stock market data from August 2019 up to the current date for BBCA. Get ready—we’re about to dive into an exciting journey of exploration and analysis!
+
+```python
+import requests
+import time
+from datetime import datetime, timedelta
+from google.colab import userdata
+api_key = userdata.get('SECTORS_API_KEY')
+
+ticker = "BBCA"
+
+url = f"https://api.sectors.app/v1/daily/{ticker}/"
+
+headers = {"Authorization": api_key}
+
+# today
+end_date = time.strftime("%Y-%m-%d")
+#start date: end_date - 90 days
+start_date = (datetime.strptime(end_date, "%Y-%m-%d") - timedelta(days=90)).strftime("%Y-%m-%d")
+
+# accumulator array
+data = []
+
+
+def execute(i : int): # recursive procedure
+    global start_date, end_date, data
+    params = {
+    "start": start_date,
+    "end": end_date,
+    }
+    response = requests.request("GET", url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        res = response.json()
+        # concatenate
+        # reverse res
+        res = res[::-1]
+        data = data + res
+    else:
+        print(f"Request failed with status code {response.status_code}")
+
+
+    if(i == 0) : return
+
+    else :
+        end_date =  (datetime.strptime(start_date, "%Y-%m-%d") - timedelta(days=1)).strftime("%Y-%m-%d")
+        start_date = (datetime.strptime(end_date, "%Y-%m-%d") - timedelta(days=90)).strftime("%Y-%m-%d")
+
+        return execute(i-1)
+
+# try to fulfill with 20 iterations
+execute(20)
+# reverse the order
+df = pd.DataFrame(data[::-1])
+
+```
+
+Here's the snapshot of the data, since August 2019, when we inspect the `data` variable :
+
+| symbol  | date       | close | volume     | market_cap |
+| ------- | ---------- | ----- | ---------- | ---------- |
+| BBCA.JK | 2019-08-12 | 6040  | 52705000   | NaN        |
+| BBCA.JK | 2019-08-13 | 6015  | 84406000   | NaN        |
+| BBCA.JK | 2019-08-14 | 6010  | 81942000   | NaN        |
+| BBCA.JK | 2019-08-15 | 6000  | 52561500   | NaN        |
+| BBCA.JK | 2019-08-16 | 5960  | 49821500   | NaN        |
+
+After that, we could visualize seasonal decomposition of the close stock price using `seasonal_decompose` from **statsmodel**
+
+```python
+from statsmodels.tsa.seasonal import seasonal_decompose
+df_decompose = df[["date", "close"]]
+df_decompose["date"] = pd.to_datetime(df_decompose["date"])
+df_decompose.set_index("date", inplace=True)
+result = seasonal_decompose(df_decompose['close'], model='additive', period=365)
+fig = result.plot()
+fig.show()
+```
+
+Here is the result:
+![streamlit_start](/recipes/quick-start-in-python/images/seasonal_decompose.png)
+
+
+
