@@ -1,6 +1,6 @@
 ---
-title: "Basic Exploratory Data Analysis for Stock Price"
-sidebarTitle: "6. EDA for Stock Price (Seasonal Decomposition)"
+title: "Basic Exploratory Data Analysis and Simple Machine Learning Prediction for Stock Price"
+sidebarTitle: "6. EDA for Stock Price and Prediction"
 description: "By: [Jeremya Dharmawan](https://github.com/jejejery) · Nov 01, 2024"
 ---
 
@@ -110,7 +110,296 @@ fig.show()
 ```
 
 Here is the result:
-![streamlit_start](/recipes/quick-start-in-python/images/seasonal_decompose.png)
+![seasonal_decompose](/recipes/quick-start-in-python/images/seasonal_decompose.png)
+
+With the seasonal decomposition complete, we can now analyze the periods when the seasonal trend reaches its minimum and maximum values. This helps us understand the cyclical behavior of the stock price over time.
+
+Using the `seasonal` component, we identify the dates where these minimum and maximum values occur. Below is the code snippet to accomplish this:
+
+```python
+import calendar
+
+# Store the seasonal component in a DataFrame
+seasonal = result.seasonal
+
+# Find the date where the seasonal component has minimum and maximum values
+idx_min_date = seasonal.idxmin()
+idx_max_date = seasonal.idxmax()
+min_value = seasonal.min()
+max_value = seasonal.max()
+
+# Retrieve the min_date and max_date from df_decompose based on the index
+min_date = df_decompose.loc[idx_min_date, 'date']
+max_date = df_decompose.loc[idx_max_date, 'date']
+
+# Print the minimum and maximum period of the seasonal trend
+print(f"Minimum period of the seasonal trend: {calendar.month_name[min_date.month]} {min_date.day}")
+print(f"Maximum period of the seasonal trend: {calendar.month_name[max_date.month]} {max_date.day}")
+```
+
+### Explanation:
+
+1. **Extract the Seasonal Component**: We store the seasonal component from the `seasonal_decompose` result in a variable called `seasonal`.
+  
+2. **Find Min/Max Values**: We use `.idxmin()` and `.idxmax()` to get the dates where the seasonal trend reaches its minimum and maximum values, respectively.
+  
+3. **Map Month Numbers to Names**: Using Python’s `calendar.month_name`, we convert the month numbers of these dates into their corresponding month names.
+  
+4. **Display the Results**: We print the minimum and maximum period of the seasonal trend, showing the month and day for each.
+
+The output will look like this:
+
+```
+Minimum period of the seasonal trend: January-22
+Maximum period of the seasonal trend: December-3
+```
+
+The seasonal trend indicates that the stock price tends to reach its lowest point around January 22 and peaks around December 3 each year. 
+Investors might use this insight to time their buying and selling decisions; for instance, they may consider purchasing the stock near January, when prices are relatively low, and selling around early December, when prices historically reach their peak. 
+This approach leverages cyclical patterns but should be balanced with broader market conditions and other financial analyses, as past performance does not guarantee future results.
+
+## Market Volatility
+
+Market volatility refers to the speed and extent of price changes for a financial instrument over a given time period. High volatility suggests significant price swings, whereas low volatility indicates smaller changes. 
+Common ways to measure volatility include historical volatility and implied volatility, the latter being calculated from options prices.
 
 
 
+To better understand market volatility, we can analyze the daily returns of the stock as the first step. 
+Daily return represents the percentage change in stock price from one day to the next, which helps in visualizing the frequency and scale of price fluctuations.
+
+Using the code below, we calculate daily returns and create a time series plot to observe these variations over time:
+
+```python
+import plotly.express as px
+
+# Calculate daily returns as a percentage
+df_return = pd.DataFrame(df['close'])
+df_return['daily_return'] = df_return['close'].pct_change() * 100
+df_return['date'] = df['date']
+df_return.dropna(inplace=True)
+
+# Plot the time series of daily return percentage
+fig = px.line(df_return, x='date', y='daily_return',
+              color_discrete_sequence=['red'],
+              labels={'value': 'Daily Return', 'variable': 'Legend'},
+              title='Daily Return of the Companies')
+fig.show()
+```
+
+The result:
+![daily_return](/recipes/quick-start-in-python/images/daily_return.png)
+
+The resulting plot shows the daily return percentage, highlighting periods of high and low volatility. 
+Sharp peaks indicate days with significant price changes, signaling higher volatility, while flatter areas reflect more stable, low-volatility periods.
+
+After that, we could see the distribution of daily return using this code below.
+```python
+fig_hist = px.histogram(df_return, x='daily_return', nbins=30,
+                        title='Distribution of Daily Return',
+                        labels={'daily_return': 'Daily Return (%)'})
+fig_hist.show()
+```
+The result:
+![dist_daily_return](/recipes/quick-start-in-python/images/dist_daily_return.png)
+
+From the histogram above, we can infer that >50% data have positive daily return.
+
+### The Annualized Volatility
+
+To gain further insights into market volatility, we can calculate the **annualized volatility** of the stock. Annualized volatility provides an estimate of the stock's price fluctuation over a year and helps investors understand long-term risk.
+
+Using a 21-day rolling window (approximately one trading month), we compute the daily standard deviation of returns and scale it to an annual measure by multiplying by the square root of 252, the typical number of trading days in a year. The code below demonstrates this calculation and visualization:
+
+```python
+import numpy as np
+
+# Define rolling window for calculating volatility
+window = 21
+
+# Calculate rolling annualized volatility
+df_decompose['volatility'] = (df_decompose['close'].pct_change().rolling(window=window).std() * np.sqrt(252)).reset_index(0, drop=True)
+df_decompose.dropna(inplace=True)
+# Plot the time series of annualized volatility
+fig = px.line(df_decompose, x='date', y='volatility',
+              color_discrete_sequence=['green'],
+              labels={'value': 'Volatility', 'variable': 'Legend'},
+              title='Volatility of the Companies')
+fig.show()
+```
+
+The result:
+![volatility_plot](/recipes/quick-start-in-python/images/volatility_plot.png)
+
+The plot above visualizes the annualized volatility of the stock over time, where spikes indicate periods of increased volatility and thus higher risk.
+This rolling measure of volatility allows investors to observe how risk levels change over different timeframes and make more informed decisions regarding entry and exit points in response to market conditions.
+
+### Forecasting the Volatility using Machine Learning
+
+After we get the annualized volatility, we could perform the machine learning method in order to forecast the future volatility
+
+#### 1. Feature Engineering
+
+Here's a paraphrased version of the passage for you:
+
+---
+
+In preparation for forecasting volatility, we perform feature engineering to create relevant indicators that capture different aspects of stock behavior.
+These features provide valuable insights into trends, momentum, and volume, which can influence volatility.
+
+1. **21-Day Moving Average**: A rolling mean over the past 21 days, which smooths price data to highlight longer-term trends.
+2. **Relative Strength Index (RSI)**: A momentum indicator over a 14-day window that ranges from 0 to 100, indicating overbought or oversold conditions.
+3. **On-Balance Volume (OBV)**: A volume-based indicator that reflects buying and selling pressure to reveal whether volume is moving in or out of the stock.
+4. **Moving Average Convergence Divergence (MACD)**: A trend-following measure of the difference between two moving averages, helping detect shifts in price trends.
+
+These engineered features provide insights into stock behavior and prepare the data for machine learning. 
+The code below generates these features and removes any missing values:
+
+```python
+from ta.momentum import RSIIndicator
+from ta.trend import MACD
+from ta.volume import OnBalanceVolumeIndicator
+
+# Feature: 21-day Moving Average
+df_decompose['MA_21'] = df_decompose['close'].rolling(window=21).mean()
+
+# Feature: RSI
+rsi = RSIIndicator(df_decompose['close'], window=14)
+df_decompose['RSI'] = rsi.rsi()
+
+# Feature : On-Balance Volume (OBV)
+obv = OnBalanceVolumeIndicator(df['close'], df['volume'])
+df_decompose['OBV'] = obv.on_balance_volume()
+
+# Feature: MACD
+macd = MACD(df_decompose['close'])
+df_decompose['MACD'] = macd.macd_diff()
+
+# Drop NaN values
+df_decompose.dropna(inplace=True)
+```
+
+#### 2. Modeling with Random Forest Regressor
+
+---
+
+With the features now engineered, we can proceed to building a **machine learning model** to forecast future volatility. 
+In this example, we use a **Random Forest Regressor** to predict the stock's future volatility based on the feature set we've created. 
+Random Forests are effective for this type of problem because they handle complex patterns in the data well and are generally robust without requiring extensive parameter tuning.
+
+The code below implements this entire pipeline:
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+import numpy as np
+
+# Create target variable
+df_decompose['future_volatility'] = df_decompose['volatility'].shift(-21)  # Forecast 21 days ahead
+
+# Drop NaN values
+df_decompose.dropna(inplace=True)
+
+# Features and target
+X = df_decompose[['MA_21', 'RSI', 'OBV', 'MACD', 'volatility']]
+y = df_decompose['future_volatility']
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train Random Forest model
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Predict on test data
+y_pred = model.predict(X_test)
+
+# Calculate RMSE
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+print(f'Root Mean Squared Error: {rmse}')
+```
+
+
+The Root Mean Squared Error (RMSE) serves as a metric to quantify the model's prediction error, reflecting the average deviation between predicted and actual future volatility values, 
+where lower RMSE indicates higher forecast accuracy. This is the result from that modeling:
+```
+Root Mean Squared Error: 0.05083765007739254
+``` 
+
+#### 3. Evaluating the Model
+
+To evaluate the effectiveness of our volatility forecasting model, we can visually compare the **actual** and **predicted** volatility values on the test set. 
+This helps us understand how well the model captures the volatility patterns over time.
+
+The plot below shows the actual and predicted values side-by-side:
+
+```python
+import matplotlib.pyplot as plt
+
+# Plot the actual and predicted volatility values
+plt.figure(figsize=(18, 6))
+plt.plot(y_test.values, label='Actual Volatility', color='blue')
+plt.plot(y_pred, label='Predicted Volatility', color='red')
+plt.title('Actual vs Predicted Volatility')
+plt.legend()
+plt.show()
+```
+The result:
+![volatility_forecast](/recipes/quick-start-in-python/images/volatility_forecast.png)
+
+#### 4. Incorporating Volatility Forecasting into a Stock Trading Strategy
+
+---
+
+To incorporate volatility forecasting into a trading strategy through **position sizing**, we can use the model's volatility forecast to adjust the size of our trades. 
+A common approach is to **reduce position size** when higher volatility is predicted (to minimize risk) and **increase position size** when volatility is lower.
+
+Here’s an example of how this concept can be implemented in Python:
+
+1. **Position Sizing Formula**: We can use a basic position sizing rule where position size is inversely related to forecasted volatility. For instance:
+    
+    
+    `Position Size = Target Risk / Forecasted Volatility`
+
+
+   where `Target Risk` is a predefined amount of capital at risk per trade.
+
+2. **Setting Up Parameters**: We define a risk factor and calculate position sizes based on forecasted volatility.
+
+3. **Implementation**: Below, we calculate position sizes for each day based on the model's volatility forecast.
+
+```python
+import numpy as np
+
+# Define target risk (the rupiah amount or percentage of capital to risk per trade)
+target_risk = 10000  # e.g., Rp10.000 risk per trade
+
+# Calculate position sizes based on forecasted volatility
+df_decompose['position_size'] = target_risk / df_decompose['future_volatility']
+
+# Limit position size to avoid excessively large trades during low volatility
+max_position_size = 50000  # Maximum units to trade, based on strategy limits
+df_decompose['position_size'] = np.minimum(df_decompose['position_size'], max_position_size)
+
+# Example output to see the calculated position sizes
+df_decompose[['date', 'future_volatility', 'position_size']].tail()
+```
+
+This calculation helps adjust trade size to match the predicted market conditions:
+
+- **Higher Forecasted Volatility** → Smaller position sizes to limit potential losses.
+- **Lower Forecasted Volatility** → Larger position sizes to take advantage of stable market conditions.
+
+From the volatility forecast of BBCA stock, we can evaluate the potential position sizes for future trades. 
+The results are shown below:
+|   Date      | Future Volatility | Position Size  |
+|-------------|-------------------|----------------|
+| 2024-08-30  | 0.211042          | 47383.833926   |
+| 2024-09-02  | 0.211006          | 47392.010809   |
+| 2024-09-03  | 0.208473          | 47967.750053   |
+| 2024-09-04  | 0.204720          | 48847.234923   |
+| 2024-09-05  | 0.212859          | 46979.355676   |
+
+Stock analysis combining seasonal decomposition and machine learning provides powerful insights into market patterns and risk management. 
+By understanding these patterns and using volatility forecasting for position sizing, traders can make more informed decisions in their investment strategies.
