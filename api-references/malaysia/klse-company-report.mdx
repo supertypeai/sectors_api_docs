@@ -1,0 +1,166 @@
+---
+title: "KLSE Company Report"
+api: "GET /klse/company/report/{ticker}/"
+description: "Return report of a given ticker, organized into distinct sections"
+---
+
+<ResponseExample>
+```json 200
+{
+  "symbol": "1155",
+  "name": "Malayan Banking Berhad",
+  "overview": {
+    "market_cap": 122118045696.0,
+    "volume": 24806300.0,
+    "employee_num": null,
+    "sector": "Financials",
+    "sub_sector": "Banking Services",
+    "change_1d": 0.0019,
+    "change_7d": 0.0057
+  },
+  "valuation": {
+    "pe_ttm": 12.55,
+    "ps_ttm": 4.542991,
+    "pcf": -2.17833246447896,
+    "pcf_ttm": -2.2,
+    "pb": 1.2836124,
+    "pe": 12.493827
+  },
+  "financials": {
+    "historical_earnings": [
+      {
+        "period": "TTM",
+        "earnings": 9944198000.0
+      },
+      {
+        "period": 2023,
+        "earnings": 9349780000.0
+      },
+      {
+        "period": 2022,
+        "earnings": 7960526000.0
+      },
+      {
+        "period": 2021,
+        "earnings": 8096229000.0
+      },
+      {
+        "period": 2020,
+        "earnings": 6481219000.0
+      },
+      {
+        "period": 2019,
+        "earnings": null
+      }
+    ],
+    "historical_revenue": [
+      {
+        "period": "TTM",
+        "revenue": 27362413000.0
+      },
+      {
+        "period": 2023,
+        "revenue": 25992227000.0
+      },
+      {
+        "period": 2022,
+        "revenue": 24714437000.0
+      },
+      {
+        "period": 2021,
+        "revenue": 23815475000.0
+      },
+      {
+        "period": 2020,
+        "revenue": 23183115000.0
+      },
+      {
+        "period": 2019,
+        "revenue": null
+      }
+    ],
+    "eps": 0.83,
+    "gross_margin": null,
+    "operating_margin": 0.49323002,
+    "net_profit_margin": 0.36323002,
+    "five_year_eps_growth": "0.0089",
+    "five_year_sales_growth": 0.031,
+    "five_year_capital_spending_growth": "0.08439999999999999",
+    "asset_turnover": null,
+    "inventory_turnover_ttm": null,
+    "receivable_turnover": null,
+    "quick_ratio": null,
+    "current_ratio": null,
+    "debt_to_equity": null
+  },
+  "dividend": {
+    "dividend_yield_5y_avg": 0.1009,
+    "dividend_growth_rate": "0.0172",
+    "payout_ratio": "0.7275",
+    "forward_dividend": 0.58,
+    "forward_dividend_yield": 0.056799997,
+    "dividend_ttm": 0.6
+  }
+}
+```
+
+```json 400
+{ "error": "Please provide a valid stock ticker." }
+```
+
+```json 400
+{ "error": "Given stock ticker does not exist." }
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Path
+
+<ParamField path="ticker" type="string" initialValue="1155" required>
+  Ticker of the company for which the report is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Examples of the ticker">
+      `1155`, `1023`, `1295`, `5347`, `5225`
+    </Accordion>
+    <Accordion title="Format">
+      A valid `ticker` consists of 4 numbers.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="symbol" type="string" required>
+  The ticker of the company.
+</ResponseField>
+
+<ResponseField name="name" type="string" required>
+  The full name of the company.
+</ResponseField>
+
+<ResponseField name="overview" type="object">
+  An overview of the key metrics of the given ticker.
+</ResponseField>
+
+<ResponseField name="valuation" type="object">
+  Valuation metrics and related information of the given ticker.
+</ResponseField>
+
+<ResponseField name="financials" type="object">
+  Historical financials and key financial ratios of the given ticker.
+</ResponseField>
+
+<ResponseField name="dividend" type="object">
+  Dividend information of the given ticker.
+</ResponseField>

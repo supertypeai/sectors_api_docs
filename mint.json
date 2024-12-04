@@ -69,51 +69,72 @@
       "group": "API References",
       "pages": [
         {
-          "group": "Helper List",
-          "icon": "list-check",
+          "group": "Indonesia",
           "pages": [
-            "api-references/helper-list/subsectors",
-            "api-references/helper-list/industries",
-            "api-references/helper-list/subindustries",
-            "api-references/helper-list/companies-index",
-            "api-references/helper-list/companies-subsector",
-            "api-references/helper-list/companies-subindustry",
-            "api-references/helper-list/companies-segment-list"
+            {
+              "group": "Helper List",
+              "icon": "list-check",
+              "pages": [
+                "api-references/helper-list/subsectors",
+                "api-references/helper-list/industries",
+                "api-references/helper-list/subindustries",
+                "api-references/helper-list/companies-index",
+                "api-references/helper-list/companies-subsector",
+                "api-references/helper-list/companies-subindustry",
+                "api-references/helper-list/companies-segment-list"
+              ]
+            },
+            {
+              "group": "Since IPO Performance",
+              "icon": "chart-line",
+              "pages": [
+                "api-references/ipo/listing-performance"
+              ]
+            },
+            {
+              "group": "Detailed Reports",
+              "icon": "file-contract",
+              "pages": [
+                "api-references/report/company",
+                "api-references/report/company-segment",
+                "api-references/report/subsector"
+              ]
+            },
+            {
+              "group": "Company Ranking by Dimensions",
+              "icon": "ranking-star",
+              "pages": [
+                "api-references/ranking/most-traded",
+                "api-references/ranking/top-tickers",
+                "api-references/ranking/top-changes",
+                "api-references/ranking/top-growth"
+              ]
+            },
+            {
+              "group": "Historical Market Cap & Transaction Data",
+              "icon": "money-bill-transfer",
+              "pages": [
+                "api-references/transaction/idx-mc",
+                "api-references/transaction/daily-transaction",
+                "api-references/transaction/index-daily-transaction"
+              ]
+            }
           ]
         },
         {
-          "group": "Since IPO Performance",
-          "icon": "chart-line",
+          "group": "Singapore",
           "pages": [
-            "api-references/ipo/listing-performance"
+            "api-references/singapore/sgx-sector",
+            "api-references/singapore/sgx-company-report",
+            "api-references/singapore/sgx-top-companies"
           ]
         },
         {
-          "group": "Detailed Reports",
-          "icon": "file-contract",
+          "group": "Malaysia",
           "pages": [
-            "api-references/report/company",
-            "api-references/report/company-segment",
-            "api-references/report/subsector"
-          ]
-        },
-        {
-          "group": "Company Ranking by Dimensions",
-          "icon": "ranking-star",
-          "pages": [
-            "api-references/ranking/most-traded",
-            "api-references/ranking/top-tickers",
-            "api-references/ranking/top-changes",
-            "api-references/ranking/top-growth"
-          ]
-        },
-        {
-          "group": "Historical Market Cap & Transaction Data",
-          "icon": "money-bill-transfer",
-          "pages": [
-            "api-references/transaction/idx-mc",
-            "api-references/transaction/daily-transaction",
-            "api-references/transaction/index-daily-transaction"
+            "api-references/malaysia/klse-sector",
+            "api-references/malaysia/klse-company-report",
+            "api-references/malaysia/klse-top-companies"
           ]
         }
       ]
