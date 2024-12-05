@@ -1,0 +1,80 @@
+---
+title: "SGX Companies by Sector"
+api: "GET /sgx/companies/"
+description: "Return list of companies in SGX Index from a sector"
+---
+
+<ResponseExample>
+```json 200
+[
+  {
+    "symbol": "D05",
+    "company_name": "DBS"
+  },
+  {
+    "symbol": "U11",
+    "company_name": "UOB"
+  },
+  {
+    "symbol": "S35",
+    "company_name": "Sing Investments & Finance Ltd"
+  },
+  ...
+]
+```
+
+```json 400
+["The requested sector does not exist."]
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="sector" type="string" initialValue="insurance" required>
+  Sector from which the list of companies is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sector">
+      Get the available `sector` from the [SGX Sectors](./sgx-sector)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sector">
+      `food-drug-retailing`, `energy-minerals`, `holding-companies`, `banking-investment-services`, `real-estate`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="Company[]" required>
+  Array of companies of the given subsector.
+  <Expandable title="properties">
+    <ResponseField name="Company.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="Company.company_name" type="string" required>
+      The full name of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Usage
+
+This list can be used for the following endpoint:
+
+- [SGX Company Report](./sgx-company-report)
