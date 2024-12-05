@@ -66,6 +66,19 @@ description: "Return a list of top tickers based on certain classification (divi
 
 <ParamField query="sector" type="string" default="all">
   Sector from which the list of top company is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sector">
+      Get the available `sector` from the [SGX Sectors](./sgx-sector)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sector">
+      `food-drug-retailing`, `energy-minerals`, `holding-companies`, `banking-investment-services`, `real-estate`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
 </ParamField>
 
 <ParamField query="classifications" type="string" default="all">

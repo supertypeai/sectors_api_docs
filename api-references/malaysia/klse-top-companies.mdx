@@ -66,6 +66,19 @@ description: "Return a list of top tickers based on certain classification (divi
 
 <ParamField query="sector" type="string" default="all">
   Sector from which the list of top company is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sector">
+      Get the available `sector` from the [KLSE Sectors](./klse-sector)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sector">
+      `consumer-cyclicals`, `financials`, `industrial-services`, `healthcare`, `basic-materials`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
 </ParamField>
 
 <ParamField query="classifications" type="string" default="all">
