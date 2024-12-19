@@ -1,0 +1,248 @@
+---
+title: 'IDX Market Overview Dashboard'
+sidebarTitle: "4. IDX Market Overview Dashboard"
+description: "By: [Aurellia Christie](https://www.github.com/AurelliaChristie) & [Gerald Bryan](https://www.github.com/geraldbryan) · December 13, 2024"
+---
+
+## IHSG Market Overview
+In this recipe, we will create an end-to-end IDX market overview dashboard. IDX market or usually also known as IHSG right now is one of the most promising stock exchange in the world
+
+![idx_condition](/recipes/non-programmatical-tools/03-looker/asset/idx_position.png)
+
+Something you didn't know about the Indonesia Stock Exchange. Based on World Federation Exchange (WFE) data per November 2024, it ranks 19nd largest, ahead of Singapore Exchange -- but only half the size of Korean S.E, Theran S.E, etc.
+you can access the full data about Indonesian stock market condition [here](https://sectors.app/why-indonesia-stock-market) 
+
+But it's experiencing an explosive growth. 
+41% over 2 years. 
+For perspective, here are the top 4 country by population and their GDP rank
+1. India (pop 1.44b, gdp 3.9t usd): 5th largest 
+2. China (pop 1.43b, gdp 18.5t usd): 2nd largest
+3. US (pop 341.8m, gdp 28.8t usd): 1st largest
+4. Indonesia (pop 280m, 1.48t usd): ___ can you guess where are we on the GDP rank currently? 
+
+Despite being the 4th most populous country, Indonesia has the 16th largest economy and 22nd largest market (23rd place is Singapore, 584b market cap, 26th place Thailand, 28th place Malaysia).
+
+So it's really early times, and plenty of reasons to be optimistic about the continued growth of this economy and financial market. Without further delay, let's start our jorney now!
+
+## Data Fetching and Data Connector in Looker Studio
+
+### Data Fetching using Google Sheets
+In this recipe, we'll use Google Sheets to fetch data from the Sectors API. Note that this is not the only way to access data from the Sectors API; 
+you can also use tools like Postman or any programming language to call the API. However, to keep things as low-code as possible, we'll be using Google Sheets in this example.
+Before getting started, you’ll need two tools: the API Connector extension and a Sectors API key. For instructions on how to use the API Connector extension in Google Sheets, refer to [this tutorial in the previous recipe](../02-sheets/02-sheets#api-connector).
+
+If you already familiar with the API Connector Extension, now you just need to change the all we need to do is change the `Request URL` and add the headers with `Authorization` and value of your `<API Key>`.
+
+This time we will fetch these data:
+<Accordion title="Historical IDX Market Cap">
+    - **Definition:** The 30 days historical IDX Market Capitalization Value. 
+    - **URL:** `https://api.sectors.app/v1/idx-total/`
+</Accordion>
+<Accordion title="Historical LQ45 Index Price">
+    - **Definition:** The 30 days historical LQ45 Index Price
+    - **URL:** `https://api.sectors.app/v1/index-daily/lq45/`
+</Accordion>
+<Accordion title="Historical IDX30 Index Price">
+    - **Definition:** The 30 days historical IDX30 Index Price
+    - **URL:** `https://api.sectors.app/v1/index-daily/idx30/`
+</Accordion>
+<Accordion title="Historical JII70 Index Price">
+    - **Definition:** The 30 days historical JII70 Index Price
+    - **URL:** `https://api.sectors.app/v1/index-daily/jii70/`
+</Accordion>
+<Accordion title="Top 10 Companies based on Market Capitalization">
+    - **Definition:** The top 10 companies based on market capitalization parameter in the current year
+    - **URL:** `https://api.sectors.app/v1/companies/top/?classifications=market_cap&n_stock=10`
+</Accordion>
+<Accordion title="Top 10 Companies based on Dividend Yield">
+    - **Definition:** The top 10 companies based on dividend yield parameter in the current year
+    - **URL:** `https://api.sectors.app/v1/companies/top/?classifications=market_cap&n_stock=10`
+</Accordion>
+<Accordion title="Top 10 Companies based on Revenue">
+    - **Definition:** The top 10 companies based on revenue parameter in 2023
+    - **URL:** `https://api.sectors.app/v1/companies/top/?classifications=revenue&n_stock=10&year=2023`
+</Accordion>
+<Accordion title="Top 10 Companies based on Earnings">
+    - **Definition:** The top 10 companies based on earnings parameter in the 2023
+    - **URL:** `https://api.sectors.app/v1/companies/top/?classifications=earnings&n_stock=10&year=2023`
+</Accordion>
+<Accordion title="Top 10 Thirty Days Gainers">
+    - **Definition:** The top 10 companies with the highest percentage change in price in the last 30 days
+    - **URL:** `'https://api.sectors.app/v1/companies/top-changes/?classifications=top_gainers&n_stock=10&periods=30d'`
+</Accordion>
+<Accordion title="Top 10 Thirty Days Losers">
+    - **Definition:** The top 10 companies with the lowest percentage change in price in the last 30 days
+    - **URL:** `'https://api.sectors.app/v1/companies/top-changes/?classifications=top_losers&n_stock=10&periods=30d'`
+</Accordion>
+
+After finish configuring the API connector and fetch the data, then you will have the google sheets file that supposedly look like this
+![sheets_data](/recipes/non-programmatical-tools/03-looker/asset/sheets_result.png)
+
+### Data Fetching (API in Json Format) Directly into Looker Studio
+
+After we use the google sheets as the intermediaries to fetch the data from the API before import them into looker studio, now we will directly call the API in the looker studio using Windsor.ai connector.
+For a disclaimer, Supertype is _not_ affiliated with Windsor.ai, and we are not responsible for anything that happens because of the usage of the respective extension.
+
+- First, you need to open looker studio and create a blank report
+- Then, "Add data to report" menu should be automatically pop up into the screen, and in the search box you can type `json` and in the `Partner Connectors` section you can choose the one by windsor.ai or the one in the red square.
+![json_windsor](/recipes/non-programmatical-tools/03-looker/asset/windsor_connector.png)
+- After choosing it, you can connect your account to windsor.ai by clicking the `authorize`. Please note, to read the terms and condition and what you allow in the authorization, once again we are not responsible for anything that happens because of the usage of the respective extension.
+![windsor_authorize](/recipes/non-programmatical-tools/03-looker/asset/windsor_authorize.png)
+- After the authorization, the we can put the URL link of the JSON data that we want to use in the `Enter the URL of a JSON data source`. For example, in this tutorial we will use this URL endpoint `we are not responsible for anything that happens because of the usage of the respective extension.` Then, you can click the `Add` button
+![windsor_connect](/recipes/non-programmatical-tools/03-looker/asset/windsor_url.png)
+- Finally, we can use the data in our report to do some visualization
+![windsor_visualization](/recipes/non-programmatical-tools/03-looker/asset/windsor_visualization.png)
+- Specifically, for the windsor.ai json connector, we must do another additional step to make our data is not accessible for anyone out there, since by default if we connect our data using windsor.ai it can be used by the other people in the community. To disable that settings, we can go to `Resources` menu -> `Manage added data sources` -> `Edit` in the specific dataset that use windsor.ai data.
+![windsor_data_source](/recipes/non-programmatical-tools/03-looker/asset/windsor_data_source.png)
+- Then we can click on the `Community visualization access`, and set it to `off` and click `save`
+![windsor_comvis](/recipes/non-programmatical-tools/03-looker/asset/windsor_comvis.png)
+
+### Manage Data Source in Looker Studio
+
+In Looker Studio there are two type of data source, which is the data type in `Embedded scope` and the other one is `Reuseable Scope`. The table below will explain the difference between those two type
+| Embedded                                        | Reuseable                                                               |
+|-------------------------------------------------|-------------------------------------------------------------------------|
+| Created in a report                             | Can be created from homepage                                            |
+| Can only be accessed from a single report       | Can be accessed by all reports                                          |
+| Shared / copied along with the report           | Changes will be applied on all reports that used it as the data source  |
+| Can be edited by anyone who can edit the report | More control over sharing                                               |
+| Can be converted to reusable                    | Can not be converted to embedded                                        |                                                                         |
+
+To change the data source from embedded into reusable you just need to open the report which you use the desired data. Then go to `Resource` menu -> `Manage added data sources`, and click the `Make Reusable` in the desired dataset. 
+![reuseable_data](/recipes/non-programmatical-tools/03-looker/asset/reuseable_data.png)
+
+After you click that, your dataset could be imported directly into another dashboard, without configuring connection for every report. You just need to go to `+Add Data` menu -> switch to `My data sources` and select the data you want to used.
+![my_data_source](/recipes/non-programmatical-tools/03-looker/asset/my_data_source.png)
+
+## The Fundamental of Data Visualization
+
+Before we dive in into the practical work on Looker Studio, let's start with some theoretical knowledge first about data visualization and data storytelling
+### What is Data Visualization
+In the big data era, the sheer volume and variety of data is actually a powerful ingredient for businesses to seek valuable insights. However, managing and interpreting the data could be incredibly complicated and time-consuming. This is where data visualization comes into play.
+
+So, what exactly is data visualization?
+
+Data visualization is the graphical representation of information and data. It converts complex datasets into visual elements like charts, graphs, maps and infographics, making it easier to interpret and understand intricate information quickly. We will be able to identify trends, outliers, patterns and correlations in the data. But before we delve deeper into the method, let’s first learn about the history of data visualization to how it has evolved to meet changing needs.
+
+<Tip>
+  The 2 common types of visual representation that humans use are:
+
+  - **Presentation:** Uses visuals to communicate information and ideas to an audience.
+  - **Visualization:** Uses visuals to aid in thinking, understanding and analyzing information.
+</Tip>
+
+### Key Principles of Data Visualization
+Effective data visualization involves a set of core principles that ensures that visualizations communicate insights clearly and effectively to the intended audience.
+
+<Accordion title="Know Your Audience">
+    - **Definition:** Tailoring your data visualization to the specific background, expertise and expectations of your audience. 
+    - **Why It Matters:** Different audiences have varying levels of familiarity with the data and its context. A well-designed visualization considers these differences.
+    - **How to Achieve It:** Research and analyze your audience's background and requirements. Customize the level of detail, complexity, and focus of your visualization to cater content that is valuable to them.
+</Accordion>
+<Accordion title="Keep Things Simple">
+    - **Definition:** Simplicity in data visualization means avoiding unnecessary complexity and focusing on presenting only the essential information. 
+    - **Why It Matters:** Overly complex visuals can overwhelm viewers and obscure the main points. Stripping away extraneous details and visual elements can help to maintain focus on the crucial aspects of the data.
+    - **How to Achieve It:** Prioritize the most important data points and insights, using a clean design with minimalistic elements. 
+</Accordion>
+<Accordion title="Use the Right Chart Type">
+    - **Definition:** By choosing the right chart, you ensure that the visualization helps viewers understand the data’s key features effectively.
+    - **Why It Matters:** Using the right type ensures that the visualization effectively illustrates the relationships, trends, or comparisons you want to highlight, making it easier for viewers to grasp the data’s significance.
+    - **How to Achieve It:** Choose a chart type that best represents the data’s characteristics, such as using bar charts for comparisons, line charts for trends, or pie charts for proportions.
+</Accordion>
+<Accordion title="Use Colors Wisely">
+    - **Definition:** Colors can differentiate data series, highlight important data points, and improve the overall visual appeal.
+    - **Why It Matters:** The strategic use of colors enhances readability and emphasizes key information, drawing attention to critical insights.
+    - **How to Achieve It:** Select a color palette that provides clear contrast and supports the visualization’s goals. Be mindful of color blindness and ensure that the color scheme is accessible to all viewers.
+</Accordion>
+<Accordion title="Highlight the Most Important Information">
+    - **Definition:** Emphasizing the most critical data points and insights in a visualization for the audience to grasp the essential insights and take actionable steps based on the information presented.
+    - **Why It Matters:** Directs the audience focus to the core message, facilitating quicker comprehension and more effective decision-making.
+    - **How to Achieve It:** Use visual techniques such as size, color, or positioning to make key data points stand out. 
+</Accordion>
+<Accordion title="Avoid Clutter">
+    - **Definition:** Avoiding clutter means keeping the design of the visualization clean and focused. 
+    - **Why It Matters:** Maintaining a clean design enhances the effectiveness of the visualization. Prevent being overwhelmed by extraneous details.
+    - **How to Achieve It:** Remove non-essential elements, simplify data presentation, and use whitespace effectively to create a visually appealing and focused design.
+</Accordion>
+
+### Avoiding Data Visualization Common Pitfalls
+When creating visualizations, it’s important to avoid common pitfalls to ensure your data is accurately represented and easily interpreted.
+
+#### Misleading Visuals
+
+1. **Scale Issues:** Manipulating the scale of axes can distort the data. For instance, truncating the y-axis in a bar chart can exaggerate differences between bars. 
+- Always use a consistent scale or start the axis at zero to avoid misleading viewers.
+2. **Inappropriate Chart Types:** Using a pie chart for data with too many categories can be confusing. Pie charts work best with a small number of categories. 
+- For more categories, consider a bar chart instead.
+3. **Cherry-Picking Data:** Selecting only a subset of data to support a specific narrative can be misleading. 
+- Ensure your visualization represents the full dataset to provide an accurate picture.
+
+#### Overcomplicating with Too Much Data
+
+1. **Cluttered Visuals:** Including too many data series or categories in a single chart can make it hard to interpret. Keep your visualizations focused and use additional charts if necessary to break down complex data.
+2. **Excessive Details:** Adding too many details (e.g., excessive grid lines or labels) can overwhelm the viewer. Use clean, simple designs and only include essential information to ensure clarity.
+3. **Complexity Over Clarity:** Sometimes, a simple chart (like a basic bar or line chart) can be more effective than a complex visualization (like a 3D chart or interactive dashboard). Prioritize clarity over complexity to ensure your audience can easily understand the data.
+
+## Data Storytelling
+Traditional education often treats creative storytelling and technical analysis as separate skills, but today's job market values professionals who excel in both. 
+However, data visualization is a prime example of where these two areas intersect, making it a highly sought-after skill in our data-driven world. 
+Data storytelling involves merging solid data with compelling narratives to present insights in a way that resonates with audiences. 
+This approach relies on three essential components: data, narrative, and visuals.
+
+1. **Data:** The raw numbers and facts that provide the foundation of the story.
+2. **Narrative:** The context and interpretation that give meaning to the data.
+3. **Visuals:** The charts, graphs, and other visual aids that illustrate the data and narrative.
+
+By integrating these elements, data storytelling transforms complex data sets into understandable, memorable, and actionable insights. 
+The goal is to make the data not just accessible, but also engaging and persuasive, turning dry statistics into a compelling story that drives home key points.
+
+These are the steps to make a good data story telling
+<Steps>
+  <Step title="1. Crafting a Data Story">
+    <AccordionGroup>
+        <Accordion title="Understanding your Audiences">
+            Different audience segments might require distinct approaches: executives might prefer high-level insights with clear business implications, while technical teams may appreciate detailed data and methodology. 
+            By customizing your story to align with these diverse expectations, you ensure that each segment receives the most relevant and impactful information, ultimately leading to better engagement and more informed decision-making.
+
+            <Tip>
+                You can use 5W + 1H formula, to craft your data story 
+            </Tip>
+        </Accordion>
+        <Accordion title="Defining the Purpose">
+            By focusing on a central theme or insight, you ensure that your story remains coherent and impactful. 
+            Whether your aim is to highlight performance metrics, uncover new opportunities, or address specific challenges, ensuring that your narrative supports the broader objectives of your organization helps in securing buy-in from stakeholders and reinforcing the strategic value of your insights.
+        </Accordion>
+        <Accordion title="Identifying Key Insights">
+            A critical step in crafting a compelling data story is data analysis and insight extraction. 
+            The goal is to interpret the data in a way that highlights the most relevant and actionable insights, making it easier for your audience to understand the implications and take informed actions based on your findings.
+        </Accordion>
+    </AccordionGroup>
+  </Step>
+    <Step title="2. Building the Narrative">
+    <AccordionGroup>
+        <Accordion title="Setting the Context">
+            This involves providing background information and context for the data, helping your audience grasp why the data matters and how it fits into the larger picture.
+        </Accordion>
+        <Accordion title="Highlighting Key Insights">
+            This means pinpointing the data points that have the greatest significance and potential impact, and then using narrative elements such as anecdotes, analogies, or visual highlights to draw attention to these insights.
+        </Accordion>
+        <Accordion title="Creating a Flow">
+            This involves structuring your narrative with clear transitions and logical sequencing, making it easy for the audience to follow along.
+        </Accordion>
+    </AccordionGroup>
+    </Step>
+    <Step title="3. Delivering the Stories">
+    <AccordionGroup>
+        <Accordion title="Presentation Techniques">
+            Presentation techniques play a crucial role in effectively delivering your data story.
+            Best practices for presenting data stories include clear articulation of key points, maintaining a logical structure, and using visuals to enhance understanding. 
+            Engaging the audience involves not just presenting the data, but also connecting with them through confident delivery, interactive elements, and storytelling techniques that keep their interest. 
+            Effective delivery ensures that your audience remains attentive, understands the insights, and is motivated to take action based on your findings.
+
+            <Tip>
+                You must also learn about design best practice, such as Visual Hierarchies, Color Theory, Typography, etc.
+            </Tip>
+        </Accordion>
+    </AccordionGroup>
+    </Step>
+</Steps>
