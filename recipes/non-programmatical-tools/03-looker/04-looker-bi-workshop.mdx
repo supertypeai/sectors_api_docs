@@ -5,7 +5,7 @@ description: "By: [Aurellia Christie](https://www.github.com/AurelliaChristie) &
 ---
 
 ## IHSG Market Overview
-In this recipe, we will create an end-to-end IDX market overview dashboard. IDX market or usually also known as IHSG right now is one of the most promising stock exchange in the world
+In this recipe, we will build a comprehensive end-to-end IDX market overview dashboard. The IDX market, also commonly referred to as IHSG, is currently among the most promising stock exchanges globally. For a further data or analysis of Indonesian Stock Market (IDX Market) you can go to [Sectors App](https://sectors.app/).
 
 ![idx_condition](/recipes/non-programmatical-tools/03-looker/asset/idx_position.png)
 
@@ -18,18 +18,18 @@ For perspective, here are the top 4 country by population and their GDP rank
 1. India (pop 1.44b, gdp 3.9t usd): 5th largest 
 2. China (pop 1.43b, gdp 18.5t usd): 2nd largest
 3. US (pop 341.8m, gdp 28.8t usd): 1st largest
-4. Indonesia (pop 280m, 1.48t usd): ___ can you guess where are we on the GDP rank currently? 
+4. Indonesia (pop 280m, 1.48t usd): ? 
 
-Despite being the 4th most populous country, Indonesia has the 16th largest economy and 22nd largest market (23rd place is Singapore, 584b market cap, 26th place Thailand, 28th place Malaysia).
+Despite being the 4th most populous country, Indonesia has the 16th largest economy and 19th largest market (23rd place is Singapore, 26th place Thailand, 28th place Malaysia).
 
-So it's really early times, and plenty of reasons to be optimistic about the continued growth of this economy and financial market. Without further delay, let's start our jorney now!
+So it's really early times, and plenty of reasons to be optimistic about the continued growth of this economy and financial market. Without further delay, let's start our journey now!
 
 ## Data Fetching and Data Connector in Looker Studio
 
 ### Data Fetching using Google Sheets
-In this recipe, we'll use Google Sheets to fetch data from the Sectors API. Note that this is not the only way to access data from the Sectors API; 
+In this recipe, we'll use Google Sheets to fetch data from the [Sectors API](https://sectors.app/api). Note that this is not the only way to access data from the [Sectors API](https://sectors.app/api) 
 you can also use tools like Postman or any programming language to call the API. However, to keep things as low-code as possible, we'll be using Google Sheets in this example.
-Before getting started, you’ll need two tools: the API Connector extension and a Sectors API key. For instructions on how to use the API Connector extension in Google Sheets, refer to [this tutorial in the previous recipe](../02-sheets/02-sheets#api-connector).
+Before getting started, you’ll need two tools: the API Connector extension and a [Sectors API key](https://sectors.app/api). For instructions on how to use the API Connector extension in Google Sheets, refer to [this tutorial in the previous recipe](../02-sheets/02-sheets#api-connector).
 
 If you already familiar with the API Connector Extension, now you just need to change the all we need to do is change the `Request URL` and add the headers with `Authorization` and value of your `<API Key>`.
 
@@ -80,25 +80,41 @@ After finish configuring the API connector and fetch the data, then you will hav
 
 ### Data Fetching (API in Json Format) Directly into Looker Studio
 
-After we use the google sheets as the intermediaries to fetch the data from the API before import them into looker studio, now we will directly call the API in the looker studio using Windsor.ai connector.
-For a disclaimer, Supertype is _not_ affiliated with Windsor.ai, and we are not responsible for anything that happens because of the usage of the respective extension.
+After previously using Google Sheets as an intermediary to fetch data from the API before importing it into Looker Studio, we will now directly call the API in Looker Studio using the Windsor.ai connector. However, we can't use an API with need to specify the authorization key in the url header, because it only have the box for url which make us can't specify the header (our api-key).
 
-- First, you need to open looker studio and create a blank report
-- Then, "Add data to report" menu should be automatically pop up into the screen, and in the search box you can type `json` and in the `Partner Connectors` section you can choose the one by windsor.ai or the one in the red square.
-![json_windsor](/recipes/non-programmatical-tools/03-looker/asset/windsor_connector.png)
-- After choosing it, you can connect your account to windsor.ai by clicking the `authorize`. Please note, to read the terms and condition and what you allow in the authorization, once again we are not responsible for anything that happens because of the usage of the respective extension.
-![windsor_authorize](/recipes/non-programmatical-tools/03-looker/asset/windsor_authorize.png)
-- After the authorization, the we can put the URL link of the JSON data that we want to use in the `Enter the URL of a JSON data source`. For example, in this tutorial we will use this URL endpoint `we are not responsible for anything that happens because of the usage of the respective extension.` Then, you can click the `Add` button
-![windsor_connect](/recipes/non-programmatical-tools/03-looker/asset/windsor_url.png)
-- Finally, we can use the data in our report to do some visualization
-![windsor_visualization](/recipes/non-programmatical-tools/03-looker/asset/windsor_visualization.png)
-- Specifically, for the windsor.ai json connector, we must do another additional step to make our data is not accessible for anyone out there, since by default if we connect our data using windsor.ai it can be used by the other people in the community. To disable that settings, we can go to `Resources` menu -> `Manage added data sources` -> `Edit` in the specific dataset that use windsor.ai data.
-![windsor_data_source](/recipes/non-programmatical-tools/03-looker/asset/windsor_data_source.png)
-- Then we can click on the `Community visualization access`, and set it to `off` and click `save`
-![windsor_comvis](/recipes/non-programmatical-tools/03-looker/asset/windsor_comvis.png)
+**Disclaimer**: Supertype is _not_ affiliated with Windsor.ai and takes no responsibility for any outcomes resulting from the use of this extension.
+
+### Steps to Use Windsor.ai Connector:
+
+1. Open Looker Studio and create a blank report.
+
+2. The "Add data to report" menu should automatically appear. In the search box, type `json`. Under the `Partner Connectors` section, select the Windsor.ai connector (highlighted in the red square).  
+   ![json_windsor](/recipes/non-programmatical-tools/03-looker/asset/windsor_connector.png)
+
+3. After selecting the connector, authorize Windsor.ai by clicking the `authorize` button. Be sure to read the terms and conditions as well as the permissions being granted. Again, Supertype is not responsible for any consequences arising from the use of this extension.  
+   ![windsor_authorize](/recipes/non-programmatical-tools/03-looker/asset/windsor_authorize.png)
+
+4. Once authorized, provide the URL of the JSON data source you want to use in the `Enter the URL of a JSON data source` field. For example, use the desired API endpoint URL. Then, click the `Add` button.  
+   ![windsor_connect](/recipes/non-programmatical-tools/03-looker/asset/windsor_url.png)
+
+5. After adding the data source, you can use it in your report to create visualizations.  
+   ![windsor_visualization](/recipes/non-programmatical-tools/03-looker/asset/windsor_visualization.png)
+
+**Important Note About Data Privacy:**
+
+For the Windsor.ai JSON connector, by default, the data you connect may be accessible to others in the Windsor.ai community. To ensure your data is private:
+
+1. Go to the `Resources` menu -> `Manage added data sources` -> click `Edit` for the dataset connected via Windsor.ai.  
+   ![windsor_data_source](/recipes/non-programmatical-tools/03-looker/asset/windsor_data_source.png)
+
+2. In the settings, locate the `Community visualization access` option, set it to `off`, and click `save`.  
+   ![windsor_comvis](/recipes/non-programmatical-tools/03-looker/asset/windsor_comvis.png)
+
+This ensures that your data is not accessible to others by default.
 
 ### Manage Data Source in Looker Studio
 
+#### Data Source Type in Looker Studio
 In Looker Studio there are two type of data source, which is the data type in `Embedded scope` and the other one is `Reuseable Scope`. The table below will explain the difference between those two type
 | Embedded                                        | Reuseable                                                               |
 |-------------------------------------------------|-------------------------------------------------------------------------|
@@ -108,11 +124,20 @@ In Looker Studio there are two type of data source, which is the data type in `E
 | Can be edited by anyone who can edit the report | More control over sharing                                               |
 | Can be converted to reusable                    | Can not be converted to embedded                                        |                                                                         |
 
-To change the data source from embedded into reusable you just need to open the report which you use the desired data. Then go to `Resource` menu -> `Manage added data sources`, and click the `Make Reusable` in the desired dataset. 
+To change the data source from embedded to reusable, open the report that uses the desired data source. Navigate to the `Resource` menu -> `Manage added data sources`, and click `Make Reusable` on the dataset you want to reuse.  
 ![reuseable_data](/recipes/non-programmatical-tools/03-looker/asset/reuseable_data.png)
 
-After you click that, your dataset could be imported directly into another dashboard, without configuring connection for every report. You just need to go to `+Add Data` menu -> switch to `My data sources` and select the data you want to used.
+Once you've done that, the dataset can be imported directly into other dashboards without needing to configure the connection for every report. Simply go to the `+Add Data` menu -> switch to `My data sources`, and select the data you want to use.  
 ![my_data_source](/recipes/non-programmatical-tools/03-looker/asset/my_data_source.png)
+
+#### Data Caching (Data Freshness) in Looker Studio
+One advantage of using Looker Studio to create dashboards or data visualizations is the ability to set data auto-updates, commonly referred to as data freshness in Looker. The options for data freshness vary depending on the connector being used. For more detailed information, refer to [this documentation](https://support.google.com/looker-studio/answer/7020039#zippy=%2Cin-this-article).
+
+Setting up data auto-update (data freshness) is similar to changing the data source type. Go to the `Resource` menu -> `Manage added data sources`. From there, select the data source you want to auto-update, click the `Data Freshness` option, and modify the schedule accordingly.  
+![data_freshness](/recipes/non-programmatical-tools/03-looker/asset/data_freshness.png)
+
+Alternatively, you can manually refresh all the data used in a report by clicking the three dots and selecting `Refresh data`.  
+![refresh_data](/recipes/non-programmatical-tools/03-looker/asset/refresh_data.png)
 
 ## The Fundamental of Data Visualization
 
