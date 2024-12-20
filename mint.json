@@ -203,7 +203,8 @@
       "pages": [
         "recipes/non-programmatical-tools/01-excel/01-excel",
         "recipes/non-programmatical-tools/02-sheets/02-sheets",
-        "recipes/non-programmatical-tools/03-looker/03-looker"
+        "recipes/non-programmatical-tools/03-looker/03-looker",
+        "recipes/non-programmatical-tools/03-looker/04-looker-bi-workshop"
       ]
     }
   ],
