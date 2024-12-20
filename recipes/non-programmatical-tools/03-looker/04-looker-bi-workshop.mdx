@@ -1,78 +1,86 @@
 ---
-title: 'IDX Market Overview Dashboard'
-sidebarTitle: "4. IDX Market Overview Dashboard"
-description: "By: [Aurellia Christie](https://www.github.com/AurelliaChristie) & [Gerald Bryan](https://www.github.com/geraldbryan) · December 13, 2024"
+title: "IDX Market Overview Dashboard Part 1: Data Integration and API Connections"
+sidebarTitle: "4. Data Connectors in Looker Studio"
+description: "By: [Gerald Bryan](https://www.github.com/geraldbryan) · December 13, 2024"
 ---
 
-## IHSG Market Overview
+## IDX Market Overview
+
 In this recipe, we will build a comprehensive end-to-end IDX market overview dashboard. The IDX market, also commonly referred to as IHSG, is currently among the most promising stock exchanges globally. For a further data or analysis of Indonesian Stock Market (IDX Market) you can go to [Sectors App](https://sectors.app/).
 
 ![idx_condition](/recipes/non-programmatical-tools/03-looker/asset/idx_position.png)
 
-Something you didn't know about the Indonesia Stock Exchange. Based on World Federation Exchange (WFE) data per November 2024, it ranks 19nd largest, ahead of Singapore Exchange -- but only half the size of Korean S.E, Theran S.E, etc.
-you can access the full data about Indonesian stock market condition [here](https://sectors.app/why-indonesia-stock-market) 
+Did you know this about the Indonesia Stock Exchange (IDX)? According to the World Federation of Exchanges (WFE) data as of November 2024, the IDX Composite Index (IHSG) ranks as the 19th largest globally—outperforming the Singapore Exchange. However, its market size is still only half that of larger players like the Korean and Tehran Stock Exchanges.
+Explore detailed insights into Indonesia’s stock market conditions [here](https://sectors.app/why-indonesia-stock-market).
 
-But it's experiencing an explosive growth. 
-41% over 2 years. 
-For perspective, here are the top 4 country by population and their GDP rank
-1. India (pop 1.44b, gdp 3.9t usd): 5th largest 
-2. China (pop 1.43b, gdp 18.5t usd): 2nd largest
-3. US (pop 341.8m, gdp 28.8t usd): 1st largest
-4. Indonesia (pop 280m, 1.48t usd): ? 
+But here’s the exciting part: Indonesia's financial market is experiencing rapid growth—an impressive 41% increase over the past two years. To put this into perspective, let’s look at the top four countries by population and their GDP ranks:
 
-Despite being the 4th most populous country, Indonesia has the 16th largest economy and 19th largest market (23rd place is Singapore, 26th place Thailand, 28th place Malaysia).
+1. India: Population 1.44 billion, GDP $3.9 trillion (5th largest)
+2. China: Population 1.43 billion, GDP $18.5 trillion (2nd largest)
+3. United States: Population 341.8 million, GDP $28.8 trillion (1st largest)
+4. Indonesia: Population 280 million, GDP $1.48 trillion (16th largest economy)
 
-So it's really early times, and plenty of reasons to be optimistic about the continued growth of this economy and financial market. Without further delay, let's start our journey now!
+Despite being the 4th most populous nation, Indonesia’s economy is ranked 16th in size, and its stock market ranks 19th globally (compared to Singapore at 23rd, Thailand at 26th, and Malaysia at 28th). This highlights Indonesia’s immense potential for growth. It’s early days for the country’s economy and financial markets, but the trajectory is clear—Indonesia is poised for a bright future.
+
+Let’s embark on this exciting journey and explore more about IDX market overview!
 
 ## Data Fetching and Data Connector in Looker Studio
 
 ### Data Fetching using Google Sheets
-In this recipe, we'll use Google Sheets to fetch data from the [Sectors API](https://sectors.app/api). Note that this is not the only way to access data from the [Sectors API](https://sectors.app/api) 
+
+In this recipe, we'll use Google Sheets to fetch data from the [Sectors API](https://sectors.app/api). Note that this is not the only way to access data from the [Sectors API](https://sectors.app/api)
 you can also use tools like Postman or any programming language to call the API. However, to keep things as low-code as possible, we'll be using Google Sheets in this example.
 Before getting started, you’ll need two tools: the API Connector extension and a [Sectors API key](https://sectors.app/api). For instructions on how to use the API Connector extension in Google Sheets, refer to [this tutorial in the previous recipe](../02-sheets/02-sheets#api-connector).
 
 If you already familiar with the API Connector Extension, now you just need to change the all we need to do is change the `Request URL` and add the headers with `Authorization` and value of your `<API Key>`.
 
 This time we will fetch these data:
+
 <Accordion title="Historical IDX Market Cap">
-    - **Definition:** The 30 days historical IDX Market Capitalization Value. 
-    - **URL:** `https://api.sectors.app/v1/idx-total/`
+  - **Definition:** The 30 days historical IDX Market Capitalization Value. -
+  **URL:** `https://api.sectors.app/v1/idx-total/`
 </Accordion>
 <Accordion title="Historical LQ45 Index Price">
-    - **Definition:** The 30 days historical LQ45 Index Price
-    - **URL:** `https://api.sectors.app/v1/index-daily/lq45/`
+  - **Definition:** The 30 days historical LQ45 Index Price - **URL:**
+  `https://api.sectors.app/v1/index-daily/lq45/`
 </Accordion>
 <Accordion title="Historical IDX30 Index Price">
-    - **Definition:** The 30 days historical IDX30 Index Price
-    - **URL:** `https://api.sectors.app/v1/index-daily/idx30/`
+  - **Definition:** The 30 days historical IDX30 Index Price - **URL:**
+  `https://api.sectors.app/v1/index-daily/idx30/`
 </Accordion>
 <Accordion title="Historical JII70 Index Price">
-    - **Definition:** The 30 days historical JII70 Index Price
-    - **URL:** `https://api.sectors.app/v1/index-daily/jii70/`
+  - **Definition:** The 30 days historical JII70 Index Price - **URL:**
+  `https://api.sectors.app/v1/index-daily/jii70/`
 </Accordion>
 <Accordion title="Top 10 Companies based on Market Capitalization">
-    - **Definition:** The top 10 companies based on market capitalization parameter in the current year
-    - **URL:** `https://api.sectors.app/v1/companies/top/?classifications=market_cap&n_stock=10`
+  - **Definition:** The top 10 companies based on market capitalization
+  parameter in the current year - **URL:**
+  `https://api.sectors.app/v1/companies/top/?classifications=market_cap&n_stock=10`
 </Accordion>
 <Accordion title="Top 10 Companies based on Dividend Yield">
-    - **Definition:** The top 10 companies based on dividend yield parameter in the current year
-    - **URL:** `https://api.sectors.app/v1/companies/top/?classifications=market_cap&n_stock=10`
+  - **Definition:** The top 10 companies based on dividend yield parameter in
+  the current year - **URL:**
+  `https://api.sectors.app/v1/companies/top/?classifications=market_cap&n_stock=10`
 </Accordion>
 <Accordion title="Top 10 Companies based on Revenue">
-    - **Definition:** The top 10 companies based on revenue parameter in 2023
-    - **URL:** `https://api.sectors.app/v1/companies/top/?classifications=revenue&n_stock=10&year=2023`
+  - **Definition:** The top 10 companies based on revenue parameter in 2023 -
+  **URL:**
+  `https://api.sectors.app/v1/companies/top/?classifications=revenue&n_stock=10&year=2023`
 </Accordion>
 <Accordion title="Top 10 Companies based on Earnings">
-    - **Definition:** The top 10 companies based on earnings parameter in the 2023
-    - **URL:** `https://api.sectors.app/v1/companies/top/?classifications=earnings&n_stock=10&year=2023`
+  - **Definition:** The top 10 companies based on earnings parameter in the 2023
+  - **URL:**
+  `https://api.sectors.app/v1/companies/top/?classifications=earnings&n_stock=10&year=2023`
 </Accordion>
 <Accordion title="Top 10 Thirty Days Gainers">
-    - **Definition:** The top 10 companies with the highest percentage change in price in the last 30 days
-    - **URL:** `'https://api.sectors.app/v1/companies/top-changes/?classifications=top_gainers&n_stock=10&periods=30d'`
+  - **Definition:** The top 10 companies with the highest percentage change in
+  price in the last 30 days - **URL:**
+  `'https://api.sectors.app/v1/companies/top-changes/?classifications=top_gainers&n_stock=10&periods=30d'`
 </Accordion>
 <Accordion title="Top 10 Thirty Days Losers">
-    - **Definition:** The top 10 companies with the lowest percentage change in price in the last 30 days
-    - **URL:** `'https://api.sectors.app/v1/companies/top-changes/?classifications=top_losers&n_stock=10&periods=30d'`
+  - **Definition:** The top 10 companies with the lowest percentage change in
+  price in the last 30 days - **URL:**
+  `'https://api.sectors.app/v1/companies/top-changes/?classifications=top_losers&n_stock=10&periods=30d'`
 </Accordion>
 
 After finish configuring the API connector and fetch the data, then you will have the google sheets file that supposedly look like this
@@ -84,7 +92,7 @@ After previously using Google Sheets as an intermediary to fetch data from the A
 
 **Disclaimer**: Supertype is _not_ affiliated with Windsor.ai and takes no responsibility for any outcomes resulting from the use of this extension.
 
-### Steps to Use Windsor.ai Connector:
+### Steps to Use Windsor.ai Connector
 
 1. Open Looker Studio and create a blank report.
 
@@ -115,14 +123,15 @@ This ensures that your data is not accessible to others by default.
 ### Manage Data Source in Looker Studio
 
 #### Data Source Type in Looker Studio
+
 In Looker Studio there are two type of data source, which is the data type in `Embedded scope` and the other one is `Reuseable Scope`. The table below will explain the difference between those two type
-| Embedded                                        | Reuseable                                                               |
+| Embedded | Reuseable |
 |-------------------------------------------------|-------------------------------------------------------------------------|
-| Created in a report                             | Can be created from homepage                                            |
-| Can only be accessed from a single report       | Can be accessed by all reports                                          |
-| Shared / copied along with the report           | Changes will be applied on all reports that used it as the data source  |
-| Can be edited by anyone who can edit the report | More control over sharing                                               |
-| Can be converted to reusable                    | Can not be converted to embedded                                        |                                                                         |
+| Created in a report | Can be created from homepage |
+| Can only be accessed from a single report | Can be accessed by all reports |
+| Shared / copied along with the report | Changes will be applied on all reports that used it as the data source |
+| Can be edited by anyone who can edit the report | More control over sharing |
+| Can be converted to reusable | Can not be converted to embedded | |
 
 To change the data source from embedded to reusable, open the report that uses the desired data source. Navigate to the `Resource` menu -> `Manage added data sources`, and click `Make Reusable` on the dataset you want to reuse.  
 ![reuseable_data](/recipes/non-programmatical-tools/03-looker/asset/reuseable_data.png)
@@ -131,6 +140,7 @@ Once you've done that, the dataset can be imported directly into other dashboard
 ![my_data_source](/recipes/non-programmatical-tools/03-looker/asset/my_data_source.png)
 
 #### Data Caching (Data Freshness) in Looker Studio
+
 One advantage of using Looker Studio to create dashboards or data visualizations is the ability to set data auto-updates, commonly referred to as data freshness in Looker. The options for data freshness vary depending on the connector being used. For more detailed information, refer to [this documentation](https://support.google.com/looker-studio/answer/7020039#zippy=%2Cin-this-article).
 
 Setting up data auto-update (data freshness) is similar to changing the data source type. Go to the `Resource` menu -> `Manage added data sources`. From there, select the data source you want to auto-update, click the `Data Freshness` option, and modify the schedule accordingly.  
@@ -141,8 +151,10 @@ Alternatively, you can manually refresh all the data used in a report by clickin
 
 ## The Fundamental of Data Visualization
 
-Before we dive in into the practical work on Looker Studio, let's start with some theoretical knowledge first about data visualization and data storytelling
+Before we dive into the hands-on work in Looker Studio, let's first explore the foundational concepts of data visualization and data storytelling. In this section, I'll cover these essential topics, laying the groundwork for Aurellia's detailed guide on building the dashboard in Part 2.
+
 ### What is Data Visualization
+
 In the big data era, the sheer volume and variety of data is actually a powerful ingredient for businesses to seek valuable insights. However, managing and interpreting the data could be incredibly complicated and time-consuming. This is where data visualization comes into play.
 
 So, what exactly is data visualization?
@@ -152,54 +164,88 @@ Data visualization is the graphical representation of information and data. It c
 <Tip>
   The 2 common types of visual representation that humans use are:
 
-  - **Presentation:** Uses visuals to communicate information and ideas to an audience.
-  - **Visualization:** Uses visuals to aid in thinking, understanding and analyzing information.
+- **Presentation:** Uses visuals to communicate information and ideas to an
+  audience.
+- **Visualization:** Uses visuals to aid in thinking, understanding
+  and analyzing information.
+
 </Tip>
 
 ### Key Principles of Data Visualization
+
 Effective data visualization involves a set of core principles that ensures that visualizations communicate insights clearly and effectively to the intended audience.
 
 <Accordion title="Know Your Audience">
-    - **Definition:** Tailoring your data visualization to the specific background, expertise and expectations of your audience. 
-    - **Why It Matters:** Different audiences have varying levels of familiarity with the data and its context. A well-designed visualization considers these differences.
-    - **How to Achieve It:** Research and analyze your audience's background and requirements. Customize the level of detail, complexity, and focus of your visualization to cater content that is valuable to them.
+  - **Definition:** Tailoring your data visualization to the specific
+  background, expertise and expectations of your audience. - **Why It Matters:**
+  Different audiences have varying levels of familiarity with the data and its
+  context. A well-designed visualization considers these differences. - **How to
+  Achieve It:** Research and analyze your audience's background and
+  requirements. Customize the level of detail, complexity, and focus of your
+  visualization to cater content that is valuable to them.
 </Accordion>
 <Accordion title="Keep Things Simple">
-    - **Definition:** Simplicity in data visualization means avoiding unnecessary complexity and focusing on presenting only the essential information. 
-    - **Why It Matters:** Overly complex visuals can overwhelm viewers and obscure the main points. Stripping away extraneous details and visual elements can help to maintain focus on the crucial aspects of the data.
-    - **How to Achieve It:** Prioritize the most important data points and insights, using a clean design with minimalistic elements. 
+  - **Definition:** Simplicity in data visualization means avoiding unnecessary
+  complexity and focusing on presenting only the essential information. - **Why
+  It Matters:** Overly complex visuals can overwhelm viewers and obscure the
+  main points. Stripping away extraneous details and visual elements can help to
+  maintain focus on the crucial aspects of the data. - **How to Achieve It:**
+  Prioritize the most important data points and insights, using a clean design
+  with minimalistic elements.
 </Accordion>
 <Accordion title="Use the Right Chart Type">
-    - **Definition:** By choosing the right chart, you ensure that the visualization helps viewers understand the data’s key features effectively.
-    - **Why It Matters:** Using the right type ensures that the visualization effectively illustrates the relationships, trends, or comparisons you want to highlight, making it easier for viewers to grasp the data’s significance.
-    - **How to Achieve It:** Choose a chart type that best represents the data’s characteristics, such as using bar charts for comparisons, line charts for trends, or pie charts for proportions.
+  - **Definition:** By choosing the right chart, you ensure that the
+  visualization helps viewers understand the data’s key features effectively. -
+  **Why It Matters:** Using the right type ensures that the visualization
+  effectively illustrates the relationships, trends, or comparisons you want to
+  highlight, making it easier for viewers to grasp the data’s significance. -
+  **How to Achieve It:** Choose a chart type that best represents the data’s
+  characteristics, such as using bar charts for comparisons, line charts for
+  trends, or pie charts for proportions.
 </Accordion>
 <Accordion title="Use Colors Wisely">
-    - **Definition:** Colors can differentiate data series, highlight important data points, and improve the overall visual appeal.
-    - **Why It Matters:** The strategic use of colors enhances readability and emphasizes key information, drawing attention to critical insights.
-    - **How to Achieve It:** Select a color palette that provides clear contrast and supports the visualization’s goals. Be mindful of color blindness and ensure that the color scheme is accessible to all viewers.
+  - **Definition:** Colors can differentiate data series, highlight important
+  data points, and improve the overall visual appeal. - **Why It Matters:** The
+  strategic use of colors enhances readability and emphasizes key information,
+  drawing attention to critical insights. - **How to Achieve It:** Select a
+  color palette that provides clear contrast and supports the visualization’s
+  goals. Be mindful of color blindness and ensure that the color scheme is
+  accessible to all viewers.
 </Accordion>
 <Accordion title="Highlight the Most Important Information">
-    - **Definition:** Emphasizing the most critical data points and insights in a visualization for the audience to grasp the essential insights and take actionable steps based on the information presented.
-    - **Why It Matters:** Directs the audience focus to the core message, facilitating quicker comprehension and more effective decision-making.
-    - **How to Achieve It:** Use visual techniques such as size, color, or positioning to make key data points stand out. 
+  - **Definition:** Emphasizing the most critical data points and insights in a
+  visualization for the audience to grasp the essential insights and take
+  actionable steps based on the information presented. - **Why It Matters:**
+  Directs the audience focus to the core message, facilitating quicker
+  comprehension and more effective decision-making. - **How to Achieve It:** Use
+  visual techniques such as size, color, or positioning to make key data points
+  stand out.
 </Accordion>
 <Accordion title="Avoid Clutter">
-    - **Definition:** Avoiding clutter means keeping the design of the visualization clean and focused. 
-    - **Why It Matters:** Maintaining a clean design enhances the effectiveness of the visualization. Prevent being overwhelmed by extraneous details.
-    - **How to Achieve It:** Remove non-essential elements, simplify data presentation, and use whitespace effectively to create a visually appealing and focused design.
+  - **Definition:** Avoiding clutter means keeping the design of the
+  visualization clean and focused. - **Why It Matters:** Maintaining a clean
+  design enhances the effectiveness of the visualization. Prevent being
+  overwhelmed by extraneous details. - **How to Achieve It:** Remove
+  non-essential elements, simplify data presentation, and use whitespace
+  effectively to create a visually appealing and focused design.
 </Accordion>
 
 ### Avoiding Data Visualization Common Pitfalls
+
 When creating visualizations, it’s important to avoid common pitfalls to ensure your data is accurately represented and easily interpreted.
 
 #### Misleading Visuals
 
-1. **Scale Issues:** Manipulating the scale of axes can distort the data. For instance, truncating the y-axis in a bar chart can exaggerate differences between bars. 
+1. **Scale Issues:** Manipulating the scale of axes can distort the data. For instance, truncating the y-axis in a bar chart can exaggerate differences between bars.
+
 - Always use a consistent scale or start the axis at zero to avoid misleading viewers.
-2. **Inappropriate Chart Types:** Using a pie chart for data with too many categories can be confusing. Pie charts work best with a small number of categories. 
+
+2. **Inappropriate Chart Types:** Using a pie chart for data with too many categories can be confusing. Pie charts work best with a small number of categories.
+
 - For more categories, consider a bar chart instead.
-3. **Cherry-Picking Data:** Selecting only a subset of data to support a specific narrative can be misleading. 
+
+3. **Cherry-Picking Data:** Selecting only a subset of data to support a specific narrative can be misleading.
+
 - Ensure your visualization represents the full dataset to provide an accurate picture.
 
 #### Overcomplicating with Too Much Data
@@ -209,19 +255,21 @@ When creating visualizations, it’s important to avoid common pitfalls to ensur
 3. **Complexity Over Clarity:** Sometimes, a simple chart (like a basic bar or line chart) can be more effective than a complex visualization (like a 3D chart or interactive dashboard). Prioritize clarity over complexity to ensure your audience can easily understand the data.
 
 ## Data Storytelling
-Traditional education often treats creative storytelling and technical analysis as separate skills, but today's job market values professionals who excel in both. 
-However, data visualization is a prime example of where these two areas intersect, making it a highly sought-after skill in our data-driven world. 
-Data storytelling involves merging solid data with compelling narratives to present insights in a way that resonates with audiences. 
+
+Traditional education often treats creative storytelling and technical analysis as separate skills, but today's job market values professionals who excel in both.
+However, data visualization is a prime example of where these two areas intersect, making it a highly sought-after skill in our data-driven world.
+Data storytelling involves merging solid data with compelling narratives to present insights in a way that resonates with audiences.
 This approach relies on three essential components: data, narrative, and visuals.
 
 1. **Data:** The raw numbers and facts that provide the foundation of the story.
 2. **Narrative:** The context and interpretation that give meaning to the data.
 3. **Visuals:** The charts, graphs, and other visual aids that illustrate the data and narrative.
 
-By integrating these elements, data storytelling transforms complex data sets into understandable, memorable, and actionable insights. 
+By integrating these elements, data storytelling transforms complex data sets into understandable, memorable, and actionable insights.
 The goal is to make the data not just accessible, but also engaging and persuasive, turning dry statistics into a compelling story that drives home key points.
 
 These are the steps to make a good data story telling
+
 <Steps>
   <Step title="1. Crafting a Data Story">
     <AccordionGroup>
@@ -230,18 +278,19 @@ These are the steps to make a good data story telling
             By customizing your story to align with these diverse expectations, you ensure that each segment receives the most relevant and impactful information, ultimately leading to better engagement and more informed decision-making.
 
             <Tip>
-                You can use 5W + 1H formula, to craft your data story 
+                You can use 5W + 1H formula, to craft your data story
             </Tip>
         </Accordion>
         <Accordion title="Defining the Purpose">
-            By focusing on a central theme or insight, you ensure that your story remains coherent and impactful. 
+            By focusing on a central theme or insight, you ensure that your story remains coherent and impactful.
             Whether your aim is to highlight performance metrics, uncover new opportunities, or address specific challenges, ensuring that your narrative supports the broader objectives of your organization helps in securing buy-in from stakeholders and reinforcing the strategic value of your insights.
         </Accordion>
         <Accordion title="Identifying Key Insights">
-            A critical step in crafting a compelling data story is data analysis and insight extraction. 
+            A critical step in crafting a compelling data story is data analysis and insight extraction.
             The goal is to interpret the data in a way that highlights the most relevant and actionable insights, making it easier for your audience to understand the implications and take informed actions based on your findings.
         </Accordion>
     </AccordionGroup>
+
   </Step>
     <Step title="2. Building the Narrative">
     <AccordionGroup>
@@ -270,4 +319,10 @@ These are the steps to make a good data story telling
         </Accordion>
     </AccordionGroup>
     </Step>
+
 </Steps>
+
+## Coming Soon: Crafting Your Dashboard in Part 2
+
+With a solid understanding of how to connect and optimize your data, you're now ready to move on to Part 2, where we'll bring this data to life.
+In the next section, Aurellia will guide you through building dynamic visualizations, adding interactivity with filters and controls, and creating a dashboard that tells a compelling data story.
