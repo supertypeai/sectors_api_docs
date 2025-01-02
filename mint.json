@@ -97,6 +97,7 @@
               "pages": [
                 "api-references/report/company",
                 "api-references/report/company-segment",
+                "api-references/report/company-quarterly-financials",
                 "api-references/report/subsector"
               ]
             },
