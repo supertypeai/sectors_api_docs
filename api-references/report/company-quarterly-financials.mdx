@@ -75,20 +75,29 @@ description: "Return quarterly financials metrics of a given ticker"
 ### Query Parameters
 
 <ParamField query="report_date" type="string">
-  Report date for which the quarterly financials of a given return is to be retrieved.
+  Report date for which the quarterly financials of a given ticker is to be
+  retrieved.
+  <AccordionGroup>
     <Accordion title="Format">
       The API endpoint only accepts `report_date` date in the `YYYY-MM-DD`
       format.
     </Accordion>
     <Accordion title="Get the available report_date">
       Get the available `report_date` from the [Company with Quarterly Financial
-      Dates List ](../helper-list/company-with-quarterly-financial-dates-list/)
-      endpoint.
+      Dates List ](../helper-list/company-quarterly-dates/) endpoint.
     </Accordion>
     <Accordion title="Default value">
-      When `report_date` is not provided, the latest quarterly financials will be retrieved.
+      When `report_date` is not provided, the latest quarterly financials will
+      be retrieved.
     </Accordion>
   </AccordionGroup>
+</ParamField>
+
+<ParamField query="approx" type="boolean" default="true">
+  When set to `true`, the quarterly financials are retrieved based on the
+  closest available report date to the specified `report_date`. If set to
+  `false`, only the quarterly financials matching the exact specified
+  `report_date` will be retrieved.
 </ParamField>
 
 ### Response

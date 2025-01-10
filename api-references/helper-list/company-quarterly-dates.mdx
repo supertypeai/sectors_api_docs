@@ -1,7 +1,7 @@
 ---
-title: "Company with Quarterly Financial Dates List"
+title: "Quarterly Financial Dates of a Company"
 api: "GET /company/get_quarterly_financial_dates/{ticker}/"
-description: "Return list of companies with quarterly financial dates of their available quarterly financial years."
+description: "Return available quarterly financial dates of a given ticker"
 ---
 
 <ResponseExample>
@@ -74,10 +74,10 @@ description: "Return list of companies with quarterly financial dates of their a
 ### Response
 
 <ResponseField name="<financial_year>" type="object" required>
-  The financial year of the quarterly financials report
+  The financial year of the quarterly financial report.
   <Expandable title="properties">
     <ResponseField name="report_date" type="array" required>
-      The financials report_date in the financial year
+      The available quarterly financial dates in the financial year.
     </ResponseField>
   </Expandable>
 </ResponseField>

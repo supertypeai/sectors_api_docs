@@ -81,7 +81,8 @@
                 "api-references/helper-list/companies-index",
                 "api-references/helper-list/companies-subsector",
                 "api-references/helper-list/companies-subindustry",
-                "api-references/helper-list/companies-segment-list"
+                "api-references/helper-list/companies-segment-list",
+                "api-references/helper-list/company-quarterly-dates"
               ]
             },
             {
