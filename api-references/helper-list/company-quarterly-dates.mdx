@@ -1,0 +1,89 @@
+---
+title: "Quarterly Financial Dates of a Company"
+api: "GET /company/get_quarterly_financial_dates/{ticker}/"
+description: "Return available quarterly financial dates of a given ticker"
+---
+
+<ResponseExample>
+```json 200
+{
+    "2023": [
+        [
+            "2023-06-30",
+            "q2"
+        ],
+        [
+            "2023-09-30",
+            "q3"
+        ],
+        [
+            "2023-12-31",
+            "q4"
+        ]
+    ],
+    "2024": [
+        [
+            "2024-03-31",
+            "q1"
+        ],
+        [
+            "2024-06-30",
+            "q2"
+        ],
+        [
+            "2024-09-30",
+            "q3"
+        ]
+    ]
+}
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Path
+
+<ParamField path="ticker" type="string" initialValue="BBCA" required>
+  Ticker of the company for which the report is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available ticker">
+      Get the available `ticker` from the [Companies by
+      Subsector](../helper-list/companies-subsector) or the [Companies by
+      Subindustry](../helper-list/companies-subindustry) endpoints.
+    </Accordion>
+    <Accordion title="Examples of the ticker">
+      `ASII`, `BBCA`, `BBRI`, `BMRI`, `BYAN`
+    </Accordion>
+    <Accordion title="Format">
+      A valid `ticker` consists of 4 letters, optionally followed by '.jk', and
+      is **case-insensitive**.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="<financial_year>" type="object" required>
+  The financial year of the quarterly financial report.
+  <Expandable title="properties">
+    <ResponseField name="report_date" type="array" required>
+      The available quarterly financial dates in the financial year.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Usage
+
+This list can be used for the following endpoint:
+
+- [Company Quarterly Financials](../report/company-quarterly-financials)
