@@ -1,0 +1,80 @@
+---
+title: "KLSE Companies by Sector"
+api: "GET /klse/companies/"
+description: "Return list of companies in KLSE Index from a sector"
+---
+
+<ResponseExample>
+```json 200
+[
+  {
+    "symbol": "1818",
+    "company_name": "Bursa Malaysia Berhad"
+  },
+  {
+    "symbol": "5167",
+    "company_name": "Turbo-Mech Berhad"
+  },
+  {
+    "symbol": "1198",
+    "company_name": "MAA Group Berhad"
+  },
+  ...
+]
+```
+
+```json 400
+["The requested sector does not exist."]
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="sector" type="string" initialValue="insurance" required>
+  Sector from which the list of companies is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sector">
+      Get the available `sector` from the [KLSE Sectors](./klse-sector)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sector">
+      `consumer-cyclicals`, `financials`, `industrial-services`, `healthcare`, `basic-materials`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="Company[]" required>
+  Array of companies of the given subsector.
+  <Expandable title="properties">
+    <ResponseField name="Company.symbol" type="string" required>
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="Company.company_name" type="string" required>
+      The full name of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Usage
+
+This list can be used for the following endpoint:
+
+- [KLSE Company Report](./klse-company-report)

@@ -126,6 +126,7 @@
           "group": "Singapore",
           "pages": [
             "api-references/singapore/sgx-sector",
+            "api-references/singapore/sgx-companies-by-sector",
             "api-references/singapore/sgx-company-report",
             "api-references/singapore/sgx-top-companies"
           ]
@@ -134,6 +135,7 @@
           "group": "Malaysia",
           "pages": [
             "api-references/malaysia/klse-sector",
+            "api-references/malaysia/klse-companies-by-sector",
             "api-references/malaysia/klse-company-report",
             "api-references/malaysia/klse-top-companies"
           ]

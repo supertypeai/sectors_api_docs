@@ -1,7 +1,7 @@
 ---
 title: "Company Quarterly Financials"
 api: "GET /financials/quarterly/{ticker}/"
-description: "Return Quarterly Financials Metrics of a Company"
+description: "Return quarterly financials metrics of a given ticker"
 ---
 
 <ResponseExample>
@@ -59,9 +59,8 @@ description: "Return Quarterly Financials Metrics of a Company"
   Ticker of the company for which the quarterly financials are to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available ticker">
-      Get the available `ticker` from the [Companies by
-      Subsector](../helper-list/companies-subsector) or the [Companies by
-      Subindustry](../helper-list/companies-subindustry) endpoints.
+      Get the available `ticker` from the [List Companies With Quarterly
+      Financials](../helper-list/companies-with-quarterly-financials/) endpoint.
     </Accordion>
     <Accordion title="Examples of the ticker">
       `ASII`, `BBCA`, `BBRI`, `BMRI`, `BYAN`
@@ -76,9 +75,7 @@ description: "Return Quarterly Financials Metrics of a Company"
 ### Query Parameters
 
 <ParamField query="report_date" type="string">
-  Fetch company quarterly financials for given report date. If not provided, it
-  will return the latest company quarterly financials data.
-  <AccordionGroup>
+  Report date for which the quarterly financials of a given return is to be retrieved.
     <Accordion title="Format">
       The API endpoint only accepts `report_date` date in the `YYYY-MM-DD`
       format.
@@ -88,7 +85,9 @@ description: "Return Quarterly Financials Metrics of a Company"
       Dates List ](../helper-list/company-with-quarterly-financial-dates-list/)
       endpoint.
     </Accordion>
-    <Accordion title="Examples of the report_date">"2024-01-05"</Accordion>
+    <Accordion title="Default value">
+      When `report_date` is not provided, the latest quarterly financials will be retrieved.
+    </Accordion>
   </AccordionGroup>
 </ParamField>
 
