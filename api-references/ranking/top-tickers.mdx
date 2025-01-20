@@ -81,12 +81,7 @@ description: "Return a list of top tickers in a given year based on certain clas
 
 ### Query Parameters
 
-<ParamField
-  query="classifications"
-  type="string"
-  default="all"
-  initialValue="dividend_yield"
->
+<ParamField query="classifications" type="string" default="all">
   Classification for ranking the top tickers in a given year (default to all).
   <AccordionGroup>
     <Accordion title="Available classifications">
@@ -111,7 +106,7 @@ description: "Return a list of top tickers in a given year based on certain clas
   Minimum market cap of the retrieved companies in billion IDR.
 </ParamField>
 
-<ParamField query="sub_sector" type="string">
+<ParamField query="sub_sector" type="string" default="all">
   Subsector from which the list of top companies is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available sub_sector">
@@ -137,17 +132,13 @@ description: "Return a list of top tickers in a given year based on certain clas
 
 <ResponseField name="dividend_yield" type="DividendYieldData[]">
   <Expandable title="properties">
-    <ResponseField name="DividendYieldData.symbol" type="string" required>
+    <ResponseField name="DividendYieldData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="DividendYieldData.company_name" type="string" required>
+    <ResponseField name="DividendYieldData.company_name" type="string">
       The name of the company.
     </ResponseField>
-    <ResponseField
-      name="DividendYieldData.dividend_yield"
-      type="float"
-      required
-    >
+    <ResponseField name="DividendYieldData.dividend_yield" type="float">
       The dividend yield of the company.
     </ResponseField>
   </Expandable>
@@ -155,17 +146,13 @@ description: "Return a list of top tickers in a given year based on certain clas
 
 <ResponseField name="total_dividend" type="TotalDividendData[]">
   <Expandable title="properties">
-    <ResponseField name="TotalDividendData.symbol" type="string" required>
+    <ResponseField name="TotalDividendData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="TotalDividendData.company_name" type="string" required>
+    <ResponseField name="TotalDividendData.company_name" type="string">
       The name of the company.
     </ResponseField>
-    <ResponseField
-      name="TotalDividendData.total_dividend"
-      type="float"
-      required
-    >
+    <ResponseField name="TotalDividendData.total_dividend" type="float">
       The total dividend of the company in IDR.
     </ResponseField>
   </Expandable>
@@ -173,13 +160,13 @@ description: "Return a list of top tickers in a given year based on certain clas
 
 <ResponseField name="revenue" type="RevenueData[]">
   <Expandable title="properties">
-    <ResponseField name="RevenueData.symbol" type="string" required>
+    <ResponseField name="RevenueData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="RevenueData.company_name" type="string" required>
+    <ResponseField name="RevenueData.company_name" type="string">
       The name of the company.
     </ResponseField>
-    <ResponseField name="RevenueData.revenue" type="float" required>
+    <ResponseField name="RevenueData.revenue" type="float">
       The total revenue of the company in IDR.
     </ResponseField>
   </Expandable>
@@ -187,13 +174,13 @@ description: "Return a list of top tickers in a given year based on certain clas
 
 <ResponseField name="earnings" type="EarningsData[]">
   <Expandable title="properties">
-    <ResponseField name="EarningsData.symbol" type="string" required>
+    <ResponseField name="EarningsData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="EarningsData.company_name" type="string" required>
+    <ResponseField name="EarningsData.company_name" type="string">
       The name of the company.
     </ResponseField>
-    <ResponseField name="EarningsData.earnings" type="float" required>
+    <ResponseField name="EarningsData.earnings" type="float">
       The total earnings of the company in IDR.
     </ResponseField>
   </Expandable>
@@ -201,13 +188,13 @@ description: "Return a list of top tickers in a given year based on certain clas
 
 <ResponseField name="market_cap" type="MarketCapData[]">
   <Expandable title="properties">
-    <ResponseField name="MarketCapData.symbol" type="string" required>
+    <ResponseField name="MarketCapData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="MarketCapData.company_name" type="string" required>
+    <ResponseField name="MarketCapData.company_name" type="string">
       The name of the company.
     </ResponseField>
-    <ResponseField name="MarketCapData.market_cap" type="int" required>
+    <ResponseField name="MarketCapData.market_cap" type="int">
       The total market cap of the company in IDR.
     </ResponseField>
   </Expandable>
@@ -215,13 +202,13 @@ description: "Return a list of top tickers in a given year based on certain clas
 
 <ResponseField name="pb" type="PBData[]">
   <Expandable title="properties">
-    <ResponseField name="PBData.symbol" type="string" required>
+    <ResponseField name="PBData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="PBData.company_name" type="string" required>
+    <ResponseField name="PBData.company_name" type="string">
       The name of the company.
     </ResponseField>
-    <ResponseField name="PBData.pb" type="float" required>
+    <ResponseField name="PBData.pb" type="float">
       The price to book value ratio of the company.
     </ResponseField>
   </Expandable>
@@ -229,13 +216,13 @@ description: "Return a list of top tickers in a given year based on certain clas
 
 <ResponseField name="pe" type="PEData[]">
   <Expandable title="properties">
-    <ResponseField name="PEData.symbol" type="string" required>
+    <ResponseField name="PEData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="PEData.company_name" type="string" required>
+    <ResponseField name="PEData.company_name" type="string">
       The name of the company.
     </ResponseField>
-    <ResponseField name="PEData.pe" type="float" required>
+    <ResponseField name="PEData.pe" type="float">
       The price to earning ratio of the company.
     </ResponseField>
   </Expandable>
@@ -243,13 +230,13 @@ description: "Return a list of top tickers in a given year based on certain clas
 
 <ResponseField name="ps" type="PSData[]">
   <Expandable title="properties">
-    <ResponseField name="PSData.symbol" type="string" required>
+    <ResponseField name="PSData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="PSData.company_name" type="string" required>
+    <ResponseField name="PSData.company_name" type="string">
       The name of the company.
     </ResponseField>
-    <ResponseField name="PSData.ps" type="float" required>
+    <ResponseField name="PSData.ps" type="float">
       The price to sales ratio of the company.
     </ResponseField>
   </Expandable>

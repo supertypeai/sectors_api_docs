@@ -37,7 +37,7 @@ description: "Return list of companies from a subsector"
 
 ### Query Parameters
 
-<ParamField query="sub_sector" type="string" initialValue="insurance" required>
+<ParamField query="sub_sector" type="string" required>
   Subsector from which the list of companies is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available sub_sector">
@@ -56,13 +56,13 @@ description: "Return list of companies from a subsector"
 
 ### Response
 
-<ResponseField name="payload" type="Company[]" required>
+<ResponseField name="payload" type="Company[]">
   Array of companies of the given subsector.
   <Expandable title="properties">
-    <ResponseField name="Company.symbol" type="string" required>
+    <ResponseField name="Company.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="Company.company_name" type="string" required>
+    <ResponseField name="Company.company_name" type="string">
       The full name of the company.
     </ResponseField>
   </Expandable>

@@ -42,15 +42,15 @@ description: "Return list of companies in SGX Index from a sector"
 
 ### Query Parameters
 
-<ParamField query="sector" type="string" initialValue="insurance" required>
+<ParamField query="sector" type="string" required>
   Sector from which the list of companies is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available sector">
-      Get the available `sector` from the [SGX Sectors](./sgx-sector)
-      endpoint.
+      Get the available `sector` from the [SGX Sectors](./sgx-sector) endpoint.
     </Accordion>
     <Accordion title="Examples of the sector">
-      `food-drug-retailing`, `energy-minerals`, `holding-companies`, `banking-investment-services`, `real-estate`
+      `food-drug-retailing`, `energy-minerals`, `holding-companies`,
+      `banking-investment-services`, `real-estate`
     </Accordion>
     <Accordion title="Format">
       The API endpoint only accepts `sector` in the **kebab case** format
@@ -61,13 +61,13 @@ description: "Return list of companies in SGX Index from a sector"
 
 ### Response
 
-<ResponseField name="payload" type="Company[]" required>
+<ResponseField name="payload" type="Company[]">
   Array of companies of the given subsector.
   <Expandable title="properties">
-    <ResponseField name="Company.symbol" type="string" required>
+    <ResponseField name="Company.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="Company.company_name" type="string" required>
+    <ResponseField name="Company.company_name" type="string">
       The full name of the company.
     </ResponseField>
   </Expandable>

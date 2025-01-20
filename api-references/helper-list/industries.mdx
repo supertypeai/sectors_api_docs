@@ -29,13 +29,13 @@ description: "Return list of all available industries"
 
 ### Response
 
-<ResponseField name="payload" type="Industry[]" required>
+<ResponseField name="payload" type="Industry[]">
   <Expandable title="properties">
-    <ResponseField name="Industry.subsector" type="string" required>
+    <ResponseField name="Industry.subsector" type="string">
       A specific classification within a sector.
     </ResponseField>
 
-    <ResponseField name="Industry.industry" type="string" required>
+    <ResponseField name="Industry.industry" type="string">
       A specific classification within a subsector.
     </ResponseField>
 

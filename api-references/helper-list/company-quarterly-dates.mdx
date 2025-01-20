@@ -53,7 +53,7 @@ description: "Return available quarterly financial dates of a given ticker"
 
 ### Path
 
-<ParamField path="ticker" type="string" initialValue="BBCA" required>
+<ParamField path="ticker" type="string" required>
   Ticker of the company for which the report is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available ticker">
@@ -73,10 +73,10 @@ description: "Return available quarterly financial dates of a given ticker"
 
 ### Response
 
-<ResponseField name="<financial_year>" type="object" required>
+<ResponseField name="<financial_year>" type="object">
   The financial year of the quarterly financial report.
   <Expandable title="properties">
-    <ResponseField name="report_date" type="array" required>
+    <ResponseField name="report_date" type="array">
       The available quarterly financial dates in the financial year.
     </ResponseField>
   </Expandable>

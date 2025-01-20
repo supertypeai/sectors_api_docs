@@ -40,7 +40,7 @@ description: "Return revenue and cost segments of a given ticker"
 
 ### Path
 
-<ParamField path="ticker" type="string" initialValue="BBCA" required>
+<ParamField path="ticker" type="string" required>
   Ticker of the company for which the revenue and cost segments are to be
   retrieved.
   <AccordionGroup>
@@ -61,36 +61,39 @@ description: "Return revenue and cost segments of a given ticker"
 ### Query Parameters
 
 <ParamField query="financial_year" type="integer">
-  Fetch company segment for given financial year. If not provided, it will
-  return the latest company segment data.
+  Fetch company segment for given financial year.
   <AccordionGroup>
     <Accordion title="Get the available financial_year">
       Get the available `financial_year` from the [Companies Segment
       List](../helper-list/companies-segment-list) endpoint.
     </Accordion>
     <Accordion title="Examples of the financial_year">`2022`, `2023`</Accordion>
+    <Accordion title="Default value">
+      When `financial_year` is not provided, the latest company segment data
+      will be retrieved.
+    </Accordion>
   </AccordionGroup>
 </ParamField>
 
 ### Response
 
-<ResponseField name="symbol" type="string" required>
+<ResponseField name="symbol" type="string">
   The ticker of the company.
 </ResponseField>
 
-<ResponseField name="financial_year" type="integer" required>
+<ResponseField name="financial_year" type="integer">
   The financial year of the revenue and cost segments.
 </ResponseField>
 
-<ResponseField name="revenue_breakdown" type="RevenueBreakdownData[]" required>
+<ResponseField name="revenue_breakdown" type="RevenueBreakdownData[]">
   <Expandable title="properties">
-    <ResponseField name="RevenueBreakdownData.value" type="float" required>
+    <ResponseField name="RevenueBreakdownData.value" type="float">
       The revenue/cost value in IDR.
     </ResponseField>
-    <ResponseField name="RevenueBreakdownData.source" type="string" required>
+    <ResponseField name="RevenueBreakdownData.source" type="string">
       The source node.
     </ResponseField>
-    <ResponseField name="RevenueBreakdownData.target" type="string" required>
+    <ResponseField name="RevenueBreakdownData.target" type="string">
       The target node.
     </ResponseField>
   </Expandable>

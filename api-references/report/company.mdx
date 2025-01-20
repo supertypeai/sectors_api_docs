@@ -302,7 +302,7 @@ description: "Return report of a given ticker, organized into distinct sections"
 
 ### Path
 
-<ParamField path="ticker" type="string" initialValue="BBCA" required>
+<ParamField path="ticker" type="string" required>
   Ticker of the company for which the report is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available ticker">
@@ -322,12 +322,7 @@ description: "Return report of a given ticker, organized into distinct sections"
 
 ### Query Parameters
 
-<ParamField
-  query="sections"
-  type="string"
-  default="all"
-  initialValue="overview"
->
+<ParamField query="sections" type="string" default="all">
   Sections of the company report that is to be retrieved (default to all).
   <AccordionGroup>
     <Accordion title="Available sections">
@@ -346,11 +341,11 @@ description: "Return report of a given ticker, organized into distinct sections"
 
 ### Response
 
-<ResponseField name="symbol" type="string" required>
+<ResponseField name="symbol" type="string">
   The ticker of the company.
 </ResponseField>
 
-<ResponseField name="company_name" type="string" required>
+<ResponseField name="company_name" type="string">
   The full name of the company.
 </ResponseField>
 

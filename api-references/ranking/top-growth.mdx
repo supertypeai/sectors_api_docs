@@ -82,7 +82,7 @@ description: "Return a list of top tickers based on certain growth classificatio
   Minimum market cap of the retrieved companies in billion IDR.
 </ParamField>
 
-<ParamField query="sub_sector" type="string">
+<ParamField query="sub_sector" type="string" default="all">
   Subsector from which the list of top tickers is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available sub_sector">
@@ -103,16 +103,15 @@ description: "Return a list of top tickers based on certain growth classificatio
 
 <ResponseField name="top_earnings_growth_gainers" type="EarningGrowthData[]">
   <Expandable title="properties">
-    <ResponseField name="EarningGrowthData.symbol" type="string" required>
+    <ResponseField name="EarningGrowthData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="EarningGrowthData.company_name" type="string" required>
+    <ResponseField name="EarningGrowthData.company_name" type="string">
       The name of the company.
     </ResponseField>
     <ResponseField
       name="EarningGrowthData.yoy_quarter_earnings_growth"
       type="float"
-      required
     >
       The year on year quarter earning growth.
     </ResponseField>
@@ -121,16 +120,15 @@ description: "Return a list of top tickers based on certain growth classificatio
 
 <ResponseField name="top_earnings_growth_losers" type="EarningGrowthData[]">
   <Expandable title="properties">
-    <ResponseField name="EarningGrowthData.symbol" type="string" required>
+    <ResponseField name="EarningGrowthData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="EarningGrowthData.company_name" type="string" required>
+    <ResponseField name="EarningGrowthData.company_name" type="string">
       The name of the company.
     </ResponseField>
     <ResponseField
       name="EarningGrowthData.yoy_quarter_earnings_growth"
       type="float"
-      required
     >
       The year on year quarter earning growth.
     </ResponseField>
@@ -139,16 +137,15 @@ description: "Return a list of top tickers based on certain growth classificatio
 
 <ResponseField name="top_revenue_growth_gainers" type="RevenueGrowthData[]">
   <Expandable title="properties">
-    <ResponseField name="RevenueGrowthData.symbol" type="string" required>
+    <ResponseField name="RevenueGrowthData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="RevenueGrowthData.company_name" type="string" required>
+    <ResponseField name="RevenueGrowthData.company_name" type="string">
       The name of the company.
     </ResponseField>
     <ResponseField
       name="RevenueGrowthData.yoy_quarter_revenue_growth"
       type="float"
-      required
     >
       The year on year quarter revenue growth.
     </ResponseField>
@@ -157,16 +154,15 @@ description: "Return a list of top tickers based on certain growth classificatio
 
 <ResponseField name="top_revenue_growth_losers" type="RevenueGrowthData[]">
   <Expandable title="properties">
-    <ResponseField name="RevenueGrowthData.symbol" type="string" required>
+    <ResponseField name="RevenueGrowthData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="RevenueGrowthData.company_name" type="string" required>
+    <ResponseField name="RevenueGrowthData.company_name" type="string">
       The name of the company.
     </ResponseField>
     <ResponseField
       name="RevenueGrowthData.yoy_quarter_revenue_growth"
       type="float"
-      required
     >
       The year on year quarter revenue growth.
     </ResponseField>

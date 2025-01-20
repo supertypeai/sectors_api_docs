@@ -44,7 +44,7 @@ Index daily transaction data is only available from **January 2nd, 2019**.
 
 ### Path
 
-<ParamField path="index_code" type="string" initialValue="idx30" required>
+<ParamField path="index_code" type="string" required>
   Code of the index for which the daily transaction data is to be retrieved.
   <Accordion title="Available index">
     `ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`, `idxhidiv20`, `idxq30`,
@@ -99,17 +99,17 @@ Index daily transaction data is only available from **January 2nd, 2019**.
 
 ### Response
 
-<ResponseField name="payload" type="IndexDailyTransactionData[]" required>
+<ResponseField name="payload" type="IndexDailyTransactionData[]">
   <Expandable title="properties">
-    <ResponseField name="IndexDailyTransactionData.index_code" type="string" required>
+    <ResponseField name="IndexDailyTransactionData.index_code" type="string">
       The code of the index.
     </ResponseField>
 
-    <ResponseField name="IndexDailyTransactionData.date" type="string" required>
+    <ResponseField name="IndexDailyTransactionData.date" type="string">
       The date of the transaction.
     </ResponseField>
 
-    <ResponseField name="IndexDailyTransactionData.price" type="float" required>
+    <ResponseField name="IndexDailyTransactionData.price" type="float">
       The closing price of the given index code in IDR.
     </ResponseField>
 

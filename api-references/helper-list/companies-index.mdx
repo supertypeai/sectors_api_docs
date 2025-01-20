@@ -50,13 +50,13 @@ description: "Return list of companies from a stock index"
 
 ### Response
 
-<ResponseField name="payload" type="Company[]" required>
+<ResponseField name="payload" type="Company[]">
   Array of companies of the given index.
   <Expandable title="properties">
-    <ResponseField name="Company.symbol" type="string" required>
+    <ResponseField name="Company.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="Company.company_name" type="string" required>
+    <ResponseField name="Company.company_name" type="string">
       The full name of the company.
     </ResponseField>
   </Expandable>

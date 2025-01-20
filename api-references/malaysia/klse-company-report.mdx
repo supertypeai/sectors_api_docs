@@ -127,7 +127,7 @@ description: "Return report of a given ticker, organized into distinct sections"
 
 ### Path
 
-<ParamField path="ticker" type="string" initialValue="1155" required>
+<ParamField path="ticker" type="string" required>
   Ticker of the company for which the report is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available ticker">
@@ -145,11 +145,11 @@ description: "Return report of a given ticker, organized into distinct sections"
 
 ### Response
 
-<ResponseField name="symbol" type="string" required>
+<ResponseField name="symbol" type="string">
   The ticker of the company.
 </ResponseField>
 
-<ResponseField name="name" type="string" required>
+<ResponseField name="name" type="string">
   The full name of the company.
 </ResponseField>
 

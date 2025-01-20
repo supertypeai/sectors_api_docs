@@ -37,7 +37,7 @@ description: "Return list of companies from a subindustry"
 
 ### Query Parameters
 
-<ParamField query="sub_industry" type="string" initialValue="timber" required>
+<ParamField query="sub_industry" type="string" required>
   Subindustry from which the list of companies is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available sub_industry">
@@ -57,13 +57,13 @@ description: "Return list of companies from a subindustry"
 
 ### Response
 
-<ResponseField name="payload" type="Company[]" required>
+<ResponseField name="payload" type="Company[]">
   Array of companies of the given subindustry.
   <Expandable title="properties">
-    <ResponseField name="Company.symbol" type="string" required>
+    <ResponseField name="Company.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="Company.company_name" type="string" required>
+    <ResponseField name="Company.company_name" type="string">
       The full name of the company.
     </ResponseField>
   </Expandable>

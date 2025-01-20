@@ -36,7 +36,7 @@ description: "Return daily transaction data of a given ticker on a certain inter
 
 ### Path
 
-<ParamField path="ticker" type="string" initialValue="BBCA" required>
+<ParamField path="ticker" type="string" required>
   Ticker of the company for which the daily transaction data is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available ticker">
@@ -100,25 +100,25 @@ description: "Return daily transaction data of a given ticker on a certain inter
 
 ### Response
 
-<ResponseField name="payload" type="DailyTransactionData[]" required>
+<ResponseField name="payload" type="DailyTransactionData[]">
   <Expandable title="properties">
-    <ResponseField name="DailyTransactionData.symbol" type="string" required>
+    <ResponseField name="DailyTransactionData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
 
-    <ResponseField name="DailyTransactionData.date" type="string" required>
+    <ResponseField name="DailyTransactionData.date" type="string">
       The date of the transaction.
     </ResponseField>
 
-    <ResponseField name="DailyTransactionData.close" type="integer" required>
+    <ResponseField name="DailyTransactionData.close" type="integer">
       The closing price of the given ticker in IDR.
     </ResponseField>
 
-    <ResponseField name="DailyTransactionData.volume" type="integer" required>
+    <ResponseField name="DailyTransactionData.volume" type="integer">
       The transaction volume of the given ticker.
     </ResponseField>
 
-    <ResponseField name="DailyTransactionData.market_cap" type="integer" required>
+    <ResponseField name="DailyTransactionData.market_cap" type="integer">
       The market capitalization of the given ticker in IDR.
     </ResponseField>
 

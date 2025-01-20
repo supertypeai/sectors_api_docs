@@ -160,7 +160,7 @@ description: "Return report of a given subsector, organized into distinct sectio
 
 ### Path
 
-<ParamField path="sub_sector" type="string" initialValue="insurance" required>
+<ParamField path="sub_sector" type="string" required>
   Subsector for which the report is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available subsector">
@@ -179,12 +179,7 @@ description: "Return report of a given subsector, organized into distinct sectio
 
 ### Query Parameters
 
-<ParamField
-  query="sections"
-  type="string"
-  default="all"
-  initialValue="statistics"
->
+<ParamField query="sections" type="string" default="all">
   Sections of the subsector report that is to be retrieved (default to all).
   <AccordionGroup>
     <Accordion title="Available sections">
@@ -203,11 +198,11 @@ description: "Return report of a given subsector, organized into distinct sectio
 
 ### Response
 
-<ResponseField name="sector" type="string" required>
+<ResponseField name="sector" type="string">
   The sector of which the given subsector belongs to.
 </ResponseField>
 
-<ResponseField name="sub_sector" type="string" required>
+<ResponseField name="sub_sector" type="string">
   The subsector of which the report belongs to.
 </ResponseField>
 

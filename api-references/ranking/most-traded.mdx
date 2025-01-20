@@ -82,7 +82,7 @@ description: "Return a list of the most traded tickers based on transaction volu
   on transaction volume multiplied by closing price.
 </ParamField>
 
-<ParamField query="sub_sector" type="string">
+<ParamField query="sub_sector" type="string" default="all">
   Subsector from which the list of most traded tickers is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available sub_sector">
@@ -101,18 +101,18 @@ description: "Return a list of the most traded tickers based on transaction volu
 
 ### Response
 
-<ResponseField name="<date>" type="TradedData[]" required>
+<ResponseField name="<date>" type="TradedData[]">
   <Expandable title="properties">
-    <ResponseField name="TradedData.symbol" type="string" required>
+    <ResponseField name="TradedData.symbol" type="string">
       The ticker of the traded stock.
     </ResponseField>
-    <ResponseField name="TradedData.company_name" type="string" required>
+    <ResponseField name="TradedData.company_name" type="string">
       The company name of the traded stock.
     </ResponseField>
-    <ResponseField name="TradedData.volume" type="integer" required>
+    <ResponseField name="TradedData.volume" type="integer">
       The transaction volume on the specified date.
     </ResponseField>
-    <ResponseField name="TradedData.price" type="integer" required>
+    <ResponseField name="TradedData.price" type="integer">
       The transaction price on the specified date in IDR.
     </ResponseField>
   </Expandable>

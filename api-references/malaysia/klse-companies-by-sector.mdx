@@ -42,7 +42,7 @@ description: "Return list of companies in KLSE Index from a sector"
 
 ### Query Parameters
 
-<ParamField query="sector" type="string" initialValue="insurance" required>
+<ParamField query="sector" type="string" required>
   Sector from which the list of companies is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available sector">
@@ -50,7 +50,8 @@ description: "Return list of companies in KLSE Index from a sector"
       endpoint.
     </Accordion>
     <Accordion title="Examples of the sector">
-      `consumer-cyclicals`, `financials`, `industrial-services`, `healthcare`, `basic-materials`
+      `consumer-cyclicals`, `financials`, `industrial-services`, `healthcare`,
+      `basic-materials`
     </Accordion>
     <Accordion title="Format">
       The API endpoint only accepts `sector` in the **kebab case** format
@@ -61,13 +62,13 @@ description: "Return list of companies in KLSE Index from a sector"
 
 ### Response
 
-<ResponseField name="payload" type="Company[]" required>
+<ResponseField name="payload" type="Company[]">
   Array of companies of the given subsector.
   <Expandable title="properties">
-    <ResponseField name="Company.symbol" type="string" required>
+    <ResponseField name="Company.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="Company.company_name" type="string" required>
+    <ResponseField name="Company.company_name" type="string">
       The full name of the company.
     </ResponseField>
   </Expandable>

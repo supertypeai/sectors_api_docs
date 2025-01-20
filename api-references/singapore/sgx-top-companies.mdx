@@ -68,11 +68,11 @@ description: "Return a list of top tickers based on certain classification (divi
   Sector from which the list of top company is to be retrieved.
   <AccordionGroup>
     <Accordion title="Get the available sector">
-      Get the available `sector` from the [SGX Sectors](./sgx-sector)
-      endpoint.
+      Get the available `sector` from the [SGX Sectors](./sgx-sector) endpoint.
     </Accordion>
     <Accordion title="Examples of the sector">
-      `food-drug-retailing`, `energy-minerals`, `holding-companies`, `banking-investment-services`, `real-estate`
+      `food-drug-retailing`, `energy-minerals`, `holding-companies`,
+      `banking-investment-services`, `real-estate`
     </Accordion>
     <Accordion title="Format">
       The API endpoint only accepts `sector` in the **kebab case** format
@@ -105,17 +105,13 @@ description: "Return a list of top tickers based on certain classification (divi
 
 <ResponseField name="dividend_yield" type="DividendYieldData[]">
   <Expandable title="properties">
-    <ResponseField name="DividendYieldData.symbol" type="string" required>
+    <ResponseField name="DividendYieldData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField
-      name="DividendYieldData.forward_dividend_yield"
-      type="float"
-      required
-    >
+    <ResponseField name="DividendYieldData.forward_dividend_yield" type="float">
       The forward dividend yield of the company.
     </ResponseField>
-    <ResponseField name="DividendYieldData.company_name" type="string" required>
+    <ResponseField name="DividendYieldData.company_name" type="string">
       The name of the company.
     </ResponseField>
   </Expandable>
@@ -123,13 +119,13 @@ description: "Return a list of top tickers based on certain classification (divi
 
 <ResponseField name="revenue" type="RevenueData[]">
   <Expandable title="properties">
-    <ResponseField name="RevenueData.symbol" type="string" required>
+    <ResponseField name="RevenueData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="RevenueData.revenue" type="float" required>
+    <ResponseField name="RevenueData.revenue" type="float">
       The total revenue of the company in SGD.
     </ResponseField>
-    <ResponseField name="RevenueData.company_name" type="string" required>
+    <ResponseField name="RevenueData.company_name" type="string">
       The name of the company.
     </ResponseField>
   </Expandable>
@@ -137,13 +133,13 @@ description: "Return a list of top tickers based on certain classification (divi
 
 <ResponseField name="earnings" type="EarningsData[]">
   <Expandable title="properties">
-    <ResponseField name="EarningsData.symbol" type="string" required>
+    <ResponseField name="EarningsData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="EarningsData.earnings" type="float" required>
+    <ResponseField name="EarningsData.earnings" type="float">
       The total earnings of the company in SGD.
     </ResponseField>
-    <ResponseField name="EarningsData.company_name" type="string" required>
+    <ResponseField name="EarningsData.company_name" type="string">
       The name of the company.
     </ResponseField>
   </Expandable>
@@ -151,13 +147,13 @@ description: "Return a list of top tickers based on certain classification (divi
 
 <ResponseField name="market_cap" type="MarketCapData[]">
   <Expandable title="properties">
-    <ResponseField name="MarketCapData.symbol" type="string" required>
+    <ResponseField name="MarketCapData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="MarketCapData.market_cap" type="int" required>
+    <ResponseField name="MarketCapData.market_cap" type="int">
       The total market cap of the company in SGD.
     </ResponseField>
-    <ResponseField name="MarketCapData.company_name" type="string" required>
+    <ResponseField name="MarketCapData.company_name" type="string">
       The name of the company.
     </ResponseField>
   </Expandable>
@@ -165,13 +161,13 @@ description: "Return a list of top tickers based on certain classification (divi
 
 <ResponseField name="pe" type="PEData[]">
   <Expandable title="properties">
-    <ResponseField name="PEData.symbol" type="string" required>
+    <ResponseField name="PEData.symbol" type="string">
       The ticker of the company.
     </ResponseField>
-    <ResponseField name="PEData.pe" type="float" required>
+    <ResponseField name="PEData.pe" type="float">
       The price to earning ratio of the company.
     </ResponseField>
-    <ResponseField name="PEData.company_name" type="string" required>
+    <ResponseField name="PEData.company_name" type="string">
       The name of the company.
     </ResponseField>
   </Expandable>
