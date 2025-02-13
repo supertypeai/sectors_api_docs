@@ -3,9 +3,6 @@ title: "Sectors Financial API Postman Collection"
 sidebarTitle: "1. Postman Collection"
 ---
 
-
-# Sectors Financial API Documentation
-
 Welcome to the **Sectors Financial API** documentation! This guide is designed to help developers and integrators get started with our API, which provides market and analytical data specific to Indonesia. Whether you're building financial applications, conducting market research, or integrating data into your platform, this API will provide you with the tools you need.
 
 In this tutorial, we'll walk you through how to use our **Postman Collection** to explore and test our API endpoints.
@@ -41,14 +38,14 @@ If you're new to Postman, check out their official [documentation](https://learn
 To start using our API, follow these steps to import the **Sectors Financial API Postman Collection**:
 
 1. **Download the Postman Collection**:
-   - Click here [Postman Collection](/recipes/postman_collection/json/Supertype API 02-2025 v1.1.postman_collection.json) and download the latest version of the Postman collection file.
+   - Click here [Postman Collection](https://github.com/supertypeai/sectors_api_docs/blob/feat/postman_collection/recipes/postman-collection/json/Supertype%20API%2002-2025%20v1.1.postman_collection.json) and download the latest version of the Postman collection file.
 
 2. **Open Postman**:
    - Launch the Postman application on your computer.
 
 3. **Import the Collection**:
    - Click on the **Import** button in the top-left corner of the Postman interface.
-   - Select the downloaded `Supertype API 02-2025 v1.1.postman_collection.json` file and click **Open**.
+   - Select the downloaded `Supertype_API_02-2025_v1.1.postman_collection.json` file and click **Open**.
    - The collection will now appear in your Postman workspace under the **Collections** tab.
 
 ---
@@ -105,19 +102,9 @@ Each request is pre-configured with the necessary parameters and variables.
 The collection uses variables to make it reusable and customizable. There are two types of variables:
 
 1. **Collection Variables**: These are shared across all requests in the collection. Examples include:
-   - `{{environment}}`: The base URL for the API.
+   - `{{environment}}`: The base URL for the API (default data: https://api.sectors.app).
    - `{{apikey}}`: Your API key (replace this with your own key).
    - `{{ticker}}`: The stock ticker symbol (e.g., `AAPL`).
 
 2. **Request-Specific Variables**: Some parameters are unique to specific requests and are defined within the request itself. For example:
    - `{{report_date}}`: The report date for financial data (e.g., `2023-09-30`).
-
-## Replacing the API Key
-
-The collection currently uses a placeholder API key. To use your own API key:
-
-1. Open the collection in Postman.
-2. Go to the **Variables** tab in the collection settings.
-3. Locate the `{{api_key}}` variable.
-4. Replace the current value with your API key.
-5. Save the changes.

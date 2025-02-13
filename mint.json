@@ -214,7 +214,7 @@
     {
       "group": "Postman Collection",
       "pages": [
-        "recipes/postman-collection/00-postman-collection.mdx"
+        "recipes/postman-collection/01-postman-collection"
       ]
     }
   ],
