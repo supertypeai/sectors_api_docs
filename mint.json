@@ -210,6 +210,12 @@
         "recipes/non-programmatical-tools/03-looker/03-looker",
         "recipes/non-programmatical-tools/03-looker/04-looker-bi-workshop"
       ]
+    },
+    {
+      "group": "Postman Collection",
+      "pages": [
+        "recipes/postman-collection/00-postman-collection.mdx"
+      ]
     }
   ],
   "footerSocials": {
