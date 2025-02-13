@@ -133,8 +133,6 @@ A secure environment is the foundation for any reliable API integration. By isol
 
 Secure communication is a critical component when integrating with the **Sectors Financial API**. Properly securing data in transit ensures that sensitive market data is protected from interception, modification, or unauthorized access. Below, we cover the key security practices: HTTPS enforcement, SSL/TLS certificate verification, and additional encryption techniques.
 
-
-
 ### A. Using HTTPS for Secure API Requests
 
 #### **Why HTTPS Matters**
@@ -158,77 +156,6 @@ if response.status_code == 200:
 else:
     print("Error:", response.status_code)
 ```
-##### **Insecure HTTP Request (DO NOT USE)**
-```python
-url = "http://api.sectors.app/v1/company/report/<company-name>"  # Incorrect, unencrypted request
-response = requests.get(url)
-```
-### B. SSL/TLS Certificate Verification
-#### Why Verify SSL Certificates?
-- SSL/TLS certificates authenticate the API server and encrypt data in transit.
-- If an attacker intercepts traffic and serves a fake API endpoint (e.g., via DNS spoofing), your client must detect it.
-- Without SSL verification, an attacker could intercept requests and manipulate data.
-
-#### How to Ensure SSL Certificate Verification in Python
-By default, Python’s requests module automatically verifies SSL certificates, but you should always check explicitly:
-
-##### **Enforcing SSL Verification (Secure)**
-```python
-response = requests.get(url, verify=True)  # Default behavior
-
-if response.status_code == 200:
-    print("SSL certificate verified!")
-
-# Expected output: SSL certificate verified!
-```
-##### **Disabling SSL Verification (NOT RECOMMENDED)**
-```python
-response = requests.get(url, verify=False)  # Disables SSL verification
-```
-If you disable SSL verification, attackers could intercept and manipulate API responses. Never disable SSL verification unless debugging a local API with self-signed certificates.
-
-
-### C. Additional Encryption Practices
-#### Certificate Pinning
-Certificate pinning ensures that your application only trusts specific SSL certificates from the API provider, reducing the risk of rogue certificate authorities (CA) issuing fake certificates.
-
-##### How to Implement Certificate Pinning in Python
-```python
-import requests
-
-# Define the expected certificate fingerprint (SHA-256 of public key)
-VALID_CERTIFICATE_HASH = "d2a57f5b4e6ff865d849..."
-
-def check_certificate(url):
-    response = requests.get(url)
-    
-    # Extract SSL certificate info
-    cert = response.raw.connection.sock.getpeercert(binary_form=True)
-    
-    # Generate SHA-256 hash
-    import hashlib
-    cert_hash = hashlib.sha256(cert).hexdigest()
-    
-    # Verify the certificate matches expected hash
-    if cert_hash == VALID_CERTIFICATE_HASH:
-        print("Certificate is valid and trusted!")
-    else:
-        print("WARNING: Untrusted certificate!")
-
-check_certificate("https://api.sectors.app")
-
-# Expected output: Certificate is valid and trusted!
-```
-#### Using TLS 1.2+
-- Ensure you are using TLS 1.2 or TLS 1.3 for enhanced security.
-- You can check the TLS version used in your Python request:
-```python
-import ssl
-print(ssl.OPENSSL_VERSION)
-
-# Expected Output (Example for TLS 1.2 or higher): OpenSSL 1.1.1  11 Sep 2018
-```
-
 
 ## 4. Best Practices for Securing API Keys
 
