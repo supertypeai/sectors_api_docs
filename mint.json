@@ -210,6 +210,12 @@
         "recipes/non-programmatical-tools/03-looker/03-looker",
         "recipes/non-programmatical-tools/03-looker/04-looker-bi-workshop"
       ]
+    },
+    {
+      "group": "API Security",
+      "pages": [
+        "recipes/api-security/01-securing-api-usage"
+      ]
     }
   ],
   "footerSocials": {
