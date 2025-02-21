@@ -212,6 +212,12 @@
       ]
     },
     {
+      "group": "Postman Collection",
+      "pages": [
+        "recipes/postman-collection/01-postman-collection"
+      ]
+    },
+    {
       "group": "API Security",
       "pages": [
         "recipes/api-security/01-securing-api-usage"
