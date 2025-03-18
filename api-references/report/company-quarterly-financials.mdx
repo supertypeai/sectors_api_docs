@@ -6,61 +6,62 @@ description: "Return quarterly financials metrics of a given ticker"
 
 <ResponseExample>
 ```json 200
-{
-    "symbol": "TLKM.JK",
-    "date": "2024-09-30",
-    "interest_income": null,
-    "interest_expense": null,
-    "net_interest_income": null,
-    "premium_income": null,
-    "premium_expense": null,
-    "net_premium_income": null,
-    "non_interest_income": null,
-    "revenue": 36927000000000,
-    "operating_expense": null,
-    "provision": null,
-    "operating_pnl": 10638000000000,
-    "non_operating_income_or_loss": null,
-    "earnings_before_tax": 9694000000000,
-    "tax": -2097000000000,
-    "minorities": 1683000000000,
-    "earnings": 5914000000000,
-    "gross_profit": 24952000000000,
-    "diluted_shares_outstanding": "99064006277",
-    "interest_expense_non_operating": 1438000000000,
-    "ebit": 11132000000000,
-    "ebitda": 19253000000000,
-    "cost_of_revenue": null,
-    "total_assets": 285134000000000,
-    "gross_loan": null,
-    "allowance_for_loans": null,
-    "net_loan": null,
-    "total_earning_assets": null,
-    "current_account": null,
-    "savings_account": null,
-    "time_deposit": null,
-    "total_deposit": null,
-    "other_interest_bearing_liabilities": null,
-    "non_interest_bearing_liabilities": null,
-    "cash_only": null,
-    "total_cash_and_due_from_banks": null,
-    "total_liabilities": 130783000000000,
-    "total_equity": 154351000000000,
-    "total_debt": 73139000000000,
-    "stockholders_equity": 135702000000000,
-    "total_non_current_assets": 232765000000000,
-    "current_liabilities": 74978000000000,
-    "cash_and_short_term_investments": 24540000000000,
-    "non_loan_assets": null,
-    "total_current_asset": 52369000000000,
-    "total_non_current_liabilities": 55805000000000,
-    "net_financing_cash_flow": -9551000000000,
-    "net_operating_cash_flow": 16268000000000,
-    "net_investing_cash_flow": -7307000000000,
-    "net_cash_flow": -590000000000,
-    "capital_expenditure": 7449000000000,
-    "free_cash_flow": 8819000000000
-}
+[
+    {
+        "symbol": "BMRI.JK",
+        "date": "2023-06-30",
+        "interest_income": 32799706000000,
+        "interest_expense": 8501807000000,
+        "net_interest_income": 41301513000000,
+        "premium_income": 3656585000000,
+        "premium_expense": 3175015000000,
+        "net_premium_income": 6831600000000,
+        "non_interest_income": 8674317000000,
+        "revenue": 56807430000000,
+        "operating_expense": 12277706000000,
+        "provision": 5132631000000,
+        "operating_pnl": 17176774000000,
+        "non_operating_income_or_loss": 6600000000,
+        "earnings_before_tax": 17183374000000,
+        "tax": 3340277000000,
+        "minorities": 1171381000000,
+        "earnings": 15014478000000,
+        "gross_profit": null,
+        "interest_expense_non_operating": null,
+        "ebit": null,
+        "ebitda": null,
+        "cost_of_revenue": null,
+        "total_assets": 1963987471000000,
+        "gross_loan": 1238806037000000,
+        "allowance_for_loans": 61981013000000,
+        "net_loan": 1300787050000000,
+        "total_earning_assets": null,
+        "current_account": 476766424000000,
+        "savings_account": 482799469000000,
+        "time_deposit": 279048572000000,
+        "total_deposit": 1238614465000000,
+        "other_interest_bearing_liabilities": null,
+        "non_interest_bearing_liabilities": null,
+        "cash_only": 27681721000000,
+        "total_cash_and_due_from_banks": 55069061000000,
+        "total_liabilities": 1516625484000000,
+        "total_equity": 255246569000000,
+        "total_debt": 177315855000000,
+        "stockholders_equity": 231009494000000,
+        "total_non_current_assets": null,
+        "current_liabilities": null,
+        "cash_and_short_term_investments": null,
+        "non_loan_assets": null,
+        "total_current_asset": null,
+        "total_non_current_liabilities": null,
+        "financing_cash_flow": 1134216000000,
+        "operating_cash_flow": -18600642000000,
+        "investing_cash_flow": 25875004000000,
+        "net_cash_flow": 8408578000000,
+        "free_cash_flow": -5442291000000,
+        "realized_capital_goods_investment": null
+    }
+]
 ```
 
 ```json 400
@@ -120,108 +121,96 @@ description: "Return quarterly financials metrics of a given ticker"
       be retrieved.
     </Accordion>
   </AccordionGroup>
-</ParamField>
-
-<ParamField query="approx" type="boolean" default="true">
+</ParamField> <ParamField query="approx" type="boolean" default="true">
   When set to `true`, the quarterly financials are retrieved based on the
   closest available report date to the specified `report_date`. If set to
   `false`, only the quarterly financials matching the exact specified
   `report_date` will be retrieved.
+</ParamField> <ParamField query="n_quarters" type="integer">
+  The number of latest consecutive quarters for which financial data should be
+  retrieved. When this parameter is provided, it overrides `report_date` and
+  `approx`, returning financial data for the most recent `n_quarters` available.
 </ParamField>
+
 ### Response
 
 <ResponseField name="symbol" type="string">
   The ticker of the company.
 </ResponseField>
-
 <ResponseField name="date" type="string">
   The date when the quarterly financials are reported.
 </ResponseField>
-
 <ResponseField name="net_operating_cash_flow" type="number">
   The net cash flow from operating activities.
 </ResponseField>
-
 <ResponseField name="total_assets" type="number">
   The total assets owned by the company.
 </ResponseField>
-
 <ResponseField name="total_liabilities" type="number">
   The total liabilities of the company.
 </ResponseField>
-
 <ResponseField name="total_current_liabilities" type="number">
   The total current liabilities of the company.
 </ResponseField>
-
 <ResponseField name="total_equity" type="number">
   The total equity of the company.
 </ResponseField>
-
 <ResponseField name="total_revenue" type="number">
   The total revenue generated by the company.
 </ResponseField>
-
 <ResponseField name="net_income" type="number">
   The net income of the company.
 </ResponseField>
-
 <ResponseField name="total_debt" type="number">
   The total debt held by the company.
 </ResponseField>
-
 <ResponseField name="stockholders_equity" type="number">
   The equity attributable to stockholders.
 </ResponseField>
-
 <ResponseField name="ebit" type="number">
   The earnings before interest and taxes (EBIT).
 </ResponseField>
-
 <ResponseField name="ebitda" type="number">
   The earnings before interest, taxes, depreciation, and amortization (EBITDA).
 </ResponseField>
-
 <ResponseField name="cash_and_short_term_investments" type="number">
   The cash and short-term investments available.
 </ResponseField>
-
 <ResponseField name="cash_only" type="number">
   The cash only available with the company.
 </ResponseField>
-
 <ResponseField name="total_cash_and_due_from_banks" type="number">
   The total cash and funds due from banks.
 </ResponseField>
-
 <ResponseField name="diluted_shares_outstanding" type="number">
   The number of diluted shares outstanding.
 </ResponseField>
-
 <ResponseField name="gross_income" type="number">
   The gross income of the company.
 </ResponseField>
-
 <ResponseField name="pretax_income" type="number">
   The income earned before taxes.
 </ResponseField>
-
 <ResponseField name="income_taxes" type="number">
   The total income taxes paid by the company.
 </ResponseField>
-
 <ResponseField name="total_non_current_assets" type="number">
   The total non-current assets owned by the company.
 </ResponseField>
-
 <ResponseField name="free_cash_flow" type="number">
   The free cash flow available after operational and capital expenses.
 </ResponseField>
-
 <ResponseField name="interest_expense_non_operating" type="number">
   The interest expenses incurred from non-operating activities.
 </ResponseField>
-
 <ResponseField name="operating_income" type="number">
   The income earned from operating activities.
+</ResponseField>
+<ResponseField name="capital_expenditure" type="number">
+  The capital expenditure of the company. This field is only available if the
+  requested ticker represents a bank.
+</ResponseField>
+<ResponseField name="realized_capital_goods_investment" type="number">
+  The realized capital goods investment of the company. This field is only
+  available if the requested ticker represents a non-bank company.
 </ResponseField>
