@@ -1,0 +1,33 @@
+---
+title: "Classification Companies for Subsector"
+sidebarTitle: "6. Classification Companies for Subsector"
+description: "By: [Delisya Jayadi](https://github.com/DelisyaJayadi) · March 21, 2025"
+---
+
+Have you ever wondered how companies compare across different subsectors? By analyzing their total distribution, we can uncover fascinating insights into industry trends, market dominance, and business growth. With the help of plotly and data from the Sectors, this recipe will show the step of giving the visualization that can be seen from the companies by subsector helping you understand which areas are thriving and which are shrinking. 
+
+## Install required libraries
+As the saying goes, prepare an umbrella before rain, let’s prepare the libraries that are used in this recipe. 
+
+- Install the [requests](https://requests.readthedocs.io/en/latest/) library to make HTTP Requests
+- Install [pandas](https://pypi.org/project/pandas/) to do some data exploratory
+- In this recipe we will use [plotly](https://plotly.com/graphing-libraries/) to do the data visualization
+
+  ```python
+  pip install requests pandas plotly
+  ```
+
+## Data Fetching
+
+Before diving into data fetching and processing, we’ll start by importing the necessary packages for this recipe. If the required libraries haven't been installed, don’t forget to check the previous step to make sure you have all the required libraries!
+
+```python
+import pandas as pd
+import requests 
+import plotly.graph_objects as go
+```
+
+All required libraries are ready! Now let's access the API keys from the Sectors Financial API Page. We will use that API Key later as an authorization for the API. Then, we can start the code!
+
+```python
+
