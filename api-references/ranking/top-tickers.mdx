@@ -186,13 +186,14 @@ description: "Return a list of top tickers in a given year based on certain clas
       <code>`>=`</code>, <code>`<=`</code>, <code>`<`</code>, <code>`>`</code>, <code>`=`</code>
     </Accordion>
     <Accordion title="Targets">
-      Use the same targets as classifications (except for <code>market_cap</code> which is replaced by <code>min_mcap_billion</code>).
+      Use the same targets as classifications (except for <code>market_cap</code> which is represented by <code>min_mcap_billion</code>).
     </Accordion>
   </AccordionGroup>
 </ParamField>
 
 <ParamField query="logic" type="string" default="and">
-  Logical operator to combine multiple filters. Accepts <code>`and`</code> or{" "}
+  Logical operator to combine multiple filters. This parameter is only
+  applicable if filters are provided. Accepts <code>`and`</code> or{" "}
   <code>`or`</code> (case insensitive).
   <AccordionGroup>
     <Accordion title="Explanation">
