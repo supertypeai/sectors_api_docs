@@ -4,6 +4,44 @@ sidebarTitle: Changelog
 icon: newspaper
 ---
 
+## 2025-04-24
+
+- Modified [SGX company report endpoint](../api-references/singapore/sgx-company-report) response
+
+  - Added `all_time_price` parameter to the `overview` response section
+  - Removed `pe_ttm`, `ps_ttm`, and `pcf_ttm` parameters from the `valuation` response section
+  - Added `ps` parameter to the `valuation` response section
+  - Removed `five_year_eps_growth`, `five_year_sales_growth`, `five_year_capital_spending_growth`, `asset_turnover`, `inventory_turnover_ttm`, and `receivable_turnover` from the `financials` response section
+  - Added `one_year_eps_growth` and `one_year_sales_growth` parameters to the `financials` response section
+  - Added `historical_dividends` parameter to the `dividend` response section
+
+## 2025-04-08
+
+- Added new `filters` and `logic` query parameters to top companies ranked endpoint
+
+  - [https://api.sectors.app/v1/companies/top/?filters=\{filters}&logic=and](../api-references/ranking/top-tickers)
+
+- Modified and added new parameters to the [company quarterly financials endpoint](../api-references/report/company-quarterly-financials) response
+
+- Added new `n_quarters` query parameter to company quarterly financials endpoint
+
+  - [https://api.sectors.app/v1/financials/quarterly/\{ticker}/?n_quarters=\{n_quarters}](../api-references/report/company-quarterly-financials)
+
+- Modified [SGX company report endpoint](../api-references/singapore/sgx-company-report) response
+
+  - Added new parameters to the `overview` response section
+  - Modified data format of the `historical_earnings` and `historical_valuation` parameters under the `financials` response section
+
+
+
+## 2025-02-12
+
+- Modified [IDX company report endpoint](../api-references/report/company) response
+
+  - Added `all_time_price` parameter to the `overview` response section
+  - Moved `price_cash_flow`, `enterprise_to_revenue`, `enterprise_to_ebitda`, and `peg_ratio` parameters to be parts of the `historical_valuation` parameter under the `valuation` response section
+  - Modified and added some parameters to the `financials`, `dividend`, `ownership`, and `peers` response sections
+
 ## 2025-01-10
 
 - Added new endpoint to get available quarterly financial dates of a given ticker
