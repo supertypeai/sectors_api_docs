@@ -100,6 +100,10 @@ description: "Return available quarterly financial dates of a given ticker"
 }
 ```
 
+```json 400
+{ "error": "Invalid stock ticker or data does not exist." }
+```
+
 ```json 429
 { "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
 ```

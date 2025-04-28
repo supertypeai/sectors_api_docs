@@ -142,7 +142,12 @@ description: "Return report of a given subsector, organized into distinct sectio
 ```
 
 ```json 400
-{ "error": "Sector does not exist." }
+// Bad Request. Possible error messages:
+{ "error": "Please provide a valid sector." }
+{ "error": "Invalid query parameters: <Bad Param>." }
+{ "error": "Invalid sections provided: <Bad Section>." }
+{ "error": "Requested sub_sector does not exist." }
+
 ```
 
 ```json 429

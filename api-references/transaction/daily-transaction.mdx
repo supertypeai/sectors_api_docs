@@ -18,7 +18,11 @@ description: "Return daily transaction data of a given ticker on a certain inter
 ```
 
 ```json 400
+// Bad Request. Possible error messages:
 { "error": "Given stock ticker does not exist in the requested date." }
+{ "error": "Please provide a valid stock ticker." }
+{ "error": "Invalid query parameters: <Bad Param>." }
+{ "error": "Use a valid date format of YYYY-MM-DD." }
 ```
 
 ```json 429

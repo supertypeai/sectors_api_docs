@@ -20,9 +20,9 @@ description: "Return revenue and cost segments of a given ticker"
 ```
 
 ```json 400
-{
-  "error": "Invalid stock ticker and/or data for the specified financial year does not exist."
-}
+// Bad Request. Possible error messages:
+{ "error": "Invalid stock ticker and/or data for the specified financial year does not exist." }
+{ "error": "Please provide a valid financial year." }
 ```
 
 ```json 429
