@@ -6,63 +6,66 @@ description: "Return quarterly financials metrics of a given ticker"
 
 <ResponseExample>
 ```json 200
+// Financial Sectors
 [
     {
-        "symbol": "BBCA.JK",
+        "symbol": "BMRI.JK",
+        "financials_sector_metrics": {
+            "interest_income": 40599515000000,
+            "interest_expense": 13445706000000,
+            "net_interest_income": 54045221000000,
+            "gross_loan": 1623216612000000,
+            "allowance_for_loans": 49354645000000,
+            "net_loan": 1672571257000000,
+            "total_earning_assets": null,
+            "current_account": 568576009000000,
+            "savings_account": 580191796000000,
+            "time_deposit": 297467152000000,
+            "total_deposit": 1446234957000000,
+            "other_interest_bearing_liabilities": null,
+            "total_cash_and_due_from_banks": 78364276000000
+        },
         "date": "2024-12-31",
-        "interest_income": 24508454000000,
-        "interest_expense": 3177061000000,
-        "net_interest_income": 27685515000000,
-        "premium_income": null,
-        "premium_expense": null,
-        "net_premium_income": null,
-        "non_interest_income": 6438343000000,
-        "revenue": 34123858000000,
-        "operating_expense": 10730776000000,
-        "provision": 332636000000,
-        "operating_pnl": 17371596000000,
-        "non_operating_income_or_loss": 0,
-        "earnings_before_tax": 17371596000000,
-        "tax": 3608211000000,
-        "minorities": 943000000,
-        "earnings": 13764328000000,
+        "premium_income": 4982635000000,
+        "premium_expense": 3763798000000,
+        "net_premium_income": 8746433000000,
+        "non_interest_income": 11597082000000,
+        "revenue": 74388736000000,
+        "operating_expense": 18773124000000,
+        "provision": 2294657000000,
+        "operating_pnl": 18733613000000,
+        "non_operating_income_or_loss": 362460000000,
+        "earnings_before_tax": 19058935000000,
+        "tax": 3977068000000,
+        "minorities": 1316479000000,
+        "earnings": 16398346000000,
         "gross_profit": null,
         "interest_expense_non_operating": null,
         "ebit": null,
         "ebitda": null,
         "cost_of_revenue": null,
-        "total_assets": 1449301328000000,
-        "gross_loan": 901310853000000,
-        "allowance_for_loans": 32624643000000,
-        "net_loan": 933935496000000,
-        "total_earning_assets": null,
-        "current_account": 359435349000000,
-        "savings_account": 559622126000000,
-        "time_deposit": 201556192000000,
-        "total_deposit": 1120613667000000,
-        "other_interest_bearing_liabilities": null,
+        "total_assets": 2427223262000000,
         "non_interest_bearing_liabilities": null,
-        "cash_only": 29315878000000,
-        "total_cash_and_due_from_banks": 33414353000000,
-        "total_liabilities": 1177403108000000,
-        "total_equity": 262835087000000,
+        "cash_only": 31665082000000,
+        "total_liabilities": 1860408316000000,
+        "total_equity": 313474681000000,
         "total_debt": null,
-        "stockholders_equity": 262640621000000,
+        "stockholders_equity": 283796429000000,
         "total_non_current_assets": null,
         "current_liabilities": null,
         "cash_and_short_term_investments": null,
         "non_loan_assets": null,
         "total_current_asset": null,
         "total_non_current_liabilities": null,
-        "financing_cash_flow": -4754295000000,
-        "operating_cash_flow": -20362764000000,
-        "investing_cash_flow": 9151282000000,
-        "net_cash_flow": -15965777000000,
+        "financing_cash_flow": 29548841000000,
+        "operating_cash_flow": 12267786000000,
+        "investing_cash_flow": -7201870000000,
+        "net_cash_flow": 34614757000000,
         "free_cash_flow": null,
         "realized_capital_goods_investment": null
     }
 ]
-```
+````
 
 ```json 400
 // Bad Request. Possible error messages:
@@ -179,7 +182,7 @@ description: "Return quarterly financials metrics of a given ticker"
   The earnings before interest, taxes, depreciation, and amortization (EBITDA).
 </ResponseField>
 <ResponseField name="cash_and_short_term_investments" type="number">
-  The cash and short-term investments available.
+  The cash and short‑term investments available.
 </ResponseField>
 <ResponseField name="cash_only" type="number">
   The cash only available with the company.
@@ -200,22 +203,64 @@ description: "Return quarterly financials metrics of a given ticker"
   The total income taxes paid by the company.
 </ResponseField>
 <ResponseField name="total_non_current_assets" type="number">
-  The total non-current assets owned by the company.
+  The total non‑current assets owned by the company.
 </ResponseField>
 <ResponseField name="free_cash_flow" type="number">
   The free cash flow available after operational and capital expenses.
 </ResponseField>
 <ResponseField name="interest_expense_non_operating" type="number">
-  The interest expenses incurred from non-operating activities.
+  The interest expenses incurred from non‑operating activities.
 </ResponseField>
 <ResponseField name="operating_income" type="number">
   The income earned from operating activities.
 </ResponseField>
+<ResponseField name="financials_sector_metrics" type="object">
+  A collection of bank‑specific balance‑sheet and income‑statement line items:
+  <ResponseField name="interest_income" type="number">
+    Total interest earned on loans and investments.
+  </ResponseField>
+  <ResponseField name="interest_expense" type="number">
+    Total interest paid on deposits and borrowings.
+  </ResponseField>
+  <ResponseField name="net_interest_income" type="number">
+    interest_income minus interest_expense.
+  </ResponseField>
+  <ResponseField name="gross_loan" type="number">
+    Outstanding loans before allowances.
+  </ResponseField>
+  <ResponseField name="allowance_for_loans" type="number">
+    Loan‐loss reserves.
+  </ResponseField>
+  <ResponseField name="net_loan" type="number">
+    gross_loan less allowance_for_loans.
+  </ResponseField>
+  <ResponseField name="total_earning_assets" type="number">
+    Assets that earn interest (e.g. securities, loans).
+  </ResponseField>
+  <ResponseField name="current_account" type="number">
+    Customer checking balances.
+  </ResponseField>
+  <ResponseField name="savings_account" type="number">
+    Customer savings balances.
+  </ResponseField>
+  <ResponseField name="time_deposit" type="number">
+    Fixed‑term deposit balances.
+  </ResponseField>
+  <ResponseField name="total_deposit" type="number">
+    Sum of all deposit types.
+  </ResponseField>
+  <ResponseField name="other_interest_bearing_liabilities" type="number">
+    Borrowings and debt other than deposits.
+  </ResponseField>
+  <ResponseField name="total_cash_and_due_from_banks" type="number">
+    Cash and interbank balances.
+  </ResponseField>
+</ResponseField>
 <ResponseField name="capital_expenditure" type="number">
-  The capital expenditure of the company. This field is only available if the
-  requested ticker represents a bank.
+  Funds spent on property, plant, and equipment.
+  <i>Only for non‑financial companies (e.g. mining, manufacturing).</i>
 </ResponseField>
 <ResponseField name="realized_capital_goods_investment" type="number">
-  The realized capital goods investment of the company. This field is only
-  available if the requested ticker represents a non-bank company.
+  Investment in completed capital goods (e.g. machinery output).
+  <i>Also only for non‑financial companies where applicable.</i>
 </ResponseField>
