@@ -19,15 +19,26 @@ description: "Return historical data of IDX market cap on a certain interval (**
 ```
 
 ```json 400
-// Bad Request. Possible error messages:
-{ "error": "Use a valid date format of YYYY-MM-DD." }
-{ "error": "Starting date must not be earlier than January 1, 2021." }
-{ "error": "Start date must not be later than end date." }
-{ "error": "Dates cannot be in the future. Today's date is 2025-04-28." }
+// Possible response bodies:
+{
+  "error": "Use a valid date format of YYYY-MM-DD."
+}
+{
+  "error": "Starting date must not be earlier than January 1, 2021."
+}
+{
+  "error": "Start date must not be later than end date."
+}
+{
+  "error": "Dates cannot be in the future. Today's date is 2025-04-28."
+}
 ```
 
 ```json 429
-{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
 ```
 
 </ResponseExample>

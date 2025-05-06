@@ -18,8 +18,30 @@ description: "Return a list of the most traded tickers based on transaction volu
 }
 ```
 
+```json 400
+// Possible response bodies:
+{
+  "error": "Invalid query parameters: <Bad Param>."
+}
+{
+  "error": "Use a valid date format of YYYY-MM-DD."
+}
+{
+  "error": "{n_stock} param expects an integer value."
+}
+{
+  "error": "Invalid value for 'approx'. Use 'true' or 'false'."
+}
+{
+  "error": "The requested sub_sector does not exist."
+}
+```
+
 ```json 429
-{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
 ```
 
 </ResponseExample>

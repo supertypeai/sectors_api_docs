@@ -142,16 +142,26 @@ description: "Return report of a given subsector, organized into distinct sectio
 ```
 
 ```json 400
-// Bad Request. Possible error messages:
-{ "error": "Please provide a valid sector." }
-{ "error": "Invalid query parameters: <Bad Param>." }
-{ "error": "Invalid sections provided: <Bad Section>." }
-{ "error": "Requested sub_sector does not exist." }
-
+// Possible response bodies:
+{
+  "error": "Please provide a valid sector."
+}
+{
+  "error": "Invalid query parameters: <Bad Param>."
+}
+{
+  "error": "Invalid sections provided: <Bad Section>."
+}
+{
+  "error": "Requested sub_sector does not exist."
+}
 ```
 
 ```json 429
-{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
 ```
 
 </ResponseExample>

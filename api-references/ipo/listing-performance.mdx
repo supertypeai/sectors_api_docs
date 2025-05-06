@@ -16,9 +16,13 @@ description: "Return actual gain since listing date of a given ticker"
 ```
 
 ```json 400
-// Bad Request. Possible error messages:
-{ "error": "Given stock ticker does not exist for this data." }
-{ "error": "Please provide a valid stock ticker." }
+// Possible response bodies:
+{
+  "error": "Given stock ticker does not exist for this data."
+}
+{
+  "error": "Please provide a valid stock ticker."
+}
 ```
 
 ```json 429

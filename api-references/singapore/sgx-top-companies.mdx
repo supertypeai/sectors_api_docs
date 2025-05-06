@@ -136,17 +136,32 @@ description: "Return a list of top tickers based on certain classification (divi
 ```
 
 ```json 400
-// Bad Request. Possible error messages:
-{ "error": "Invalid query parameters: <Bad Param>." }
-{ "error": "{n_stock} param expects an integer value." }
-{ "error": "Invalid classifications provided, select from these choices: dividend_yield, revenue, earnings, market_cap, pe." }
-{ "error": "The requested sector does not exist." }
-{ "error": "Invalid min_mcap_million value. Not an integer" }
-{ "error": "There are no companies matching the criteria, consider adjusting the `min_mcap_million` param value." }
+// Possible response bodies:
+{
+  "error": "Invalid query parameters: <Bad Param>."
+}
+{
+  "error": "{n_stock} param expects an integer value."
+}
+{
+  "error": "Invalid classifications provided, select from these choices: dividend_yield, revenue, earnings, market_cap, pe."
+}
+{
+  "error": "The requested sector does not exist."
+}
+{
+  "error": "Invalid min_mcap_million value. Not an integer"
+}
+{
+  "error": "There are no companies matching the criteria, consider adjusting the `min_mcap_million` param value."
+}
 ```
 
 ```json 429
-{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
 ```
 
 </ResponseExample>

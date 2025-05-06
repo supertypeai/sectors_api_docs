@@ -105,13 +105,20 @@ description: "Return report of a given ticker, organized into distinct sections"
 ```
 
 ```json 400
-// Bad Request. Possible error messages:
-{ "error": "Please provide a valid stock ticker." }
-{ "error": "Given stock ticker does not exist." }
+// Possible response bodies:
+{
+  "error": "Please provide a valid stock ticker."
+}
+{
+  "error": "Given stock ticker does not exist."
+}
 ```
 
 ```json 429
-{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
 ```
 
 </ResponseExample>

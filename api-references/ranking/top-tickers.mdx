@@ -145,21 +145,44 @@ description: "Return a list of top tickers in a given year based on certain clas
 ```
 
 ```json 400
-// Bad Request. Possible error messages:
-{ "error": "There are no companies matching the criteria, consider adjusting the `min_mcap_billion` param value or your query filters. Note that the financials data for the current year may not be available yet." }
-{ "error": "There are no companies matching the criteria, consider adjusting the `min_mcap_billion` param value or your query filters." }
-{ "error": "Invalid logic value. Use 'and' or 'or'." }
-{ "error": "Invalid filter format. Use 'field>value', 'field>=value', 'field<value', 'field<=value', or 'field=value'." }
-{ "error": "Invalid min_mcap_billion value. Not an integer" }
-{ "error": "The requested sub_sector does not exist." }
-{ "error": "Invalid classifications provided, select from these choices: dividend_yield, total_dividend, revenue, earnings, market_cap, pb, pe, ps." }
-{ "error": "{year} param expects a single year value." }
-{ "error": "{n_stock} param expects an integer value." }
-{ "error": "Invalid query parameters: <Bad Param>." }
+// Possible response bodies:
+{
+  "error": "There are no companies matching the criteria, consider adjusting the `min_mcap_billion` param value or your query filters. Note that the financials data for the current year may not be available yet."
+}
+{
+  "error": "There are no companies matching the criteria, consider adjusting the `min_mcap_billion` param value or your query filters."
+}
+{
+  "error": "Invalid logic value. Use 'and' or 'or'."
+}
+{
+  "error": "Invalid filter format. Use 'field>value', 'field>=value', 'field<value', 'field<=value', or 'field=value'."
+}
+{
+  "error": "Invalid min_mcap_billion value. Not an integer"
+}
+{
+  "error": "The requested sub_sector does not exist."
+}
+{
+  "error": "Invalid classifications provided, select from these choices: dividend_yield, total_dividend, revenue, earnings, market_cap, pb, pe, ps."
+}
+{
+  "error": "{year} param expects a single year value."
+}
+{
+  "error": "{n_stock} param expects an integer value."
+}
+{
+  "error": "Invalid query parameters: <Bad Param>."
+}
 ```
 
 ```json 429
-{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
 ```
 
 </ResponseExample>

@@ -68,18 +68,35 @@ description: "Return quarterly financials metrics of a given ticker"
 ````
 
 ```json 400
-// Bad Request. Possible error messages:
-{ "error": "Invalid stock ticker and/or data for the specified report date does not exist." }
-{ "error": "Please provide a valid stock ticker." }
-{ "error": "Invalid query parameters: <Bad Param>." }
-{ "error": "Invalid value for 'approx'. Use 'true' or 'false'." }
-{ "error": "Invalid value for 'n_quarters'. It must be a positive integer." }
-{ "error": "Please provide a valid report_date." }
-{ "error": "Use a valid report_date format of YYYY-MM-DD." }
+// Possible response bodies:
+{
+  "error": "Invalid stock ticker and/or data for the specified report date does not exist."
+}
+{
+  "error": "Please provide a valid stock ticker."
+}
+{
+  "error": "Invalid query parameters: <Bad Param>."
+}
+{
+  "error": "Invalid value for 'approx'. Use 'true' or 'false'."
+}
+{
+  "error": "Invalid value for 'n_quarters'. It must be a positive integer."
+}
+{
+  "error": "Please provide a valid report_date."
+}
+{
+  "error": "Use a valid report_date format of YYYY-MM-DD."
+}
 ```
 
 ```json 429
-{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
 ```
 
 </ResponseExample>
