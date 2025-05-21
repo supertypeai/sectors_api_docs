@@ -18,8 +18,17 @@ description: "Return list of companies from a stock index"
 ]
 ```
 
+```json 400
+{
+  "error": "Index data for 'Bad_Index' is not available."
+}
+```
+
 ```json 429
-{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
 ```
 
 </ResponseExample>

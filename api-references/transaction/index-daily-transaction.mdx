@@ -16,11 +16,26 @@ description: "Return daily transaction data of a given index code on a certain i
 ```
 
 ```json 400
-{ "error": "Given index does not exist in the requested date." }
+// Possible response bodies:
+{
+  "error": "Invalid query parameters: <Bad Param>."
+}
+{
+  "error": "Given index does not exist in the requested date."
+}
+{
+  "error": "Please provide a valid index code."
+}
+{
+  "error": "Use a valid date format of YYYY-MM-DD."
+}
 ```
 
 ```json 429
-{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
 ```
 
 </ResponseExample>

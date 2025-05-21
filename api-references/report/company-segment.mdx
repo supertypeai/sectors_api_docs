@@ -20,13 +20,20 @@ description: "Return revenue and cost segments of a given ticker"
 ```
 
 ```json 400
+// Possible response bodies:
 {
   "error": "Invalid stock ticker and/or data for the specified financial year does not exist."
+}
+{
+  "error": "Please provide a valid financial year."
 }
 ```
 
 ```json 429
-{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
 ```
 
 </ResponseExample>
