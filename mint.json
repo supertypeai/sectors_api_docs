@@ -36,9 +36,7 @@
       "url": "mailto:sectors@supertype.ai"
     }
   ],
-  "versions": [
-    "v1"
-  ],
+  "versions": ["v1"],
   "anchors": [
     {
       "name": "Recipes",
@@ -88,9 +86,7 @@
             {
               "group": "Since IPO Performance",
               "icon": "chart-line",
-              "pages": [
-                "api-references/ipo/listing-performance"
-              ]
+              "pages": ["api-references/ipo/listing-performance"]
             },
             {
               "group": "Detailed Reports",
@@ -161,6 +157,10 @@
       ]
     },
     {
+      "group": "Sectors MCP",
+      "pages": ["recipes/sectors-mcp/00-sectors-mcp-guide"]
+    },
+    {
       "group": "Financial Analytics w/ Streamlit",
       "pages": [
         {
@@ -213,15 +213,11 @@
     },
     {
       "group": "Postman Collection",
-      "pages": [
-        "recipes/postman-collection/01-postman-collection"
-      ]
+      "pages": ["recipes/postman-collection/01-postman-collection"]
     },
     {
       "group": "API Security",
-      "pages": [
-        "recipes/api-security/01-securing-api-usage"
-      ]
+      "pages": ["recipes/api-security/01-securing-api-usage"]
     }
   ],
   "footerSocials": {
