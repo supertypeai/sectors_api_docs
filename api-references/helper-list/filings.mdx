@@ -1,0 +1,248 @@
+---
+title: "Company Filings"
+api: "GET /filings/"
+description: "Return a list of IDX company filings, with optional filtering by sector, subsector, tags, tickers, transaction type, and date range. Supports pagination or a top‑N override."
+---
+
+<ResponseExample>
+```json 200
+[
+    {
+        "id": 378,
+        "created_at": "2025-06-23T09:49:40.099180Z",
+        "title": "Dato' Sri Chong Thim Pheng Buys Wilton Makmur Indonesia Tbk",
+        "body": "Dato' Sri Chong Thim Pheng, an insider, acquired 2,544,900 shares of Wilton Makmur Indonesia Tbk (SQMI.JK) at IDR 43 per share, increasing their stake to 3,152,947,229 shares or approximately 0.06% of the company's total shares. The transaction, valued at IDR 5,595,900,000, is for personal investment purposes.",
+        "source": "https://www.idx.co.id/StaticData/NewsAndAnnouncement/ANNOUNCEMENTSTOCK/From_EREP/202506/5ea7c6227c_6387931293.pdf",
+        "timestamp": "2025-06-23T16:28:00Z",
+        "sector": "basic-materials",
+        "sub_sector": "basic-materials",
+        "tags": [
+            "Bullish",
+            "Investment",
+            "insider-trading"
+        ],
+        "tickers": [
+            "SQMI.JK"
+        ],
+        "transaction_type": "buy",
+        "holding_before": 3147351329,
+        "holding_after": 3152947229,
+        "amount_transaction": 5595900,
+        "holder_type": "insider",
+        "holder_name": "Dato' Sri Chong Thim Pheng",
+        "price": "45.6710",
+        "transaction_value": "255572700.0000",
+        "price_transaction": {
+            "prices": [
+                43,
+                48,
+                42
+            ],
+            "amount_transacted": [
+                2544900,
+                3000000,
+                51000
+            ]
+        },
+        "share_percentage_before": 20.26,
+        "share_percentage_after": 20.29,
+        "share_percentage_transaction": 0.0299999999999976,
+        "uid": null
+    },
+    {
+        "id": 381,
+        "created_at": "2025-06-23T10:00:15.113889Z",
+        "title": "Hasmoro Buy Transaction of PT Medikaloka Hermina Tbk.",
+        "body": "Hasmoro acquired 724,600 shares of PT Medikaloka Hermina Tbk. (HEAL.JK) through a buy transaction, increasing their holding from 737,510,989 to 738,235,589 shares, representing an investment purpose.",
+        "source": "https://www.idx.co.id/StaticData/NewsAndAnnouncement/ANNOUNCEMENTSTOCK/From_EREP/202506/72e6e508ba_354e25a37f.pdf",
+        "timestamp": "2025-06-23T16:23:00Z",
+        "sector": "healthcare",
+        "sub_sector": "healthcare-equipment-providers",
+        "tags": [
+            "Bullish",
+            "Investment",
+            "insider-trading"
+        ],
+        "tickers": [
+            "HEAL.JK"
+        ],
+        "transaction_type": "buy",
+        "holding_before": 737510989,
+        "holding_after": 738235589,
+        "amount_transaction": 724600,
+        "holder_type": "insider",
+        "holder_name": "Hasmoro",
+        "price": "1380.0000",
+        "transaction_value": "999948000.0000",
+        "price_transaction": {
+            "prices": [
+                1380
+            ],
+            "amount_transacted": [
+                724600
+            ]
+        },
+        "share_percentage_before": 4.7996,
+        "share_percentage_after": 4.8044,
+        "share_percentage_transaction": 0.00480000000000036,
+        "uid": null
+    },
+    ...
+]
+```
+
+```json 400
+// Possible response bodies:
+{
+  "error": "Use a valid date format of YYYY-MM-DD for 'start' and 'end'."
+}
+{
+  "error": "Invalid transaction_type provided: hold. Use 'buy' or 'sell'."
+}
+{
+  "error": "Invalid sub_sector provided: <Bad_Sub_Sector>."
+}
+{
+  "error": "Invalid query parameters: <Bad_Param>."
+}
+{
+  "error": "Invalid format. The 'n' parameter must be a positive integer."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="sector" type="string">
+  Exact match on the company's sector (e.g. `financials`,
+  `communication-services`).
+</ParamField> <ParamField query="sub_sector" type="string">
+  Exact match on the company's subsector.
+  <AccordionGroup>
+    <Accordion title="Allowed values">
+      Must be one of the predefined `SUB_SECTORS`
+    </Accordion>
+    <Accordion title="Example">
+      `banks`, `telecommunications`, `consumer-services`
+    </Accordion>
+  </AccordionGroup>
+</ParamField> <ParamField query="tags" type="string">
+  Comma‑separated list of tags associated with the filing (e.g. `Bullish,
+  Investment, insider-trading`).
+</ParamField> <ParamField query="tickers" type="string">
+  Comma‑separated list of normalized IDX ticker symbols (e.g. `BBCA.JK,
+  TLKM.JK`).
+</ParamField> <ParamField query="transaction_type" type="string">
+  Filter by transaction type: `buy` or `sell`.
+</ParamField> <ParamField query="start" type="string">
+  ISO date (YYYY‑MM‑DD) for the start of the filing timestamp filter range.
+</ParamField> <ParamField query="end" type="string">
+  ISO date (YYYY‑MM‑DD) for the end of the filing timestamp filter range.
+</ParamField> <ParamField query="n" type="integer">
+  Return the top N most recent filings (max 30). Overrides pagination.
+</ParamField> <ParamField query="page" type="integer">
+  Page number for paginated results (default is 1).
+</ParamField> <ParamField query="page_size" type="integer">
+  Number of items per page (default defined in `CustomNewsPagination`).
+</ParamField>
+
+### Response
+
+<ResponseField name="[]" type="Idx Filing">
+  <Expandable title="Idx Filing properties">
+    <ResponseField name="id" type="integer">
+      Unique filing identifier.
+    </ResponseField>
+    <ResponseField name="created_at" type="string">
+      Record creation datetime in ISO 8601 format (UTC).
+    </ResponseField>
+    <ResponseField name="title" type="string">
+      Headline description of the filing.
+    </ResponseField>
+    <ResponseField name="body" type="string">
+      Detailed summary of the transaction.
+    </ResponseField>
+    <ResponseField name="source" type="string">
+      URL to the official filing PDF.
+    </ResponseField>
+    <ResponseField name="timestamp" type="string">
+      Filing publication datetime in ISO 8601 format (UTC).
+    </ResponseField>
+    <ResponseField name="sector" type="string">
+      Sector classification (e.g. `basic-materials`, `healthcare`).
+    </ResponseField>
+    <ResponseField name="sub_sector" type="string">
+      Subsector classification (e.g. `basic-materials`,
+      `healthcare-equipment-providers`).
+    </ResponseField>
+    <ResponseField name="tags" type="string[]">
+      List of topical tags (e.g. `["Bullish", "Investment",
+      "insider-trading"]`).
+    </ResponseField>
+    <ResponseField name="tickers" type="string[]">
+      List of relevant IDX ticker symbols (e.g. `["SQMI.JK"]`).
+    </ResponseField>
+    <ResponseField name="transaction_type" type="string">
+      Transaction direction: `buy` or `sell`.
+    </ResponseField>
+    <ResponseField name="holding_before" type="integer">
+      Number of shares held prior to this transaction.
+    </ResponseField>
+    <ResponseField name="holding_after" type="integer">
+      Number of shares held after this transaction.
+    </ResponseField>
+    <ResponseField name="amount_transaction" type="integer">
+      Number of shares transacted.
+    </ResponseField>
+    <ResponseField name="holder_type" type="string">
+      Category of the holder (e.g. `insider`).
+    </ResponseField>
+    <ResponseField name="holder_name" type="string">
+      Name of the individual or entity executing the transaction.
+    </ResponseField>
+    <ResponseField name="price" type="string">
+      Average price per share in IDR for the transaction.
+    </ResponseField>
+    <ResponseField name="transaction_value" type="string">
+      Total value of the transaction in IDR.
+    </ResponseField>
+    <ResponseField name="price_transaction" type="object">
+      Breakdown of prices and share counts within the transaction:
+      <Expandable title="Price Transaction details">
+        <ResponseField name="prices" type="integer[]">
+          List of price tiers used (e.g. `[43, 48, 42]`).
+        </ResponseField>
+        <ResponseField name="amount_transacted" type="integer[]">
+          Corresponding number of shares at each price tier.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="share_percentage_before" type="number">
+      Percentage of total shares held before the transaction.
+    </ResponseField>
+    <ResponseField name="share_percentage_after" type="number">
+      Percentage of total shares held after the transaction.
+    </ResponseField>
+    <ResponseField name="share_percentage_transaction" type="number">
+      Percentage of total shares represented by this transaction.
+    </ResponseField>
+    <ResponseField name="uid" type="string|null">
+      Unique identifier field (may be `null` if not assigned).
+    </ResponseField>
+  </Expandable>
+</ResponseField>

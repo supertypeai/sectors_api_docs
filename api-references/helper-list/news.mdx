@@ -1,0 +1,207 @@
+---
+title: "News Articles"
+api: "GET /news/"
+description: "Return a list of IDX news articles, with optional filtering, pagination, or top‑N retrieval."
+---
+
+<ResponseExample>
+```json 200
+[
+  {
+      "id": 5642,
+      "created_at": "2025-06-28T04:21:45.467814Z",
+      "title": "Bank Indonesia Records 43.77% Increase in Financial Surplus in 2024",
+      "body": "Bank Indonesia reported a financial surplus of IDR 52.19 trillion in 2024, a 43.77% increase from IDR 36.3 trillion in 2023, driven by high revenue of IDR 228.66 trillion and expenses of IDR 161.3 trillion.",
+      "source": "https://insight.kontan.co.id/news/surplus-bank-indonesia-naik-berkat-kebijakan-moneter",
+      "timestamp": "2025-06-28T04:35:00Z",
+      "sector": "financials",
+      "sub_sector": [
+          "banks"
+      ],
+      "tags": [
+          "Bank Indonesia",
+          "Financial Ratios",
+          "Capital Allocation",
+          "Profit",
+          "Revenue",
+          "Bullish"
+      ],
+      "tickers": [],
+      "dimension": {
+          "future": 0,
+          "dividend": 0,
+          "ownership": 0,
+          "technical": 0,
+          "valuation": 0,
+          "financials": 2,
+          "management": 0,
+          "sustainability": 0
+      }
+  },
+  {
+      "id": 5646,
+      "created_at": "2025-06-28T04:32:52.825906Z",
+      "title": "Indonesian Banks Host Large Events to Attract New Customers and Boost Digital Transactions",
+      "body": "Several national banks in Indonesia are hosting large events, such as concerts and marathons, to attract new customers and increase digital transactions. Bank Tabungan Negara (BTN) is expecting a 15-20% increase in transactions and digital service activations through its Jakarta International Marathon event.",
+      "source": "https://insight.kontan.co.id/news/bank-menjaring-nasabah-lewat-event-lari-hingga-konser-musik",
+      "timestamp": "2025-06-27T06:30:00Z",
+      "sector": "financials",
+      "sub_sector": [
+          "banks"
+      ],
+      "tags": [
+          "Bank Indonesia",
+          "Digital Payments",
+          "Financial Ratios",
+          "Loan Growth",
+          "Bullish"
+      ],
+      "tickers": [
+          "BTPN.JK"
+      ],
+      "dimension": {
+          "future": 2,
+          "dividend": 0,
+          "ownership": 0,
+          "technical": 0,
+          "valuation": 0,
+          "financials": 1,
+          "management": 0,
+          "sustainability": 0
+      }
+  },
+  ...
+]
+```
+
+```json 400
+// Possible response bodies:
+{
+  "error": "Use a valid date format of YYYY-MM-DD for 'start' and 'end'."
+}
+{
+  "error": "Invalid format. The 'n' parameter must be a positive integer."
+}
+{
+  "error": "Invalid sub_sector provided: <Bad_Sub_Sector>."
+}
+{
+  "error": "Invalid query parameters: <Bad_Param>."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="sector" type="string">
+  Exact match on the news sector (e.g. `energy`, `financials`).
+</ParamField>
+<ParamField query="sub_sector" type="string">
+  Comma‑separated list of subsectors to filter by.
+  <AccordionGroup>
+    <Accordion title="Allowed values">
+      Must be one of the predefined `SUB_SECTORS`
+    </Accordion>
+    <Accordion title="Example">
+      `consumer-services, banks, investment-service`
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+<ParamField query="tags" type="string">
+  Comma‑separated list of tags (e.g. `Bank Indonesia, Digital Payments,
+  Bullish`).
+</ParamField>
+<ParamField query="tickers" type="string">
+  Comma‑separated list of normalized ticker symbols (e.g. `BBNI, BBCA, BMRI`).
+</ParamField>
+<ParamField query="start" type="string">
+  ISO date (YYYY‑MM‑DD) for the start of the timestamp filter range.
+</ParamField>
+<ParamField query="end" type="string">
+  ISO date (YYYY‑MM‑DD) for the end of the timestamp filter range.
+</ParamField>
+<ParamField query="n" type="integer">
+  Return the top N most recent articles (max 30). Overrides pagination.
+</ParamField>
+<ParamField query="page" type="integer">
+  Page number for paginated results (default is 1).
+</ParamField>
+<ParamField query="page_size" type="integer">
+  Number of items per page (default defined in `CustomNewsPagination`).
+</ParamField>
+
+### Response
+
+<ResponseField name="[]" type="Idx News"> 
+  <Expandable title="Idx News properties"> 
+    <ResponseField name="id" type="integer"> 
+      Unique news article identifier. 
+    </ResponseField>
+
+    <ResponseField name="created_at" type="string">
+      Creation datetime in ISO 8601 format (UTC).
+    </ResponseField>
+
+    <ResponseField name="title" type="string">
+      Headline of the news article.
+    </ResponseField>
+
+    <ResponseField name="body" type="string">
+      Content summary of the article.
+    </ResponseField>
+
+    <ResponseField name="source" type="string">
+      URL of the news article.
+    </ResponseField>
+
+    <ResponseField name="timestamp" type="string">
+      Publication datetime in ISO 8601 format (UTC).
+    </ResponseField>
+
+    <ResponseField name="sector" type="string">
+      Sector classification (e.g. `financials`).
+    </ResponseField>
+
+    <ResponseField name="sub_sector" type="string[]">
+      List of subsector tags (e.g. `["banks"]`).
+    </ResponseField>
+
+    <ResponseField name="tags" type="string[]">
+      List of topical tags (e.g. `["Financial Ratios","Bank Indonesia"]`).
+    </ResponseField>
+
+    <ResponseField name="tickers" type="string[]">
+      List of relevant stock tickers (e.g. `["BBNI", "BBCA", "BMRI"]`).
+    </ResponseField>
+
+    <ResponseField name="dimension" type="object">
+      Scoring dimensions applied to the article:
+      <Expandable title="Scoring dimensions">
+        <ResponseField name="future" type="integer">Future outlook score.</ResponseField>
+        <ResponseField name="dividend" type="integer">Dividend relevance score.</ResponseField>
+        <ResponseField name="ownership" type="integer">Ownership impact score.</ResponseField>
+        <ResponseField name="technical" type="integer">Technical analysis score.</ResponseField>
+        <ResponseField name="valuation" type="integer">Valuation perspective score.</ResponseField>
+        <ResponseField name="financials" type="integer">Financial metrics score.</ResponseField>
+        <ResponseField name="management" type="integer">Management analysis score.</ResponseField>
+        <ResponseField name="sustainability" type="integer">ESG/sustainability score.</ResponseField>
+      </Expandable>
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
