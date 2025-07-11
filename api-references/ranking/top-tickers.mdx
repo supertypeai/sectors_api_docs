@@ -246,14 +246,38 @@ description: "Return a list of top tickers in a given year based on selected cla
   Number of tickers per classification (default 5).
 </ParamField>
 
-<ParamField query="sub_sector" type="string" default="all">
-  Kebab-case subsector filter (e.g. `banks`, `consumer-services`). Mutually
-  exclusive with `sub_industry`.
-</ParamField>
-
-<ParamField query="sub_industry" type="string" default="all">
-  Kebab-case sub-industry filter (e.g. `automotive`, `pharmaceuticals`).
-  Mutually exclusive with `sub_sector`.
+<ParamField query="sub_sector" type="string">
+  Filter by subsector (kebab‑case). Provide either this or `sub_industry`, not
+  both. If both are present, `sub_industry` will override.
+  <AccordionGroup>
+    <Accordion title="Get the available sub_sector">
+      Get the available `sub_sector` from the [Subsectors](./subsectors)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sub_sector">
+      `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField> <ParamField query="sub_industry" type="string">
+  Filter by sub‑industry (kebab‑case). Provide either this or `sub_sector`, not
+  both. If both are present, `sub_industry` will override.
+  <AccordionGroup>
+    <Accordion title="Get the available sub_industry">
+      Get the available `sub_industry` from the [Subindustries](./subindustries)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sub_industry">
+      `paper`, `life-insurance`, `personal-care-products`, `software`, `gold`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_industry` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
 </ParamField>
 
 <ParamField query="min_mcap_billion" type="integer" default="5000">

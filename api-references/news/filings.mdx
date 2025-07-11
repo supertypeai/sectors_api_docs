@@ -134,11 +134,16 @@ description: "Return a list of IDX company filings, with optional filtering by s
 </ParamField> <ParamField query="sub_sector" type="string">
   Exact match on the company's subsector.
   <AccordionGroup>
-    <Accordion title="Allowed values">
-      Must be one of the predefined `SUB_SECTORS`
+    <Accordion title="Get the available sub_sector">
+      Get the available `sub_sector` from the [Subsectors](./subsectors)
+      endpoint.
     </Accordion>
-    <Accordion title="Example">
-      `banks`, `telecommunications`, `consumer-services`
+    <Accordion title="Examples of the sub_sector">
+      `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
     </Accordion>
   </AccordionGroup>
 </ParamField> <ParamField query="tags" type="string">
@@ -154,7 +159,8 @@ description: "Return a list of IDX company filings, with optional filtering by s
 </ParamField> <ParamField query="end" type="string">
   ISO date (YYYY‑MM‑DD) for the end of the filing timestamp filter range.
 </ParamField> <ParamField query="n" type="integer">
-  Return the top N most recent filings (max 30). Overrides pagination.
+  Return the top N most recent articles, up to a maximum of 30. If a value for N
+  isn't provided, it will default to 20. This setting overrides any pagination.
 </ParamField> <ParamField query="page" type="integer">
   Page number for paginated results (default is 1).
 </ParamField> <ParamField query="page_size" type="integer">

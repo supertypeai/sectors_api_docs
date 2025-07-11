@@ -63,24 +63,34 @@ description: "List companies filtered by subsector or sub‑industry, with optio
 
 <ParamField query="sub_sector" type="string">
   Filter by subsector (kebab‑case). Provide either this or `sub_industry`, not
-  both.
+  both. If both are present, `sub_industry` will override.
   <AccordionGroup>
-    <Accordion title="Allowed values">
-      Values defined in the `SUB_SECTORS` map.
+    <Accordion title="Get the available sub_sector">
+      Get the available `sub_sector` from the [Subsectors](./subsectors)
+      endpoint.
     </Accordion>
-    <Accordion title="Example">
-      `banks`, `telecommunications`, `consumer-services`
+    <Accordion title="Examples of the sub_sector">
+      `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
     </Accordion>
   </AccordionGroup>
 </ParamField> <ParamField query="sub_industry" type="string">
   Filter by sub‑industry (kebab‑case). Provide either this or `sub_sector`, not
-  both.
+  both. If both are present, `sub_industry` will override.
   <AccordionGroup>
-    <Accordion title="Allowed values">
-      Values defined in the `SUB_INDUSTRIES` map.
+    <Accordion title="Get the available sub_industry">
+      Get the available `sub_industry` from the [Subindustries](./subindustries)
+      endpoint.
     </Accordion>
-    <Accordion title="Example">
-      `automotive`, `pharmaceuticals`, `food-beverage`
+    <Accordion title="Examples of the sub_industry">
+      `paper`, `life-insurance`, `personal-care-products`, `software`, `gold`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_industry` in the **kebab case** format
+      (lowercase and separated by "-").
     </Accordion>
   </AccordionGroup>
 </ParamField> <ParamField query="sort_by" type="string">

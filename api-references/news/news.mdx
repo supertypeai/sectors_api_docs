@@ -114,11 +114,16 @@ description: "Return a list of IDX news articles, with optional filtering, pagin
 <ParamField query="sub_sector" type="string">
   Comma‑separated list of subsectors to filter by.
   <AccordionGroup>
-    <Accordion title="Allowed values">
-      Must be one of the predefined `SUB_SECTORS`
+    <Accordion title="Get the available sub_sector">
+      Get the available `sub_sector` from the [Subsectors](./subsectors)
+      endpoint.
     </Accordion>
-    <Accordion title="Example">
-      `consumer-services, banks, investment-service`
+    <Accordion title="Examples of the sub_sector">
+      `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
     </Accordion>
   </AccordionGroup>
 </ParamField>
@@ -136,7 +141,8 @@ description: "Return a list of IDX news articles, with optional filtering, pagin
   ISO date (YYYY‑MM‑DD) for the end of the timestamp filter range.
 </ParamField>
 <ParamField query="n" type="integer">
-  Return the top N most recent articles (max 30). Overrides pagination.
+  Return the top N most recent articles, up to a maximum of 30. If a value for N
+  isn't provided, it will default to 20. This setting overrides any pagination.
 </ParamField>
 <ParamField query="page" type="integer">
   Page number for paginated results (default is 1).
