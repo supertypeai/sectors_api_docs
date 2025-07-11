@@ -135,8 +135,8 @@ description: "Return a list of IDX company filings, with optional filtering by s
   Exact match on the company's subsector.
   <AccordionGroup>
     <Accordion title="Get the available sub_sector">
-      Get the available `sub_sector` from the [Subsectors](./subsectors)
-      endpoint.
+      Get the available `sub_sector` from the
+      [Subsectors](../helper-list/subsectors) endpoint.
     </Accordion>
     <Accordion title="Examples of the sub_sector">
       `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
@@ -149,6 +149,18 @@ description: "Return a list of IDX company filings, with optional filtering by s
 </ParamField> <ParamField query="tags" type="string">
   Comma‑separated list of tags associated with the filing (e.g. `Bullish,
   Investment, insider-trading`).
+  <AccordionGroup>
+    <Accordion title="Get the available sub_sector">
+      Get the available `tags` from the [Tags](../helper-list/tags) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the tags">
+      `acquisition`, `allocation-service`, `ai`, `b2b`, `automotive`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
 </ParamField> <ParamField query="tickers" type="string">
   Comma‑separated list of normalized IDX ticker symbols (e.g. `BBCA.JK,
   TLKM.JK`).

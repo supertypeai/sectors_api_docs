@@ -115,8 +115,8 @@ description: "Return a list of IDX news articles, with optional filtering, pagin
   Comma‑separated list of subsectors to filter by.
   <AccordionGroup>
     <Accordion title="Get the available sub_sector">
-      Get the available `sub_sector` from the [Subsectors](./subsectors)
-      endpoint.
+      Get the available `sub_sector` from the
+      [Subsectors](../helper-list/subsectors) endpoint.
     </Accordion>
     <Accordion title="Examples of the sub_sector">
       `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
@@ -130,6 +130,18 @@ description: "Return a list of IDX news articles, with optional filtering, pagin
 <ParamField query="tags" type="string">
   Comma‑separated list of tags (e.g. `Bank Indonesia, Digital Payments,
   Bullish`).
+  <AccordionGroup>
+    <Accordion title="Get the available sub_sector">
+      Get the available `tags` from the [Tags](../helper-list/tags) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the tags">
+      `acquisition`, `allocation-service`, `ai`, `b2b`, `automotive`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
 </ParamField>
 <ParamField query="tickers" type="string">
   Comma‑separated list of normalized ticker symbols (e.g. `BBNI, BBCA, BMRI`).
