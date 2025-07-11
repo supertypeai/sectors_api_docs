@@ -1,0 +1,41 @@
+---
+title: "Tags"
+api: "GET /tags/"
+description: "Return list of all available tags"
+---
+
+<ResponseExample>
+```json 200
+[
+    "acquisition",
+    "affordable-housing",
+    "agms",
+    "agreement",
+    "agricultural-fertilizer",
+    "agricultural-products",
+    "ai",
+  ...
+]
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="string[]">
+  A plain array of slugified tag strings, sorted alphabetically
+</ResponseField>
