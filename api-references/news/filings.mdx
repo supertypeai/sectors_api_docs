@@ -1,7 +1,7 @@
 ---
 title: "Company Filings"
 api: "GET /filings/"
-description: "Return a list of IDX company filings, with optional filtering by sector, subsector, tags, tickers, transaction type, and date range. Supports pagination or a top‑N override."
+description: "Return a list of IDX company filings, with optional filtering conditions, pagination, or top‑N retrieval."
 ---
 
 <ResponseExample>
@@ -150,8 +150,8 @@ description: "Return a list of IDX company filings, with optional filtering by s
   Comma‑separated list of tags associated with the filing (e.g. `Bullish,
   Investment, insider-trading`).
   <AccordionGroup>
-    <Accordion title="Get the available news tags">
-      Get the available `tags` from the [Tags](../helper-list/tags) endpoint.
+    <Accordion title="Get the available filing tags">
+      Get the available `tags` from the [News Tags](../helper-list/tags) endpoint.
     </Accordion>
     <Accordion title="Examples of the tags">
       `acquisition`, `allocation-service`, `ai`, `b2b`, `automotive`

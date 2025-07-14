@@ -1,7 +1,7 @@
 ---
 title: "News Tags"
 api: "GET /tags/"
-description: "Return list of all available tags"
+description: "Return list of all available tags of news articles and company fillings."
 ---
 
 <ResponseExample>
@@ -39,3 +39,10 @@ description: "Return list of all available tags"
 <ResponseField name="payload" type="string[]">
   A plain array of slugified tag strings, sorted alphabetically
 </ResponseField>
+
+### Usage
+
+This list can be used for the following endpoints:
+
+- [News Articles](../news/news)
+- [Company Filings](../news/filings)

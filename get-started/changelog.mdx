@@ -4,6 +4,28 @@ sidebarTitle: Changelog
 icon: newspaper
 ---
 
+## 2025-07-14
+
+- Added new endpoint to get a list of IDX company filings, with optional filtering, pagination or top-N retrieval
+
+  - [https://api.sectors.app/v1/filings/](../api-references/news/filings)
+
+- Added new endpoint to get a list of IDX news articles, with optional filtering, pagination, or top‑N retrieval
+
+  - [https://api.sectors.app/v1/news/](../api-references/news/news)
+
+- Added new endpoint to get all available tags of news articles and company fillings
+
+  - [https://api.sectors.app/v1/tags/](../api-references/helper-list/tags)
+
+- Added new `include_none` query parameter to top companies ranked endpoint
+
+  - [https://api.sectors.app/v1/companies/top/?include_none=false](../api-references/ranking/top-tickers)
+
+- Added new `sort_by` and `desc` query parameters to companies endpoint
+
+  - [https://api.sectors.app/v1/companies/?sort_by=symbol&desc=false](../api-references/helper=list/companies-list)
+
 ## 2025-05-21
 
 - Added new `financials_sector_metrics` parameter to the [company quarterly financials endpoint](../api-references/report/company-quarterly-financials) response
