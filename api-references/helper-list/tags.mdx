@@ -1,0 +1,48 @@
+---
+title: "News Tags"
+api: "GET /tags/"
+description: "Return list of all available tags of news articles and company fillings."
+---
+
+<ResponseExample>
+```json 200
+[
+    "acquisition",
+    "affordable-housing",
+    "agms",
+    "agreement",
+    "agricultural-fertilizer",
+    "agricultural-products",
+    "ai",
+  ...
+]
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="string[]">
+  A plain array of slugified tag strings, sorted alphabetically
+</ResponseField>
+
+### Usage
+
+This list can be used for the following endpoints:
+
+- [News Articles](../news/news)
+- [Company Filings](../news/filings)

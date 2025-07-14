@@ -1,7 +1,7 @@
 ---
 title: "Top Companies Ranked"
 api: "GET /companies/top/"
-description: "Return a list of top tickers in a given year based on certain classification (dividend yield, total dividend, revenue, earnings, market cap, PB ratio, PE ratio, or PS ratio)"
+description: "Return a list of top tickers in a given year based on selected classifications (dividend yield, total dividend, revenue, earnings, market cap, PB ratio, PE ratio, or PS ratio). Supports filtering, logical combination, and inclusion of null metrics."
 ---
 
 <ResponseExample>
@@ -17,7 +17,12 @@ description: "Return a list of top tickers in a given year based on certain clas
             "symbol": "TOWR.JK",
             "company_name": "Sarana Menara Nusantara Tbk",
             "dividend_yield": 0.0115384615384615
-        }
+        },
+        {
+            "symbol": "INKP.JK",
+            "company_name": "Indah Kiat Pulp & Paper Tbk",
+            "dividend_yield": null
+        },
     ],
     "total_dividend": [
         {
@@ -26,13 +31,40 @@ description: "Return a list of top tickers in a given year based on certain clas
             "total_dividend": 154.39
         },
         {
+            "symbol": "INKP.JK",
+            "company_name": "Indah Kiat Pulp & Paper Tbk",
+            "total_dividend": null
+        },
+        {
             "symbol": "TOWR.JK",
             "company_name": "Sarana Menara Nusantara Tbk",
             "total_dividend": 6
         }
     ],
-    "revenue": [],
-    "earnings": [],
+    "revenue": [
+        {
+            "symbol": "INKP.JK",
+            "company_name": "Indah Kiat Pulp & Paper Tbk",
+            "revenue": null
+        },
+        {
+            "symbol": "TKIM.JK",
+            "company_name": "Pabrik Kertas Tjiwi Kimia Tbk",
+            "revenue": null
+        }
+    ],
+    "earnings": [
+        {
+            "symbol": "INKP.JK",
+            "company_name": "Indah Kiat Pulp & Paper Tbk",
+            "earnings": null
+        },
+        {
+            "symbol": "TKIM.JK",
+            "company_name": "Pabrik Kertas Tjiwi Kimia Tbk",
+            "earnings": null
+        }
+    ],
     "market_cap": [
         {
             "symbol": "BBCA.JK",
@@ -153,28 +185,28 @@ description: "Return a list of top tickers in a given year based on certain clas
   "error": "There are no companies matching the criteria, consider adjusting the `min_mcap_billion` param value or your query filters."
 }
 {
+  "error": "Invalid filter format: foo>bar. Allowed fields: dividend_yield, total_dividend, revenue, earnings, pb, pe, ps."
+}
+{
   "error": "Invalid logic value. Use 'and' or 'or'."
 }
 {
-  "error": "Invalid filter format. Use 'field>value', 'field>=value', 'field<value', 'field<=value', or 'field=value'."
-}
-{
-  "error": "Invalid min_mcap_billion value. Not an integer"
-}
-{
-  "error": "The requested sub_sector does not exist."
-}
-{
-  "error": "Invalid classifications provided, select from these choices: dividend_yield, total_dividend, revenue, earnings, market_cap, pb, pe, ps."
+  "error": "n_stock param expects an integer value."
 }
 {
   "error": "{year} param expects a single year value."
 }
 {
-  "error": "{n_stock} param expects an integer value."
+  "error": "The requested sub_sector does not exist."
 }
 {
-  "error": "Invalid query parameters: <Bad Param>."
+  "error": "The requested sub_industry does not exist."
+}
+{
+  "error": "Invalid min_mcap_billion value. Not an integer"
+}
+{
+  "error": "Invalid query parameters: <Bad_Param>."
 }
 ```
 
@@ -197,192 +229,92 @@ description: "Return a list of top tickers in a given year based on certain clas
 ### Query Parameters
 
 <ParamField query="classifications" type="string" default="all">
-  Classification(s) for ranking the top tickers in a given year (defaults to
-  all). Use a comma to separate multiple classifications.
-  <AccordionGroup>
-    <Accordion title="Available classifications">
-      `dividend_yield`, `total_dividend`, `revenue`, `earnings`, `market_cap`,
-      `pb`, `pe`, `ps`
-    </Accordion>
-    <Accordion title="Format">
-      Separate multiple classifications using commas.
-    </Accordion>
-    <Accordion title="API Call Consumption">
-      Each classification queried consumes one API call.
-    </Accordion>
-  </AccordionGroup>
-</ParamField>
-
-<ParamField query="filters" type="string" default="">
-  Filter conditions to further narrow the results. Use a comma-separated list of filter expressions.
-  <AccordionGroup>
-    <Accordion title="Example">
-      Example: <code>`pe > 20, revenue > 1000`</code>
-    </Accordion>
-    <Accordion title="Available Operators">
-      <code>`>=`</code>, <code>`<=`</code>, <code>`<`</code>, <code>`>`</code>, <code>`=`</code>
-    </Accordion>
-    <Accordion title="Targets">
-      Use the same targets as classifications (except for <code>market_cap</code> which is represented by <code>min_mcap_billion</code>).
-    </Accordion>
-  </AccordionGroup>
-</ParamField>
-
-<ParamField query="logic" type="string" default="and">
-  Logical operator to combine multiple filters. This parameter is only
-  applicable if filters are provided. Accepts <code>`and`</code> or{" "}
-  <code>`or`</code> (case insensitive).
-  <AccordionGroup>
-    <Accordion title="Explanation">
-      When multiple filters are provided, this parameter specifies whether all
-      conditions must be met (<code>`and`</code>) or if any condition can be met
-      (<code>`or`</code>).
-    </Accordion>
-  </AccordionGroup>
-</ParamField>
-
-<ParamField query="n_stock" type="integer" default="5">
-  Number of tickers to be retrieved (defaults to 5, with a maximum of 10).
-</ParamField>
-
-<ParamField query="min_mcap_billion" type="integer" default="5000">
-  Minimum market cap of the retrieved companies in billion IDR.
-</ParamField>
-
-<ParamField query="sub_sector" type="string" default="all">
-  The sub-sector from which the top companies will be retrieved. The sub-sector
-  should be provided in kebab-case.
-  <AccordionGroup>
-    <Accordion title="Get the available sub_sector">
-      Retrieve the available `sub_sector` values from the
-      [Subsectors](https://docs.sectors.app/api-references/helper-list/subsectors)
-      endpoint.
-    </Accordion>
-    <Accordion title="Examples">
-      Examples include `banks`, `financing-service`, `insurance`, `retailing`,
-      `tobacco`.
-    </Accordion>
-    <Accordion title="Format">
-      The API only accepts sub_sector values in lowercase kebab-case.
-    </Accordion>
-  </AccordionGroup>
+  Comma-separated list of classifications to rank. Defaults to all:
+  `dividend_yield`, `total_dividend`, `revenue`, `earnings`, `market_cap`, `pb`,
+  `pe`, `ps`.
+  <Accordion title="Note">
+    Each classification queried counts as one API call toward your quota.
+  </Accordion>
 </ParamField>
 
 <ParamField query="year" type="integer" default="current year">
-  Year for which the list of top tickers is to be retrieved (default to the
-  current year).
+  Year for which to compute rankings (e.g. `2024`). Defaults to the current
+  year.
+</ParamField>
+
+<ParamField query="n_stock" type="integer" default="5">
+  Number of tickers per classification (default 5).
+</ParamField>
+
+<ParamField query="sub_sector" type="string">
+  Filter by subsector (kebab‑case). Provide either this or `sub_industry`, not
+  both. If both are present, `sub_industry` will override.
+  <AccordionGroup>
+    <Accordion title="Get the available sub_sector">
+      Get the available `sub_sector` from the [Subsectors](./subsectors)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sub_sector">
+      `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField> <ParamField query="sub_industry" type="string">
+  Filter by sub‑industry (kebab‑case). Provide either this or `sub_sector`, not
+  both. If both are present, `sub_industry` will override.
+  <AccordionGroup>
+    <Accordion title="Get the available sub_industry">
+      Get the available `sub_industry` from the [Subindustries](./subindustries)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sub_industry">
+      `paper`, `life-insurance`, `personal-care-products`, `software`, `gold`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_industry` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+<ParamField query="min_mcap_billion" type="integer" default="5000">
+  Minimum market cap (in IDR billions) for companies to include (e.g. `1000` for
+  IDR 1 trillion).
+</ParamField>
+
+<ParamField query="filters" type="string"> 
+  Comma-separated filter expressions (e.g. `pe>10,revenue>=500000000000`). 
+  Operators supported: `>`, `>=`, `<`, `<=`; fields: `dividend_yield`, `total_dividend`, `revenue`, `earnings`, `pb`, `pe`, `ps`. 
+</ParamField>
+
+<ParamField query="logic" type="string" default="and">
+  Applies to `filters`. Use `and` (default) to require all conditions or `or` to
+  require any.
+</ParamField>
+
+<ParamField query="include_none" type="string" default="false">
+  `true` to include companies with null metrics in the ranking (sorted last),
+  `false` to exclude them.
 </ParamField>
 
 ### Response
 
-<ResponseField name="dividend_yield" type="DividendYieldData[]">
-  <Expandable title="properties">
-    <ResponseField name="DividendYieldData.symbol" type="string">
-      The ticker of the company.
+<ResponseField name="<classification>" type="Array">
+  <Expandable title="Entry properties">
+    <ResponseField name="symbol" type="string">
+      IDX ticker symbol of the company.
     </ResponseField>
-    <ResponseField name="DividendYieldData.company_name" type="string">
-      The name of the company.
+    <ResponseField name="company_name" type="string">
+      Full registered name of the company.
     </ResponseField>
-    <ResponseField name="DividendYieldData.dividend_yield" type="float">
-      The dividend yield of the company.
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-<ResponseField name="total_dividend" type="TotalDividendData[]">
-  <Expandable title="properties">
-    <ResponseField name="TotalDividendData.symbol" type="string">
-      The ticker of the company.
-    </ResponseField>
-    <ResponseField name="TotalDividendData.company_name" type="string">
-      The name of the company.
-    </ResponseField>
-    <ResponseField name="TotalDividendData.total_dividend" type="float">
-      The total dividend of the company in IDR.
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-<ResponseField name="revenue" type="RevenueData[]">
-  <Expandable title="properties">
-    <ResponseField name="RevenueData.symbol" type="string">
-      The ticker of the company.
-    </ResponseField>
-    <ResponseField name="RevenueData.company_name" type="string">
-      The name of the company.
-    </ResponseField>
-    <ResponseField name="RevenueData.revenue" type="float">
-      The total revenue of the company in IDR.
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-<ResponseField name="earnings" type="EarningsData[]">
-  <Expandable title="properties">
-    <ResponseField name="EarningsData.symbol" type="string">
-      The ticker of the company.
-    </ResponseField>
-    <ResponseField name="EarningsData.company_name" type="string">
-      The name of the company.
-    </ResponseField>
-    <ResponseField name="EarningsData.earnings" type="float">
-      The total earnings of the company in IDR.
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-<ResponseField name="market_cap" type="MarketCapData[]">
-  <Expandable title="properties">
-    <ResponseField name="MarketCapData.symbol" type="string">
-      The ticker of the company.
-    </ResponseField>
-    <ResponseField name="MarketCapData.company_name" type="string">
-      The name of the company.
-    </ResponseField>
-    <ResponseField name="MarketCapData.market_cap" type="int">
-      The total market cap of the company in IDR.
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-<ResponseField name="pb" type="PBData[]">
-  <Expandable title="properties">
-    <ResponseField name="PBData.symbol" type="string">
-      The ticker of the company.
-    </ResponseField>
-    <ResponseField name="PBData.company_name" type="string">
-      The name of the company.
-    </ResponseField>
-    <ResponseField name="PBData.pb" type="float">
-      The price to book value ratio of the company.
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-<ResponseField name="pe" type="PEData[]">
-  <Expandable title="properties">
-    <ResponseField name="PEData.symbol" type="string">
-      The ticker of the company.
-    </ResponseField>
-    <ResponseField name="PEData.company_name" type="string">
-      The name of the company.
-    </ResponseField>
-    <ResponseField name="PEData.pe" type="float">
-      The price to earning ratio of the company.
-    </ResponseField>
-  </Expandable>
-</ResponseField>
-
-<ResponseField name="ps" type="PSData[]">
-  <Expandable title="properties">
-    <ResponseField name="PSData.symbol" type="string">
-      The ticker of the company.
-    </ResponseField>
-    <ResponseField name="PSData.company_name" type="string">
-      The name of the company.
-    </ResponseField>
-    <ResponseField name="PSData.ps" type="float">
-      The price to sales ratio of the company.
+    <ResponseField name="<classification>" type="float | integer | null">
+      Metric value for the given classification in the specified year. For
+      **market_cap**, this is an integer (IDR). For other classifications, this
+      is a float. **Maybe null** if the company does not have data for that
+      metric in the target year.
     </ResponseField>
   </Expandable>
 </ResponseField>

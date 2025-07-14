@@ -1,0 +1,134 @@
+---
+title: "Companies"
+api: "GET /companies/"
+description: "List companies filtered by subsector or sub‑industry, with optional sorting on various financial metrics."
+---
+
+<ResponseExample>
+```json 200
+[
+  {
+      "symbol": "JTPE.JK",
+      "company_name": "Jasuindo Tiga Perkasa Tbk",
+      "sorted_by": 1685604270080
+  },
+  {
+      "symbol": "ASGR.JK",
+      "company_name": "Astra Graphia Tbk",
+      "sorted_by": 1213902094336
+  },
+  ...
+]
+```
+
+```json 400
+// Possible response bodies:
+{
+  "error": "Query parameter 'sub_sector' and/or 'sub_industry' is required."
+}
+{
+  "error": "Provide either 'sub_sector' or 'sub_industry', not both."
+}
+{
+  "error": "Invalid 'sort_by' parameter. Valid options are: market_cap, dividend_yield, total_dividend, revenue, earnings, pb, pe, ps, symbol, company_name."
+}
+{
+  "error": "Invalid value for 'desc'. Use 'true' or 'false'."
+}
+{
+  "error": "The requested sub_sector does not exist."
+}
+{
+  "error": "The requested sub_industry does not exist."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="sub_sector" type="string">
+  Filter by subsector (kebab‑case). Provide either this or `sub_industry`, not
+  both. If both are present, `sub_industry` will override.
+  <AccordionGroup>
+    <Accordion title="Get the available sub_sector">
+      Get the available `sub_sector` from the [Subsectors](./subsectors)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sub_sector">
+      `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField> <ParamField query="sub_industry" type="string">
+  Filter by sub‑industry (kebab‑case). Provide either this or `sub_sector`, not
+  both. If both are present, `sub_industry` will override.
+  <AccordionGroup>
+    <Accordion title="Get the available sub_industry">
+      Get the available `sub_industry` from the [Subindustries](./subindustries)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sub_industry">
+      `paper`, `life-insurance`, `personal-care-products`, `software`, `gold`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_industry` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField> <ParamField query="sort_by" type="string">
+  Field to sort results by. Defaults to `symbol`.
+  <AccordionGroup>
+    <Accordion title="Valid options">
+      `symbol`, `company_name`, `market_cap`, `dividend_yield`,
+      `total_dividend`, `revenue`, `earnings`, `pb`, `pe`, `ps`
+    </Accordion>
+  </AccordionGroup>
+</ParamField> <ParamField query="desc" type="string">
+  Sort direction: `true` for descending, `false` for ascending (default
+  `false`).
+</ParamField>
+
+### Response
+
+<ResponseField name="[]" type="Company">
+  <Expandable title="Company properties">
+    <ResponseField name="symbol" type="string">
+      IDX ticker symbol of the company (e.g. `"TRIL.JK"`).
+    </ResponseField>
+    <ResponseField name="company_name" type="string">
+      Full registered name of the company (e.g. `"Triwira Insanlestari Tbk"`).
+    </ResponseField>
+    <ResponseField name="sorted_by" type="string | number">
+      The value used for sorting depends on the chosen metric: If sorting by
+      symbol or company_name, the exact string value (e.g., "TRIL.JK" or
+      "Triwira Insanlestari Tbk") is used. For numeric metrics like market_cap
+      or revenue, the metric value from the most recently completed fiscal year
+      is used (e.g., 1685604270080), which may be null if no data is available
+      for that year
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Usage
+
+This list can be used for the following endpoint:
+
+- [Company Report](../report/company)
