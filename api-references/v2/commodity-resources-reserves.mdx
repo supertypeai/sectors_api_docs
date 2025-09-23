@@ -1,0 +1,91 @@
+---
+title: "National Resources and Reserves"
+api: "GET /v2/resources-reserves/"
+description: "Aggregates and lists national resources and reserves data, with options to filter by location, year, and commodity."
+---
+
+<ResponseExample>
+```json 200
+[
+    {
+        "province": "Aceh",
+        "year": 2024,
+        "commodity_type": "Gold",
+        "resources_reserves": "{\"ore_resources_inferred\": 493110000.0, ...}"
+    },
+    {
+        "province": "Banten",
+        "year": 2024,
+        "commodity_type": "Gold",
+        "resources_reserves": "{\"ore_resources_inferred\": 656634823.0, ...}"
+    }
+]
+```
+
+```json 400
+{
+  "error": "Invalid pagination or limit parameters. Please provide positive integers."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="province" type="string">
+  Filter data by a specific province.
+</ParamField>
+<ParamField query="year" type="integer">
+  Filter data by a specific year.
+</ParamField>
+<ParamField query="commodity_type" type="string">
+  Filter data by a specific commodity (e.g., `Gold`).
+</ParamField>
+<ParamField query="limit" type="integer" default="20">
+  Number of results to return. Maximum value is 30.
+</ParamField>
+
+### Response
+
+<ResponseField name="[]" type="ResourceRecord">
+  <Expandable title="Resource Record properties">
+    <ResponseField name="province" type="string">
+      The province where the resources/reserves are located.
+    </ResponseField>
+    <ResponseField name="year" type="integer">
+      The year the data was recorded.
+    </ResponseField>
+    <ResponseField name="commodity_type" type="string">
+      The type of commodity.
+    </ResponseField>
+    <ResponseField name="resources_reserves" type="string (JSON Object)">
+      A JSON string containing detailed data on resources and reserves.
+      <Expandable title="Resources/Reserves Structure">
+        <ResponseField name="ore_resources_inferred" type="number" />
+        <ResponseField name="resources_inferred" type="number" />
+        <ResponseField name="ore_resources_indicated" type="number" />
+        <ResponseField name="resources_indicated" type="number" />
+        <ResponseField name="ore_resources_measured" type="number" />
+        <ResponseField name="resources_measured" type="number" />
+        <ResponseField name="ore_reserves_probable" type="number" />
+        <ResponseField name="reserves_probable" type="number" />
+        <ResponseField name="ore_reserves_proven" type="number" />
+        <ResponseField name="reserves_proven" type="number" />
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>

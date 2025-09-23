@@ -1,0 +1,94 @@
+---
+title: "List Mining Licenses"
+api: "GET /v2/licenses/"
+description: "Lists mining licenses with filters for status, commodity, and location. Includes a feature to find licenses that are expiring soon."
+---
+
+<ResponseExample>
+```json 200
+[
+    {
+        "id": "3340",
+        "license_number": "503/1573/IUP-OP/BPPMD-PTSP/X/2015",
+        "province": "Kalimantan Timur",
+        "city": "Paser",
+        "permit_expiry_date": "2025-10-02",
+        "commodity": "Coal",
+        "company_name": "PT Jasa Tambang Nusantara"
+    },
+    {
+        "id": "1650",
+        "license_number": "1108/1/IUP/PMDN/2022",
+        "province": "Kalimantan Timur",
+        "city": "Kabupaten Berau",
+        "permit_expiry_date": "2025-10-06",
+        "commodity": "Coal",
+        "company_name": "PT Supra Bara Energi"
+    }
+]
+```
+
+```json 400
+{
+  "error": "Invalid pagination or limit parameters. Please provide positive integers."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="province" type="string">
+  Filter licenses by the province they are registered in.
+</ParamField>
+<ParamField query="commodity" type="string">
+  Filter licenses by a specific commodity.
+</ParamField>
+<ParamField query="expiring_soon" type="boolean">
+  Set to `true` to find licenses that will expire within the next 365 days.
+</ParamField>
+<ParamField query="limit" type="integer" default="20">
+  Number of results to return. Maximum value is 30.
+</ParamField>
+
+### Response
+
+<ResponseField name="[]" type="MiningLicense">
+  <Expandable title="Mining License properties">
+    <ResponseField name="id" type="string">
+      Unique identifier for the license.
+    </ResponseField>
+    <ResponseField name="license_number" type="string">
+      The official license number.
+    </ResponseField>
+    <ResponseField name="province" type="string">
+      The province where the license is valid.
+    </ResponseField>
+    <ResponseField name="city" type="string">
+      The city or regency where the license is valid.
+    </ResponseField>
+    <ResponseField name="permit_expiry_date" type="string">
+      The expiry date of the permit in `YYYY-MM-DD` format.
+    </ResponseField>
+    <ResponseField name="commodity" type="string">
+      The commodity covered by the license.
+    </ResponseField>
+    <ResponseField name="company_name" type="string">
+      The name of the company holding the license.
+    </ResponseField>
+  </Expandable>
+</ResponseField>

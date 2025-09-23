@@ -1,0 +1,236 @@
+---
+title: "Companies V2"
+api: "GET /v2/companies/"
+description: "High-performance API for filtering and sorting companies with a SQL-like interface. Supports both structured queries (`where`, `order_by`) and natural language queries (`q`). Returns a paginated list of companies."
+---
+
+<ResponseExample>
+```json 200
+{
+    "results": [
+        {
+            "symbol": "BBCA.JK",
+            "company_name": "Bank Central Asia Tbk"
+        },
+        {
+            "symbol": "BBRI.JK",
+            "company_name": "Bank Rakyat Indonesia (Persero) Tbk"
+        }
+    ],
+    "pagination": {
+        "total_count": 2,
+        "showing": 2,
+        "limit": 50,
+        "offset": 0,
+        "has_next": false,
+        "has_previous": false,
+        "next_offset": null,
+        "previous_offset": null
+    },
+    "llm_translation": {
+        "natural_query": "top 2 banks by market cap in 2024",
+        "translated_params": {
+            "where": "sub_sector = 'banks'",
+            "order_by": "market_cap[2024]",
+            "desc": true,
+            "limit": 2,
+            "offset": 0
+        },
+        "message": "Used sub_sector = 'banks' to filter for banking companies."
+    }
+}
+```
+
+```json 400
+// --- General Parameter Errors ---
+{
+    "error": "UNSUPPORTED_PARAMETERS",
+    "message": "Unsupported parameters: invalid_param."
+}
+
+// --- 'where' Clause Errors ---
+{
+    "error": "INVALID_WHERE_CLAUSE",
+    "message": "Invalid field name 'revenue_in_2024'. Use bracket notation instead: 'revenue[2024]'"
+}
+{
+    "error": "INVALID_WHERE_CLAUSE",
+    "message": "Invalid field name 'non_existent_field'. Use bracket notation for yearly fields: field[year]"
+}
+{
+    "error": "INVALID_DATE_FORMAT",
+    "message": "Invalid date format for 'listing_date'. Please use 'YYYY-MM-DD'."
+}
+{
+    "error": "TYPE_MISMATCH",
+    "message": "The 'LIKE' operator can only be used on string fields. 'market_cap' is a numeric field."
+}
+{
+    "error": "UNSUPPORTED_OPERATOR",
+    "message": "Operator '>' is not supported for JSON list fields like 'key_executives_name'. Supported operators are '=', '!=', 'LIKE', 'IN'."
+}
+
+// --- 'order_by' Clause Errors ---
+{
+    "error": "UNSUPPORTED_ORDER_BY",
+    "message": "Ordering by arithmetic expressions is not supported. Please use a single field name."
+}
+
+// --- Pagination Errors ---
+{
+    "error": "INVALID_LIMIT",
+    "message": "LIMIT must be a positive integer up to 200."
+}
+{
+    "error": "INVALID_OFFSET",
+    "message": "OFFSET must be a non-negative integer."
+}
+
+// --- Natural Language ('q') Errors ---
+{
+    "error": "NON_TRANSLATABLE_QUERY",
+    "message": "Query refers to 'historical 5-year average PE' which is not an available field. Only listed fields can be used.",
+    "natural_query": "companies trading below historical 5-year PE average",
+    "llm_response": {
+      "where": null,
+      "order_by": null,
+      "desc": null,
+      "limit": null,
+      "offset": null,
+      "message": "Query refers to 'historical 5-year average PE' which is not an available field. Only listed fields can be used."
+    }
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="q" type="string">
+  A natural language query (e.g., `"top 10 tech companies by revenue in 2023"`).
+  When `q` is provided, all other query parameters (`where`, `order_by`, etc.)
+  are ignored, as the LLM will generate them.
+</ParamField>
+<ParamField query="where" type="string">
+  SQL-like conditions for advanced filtering. This parameter is ignored if `q`
+  is present.
+  <AccordionGroup>
+    <Accordion title="Syntax and Operators">
+      - **Operators**: `=`, `!=`, `>`, `>=`, `<`, `<=`, `like`, `in`.
+      - **Logic**: Combine conditions with `and` and `or`.
+      - **Values**: Use single or double quotes for strings (e.g., `sector =
+        'Technology'`), numbers directly (e.g., `market_cap > 1000000000000`),
+        and lists for the `in` operator (e.g., `tags in ['blue-chip',
+        'dividend']`).
+    </Accordion>
+    <Accordion title="Yearly and Forecast Data">
+      Access historical or forecast data using bracket notation: `field[YYYY]`.
+      <br />
+      Example: `revenue[2023] > 100000000000` or `forecast_eps_growth[2025] >
+      0.15`.
+    </Accordion>
+    <Accordion title="Arithmetic Expressions">
+      Perform calculations within your query on both sides of a condition.
+      <br />
+      Example: `revenue[2024] / total_assets[2024] > 0.5` or `revenue[2024] >
+      revenue[2023] * 1.2`.
+    </Accordion>
+    <Accordion title="Available Fields">
+      Refer to the extensive list of over 150 queryable fields in our data
+      dictionary, covering everything from financial statements and valuation
+      ratios to executive shareholdings and price history.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+<ParamField query="order_by" type="string" default="symbol">
+  Field to sort results by (e.g., `"market_cap"` or `"revenue[2024]"`). Use a
+  comma-separated list for multi-level sorting. This parameter is ignored if
+  `q` is present.
+</ParamField>
+<ParamField query="desc" type="string" default="false">
+  Sort direction for `order_by`. Use `true` for descending order. This
+  parameter is ignored if `q` is present.
+</ParamField>
+<ParamField query="limit" type="integer" default="50">
+  The maximum number of results to return. Max value is 200. This parameter is
+  ignored if `q` is present.
+</ParamField>
+<ParamField query="offset" type="integer" default="0">
+  The number of results to skip for pagination. This parameter is ignored if
+  `q` is present.
+</ParamField>
+
+### Response
+
+<ResponseField name="results" type="Company[]">
+  An array of company objects matching the query.
+  <Expandable title="Company properties">
+    <ResponseField name="symbol" type="string">
+      IDX ticker symbol of the company (e.g. `"BBCA.JK"`).
+    </ResponseField>
+    <ResponseField name="company_name" type="string">
+      Full registered name of the company (e.g. `"Bank Central Asia Tbk"`).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+<ResponseField name="pagination" type="object">
+  An object containing pagination details.
+  <Expandable title="Pagination properties">
+    <ResponseField name="total_count" type="integer">
+      Total number of records matching the query.
+    </ResponseField>
+    <ResponseField name="showing" type="integer">
+      Number of records in the current response.
+    </ResponseField>
+    <ResponseField name="limit" type="integer">
+      The limit used for this request.
+    </ResponseField>
+    <ResponseField name="offset" type="integer">
+      The offset used for this request.
+    </ResponseField>
+    <ResponseField name="has_next" type="boolean">
+      Indicates if there is a next page of results.
+    </ResponseField>
+    <ResponseField name="has_previous" type="boolean">
+      Indicates if there is a previous page of results.
+    </ResponseField>
+    <ResponseField name="next_offset" type="integer | null">
+      The offset for the next page, or `null` if this is the last page.
+    </ResponseField>
+    <ResponseField name="previous_offset" type="integer | null">
+      The offset for the previous page, or `null` if this is the first page.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+<ResponseField name="llm_translation" type="object | null">
+  Included only for natural language queries (using the `q` parameter). This
+  object shows how the natural language query was translated into structured API
+  parameters.
+  <Expandable title="LLM Translation properties">
+    <ResponseField name="natural_query" type="string">
+      The original natural language query provided.
+    </ResponseField>
+    <ResponseField name="translated_params" type="object">
+      The structured parameters (`where`, `order_by`, etc.) generated by the
+      LLM.
+    </ResponseField>
+    <ResponseField name="message" type="string | null">
+      An explanatory message from the LLM, often used to clarify approximations,
+      reformulations, or why a query could not be translated.
+    </ResponseField>
+  </Expandable>
+</ResponseField>

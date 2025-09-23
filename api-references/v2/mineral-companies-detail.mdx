@@ -1,0 +1,130 @@
+---
+title: "Mineral Company Detail"
+api: "GET /v2/mineral-companies/{company_id}/"
+description: "Retrieves a comprehensive overview of a single mineral company by its ID, including operational details, contact info, licenses, and aggregate counts."
+---
+
+<ResponseExample>
+```json 200
+{
+    "id": 8,
+    "name": "PT Aneka Tambang Tbk",
+    "idx_ticker": "ANTM.JK",
+    "operation_province": "Jakarta",
+    "operation_kabkot": "Jakarta Selatan",
+    "representative_address": "Gedung Aneka Tambang Tower A...",
+    "company_type": "Mine Owner",
+    "key_operation": "Mining",
+    "activities": "[\"Holding\", \"Gold Mining\", \"Silver Mining\"]",
+    "website": "www.antam.com",
+    "phone_number": "021-7891234",
+    "email": "corsec@antam.com",
+    "mining_license": "[{\"license_type\": \"IUP\", \"license_number\": \"1103/1/IUP/PMDN/2022\", ...}]",
+    "mining_contract": "[]",
+    "commodity": "[\"Nickel\", \"Gold\"]",
+    "aggregates": {
+        "mining_site_count": 3,
+        "mining_license_count": 19
+    }
+}
+```
+
+```json 404
+{
+  "error": "Company not found."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="company_id" type="integer" required>
+  The unique identifier of the mineral company.
+</ParamField>
+
+### Response
+
+<ResponseField name="<CompanyDetail>" type="object">
+  <Expandable title="Company Detail properties">
+    <ResponseField name="id" type="integer">
+      Unique identifier for the company.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      The full name of the company.
+    </ResponseField>
+    <ResponseField name="idx_ticker" type="string | null">
+      The company's IDX ticker symbol.
+    </ResponseField>
+    <ResponseField name="operation_province" type="string">
+      Province of the main operation office.
+    </ResponseField>
+    <ResponseField name="operation_kabkot" type="string">
+      City/Regency of the main operation office.
+    </ResponseField>
+    <ResponseField name="representative_address" type="string">
+      Full address of the representative office.
+    </ResponseField>
+    <ResponseField name="company_type" type="string">
+      The legal or functional type of the company.
+    </ResponseField>
+    <ResponseField name="key_operation" type="string">
+      A brief description of the company's primary operations.
+    </ResponseField>
+    <ResponseField name="activities" type="string (JSON Array)">
+      A JSON string array of the company's business activities.
+    </ResponseField>
+    <ResponseField name="website" type="string">
+      Company's official website.
+    </ResponseField>
+    <ResponseField name="phone_number" type="string">
+      Company's contact phone number.
+    </ResponseField>
+    <ResponseField name="email" type="string">
+      Company's contact email address.
+    </ResponseField>
+    <ResponseField name="mining_license" type="string (JSON Array)">
+      A JSON string containing an array of detailed mining licenses held by the
+      company.
+      <Expandable title="License Object Structure">
+        <ResponseField name="license_type" type="string" />
+        <ResponseField name="license_number" type="string" />
+        <ResponseField name="province" type="string" />
+        <ResponseField name="city" type="string" />
+        <ResponseField name="permit_expiry_date" type="string" />
+        <ResponseField name="commodity" type="string" />
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="mining_contract" type="string (JSON Array)">
+      A JSON string containing an array of mining contracts.
+    </ResponseField>
+    <ResponseField name="commodity" type="string (JSON Array)">
+      A JSON string array of commodities the company deals with.
+    </ResponseField>
+    <ResponseField name="aggregates" type="object">
+      An object containing aggregate counts related to the company.
+      <Expandable title="Aggregates properties">
+        <ResponseField name="mining_site_count" type="integer">
+          The total number of mining sites associated with this company.
+        </ResponseField>
+        <ResponseField name="mining_license_count" type="integer">
+          The total number of mining licenses held by this company.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
