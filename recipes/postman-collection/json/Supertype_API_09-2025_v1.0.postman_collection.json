@@ -1,0 +1,1689 @@
+{
+	"info": {
+		"_postman_id": "5f5dacfc-8555-40a7-8197-6a991d679b1f",
+		"name": "Supertype API 09/2025",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21033387"
+	},
+	"item": [
+		{
+			"name": "v1",
+			"item": [
+				{
+					"name": "Helper List",
+					"item": [
+						{
+							"name": "v1/subsectors/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/subsectors/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"subsectors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/subindustries/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/subindustries/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"subindustries",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/tags",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/tags/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"tags",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/industries/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/industries/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"industries",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/index/{{index}}/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/index/{{index}}/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"index",
+										"{{index}}",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/companies/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/companies/?sub_sector=industrial-services&sub_industry=coal-distribution",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"companies",
+										""
+									],
+									"query": [
+										{
+											"key": "sub_sector",
+											"value": "industrial-services"
+										},
+										{
+											"key": "sub_industry",
+											"value": "coal-distribution"
+										},
+										{
+											"key": "sort_by",
+											"value": "dividend_yield",
+											"description": "dividend_yield, total_dividend, revenue, earnings, pb, pe, ps, symbol, company_name, market_cap",
+											"disabled": true
+										},
+										{
+											"key": "desc",
+											"value": "true",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/companies/list_companies_with_segments/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/companies/list_companies_with_segments/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"companies",
+										"list_companies_with_segments",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/company/get_quarterly_financial_dates/{{ticker}}/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/company/get_quarterly_financial_dates/{{ticker}}/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"company",
+										"get_quarterly_financial_dates",
+										"{{ticker}}",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Since IPO Performance",
+					"item": [
+						{
+							"name": "v1/listing-performance",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/listing-performance/{{ticker}}/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"listing-performance",
+										"{{ticker}}",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Company News",
+					"item": [
+						{
+							"name": "v1/news/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/news/?sub_sector=banks&page=5&page_size=20",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"news",
+										""
+									],
+									"query": [
+										{
+											"key": "sector",
+											"value": "consumer-non-cyclicalss",
+											"disabled": true
+										},
+										{
+											"key": "sub_sector",
+											"value": "banks"
+										},
+										{
+											"key": "tags",
+											"value": "FINANcial rATios",
+											"description": "Bank Indonesia,Loan,NPL,Risk,Bearish",
+											"disabled": true
+										},
+										{
+											"key": "tickers",
+											"value": "BBCA.JK",
+											"disabled": true
+										},
+										{
+											"key": "start",
+											"value": "2024-05-20",
+											"disabled": true
+										},
+										{
+											"key": "end",
+											"value": "2025-7-20",
+											"disabled": true
+										},
+										{
+											"key": "n",
+											"value": "30",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "5"
+										},
+										{
+											"key": "page_size",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/filings/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/filings/?tags=Bullish,Strengthening Subsidiary Capital,Investment",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"filings",
+										""
+									],
+									"query": [
+										{
+											"key": "sector",
+											"value": "financials",
+											"disabled": true
+										},
+										{
+											"key": "sub_sector",
+											"value": "banks",
+											"disabled": true
+										},
+										{
+											"key": "tags",
+											"value": "Bullish,Strengthening Subsidiary Capital,Investment",
+											"description": "Bullish,Strengthening Subsidiary Capital,insider-trading"
+										},
+										{
+											"key": "tickers",
+											"value": "SQMI.JK",
+											"disabled": true
+										},
+										{
+											"key": "transaction_type",
+											"value": "buy",
+											"disabled": true
+										},
+										{
+											"key": "start",
+											"value": "2025-05-15",
+											"disabled": true
+										},
+										{
+											"key": "end",
+											"value": "2025-7-20",
+											"disabled": true
+										},
+										{
+											"key": "n",
+											"value": "50",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Detailed Report",
+					"item": [
+						{
+							"name": "v1/company/report/{{ticker}}/?sections={{sections}}",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/company/report/{{ticker}}/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"company",
+										"report",
+										"{{ticker}}",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/company/get-segments/{{ticker}}/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/company/get-segments/{{ticker}}/?financial_year=2024",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"company",
+										"get-segments",
+										"{{ticker}}",
+										""
+									],
+									"query": [
+										{
+											"key": "financial_year",
+											"value": "2024"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/financials/quarterly/{{ticker}}/?report_date={{report_date}}&approx=true",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/financials/quarterly/{{ticker}}/?n_quarters=5",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"financials",
+										"quarterly",
+										"{{ticker}}",
+										""
+									],
+									"query": [
+										{
+											"key": "report_dates",
+											"value": "{{report_date}}",
+											"disabled": true
+										},
+										{
+											"key": "approx",
+											"value": "trues",
+											"disabled": true
+										},
+										{
+											"key": "n_quarters",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/subsector/report/{{sector}}/?sections={{sections}}",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/subsector/report/{{sector}}/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"subsector",
+										"report",
+										"{{sector}}",
+										""
+									],
+									"query": [
+										{
+											"key": "sections",
+											"value": "{{sections}}",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Company Ranking by Dimensions",
+					"item": [
+						{
+							"name": "v1/most-traded/?start={{start_date}}&end={{end_date}}&n_stock=5&sub_sector={{sub_sector}}",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/most-traded/?start=2025-02-01&end=2025-02-04&n_stock=5&sub_sector=banks",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"most-traded",
+										""
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "2025-02-01"
+										},
+										{
+											"key": "end",
+											"value": "2025-02-04"
+										},
+										{
+											"key": "n_stock",
+											"value": "5"
+										},
+										{
+											"key": "sub_sector",
+											"value": "banks"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/companies/top/?classifications={classifications}&n_stock=5&year=2025&sub_sector={sub_sector}&min_mcap_billion=5000",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/companies/top/?sub_sector=telecommunication&sub_industry=paper&include_none=true",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"companies",
+										"top",
+										""
+									],
+									"query": [
+										{
+											"key": "classifications",
+											"value": "pb,pe",
+											"disabled": true
+										},
+										{
+											"key": "n_stock",
+											"value": "20",
+											"disabled": true
+										},
+										{
+											"key": "year",
+											"value": "2024",
+											"disabled": true
+										},
+										{
+											"key": "sub_sector",
+											"value": "telecommunication"
+										},
+										{
+											"key": "min_mcap_billion",
+											"value": "5000",
+											"disabled": true
+										},
+										{
+											"key": "filters",
+											"value": "pe > 20, revenue > 100000000",
+											"disabled": true
+										},
+										{
+											"key": "logic",
+											"value": "or",
+											"disabled": true
+										},
+										{
+											"key": "sub_industry",
+											"value": "paper"
+										},
+										{
+											"key": "include_none",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/companies/top-changes/?classifications={classifications}&n_stock=5&periods={periods}&sub_sector={sub_sector}&min_mcap_billion=5000",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/companies/top-changes/?classifications=top_gainers&n_stock=5&periods=7d&sub_sector=food-beverage&min_mcap_billion=5000",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"companies",
+										"top-changes",
+										""
+									],
+									"query": [
+										{
+											"key": "classifications",
+											"value": "top_gainers"
+										},
+										{
+											"key": "n_stock",
+											"value": "5"
+										},
+										{
+											"key": "periods",
+											"value": "7d"
+										},
+										{
+											"key": "sub_sector",
+											"value": "food-beverage"
+										},
+										{
+											"key": "min_mcap_billion",
+											"value": "5000"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/companies/top-growth/?classifications={classifications}&n_stock=5&sub_sector={sub_sector}&min_mcap_billion=5000",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/companies/top-growth/?n_stock=5&min_mcap_billion=5000&classifications=top_earnings_growth_losers&sub_sector=food-staples-retailing",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"companies",
+										"top-growth",
+										""
+									],
+									"query": [
+										{
+											"key": "n_stock",
+											"value": "5"
+										},
+										{
+											"key": "min_mcap_billion",
+											"value": "5000"
+										},
+										{
+											"key": "classifications",
+											"value": "top_earnings_growth_losers"
+										},
+										{
+											"key": "sub_sector",
+											"value": "food-staples-retailing"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Historical Market Cap and Transactions Data",
+					"item": [
+						{
+							"name": "v1/idx-total/?start={start_date}&end={end_date}",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/idx-total/?start=2017-01-10&end=2022-01-12",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"idx-total",
+										""
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "2017-01-10"
+										},
+										{
+											"key": "end",
+											"value": "2022-01-12"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/daily/{{ticker}}/?start={{start_date}}&end={{end_date}}",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/daily/{{ticker}}/?start=2025-01-03&end=2025-01-10",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"daily",
+										"{{ticker}}",
+										""
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "2025-01-03"
+										},
+										{
+											"key": "end",
+											"value": "2025-01-10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/index-daily/{{index_code}}/?start={{start_date}}&end={{end_date}}",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/index-daily/{{index_code}}/?start=2025-01-22&end=2025-01-24",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"index-daily",
+										"{{index_code}}",
+										""
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "2025-01-22"
+										},
+										{
+											"key": "end",
+											"value": "2025-01-24"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Singapore Stock Exchange",
+					"item": [
+						{
+							"name": "v1/sgx/sectors/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/sgx/sectors/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"sgx",
+										"sectors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/sgx/companies/?sector={{sector}}",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/sgx/companies/?sector=consumer-defensive",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"sgx",
+										"companies",
+										""
+									],
+									"query": [
+										{
+											"key": "sector",
+											"value": "consumer-defensive"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/sgx/company/report/{{ticker}}/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/sgx/company/report/C07.SI/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"sgx",
+										"company",
+										"report",
+										"C07.SI",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/sgx/companies/top/?classifications={{classifications}}&min_mcap_million=1000&sector={{sector}}",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/sgx/companies/top/?classifications=earnings&min_mcap_million=1&sector=consumer-defensive",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"sgx",
+										"companies",
+										"top",
+										""
+									],
+									"query": [
+										{
+											"key": "classifications",
+											"value": "earnings"
+										},
+										{
+											"key": "min_mcap_million",
+											"value": "1"
+										},
+										{
+											"key": "sector",
+											"value": "consumer-defensive"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Malaysia Stock Exchange",
+					"item": [
+						{
+							"name": "v1/klse/sectors/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/klse/sectors/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"klse",
+										"sectors",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/klse/companies/?sector={{sector}}",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/klse/companies/?sector=financials",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"klse",
+										"companies",
+										""
+									],
+									"query": [
+										{
+											"key": "sector",
+											"value": "financials"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/klse/company/report/{{ticker}}/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/klse/company/report/0026/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"klse",
+										"company",
+										"report",
+										"0026",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v1/klse/companies/top/?classifications={classifications}&min_mcap_million=1000&sector={sector}",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v1/klse/companies/top/?classifications=pe&min_mcap_million=1000&sector=finance",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v1",
+										"klse",
+										"companies",
+										"top",
+										""
+									],
+									"query": [
+										{
+											"key": "classifications",
+											"value": "pe"
+										},
+										{
+											"key": "min_mcap_million",
+											"value": "1000"
+										},
+										{
+											"key": "sector",
+											"value": "finance"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "v2",
+			"item": [
+				{
+					"name": "IDX Company Report",
+					"item": [
+						{
+							"name": "v2/companies/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/companies/?q=top 10 banks by market cap",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"companies",
+										""
+									],
+									"query": [
+										{
+											"key": "q",
+											"value": "top 10 banks by market cap"
+										},
+										{
+											"key": "where",
+											"value": "market_cap > 5000000000000 and listing_date < '2020-01-01'",
+											"disabled": true
+										},
+										{
+											"key": "order_by",
+											"value": "market_cap",
+											"disabled": true
+										},
+										{
+											"key": "desc",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "10",
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": "0",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Mineral Company Insider",
+					"item": [
+						{
+							"name": "v2/mineral-companies/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/mineral-companies/?keyword=adaro&commodity=Coal",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"mineral-companies",
+										""
+									],
+									"query": [
+										{
+											"key": "keyword",
+											"value": "adaro"
+										},
+										{
+											"key": "commodity",
+											"value": "Coal"
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v2/mineral-companies/{{company_id}}/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/mineral-companies/{{company_id}}/",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"mineral-companies",
+										"{{company_id}}",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v2/mineral-companies/{{company_id}}/performance/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/mineral-companies/{{company_id}}/performance/?years=2019,2022",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"mineral-companies",
+										"{{company_id}}",
+										"performance",
+										""
+									],
+									"query": [
+										{
+											"key": "years",
+											"value": "2019,2022"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v2/mineral-companies/{{mineral_ticker}}/financials/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/mineral-companies/{{mineral_ticker}}/financials/?years=2023,2024",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"mineral-companies",
+										"{{mineral_ticker}}",
+										"financials",
+										""
+									],
+									"query": [
+										{
+											"key": "years",
+											"value": "2023,2024"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v2/mining-sites/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/mining-sites/?province=Kalimantan Timur&mineral_type=Coal&limit=5",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"mining-sites",
+										""
+									],
+									"query": [
+										{
+											"key": "province",
+											"value": "Kalimantan Timur"
+										},
+										{
+											"key": "mineral_type",
+											"value": "Coal"
+										},
+										{
+											"key": "min_production",
+											"value": "1000000",
+											"disabled": true
+										},
+										{
+											"key": "sort_by",
+											"value": "production",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v2/production/total/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/production/total/?commodity_type=Nickel",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"production",
+										"total",
+										""
+									],
+									"query": [
+										{
+											"key": "commodity_type",
+											"value": "Nickel"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v2/resources-reserves/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/resources-reserves/?commodity_type=Gold&year=2024&limit=5",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"resources-reserves",
+										""
+									],
+									"query": [
+										{
+											"key": "commodity_type",
+											"value": "Gold"
+										},
+										{
+											"key": "year",
+											"value": "2024"
+										},
+										{
+											"key": "province",
+											"value": "Aceh",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v2/commodities/{{commodity_name}}/price/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/commodities/{{commodity_name}}/price/?start=2023-01-01&end=2023-06-30",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"commodities",
+										"{{commodity_name}}",
+										"price",
+										""
+									],
+									"query": [
+										{
+											"key": "start",
+											"value": "2023-01-01"
+										},
+										{
+											"key": "end",
+											"value": "2023-06-30"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v2/trade/exports/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/trade/exports/?year=2015&commodity_type=Gold&limit=5",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"trade",
+										"exports",
+										""
+									],
+									"query": [
+										{
+											"key": "year",
+											"value": "2015"
+										},
+										{
+											"key": "commodity_type",
+											"value": "Gold"
+										},
+										{
+											"key": "limit",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v2/licenses/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/licenses/?province=Kalimantan Timur&commodity=Coal&expiring_soon=true",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"licenses",
+										""
+									],
+									"query": [
+										{
+											"key": "province",
+											"value": "Kalimantan Timur"
+										},
+										{
+											"key": "commodity",
+											"value": "Coal"
+										},
+										{
+											"key": "expiring_soon",
+											"value": "true"
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "v2/news/",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{apikey}}"
+									}
+								],
+								"url": {
+									"raw": "{{environment}}/v2/news/?keyword=indonesia&commodity=Nickel",
+									"host": [
+										"{{environment}}"
+									],
+									"path": [
+										"v2",
+										"news",
+										""
+									],
+									"query": [
+										{
+											"key": "keyword",
+											"value": "indonesia"
+										},
+										{
+											"key": "commodity",
+											"value": "Nickel"
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "page_size",
+											"value": "20",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ticker",
+			"value": "BBCA"
+		},
+		{
+			"key": "index",
+			"value": "idxg30"
+		},
+		{
+			"key": "sub_sector",
+			"value": "alternative-energy"
+		},
+		{
+			"key": "sub_industry",
+			"value": "advertising"
+		},
+		{
+			"key": "sections",
+			"value": "dividend"
+		},
+		{
+			"key": "report_date",
+			"value": "2024-03-31"
+		},
+		{
+			"key": "sector",
+			"value": "banks"
+		},
+		{
+			"key": "index_code",
+			"value": "idx30"
+		},
+		{
+			"key": "environment",
+			"value": "https://api.sectors.app"
+		},
+		{
+			"key": "apikey",
+			"value": ""
+		},
+		{
+			"key": "company_id",
+			"value": "1"
+		},
+		{
+			"key": "mineral_ticker",
+			"value": "ITMG.JK"
+		},
+		{
+			"key": "commodity_name",
+			"value": "Coal"
+		},
+		{
+			"key": "environment",
+			"value": "",
+			"disabled": true
+		}
+	]
+}
