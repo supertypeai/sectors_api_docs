@@ -1,0 +1,107 @@
+---
+title: "Mineral Company Financials"
+api: "GET /v2/mineral-companies/{ticker}/financials/"
+description: "Retrieves financial records for a company by its IDX ticker, allowing for comparison across multiple years."
+---
+
+<ResponseExample>
+```json 200
+[
+    {
+        "company_id": 39,
+        "idx_ticker": "ITMG.JK",
+        "name": "PT Indo Tambang Megah",
+        "year": 2024,
+        "assets": 2406.54,
+        "revenue": 2304.5,
+        "revenue_breakdown": "{\"Coal\": 2288.76, \"Services\": 5.29}",
+        "cost_of_revenue": 1605.69,
+        "cost_of_revenue_breakdown": "{\"Royalty\": 260.19, ...}",
+        "net_profit": 375.6
+    },
+    {
+        "company_id": 39,
+        "idx_ticker": "ITMG.JK",
+        "name": "PT Indo Tambang Megah",
+        "year": 2023,
+        "assets": 2187.85,
+        "revenue": 2374.32,
+        "revenue_breakdown": "{\"Coal\": 2368.32, \"Services\": 6.0}",
+        "cost_of_revenue": 1631.77,
+        "cost_of_revenue_breakdown": "{\"Royalty\": 332.11, ...}",
+        "net_profit": 499.62
+    }
+]
+```
+
+```json 400
+{
+  "error": "Invalid years parameter. Please provide a comma-separated list of integers."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="ticker" type="string" required>
+  The IDX ticker symbol of the company (e.g., `ITMG.JK` or `ITMG`).
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="years" type="string">
+  A comma-separated list of years to retrieve financial data for (e.g.,
+  `2024,2023`). If omitted, data for all available years will be returned.
+</ParamField>
+
+### Response
+
+<ResponseField name="[]" type="FinancialRecord">
+  <Expandable title="Financial Record properties">
+    <ResponseField name="company_id" type="integer">
+      Unique identifier of the company.
+    </ResponseField>
+    <ResponseField name="idx_ticker" type="string">
+      The company's IDX ticker.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      The name of the company.
+    </ResponseField>
+    <ResponseField name="year" type="integer">
+      The year of the financial record.
+    </ResponseField>
+    <ResponseField name="assets" type="number">
+      Total assets for the year.
+    </ResponseField>
+    <ResponseField name="revenue" type="number">
+      Total revenue for the year.
+    </ResponseField>
+    <ResponseField name="revenue_breakdown" type="string (JSON Object)">
+      JSON string detailing the sources of revenue.
+    </ResponseField>
+    <ResponseField name="cost_of_revenue" type="number">
+      Total cost of revenue for the year.
+    </ResponseField>
+    <ResponseField name="cost_of_revenue_breakdown" type="string (JSON Object)">
+      JSON string detailing the components of the cost of revenue.
+    </ResponseField>
+    <ResponseField name="net_profit" type="number">
+      Net profit for the year.
+    </ResponseField>
+  </Expandable>
+</ResponseField>

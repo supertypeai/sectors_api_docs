@@ -1,0 +1,84 @@
+---
+title: "List Mineral Companies"
+api: "GET /v2/mineral-companies/"
+description: "Searches for mineral companies. Provides powerful search across name, ticker, and key operations, and allows filtering by commodity."
+---
+
+<ResponseExample>
+```json 200
+[
+    {
+        "id": 1,
+        "name": "PT Adaro Andalan Indonesia Tbk",
+        "idx_ticker": "AADI.JK",
+        "company_type": "Holding",
+        "key_operation": "Coal Trading"
+    },
+    {
+        "id": 3,
+        "name": "PT Adaro Minerals Indonesia Tbk",
+        "idx_ticker": "ADMR.JK",
+        "company_type": "Holding",
+        "key_operation": "Mining"
+    }
+]
+```
+
+```json 400
+{
+  "error": "Invalid pagination or limit parameters. Please provide positive integers."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="keyword" type="string">
+  A search query that matches against the company name, IDX ticker, or key
+  operations.
+</ParamField>
+<ParamField query="commodity" type="string">
+  Filter companies by a specific commodity (e.g., `Coal`, `Nickel`, `Gold`).
+</ParamField>
+<ParamField query="limit" type="integer" default="20">
+  Number of results to return. Maximum value is 30.
+</ParamField>
+
+### Response
+
+<ResponseField name="[]" type="Company">
+  <Expandable title="Company properties">
+    <ResponseField name="id" type="integer">
+      Unique identifier for the company.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      The full name of the company.
+    </ResponseField>
+    <ResponseField name="idx_ticker" type="string | null">
+      The company's ticker symbol on the Indonesia Stock Exchange. Can be
+      `null`.
+    </ResponseField>
+    <ResponseField name="company_type" type="string">
+      The legal or functional type of the company (e.g., "Holding", "Mine
+      Owner").
+    </ResponseField>
+    <ResponseField name="key_operation" type="string">
+      A brief description of the company's primary operations.
+    </ResponseField>
+  </Expandable>
+</ResponseField>

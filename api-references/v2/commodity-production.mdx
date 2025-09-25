@@ -1,0 +1,71 @@
+---
+title: "Total Commodity Production"
+api: "GET /v2/production/total/"
+description: "Shows the total annual production for a specified commodity, including the year-over-year percentage change."
+---
+
+<ResponseExample>
+```json 200
+[
+    {
+        "year": 2023,
+        "production_volume": 137.8,
+        "prev_year_volume": 98.19,
+        "yoy_change_percent": 40.34
+    },
+    {
+        "year": 2022,
+        "production_volume": 98.19,
+        "prev_year_volume": 65.51,
+        "yoy_change_percent": 49.89
+    }
+]
+```
+
+````json 400
+{
+  "error": "Query parameter 'commodity_type' is required."
+}```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded."
+}
+````
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="commodity_type" type="string" required>
+  The commodity to analyze (e.g., `Nickel`).
+</ParamField>
+
+### Response
+
+<ResponseField name="[]" type="ProductionTotal">
+  <Expandable title="Production Total properties">
+    <ResponseField name="year" type="integer">
+      The year of the production data.
+    </ResponseField>
+    <ResponseField name="production_volume" type="number">
+      The total production volume for that year.
+    </ResponseField>
+    <ResponseField name="prev_year_volume" type="number">
+      The total production volume from the previous year, used for calculating
+      growth.
+    </ResponseField>
+    <ResponseField name="yoy_change_percent" type="number | null">
+      The calculated year-over-year percentage change in production. `null` if
+      previous year data is unavailable.
+    </ResponseField>
+  </Expandable>
+</ResponseField>

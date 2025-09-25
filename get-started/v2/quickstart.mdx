@@ -25,14 +25,14 @@ icon: "bolt"
   </Step>
   <Step title="📊 Retrieve Data from the API">
     Use one of the documented API endpoints along with your Sectors Financial API Key to access data from Sectors. 
-    Explore the [API References](../api-references/helper-list/subsectors) to discover the available endpoints and sample responses.
+    Explore the [API References](../../api-references/v2/companies) to discover the available endpoints and sample responses.
 
     <CodeGroup>
     ```python Python
     import requests
 
     # Replace the URL with a URL from the API References
-    url = "https://api.sectors.app/v1/.../"
+    url = "https://api.sectors.app/v2/.../"
     api_key = "API key acquired from the previous step"
     headers = {"Authorization": api_key}
 
@@ -46,7 +46,7 @@ icon: "bolt"
 
     ```js JavaScript
     // Replace the URL with a URL from the API References
-    const url = "https://api.sectors.app/v1/.../"
+    const url = "https://api.sectors.app/v2/.../"
     const api_key = "API key acquired from the previous step"
     const options = {method: 'GET', headers: {Authorization: api_key}};
 
@@ -61,7 +61,7 @@ icon: "bolt"
     library(jsonlite)
 
     # Replace the URL with a URL from the API References
-    url <- "https://api.sectors.app/v1/.../"
+    url <- "https://api.sectors.app/v2/.../"
     api_key <- "API key acquired from the previous step"
     headers <- c(Authorization = api_key)
 

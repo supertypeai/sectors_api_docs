@@ -36,15 +36,17 @@
       "url": "mailto:sectors@supertype.ai"
     }
   ],
-  "versions": ["v1"],
+  "versions": ["v1", "v2"],
   "anchors": [
     {
       "name": "Recipes",
+      "version": "v1",
       "icon": "lightbulb",
       "url": "recipes"
     },
     {
       "name": "Generative AI Series",
+      "version": "v1",
       "icon": "microchip-ai",
       "url": "recipes/generative-ai-python"
     },
@@ -57,6 +59,7 @@
   "navigation": [
     {
       "group": "Get Started",
+      "version": "v1",
       "pages": [
         "get-started/overview",
         "get-started/quickstart",
@@ -64,7 +67,17 @@
       ]
     },
     {
+      "group": "Get Started",
+      "version": "v2",
+      "pages": [
+        "get-started/v2/overview",
+        "get-started/v2/quickstart",
+        "get-started/v2/changelog"
+      ]
+    },
+    {
       "group": "API References",
+      "version": "v1",
       "pages": [
         {
           "group": "Indonesia",
@@ -94,7 +107,7 @@
               "pages": [
                 "api-references/news/news",
                 "api-references/news/filings"
-              ]  
+              ]
             },
             {
               "group": "Detailed Reports",
@@ -143,6 +156,41 @@
             "api-references/malaysia/klse-companies-by-sector",
             "api-references/malaysia/klse-company-report",
             "api-references/malaysia/klse-top-companies"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "API References",
+      "version": "v2",
+      "pages": [
+        {
+          "group": "Indonesia",
+          "pages": [
+            {
+              "group": "IDX Company Report",
+              "icon": "bolt",
+              "pages": [
+                "api-references/v2/companies"
+              ]
+            },
+            {
+              "group": "Mineral Company Insider",
+              "icon": "gem",
+              "pages": [
+                "api-references/v2/mineral-companies",
+                "api-references/v2/mineral-companies-detail",
+                "api-references/v2/mineral-companies-performance",
+                "api-references/v2/mineral-companies-financials",
+                "api-references/v2/mining-sites",
+                "api-references/v2/mining-licenses",
+                "api-references/v2/commodity-production",
+                "api-references/v2/commodity-resources-reserves",
+                "api-references/v2/commodity-price",
+                "api-references/v2/export-destination",
+                "api-references/v2/mining-news"
+              ]
+            }
           ]
         }
       ]
@@ -233,7 +281,7 @@
     "linkedin": "https://www.linkedin.com/showcase/sectorsapp/"
   },
   "api": {
-    "baseUrl": "https://api.sectors.app/v1"
+    "baseUrl": "https://api.sectors.app"
   },
   "analytics": {
     "ga4": {

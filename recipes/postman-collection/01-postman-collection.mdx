@@ -38,62 +38,65 @@ If you're new to Postman, check out their official [documentation](https://learn
 To start using our API, follow these steps to import the **Sectors Financial API Postman Collection**:
 
 1. **Download the Postman Collection**:
-   - Click here [Postman Collection](https://github.com/supertypeai/sectors_api_docs/blob/feat/postman_collection/recipes/postman-collection/json/Supertype_API_02-2025_v1.1.postman_collection.json) and download the latest version of the Postman collection file.
+
+   - Click here [Postman Collection](https://github.com/supertypeai/sectors_api_docs/blob/feat/postman_collection/recipes/postman-collection/json/Supertype_API_09-2025_v1.0.postman_collection.json) and download the latest version of the Postman collection file.
 
 2. **Open Postman**:
+
    - Launch the Postman application on your computer.
 
 3. **Import the Collection**:
    - Click on the **Import** button in the top-left corner of the Postman interface.
-   - Select the downloaded `Supertype_API_02-2025_v1.1.postman_collection.json` file and click **Open**.
+   - Select the downloaded `Supertype_API_09-2025_v1.0.postman_collection.json` file and click **Open**.
    - The collection will now appear in your Postman workspace under the **Collections** tab.
 
 ---
 
 ## API Endpoints
 
-Our API provides several endpoints to fetch different types of financial data. Here is the full  [API Reference](https://docs.sectors.app/api-references) for you to check the details
+Our API provides several endpoints to fetch different types of financial data. Here is the full [API Reference](https://docs.sectors.app/api-references) for you to check the details
 
 ## Collection Structure
 
 The collection is organized into folders, each representing a specific functionality or endpoint group. Each folder contains one or more requests.
 
 ### Folder Structure:
+
 - **Helper List**
-    - `GET Subsectors`
-    - `GET Subindustries`
-    - `GET Industries`
-    - `GET Companies by Index`
-    - `GET Companies by Subsector`
-    - `GET Companies by Subindustry`
-    - `GET Companies with Revenue and Cost Segments`
-    - `GET Quarterly Financial Dates of a Company`
+  - `GET Subsectors`
+  - `GET Subindustries`
+  - `GET Industries`
+  - `GET Companies by Index`
+  - `GET Companies by Subsector`
+  - `GET Companies by Subindustry`
+  - `GET Companies with Revenue and Cost Segments`
+  - `GET Quarterly Financial Dates of a Company`
 - **Since IPO Performance**
-    - `GET Company's Performance since IPO`
+  - `GET Company's Performance since IPO`
 - **Detailed Reports**
-    - `GET Company Report`
-    - `GET Company Revenue and Cost Segments`
-    - `GET Company Quarterly Financials`
-    - `GET Subsector Aggregated Statistics`
+  - `GET Company Report`
+  - `GET Company Revenue and Cost Segments`
+  - `GET Company Quarterly Financials`
+  - `GET Subsector Aggregated Statistics`
 - **Company Ranking by Dimensions**
-    - `GET Most Traded Stocks by Volume`
-    - `GET Top Companies Ranked`
-    - `GET Top Company Movers`
-    - `GET Top Companies by Growth Metrics`
+  - `GET Most Traded Stocks by Volume`
+  - `GET Top Companies Ranked`
+  - `GET Top Company Movers`
+  - `GET Top Companies by Growth Metrics`
 - **Historical Market Cap and Transaction Data**
-    - `GET IDX Historical Market Cap Data`
-    - `GET Daily Transaction Data`
-    - `GET Index Daily Transaction Data`
+  - `GET IDX Historical Market Cap Data`
+  - `GET Daily Transaction Data`
+  - `GET Index Daily Transaction Data`
 - **Singapore Stock Exchange (SGX)**
-    - `GET SGX Sectors`
-    - `GET SGX Companies by Sector`
-    - `GET SGX Company Report`
-    - `GET SGX Top Companies Ranked`
+  - `GET SGX Sectors`
+  - `GET SGX Companies by Sector`
+  - `GET SGX Company Report`
+  - `GET SGX Top Companies Ranked`
 - **Malaysia Stock Exchange (KLSE)**
-    - `GET KLSE Sectors`
-    - `GET KLSE Companies by Sector`
-    - `GET KLSE Company Report`
-    - `GET KLSE Top Companies Ranked`
+  - `GET KLSE Sectors`
+  - `GET KLSE Companies by Sector`
+  - `GET KLSE Company Report`
+  - `GET KLSE Top Companies Ranked`
 
 Each request is pre-configured with the necessary parameters and variables.
 
@@ -102,6 +105,7 @@ Each request is pre-configured with the necessary parameters and variables.
 The collection uses variables to make it reusable and customizable. There are two types of variables:
 
 1. **Collection Variables**: These are shared across all requests in the collection. Examples include:
+
    - `{{environment}}`: The base URL for the API (default data: https://api.sectors.app).
    - `{{apikey}}`: Your API key (replace this with your own key).
    - `{{ticker}}`: The stock ticker symbol (e.g., `AAPL`).

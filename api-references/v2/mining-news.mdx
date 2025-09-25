@@ -1,0 +1,99 @@
+---
+title: "List Mining News"
+api: "GET /v2/news/"
+description: "Searches and lists mining-related news articles, with support for full pagination and filtering by keyword or commodity."
+---
+
+<ResponseExample>
+```json 200
+{
+    "count": 68,
+    "next": "https://api.example.com/v2/news/?page=2&page_size=20",
+    "previous": null,
+    "results": [
+        {
+            "id": 237,
+            "title": "Indonesia Nickel HPM Climbs to $15,000.33/dmt in September 2025",
+            "source": "https://nikel.co.id/2025/09/15/harga-patokan-nikel-naik-jadi-us-15-00033-per-dmt-pada-september-periode-ii/",
+            "timestamp": "2025-09-15 13:34:33"
+        },
+        {
+            "id": 232,
+            "title": "Indonesia cites lack of forestry permits in land seizures from nickel miners",
+            "source": "https://www.mining.com/web/indonesia-cites-lack-of-forestry-permits-in-land-seizures-from-nickel-miners/",
+            "timestamp": "2025-09-12 00:00:00"
+        }
+    ]
+}
+```
+
+```json 400
+{
+  "error": "Invalid pagination or limit parameters. Please provide positive integers."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="keyword" type="string">
+  Performs a full-text search on the titles of news articles.
+</ParamField>
+<ParamField query="commodity" type="string">
+  Filters news articles that are related to a specific commodity.
+</ParamField>
+<ParamField query="page" type="integer" default="1">
+  The page number for paginated results.
+</ParamField>
+<ParamField query="page_size" type="integer" default="20">
+  The number of items to return per page. Maximum value is 30.
+</ParamField>
+
+### Response
+
+<ResponseField name="<PaginatedNewsResponse>" type="object">
+  <Expandable title="Paginated Response properties">
+    <ResponseField name="count" type="integer">
+      The total number of news articles matching the query.
+    </ResponseField>
+    <ResponseField name="next" type="string | null">
+      The URL for the next page of results, or `null` if this is the last page.
+    </ResponseField>
+    <ResponseField name="previous" type="string | null">
+      The URL for the previous page of results, or `null` if this is the first
+      page.
+    </ResponseField>
+    <ResponseField name="results" type="NewsArticle[]">
+      An array of news article objects for the current page.
+      <Expandable title="News Article properties">
+        <ResponseField name="id" type="integer">
+          Unique identifier for the news article.
+        </ResponseField>
+        <ResponseField name="title" type="string">
+          The headline of the news article.
+        </ResponseField>
+        <ResponseField name="source" type="string">
+          The original source of the news.
+        </ResponseField>
+        <ResponseField name="timestamp" type="string">
+          The publication timestamp of the article.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>

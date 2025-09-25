@@ -1,0 +1,80 @@
+---
+title: "Commodity Price History"
+api: "GET /v2/commodities/{commodity_name}/price/"
+description: "Retrieves historical price data for a commodity within a specified date range. The maximum allowed date range is 1 year (365 days)."
+---
+
+<ResponseExample>
+```json 200
+{
+    "commodity_name": "Coal",
+    "price_history": [
+        {
+            "2023-01-01": "305.21"
+        },
+        {
+            "2023-02-01": "277.05"
+        }
+    ]
+}
+```
+
+```json 400
+{
+  "error": "Date range cannot exceed 365 days."
+}
+{
+  "error": "Invalid date format. Use YYYY-MM-DD."
+}
+```
+
+```json 404
+{
+  "error": "Price data not found for this commodity."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="commodity_name" type="string" required>
+  The name of the commodity to retrieve price data for (e.g., `Coal`).
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="start" type="string">
+  The start date for the price history in `YYYY-MM-DD` format.
+</ParamField>
+<ParamField query="end" type="string">
+  The end date for the price history in `YYYY-MM-DD` format.
+</ParamField>
+
+### Response
+
+<ResponseField name="<CommodityPrice>" type="object">
+  <Expandable title="Commodity Price properties">
+    <ResponseField name="commodity_name" type="string">
+      The name of the commodity.
+    </ResponseField>
+    <ResponseField name="price_history" type="array">
+      An array of objects, where each object is a key-value pair of a date
+      (`YYYY-MM-DD`) and its corresponding price.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
