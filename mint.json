@@ -40,11 +40,13 @@
   "anchors": [
     {
       "name": "Recipes",
+      "version": "v1",
       "icon": "lightbulb",
       "url": "recipes"
     },
     {
       "name": "Generative AI Series",
+      "version": "v1",
       "icon": "microchip-ai",
       "url": "recipes/generative-ai-python"
     },
@@ -57,10 +59,20 @@
   "navigation": [
     {
       "group": "Get Started",
+      "version": "v1",
       "pages": [
         "get-started/overview",
         "get-started/quickstart",
         "get-started/changelog"
+      ]
+    },
+    {
+      "group": "Get Started",
+      "version": "v2",
+      "pages": [
+        "get-started/v2/overview",
+        "get-started/v2/quickstart",
+        "get-started/v2/changelog"
       ]
     },
     {
