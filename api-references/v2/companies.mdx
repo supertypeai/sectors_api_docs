@@ -31,7 +31,7 @@ description: "High-performance API for filtering and sorting companies with a SQ
         "natural_query": "top 2 banks by market cap in 2024",
         "translated_params": {
             "where": "sub_sector = 'banks'",
-            "order_by": "market_cap[2024]",
+            "order_by": "market_cap",
             "desc": true,
             "limit": 2,
             "offset": 0
@@ -51,7 +51,7 @@ description: "High-performance API for filtering and sorting companies with a SQ
 // --- 'where' Clause Errors ---
 {
     "error": "INVALID_WHERE_CLAUSE",
-    "message": "Invalid field name 'revenue_in_2024'. Use bracket notation instead: 'revenue[2024]'"
+    "message": "Invalid field name 'revenue_in_2024'. Use bracket notation instead: 'revenue'"
 }
 {
     "error": "INVALID_WHERE_CLAUSE",
@@ -150,9 +150,221 @@ description: "High-performance API for filtering and sorting companies with a SQ
       revenue[2023] * 1.2`.
     </Accordion>
     <Accordion title="Available Fields">
-      Refer to the extensive list of over 150 queryable fields in our data
-      dictionary, covering everything from financial statements and valuation
-      ratios to executive shareholdings and price history.
+      Here is the exhaustive list of all queryable fields.
+      <AccordionGroup>
+        <Accordion title="Direct Fields (Top-level columns)">
+          **How to Use**: Query these fields directly using standard operators (`=`, `!=`, `>`, `<`, `LIKE`, `IN`). For string fields, `LIKE` and `=` are case-insensitive.
+          <Accordion title="Examples">
+            - `where=market_cap > 500000000000000`
+            - `where=company_name like '%energi%'`
+            - `where=sector = 'Financials' and listing_date > '2005-01-01'`
+          </Accordion>
+          - **symbol**: The unique stock ticker symbol (e.g., `BBCA.JK`).
+          - **company_name**: The full legal name of the company.
+          - **listing_board**: The stock exchange board where the company is listed (e.g., `Main`).
+          - **industry**: The company's primary industry (e.g., `Banks`).
+          - **sub_industry**: A more specific industry classification.
+          - **sector**: The broader economic sector (e.g., `Financials`).
+          - **sub_sector**: A more specific sector classification.
+          - **market_cap**: The total market value of the company's outstanding shares.
+          - **market_cap_rank**: The company's rank by market capitalization.
+          - **employee_num**: The total number of employees.
+          - **employee_num_rank**: The company's rank by number of employees.
+          - **listing_date**: The date the company was first listed (`YYYY-MM-DD`).
+          - **last_ex_dividend_date**: The most recent ex-dividend date (`YYYY-MM-DD`).
+          - **last_close_price**: The last closing price of the stock.
+          - **daily_close_change**: The percentage change in the stock's closing price from the previous day.
+          - **forward_pe**: The forward Price-to-Earnings ratio based on future earnings estimates.
+          - **eps**: Earnings Per Share from the most recent period.
+          - **intrinsic_value**: An estimate of the stock's "true" value based on financial modeling.
+          - **esg_score**: A score representing the company's Environmental, Social, and Governance performance.
+          - **yield_ttm**: The dividend yield over the Trailing Twelve Months.
+          - **dividend_ttm**: The total dividend per share paid over the Trailing Twelve Months.
+          - **payout_ratio**: The percentage of earnings paid out to shareholders as dividends.
+          - **cash_payout_ratio**: The ratio of cash paid out as dividends to the company's cash flow.
+          - **yoy_quarter_earnings_growth**: The year-over-year growth of the company's quarterly earnings.
+          - **yoy_quarter_revenue_growth**: The year-over-year growth of the company's quarterly revenue.
+        </Accordion>
+        <Accordion title="Array Fields">
+          **How to Use**: Query these fields using the `in` operator to check if any of the provided values exist in the array.
+          <Accordion title="Examples">
+            - `where=indices in ['LQ45', 'IDX30']`
+            - `where=tags in ['52-w-high', 'public-float-under-25']`
+          </Accordion>
+          - **tags**: A list of tags or labels associated with the stock (e.g., `insider-1-month-buy`).
+          - **indices**: A list of stock market indices the company is a component of (e.g., `KOMPAS100`).
+        </Accordion>
+        <Accordion title="JSON Object Fields (Most Recent Data)">
+          **How to Use**: Query these fields as if they were direct fields. The parser automatically handles extracting the value from the underlying JSON data.
+          <Accordion title="Examples">
+            - `where=pe_ttm < 15 and roe_ttm > 0.1`
+            - `where=last_close_price < all_time_high_price`
+            - `where=ytd_low_date > '2025-03-01'`
+          </Accordion>
+          - **pe_ttm**: Price-to-Earnings ratio (Trailing Twelve Months).
+          - **pb_mrq**: Price-to-Book ratio (Most Recent Quarter).
+          - **ps_ttm**: Price-to-Sales ratio (Trailing Twelve Months).
+          - **dar_mrq**: Debt-to-Asset ratio (Most Recent Quarter).
+          - **der_mrq**: Debt-to-Equity ratio (Most Recent Quarter).
+          - **roa_ttm**: Return on Assets (Trailing Twelve Months).
+          - **roe_ttm**: Return on Equity (Trailing Twelve Months).
+          - **total_assets_ttm**: Total assets (Trailing Twelve Months).
+          - **total_equity_ttm**: Total equity (Trailing Twelve Months).
+          - **total_revenue_ttm**: Total revenue (Trailing Twelve Months).
+          - **net_income_ttm**: Net income (Trailing Twelve Months).
+          - **total_liabilities_ttm**: Total liabilities (Trailing Twelve Months).
+          - **yearly_mcap_change**: The percentage change in market cap over the last year.
+          - **dividend_yield_5y_avg**: The average dividend yield over the last 5 years.
+          - **ytd_low_price**: Year-to-date low price.
+          - **ytd_low_date**: Date of year-to-date low price.
+          - **ytd_high_price**: Year-to-date high price.
+          - **ytd_high_date**: Date of year-to-date high price.
+          - **52_w_low_price**: 52-week low price.
+          - **52_w_low_date**: Date of 52-week low price.
+          - **52_w_high_price**: 52-week high price.
+          - **52_w_high_date**: Date of 52-week high price.
+          - **90_d_low_price**: 90-day low price.
+          - **90_d_low_date**: Date of 90-day low price.
+          - **90_d_high_price**: 90-day high price.
+          - **90_d_high_date**: Date of 90-day high price.
+          - **all_time_low_price**: All-time low price.
+          - **all_time_low_date**: Date of all-time low price.
+          - **all_time_high_price**: All-time high price.
+          - **all_time_high_date**: Date of all-time high price.
+        </Accordion>
+        <Accordion title="Yearly JSON Fields (Historical & Forecast Data)">
+          **How to Use**: You **must** use bracket notation `field[YYYY]` to access data for a specific year. These fields support all numeric operators, field-to-field comparisons, and arithmetic expressions.
+          <Accordion title="Examples">
+            - `where=revenue[2023] > earnings[2023] * 5`
+            - `where=roe[2023] > 0.15 and roe[2022] > 0.15`
+            - `where=pe[2024] < pe_peer_avg[2024]`
+          </Accordion>
+          - **annual_dividend_total[YYYY]**: Total dividend for the specified year.
+          - **annual_dividend_yield[YYYY]**: Dividend yield for the specified year.
+          - **total_dividend[YYYY]**: Alias for `annual_dividend_total`.
+          - **total_yield[YYYY]**: Alias for `annual_dividend_yield`.
+          - **allowance_for_loans[YYYY]**: Allowance for loan losses.
+          - **capital_expenditure[YYYY]**: Capital expenditure.
+          - **cash_and_equivalents[YYYY]**: Cash and equivalents.
+          - **cash_inflow[YYYY]**: Total cash inflow.
+          - **cash_only[YYYY]**: Cash balance.
+          - **cash_outflow[YYYY]**: Total cash outflow.
+          - **core_capital_tier1[YYYY]**: Tier 1 core capital (for banks).
+          - **cost_of_revenue[YYYY]**: Cost of revenue.
+          - **credit_rwa[YYYY]**: Credit risk-weighted assets.
+          - **current_account[YYYY]**: Current account balance.
+          - **current_assets[YYYY]**: Total current assets.
+          - **current_liabilities[YYYY]**: Total current liabilities.
+          - **earnings[YYYY]**: Net income or earnings.
+          - **earnings_before_tax[YYYY]**: Earnings before tax (EBT).
+          - **ebit[YYYY]**: Earnings Before Interest and Taxes.
+          - **ebitda[YYYY]**: Earnings Before Interest, Taxes, Depreciation, and Amortization.
+          - **end_cash_position[YYYY]**: Cash position at the end of the period.
+          - **financing_cash_flow[YYYY]**: Cash flow from financing activities.
+          - **fixed_assets[YYYY]**: Total fixed assets.
+          - **free_cash_flow[YYYY]**: Free cash flow.
+          - **gross_loan[YYYY]**: Total gross loans.
+          - **gross_profit[YYYY]**: Gross profit.
+          - **high_quality_liquid_asset[YYYY]**: High-quality liquid assets.
+          - **interest_expense[YYYY]**: Interest expense.
+          - **interest_expense_non_operating[YYYY]**: Non-operating interest expense.
+          - **interest_income[YYYY]**: Interest income.
+          - **inventories[YYYY]**: Value of inventories.
+          - **investing_cash_flow[YYYY]**: Cash flow from investing activities.
+          - **market_rwa[YYYY]**: Market risk-weighted assets.
+          - **net_cash_flow[YYYY]**: Net change in cash.
+          - **net_interest_income[YYYY]**: Net interest income.
+          - **net_loan[YYYY]**: Total net loans.
+          - **net_premium_income[YYYY]**: Net premium income (for insurance).
+          - **non_current_liabilities[YYYY]**: Total non-current liabilities.
+          - **non_interest_bearing_liabilities[YYYY]**: Non-interest bearing liabilities.
+          - **non_interest_income[YYYY]**: Non-interest income.
+          - **non_loan_assets[YYYY]**: Assets other than loans.
+          - **non_loan_earning_assets[YYYY]**: Earning assets other than loans.
+          - **non_loan_non_earning_assets[YYYY]**: Non-earning assets other than loans.
+          - **non_operating_income_or_loss[YYYY]**: Non-operating income or loss.
+          - **operating_cash_flow[YYYY]**: Cash flow from operating activities.
+          - **operating_expense[YYYY]**: Operating expenses.
+          - **operating_pnl[YYYY]**: Operating profit and loss.
+          - **operational_rwa[YYYY]**: Operational risk-weighted assets.
+          - **other_interest_bearing_liabilities[YYYY]**: Other interest-bearing liabilities.
+          - **outstanding_shares[YYYY]**: Number of outstanding shares.
+          - **prepaid_assets[YYYY]**: Prepaid assets.
+          - **premium_expense[YYYY]**: Premium expense (for insurance).
+          - **premium_income[YYYY]**: Premium income (for insurance).
+          - **provision[YYYY]**: Provision for losses.
+          - **realized_capital_goods_investment[YYYY]**: Realized investment in capital goods.
+          - **retained_earnings[YYYY]**: Retained earnings.
+          - **revenue[YYYY]**: Total revenue.
+          - **savings_account[YYYY]**: Savings account balance.
+          - **supplementary_capital_tier2[YYYY]**: Tier 2 supplementary capital (for banks).
+          - **tax[YYYY]**: Income tax expense.
+          - **time_deposit[YYYY]**: Time deposit balance.
+          - **total_assets[YYYY]**: Total assets.
+          - **total_capital[YYYY]**: Total capital.
+          - **total_cash_and_due_from_banks[YYYY]**: Total cash and due from banks.
+          - **total_debt[YYYY]**: Total debt.
+          - **total_deposit[YYYY]**: Total deposits.
+          - **total_equity[YYYY]**: Total equity.
+          - **total_liabilities[YYYY]**: Total liabilities.
+          - **total_risk_weighted_asset[YYYY]**: Total risk-weighted assets.
+          - **special_mention_loan[YYYY]**: Special mention loans.
+          - **non_performing_loan[YYYY]**: Non-performing loans (NPL).
+          - **restructured_loan_current[YYYY]**: Restructured but current loans.
+          - **forecast_eps_growth[YYYY]**: Forecasted EPS growth for a future year.
+          - **forecast_revenue_growth[YYYY]**: Forecasted revenue growth for a future year.
+          - **forecast_eps_estimate[YYYY]**: Forecasted EPS value for a future year.
+          - **forecast_revenue_estimate[YYYY]**: Forecasted revenue value for a future year.
+          - **pe[YYYY]**: Price-to-Earnings ratio.
+          - **pb[YYYY]**: Price-to-Book ratio.
+          - **ps[YYYY]**: Price-to-Sales ratio.
+          - **pcf[YYYY]**: Price-to-Cash Flow ratio.
+          - **peg[YYYY]**: Price/Earnings-to-Growth ratio.
+          - **enterprise_to_ebitda[YYYY]**: EV/EBITDA ratio.
+          - **enterprise_to_revenue[YYYY]**: EV/Revenue ratio.
+          - **pb_peer_avg[YYYY]**: Average peer Price-to-Book ratio.
+          - **pe_peer_avg[YYYY]**: Average peer Price-to-Earnings ratio.
+          - **ps_peer_avg[YYYY]**: Average peer Price-to-Sales ratio.
+          - **debt_to_asset_ratio[YYYY]**: Debt-to-Asset ratio.
+          - **debt_to_equity_ratio[YYYY]**: Debt-to-Equity ratio.
+          - **cash_flow_to_debt_ratio[YYYY]**: Cash Flow-to-Debt ratio.
+          - **interest_coverage_ratio[YYYY]**: Interest Coverage ratio.
+          - **current_ratio[YYYY]**: Current ratio.
+          - **operating_cash_flow_margin[YYYY]**: Operating Cash Flow margin.
+          - **fixed_asset_turnover[YYYY]**: Fixed Asset Turnover ratio.
+          - **total_asset_turnover[YYYY]**: Total Asset Turnover ratio.
+          - **roa[YYYY]**: Return on Assets.
+          - **roe[YYYY]**: Return on Equity.
+          - **net_profit_margin[YYYY]**: Net Profit Margin.
+          - **gross_profit_margin[YYYY]**: Gross Profit Margin.
+          - **operating_profit_margin[YYYY]**: Operating Profit Margin.
+          - **capital_adequacy_ratio[YYYY]**: Capital Adequacy Ratio (CAR).
+          - **casa_ratio[YYYY]**: Current Account Savings Account (CASA) ratio.
+          - **leverage_ratio[YYYY]**: Leverage ratio.
+          - **loan_to_deposit_ratio[YYYY]**: Loan-to-Deposit ratio (LDR).
+          - **liquidity_coverage_ratio[YYYY]**: Liquidity Coverage Ratio (LCR).
+          - **efficiency_ratio[YYYY]**: Efficiency ratio.
+          - **net_interest_margin[YYYY]**: Net Interest Margin (NIM).
+          - **cost_to_income_ratio[YYYY]**: Cost-to-Income ratio.
+        </Accordion>
+        <Accordion title="General JSON List Fields">
+          **How to Use**: The query checks if **any** object in the list matches the condition. Use `=` or `like` for string properties and numeric operators (`>`, `<`, etc.) for numeric properties.
+          <Accordion title="Examples">
+            - `where=major_shareholders_name like 'PT%' and major_shareholders_share_percentage > 0.1`
+            - `where=key_executives_name = 'Prajogo Pangestu'`
+            - `where=executives_shareholdings_share_percentage > 0.01`
+          </Accordion>
+          - **key_executives_name**: The name of a key executive.
+          - **key_executives_position**: The position of a key executive.
+          - **executives_shareholdings_name**: The name of an executive shareholder.
+          - **executives_shareholdings_share_amount**: The number of shares held by an executive.
+          - **executives_shareholdings_share_percentage**: The ownership percentage held by an executive.
+          - **major_shareholders_name**: The name of a major shareholder.
+          - **major_shareholders_share_value**: The value of shares held by a major shareholder.
+          - **major_shareholders_share_amount**: The number of shares held by a major shareholder.
+          - **major_shareholders_share_percentage**: The ownership percentage held by a major shareholder.
+        </Accordion>
+      </AccordionGroup>
     </Accordion>
   </AccordionGroup>
 </ParamField>
@@ -234,3 +446,4 @@ description: "High-performance API for filtering and sorting companies with a SQ
     </ResponseField>
   </Expandable>
 </ResponseField>
+````
