@@ -216,11 +216,11 @@ financially sensitive or requires a high degree of accuracy.
         top2[prompt examples] --- llm
     end
 
-    User -- 1. Writes prompt --> Orchestrator
-    Orchestrator -- 2. Queries knowledge store --> Retriever
-    Retriever -- 3. Retrieve information --> llm
+    User -- 1: Writes prompt --> Orchestrator
+    Orchestrator -- 2: Queries knowledge store --> Retriever
+    Retriever -- 3: Retrieve information --> llm
     Retriever --> db["Sectors Financial API"]
-    llm --->|4. Generate Response| User
+    llm --->|4: Generate Response| User
 ```
 
 As seen from the diagram above, the orchestrator is the central component that connects the user to the retriever and the LLM. The orchestrator is responsible for
