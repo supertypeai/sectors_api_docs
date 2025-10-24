@@ -1,0 +1,116 @@
+---
+title: "Get Sales Destination Data"
+api: "GET /v2/sales-destination/"
+description: "Retrieves and aggregates sales destination data for a specific company ticker. The data is structured by year, then by country, providing a comprehensive overview of a company's sales distribution over time and across different locations."
+---
+
+<ResponseExample>
+```json 200
+{
+    "2023": {
+        "Bangladesh": {
+            "revenue": null,
+            "percentage_of_total_revenue": 0.34,
+            "volume": 0.27,
+            "percentage_of_sales_volume": null
+        },
+        "China": {
+            "revenue": null,
+            "percentage_of_total_revenue": 26.72,
+            "volume": 20.966,
+            "percentage_of_sales_volume": 29.0
+        },
+        "India": {
+            "revenue": null,
+            "percentage_of_total_revenue": 14.13,
+            "volume": 11.088,
+            "percentage_of_sales_volume": 16.8
+        },
+        "Indonesia": {
+            "revenue": 587.0,
+            "percentage_of_total_revenue": 35.19,
+            "volume": 27.61,
+            "percentage_of_sales_volume": null
+        },
+        "Japan": {
+            "revenue": null,
+            "percentage_of_total_revenue": 7.16,
+            "volume": 5.619,
+            "percentage_of_sales_volume": 7.5
+        }
+    },
+    "2024": {
+        "China": {
+            "revenue": null,
+            "percentage_of_total_revenue": null,
+            "volume": 9.2,
+            "percentage_of_sales_volume": 38.0
+        },
+        "Indonesia": {
+            "revenue": null,
+            "percentage_of_total_revenue": null,
+            "volume": 5.6,
+            "percentage_of_sales_volume": 23.0
+        },
+        "Japan": {
+            "revenue": null,
+            "percentage_of_total_revenue": null,
+            "volume": 4.3,
+            "percentage_of_sales_volume": 18.0
+        }
+    }
+}
+```
+
+```json 400
+{
+  "error": "Query parameter 'ticker' is required."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="ticker" type="string" required>
+  The company's stock ticker (e.g., 'ITMG.JK').
+</ParamField>
+
+### Response
+
+<ResponseField name="[year]" type="object">
+  An object where each key is a year, containing sales data for that period.
+  <Expandable title="Year properties">
+    <ResponseField name="[country]" type="object">
+      An object where each key is a country name, detailing sales performance.
+      <Expandable title="Country properties">
+        <ResponseField name="revenue" type="number | null">
+          The total revenue from sales to this country.
+        </ResponseField>
+        <ResponseField name="percentage_of_total_revenue" type="number | null">
+          The percentage this country's revenue contributes to the total.
+        </ResponseField>
+        <ResponseField name="volume" type="number | null">
+          The total sales volume to this country.
+        </ResponseField>
+        <ResponseField name="percentage_of_sales_volume" type="number | null">
+          The percentage this country's volume contributes to the total.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>

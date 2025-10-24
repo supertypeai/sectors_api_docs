@@ -168,7 +168,7 @@
           "group": "Indonesia",
           "pages": [
             {
-              "group": "IDX Company Report",
+              "group": "Company Screener",
               "icon": "bolt",
               "pages": [
                 "api-references/v2/companies"
@@ -188,7 +188,10 @@
                 "api-references/v2/commodity-resources-reserves",
                 "api-references/v2/commodity-price",
                 "api-references/v2/export-destination",
-                "api-references/v2/mining-news"
+                "api-references/v2/mining-news",
+                "api-references/v2/global-commodity",
+                "api-references/v2/mining-license-auctions",
+                "api-references/v2/sales-destination"
               ]
             }
           ]
