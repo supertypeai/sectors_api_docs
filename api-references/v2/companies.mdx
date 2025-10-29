@@ -184,6 +184,7 @@ description: "High-performance API for filtering and sorting companies with a SQ
           - **cash_payout_ratio**: The ratio of cash paid out as dividends to the company's cash flow.
           - **yoy_quarter_earnings_growth**: The year-over-year growth of the company's quarterly earnings.
           - **yoy_quarter_revenue_growth**: The year-over-year growth of the company's quarterly revenue.
+          - **affiliates**: A comma-separated string of key affiliated individuals or entities (e.g., 'Barito, Prajogo Pangestu').
         </Accordion>
         <Accordion title="Array Fields">
           **How to Use**: Query these fields using the `in` operator to check if any of the provided values exist in the array.
@@ -346,6 +347,8 @@ description: "High-performance API for filtering and sorting companies with a SQ
           - **efficiency_ratio[YYYY]**: Efficiency ratio.
           - **net_interest_margin[YYYY]**: Net Interest Margin (NIM).
           - **cost_to_income_ratio[YYYY]**: Cost-to-Income ratio.
+          - **historical_eps_value[YYYY]**: The historical Earnings Per Share value for the specified year.
+          - **historical_eps_growth[YYYY]**: The year-over-year growth of the historical EPS for the specified year.
         </Accordion>
         <Accordion title="General JSON List Fields">
           **How to Use**: The query checks if **any** object in the list matches the condition. Use `=` or `like` for string properties and numeric operators (`>`, `<`, etc.) for numeric properties.
