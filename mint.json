@@ -36,8 +36,23 @@
       "url": "mailto:sectors@supertype.ai"
     }
   ],
-  "versions": ["v1", "v2"],
+  "versions": [
+    "v1",
+    "v2"
+  ],
   "anchors": [
+    {
+      "name": "Documentation",
+      "version": "v1",
+      "icon": "book-open",
+      "url": "/v1"
+    },
+    {
+      "name": "Documentation",
+      "version": "v2",
+      "icon": "book-open",
+      "url": "/v2"
+    },
     {
       "name": "Recipes",
       "version": "v1",
@@ -58,21 +73,17 @@
   ],
   "navigation": [
     {
-      "group": "Get Started",
+      "group": "",
       "version": "v1",
       "pages": [
-        "get-started/overview",
-        "get-started/quickstart",
-        "get-started/changelog"
+        "get-started/overview"
       ]
     },
     {
-      "group": "Get Started",
+      "group": "",
       "version": "v2",
       "pages": [
-        "get-started/v2/overview",
-        "get-started/v2/quickstart",
-        "get-started/v2/changelog"
+        "get-started/v2/overview"
       ]
     },
     {
@@ -99,7 +110,9 @@
             {
               "group": "Since IPO Performance",
               "icon": "chart-line",
-              "pages": ["api-references/ipo/listing-performance"]
+              "pages": [
+                "api-references/ipo/listing-performance"
+              ]
             },
             {
               "group": "Company News",
@@ -157,7 +170,8 @@
             "api-references/malaysia/klse-company-report",
             "api-references/malaysia/klse-top-companies"
           ]
-        }
+        },
+        "api-references/changelog"
       ]
     },
     {
@@ -214,7 +228,9 @@
     },
     {
       "group": "Sectors MCP",
-      "pages": ["recipes/sectors-mcp/00-sectors-mcp-guide"]
+      "pages": [
+        "recipes/sectors-mcp/00-sectors-mcp-guide"
+      ]
     },
     {
       "group": "Financial Analytics w/ Streamlit",
@@ -269,11 +285,15 @@
     },
     {
       "group": "Postman Collection",
-      "pages": ["recipes/postman-collection/01-postman-collection"]
+      "pages": [
+        "recipes/postman-collection/01-postman-collection"
+      ]
     },
     {
       "group": "API Security",
-      "pages": ["recipes/api-security/01-securing-api-usage"]
+      "pages": [
+        "recipes/api-security/01-securing-api-usage"
+      ]
     }
   ],
   "footerSocials": {
