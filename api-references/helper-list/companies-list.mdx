@@ -58,7 +58,7 @@ description: "List companies filtered by subsector or sub‑industry, with optio
 
 ### Query Parameters
 
-<ParamField query="sub_sector" type="string">
+<ParamField query="sub_sector" type="string" required>
   Filter by subsector (kebab‑case). Provide either this or `sub_industry`, not
   both. If both are present, `sub_industry` will override.
   <AccordionGroup>
@@ -126,6 +126,12 @@ description: "List companies filtered by subsector or sub‑industry, with optio
 
 ### Usage
 
-This list can be used for the following endpoint:
+This list can be used for the following endpoints:
 
 - [Company Report](../report/company)
+
+- [Quarterly Financial Dates of a Company](./company-quarterly-dates)
+
+- [Company's Performance since IPO](../ipo/listing-performance)
+
+- [Daily Transaction Data](../transaction/daily-transaction)
