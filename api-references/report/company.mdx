@@ -28,40 +28,41 @@ description: "Return report of a given ticker, organized into distinct sections"
         "daily_close_change": 0.0,
         "all_time_price": {
             "ytd_low": {
-                "date": "2025-04-09",
-                "price": 4170
+                "2025-04-09": 4170
             },
             "52_w_low": {
-                "date": "2025-04-09",
-                "price": 4170
+                "2025-04-09": 4170
             },
             "90_d_low": {
-                "date": "2025-08-05",
-                "price": 6775
+                "2025-10-27": 7800
             },
             "ytd_high": {
-                "date": "2025-01-08",
-                "price": 10650
+                "2025-11-10": 10725
             },
             "52_w_high": {
-                "date": "2025-01-08",
-                "price": 10650
+                "2025-11-10": 10725
             },
             "90_d_high": {
-                "date": "2025-10-07",
-                "price": 10350
+                "2025-11-10": 10725
             },
             "all_time_low": {
-                "date": "2023-10-09",
-                "price": 975
+                "2023-10-09": 975
             },
             "all_time_high": {
-                "date": "2024-05-17",
-                "price": 12200
+                "2024-05-17": 12200
             }
         },
         "esg_score": 37.7,
-        "affiliates": "Barito, Prajogo Pangestu"
+        "tags": [
+            "public-float-under-25",
+            "top-20-institution-buying",
+            "top-90d-transaction-value"
+        ],
+        "indices": null,
+        "affiliates": [
+            "Barito",
+            "Prajogo Pangestu"
+        ]
     },
     "valuation": {
         "last_close_price": 8900,
@@ -594,49 +595,35 @@ description: "Return report of a given ticker, organized into distinct sections"
         }
     },
     "dividend": {
-        "historical_dividends": [
-            {
-                "year": 2023,
+        "historical_dividends": {
+            "2023": {
                 "breakdown": [
-                    {
-                        "date": "2023-11-23",
-                        "total": 3.91,
-                        "yield": 0.000718134979251772
-                    }
+                {
+                    "date": "2023-11-23",
+                    "total": 3.91,
+                    "yield": 0.000718134979251772
+                }
                 ],
                 "total_yield": 0.000718134979251772,
                 "total_dividend": 3.91
             },
-            {
-                "year": 2024,
+            "2024": {
                 "breakdown": [
-                    {
-                        "date": "2024-12-12",
-                        "total": 3.78334,
-                        "yield": 0.000488271005451679
-                    },
-                    {
-                        "date": "2024-06-07",
-                        "total": 2.03362,
-                        "yield": 0.000262454996118322
-                    }
+                {
+                    "date": "2024-12-12",
+                    "total": 3.78334,
+                    "yield": 0.000488271005451679
+                },
+                {
+                    "date": "2024-06-07",
+                    "total": 2.03362,
+                    "yield": 0.000262454996118322
+                }
                 ],
                 "total_yield": 0.000750726001570001,
                 "total_dividend": 5.81696
             }
-        ],
-        "annual_yield": [
-            {
-                "year": 2024,
-                "total": 5.81696,
-                "yield": 0.000750726001570001
-            },
-            {
-                "year": 2023,
-                "total": 3.91,
-                "yield": 0.000718134979251772
-            }
-        ],
+        },
         "yield_ttm": 0.000425094379467911,
         "dividend_yield_avg": {
             "period": 1,

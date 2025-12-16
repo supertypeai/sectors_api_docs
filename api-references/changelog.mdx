@@ -2,6 +2,30 @@
 title: v1 Changelog
 sidebarTitle: Changelog
 ---
+
+## 2025-12-16
+
+- Modified [IDX company report endpoint](../api-references/report/company) response
+
+  - Added `historical_eps` parameter to the `financials` response section
+  - Added `tags`, `indices`, `affiliates` to the `overview` response section
+  - Optimized the structure of `all_time_price` in the the `overview` response section and `historical_dividends` in the `dividend` response section for better querying efficiency
+  - Removed `annual_yield` from the `dividend` response section in support of the new and more complete `historical_dividends`
+
+- Optimized the structure of the following payloads in the [IDX subsector report endpoint](../api-references/report/subsector)
+
+  - `weighted_avg_growth_data` and `growth_forecasts` parameters in the `growth` response section
+  - `historical_valuation` in the `valuation` response section
+  - `top_change_companies` and `top_companies` in the `companies` response section
+  
+  These optimizations include changing the structure from an array of JSONB into JSONB, for a better querying efficiency
+
+- Optimized the structure of the following payloads in the [SGX company report endpoint](../api-references/singapore/sgx-company-report) for better querying efficiency
+
+  - `all_time_price` in the `overview` response section
+  - `historical_financials` in the `financials` response section
+  - `historical_dividends` in the `dividend` response section
+
 ## 2025-09-25
 
 - Modified `financials` response section of the [SGX company report endpoint](../api-references/singapore/sgx-company-report)

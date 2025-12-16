@@ -57,86 +57,91 @@ description: "Return report of a given subsector, organized into distinct sectio
         "weighted_rsd_close": 0.0
     },
     "valuation": {
-        "historical_valuation": [
-            {
-                "pb": 0.0,
-                "pe": 0.0,
-                "ps": 0.0,
-                "pcf": 0.0,
-                "year": 2020
-            },
-            {
-                "pb": 0.0,
-                "pe": 0.00,
-                "ps": 0.0,
-                "pcf": 0.0,
-                "year": 2024,
-                "pb_rank": 0,
-                "pe_rank": 0,
-                "ps_rank": 0,
-                "pcf_rank": 0
-            }
-        ]
+      "historical_valuation": {
+        "2024": {
+          "pb": 0.809474232052149,
+          "pe": 16.1927341107751,
+          "ps": 3.43164746605984,
+          "pcf": 2.33091890859551
+        },
+        "2025": {
+          "pb": 0.89481242187137,
+          "pe": 17.7108426984592,
+          "ps": 4.46165431083563,
+          "pcf": 3.50113573650508,
+          "pb_rank": 4,
+          "pe_rank": 26,
+          "ps_rank": 27,
+          "pcf_rank": 5
+        }
+      }
     },
     "growth": {
-        "weighted_avg_growth_data": [
-            {
-                "year": 2018,
-                "avg_annual_earning_growth": null,
-                "avg_annual_revenue_growth": null
-            },
-            {
-                "year": 2023,
-                "avg_annual_earning_growth": 0,
-                "avg_annual_revenue_growth": 0
-            }
-        ],
-        "growth_forecasts": [
-            {
-                "base_year": 2023,
-                "eps_growth": 0,
-                "estimate_year": 2024,
-                "revenue_growth": 0
-            }
-        ]
+      "weighted_avg_growth_data":{
+        "2023": {
+          "avg_annual_earning_growth": 0.249491536388386,
+          "avg_annual_revenue_growth": 0.125238808523888
+        },
+        "2024": {
+          "avg_annual_earning_growth": 0.0794783658294118,
+          "avg_annual_revenue_growth": 0.399164988916492
+        }
+      },
+      "growth_forecasts": {
+        "2025": {
+          "base_year": 2024,
+          "eps_growth": 0.109029500331267,
+          "revenue_growth": 0.0914751056767585
+        },
+        "2026": {
+          "base_year": 2024,
+          "eps_growth": 0.257233241593758,
+          "revenue_growth": 0.187013023852801
+        },
+        ...
+      }
     },
     "companies": {
         "top_companies": {
-            "top_mcap": [
-                {
-                    "symbol": "BBCA.JK",
-                    "market_cap": 0
-                }
-            ],
-            "top_growth": [
-                {
-                    "symbol": "MAYA.JK",
-                    "revenue_growth": 0
-                }
-            ],
-            "top_profit": [
-                {
-                    "symbol": "BBRI.JK",
-                    "profit_ttm": 0
-                }
-            ],
-            "top_revenue": [
-                {
-                    "symbol": "BBRI.JK",
-                    "revenue_ttm": 0
-                }
-            ]
+          "top_mcap": {
+            "BBCA.JK": {
+              "name": "PT Bank Central Asia Tbk.",
+              "market_cap": 1012951085850000
+            },
+            ...
+          },
+          "top_growth": {
+            "ARTO.JK": {
+              "name": "PT Bank Jago Tbk.",
+              "revenue_growth": 0.633020099424198
+            },
+            ...
+          },
+          "top_profit": {
+            "BBCA.JK": {
+              "name": "PT Bank Central Asia Tbk.",
+              "profit_ttm": 57193839000000
+            },
+            ...
+          },
+          "top_revenue": {
+            "BBCA.JK": {
+              "name": "PT Bank Central Asia Tbk.",
+              "revenue_ttm": 113646656000000
+            },
+            ...
+          }
         },
-        "top_change_companies": [
-            {
-                "pe": 0,
-                "1yr": 0.0,
-                "1mth": 0.0,
-                "name": "Bank Pan Indonesia Tbk",
-                "symbol": "PNBN.JK",
-                "last_close": 0
-            }
-        ]
+        "top_change_companies": {
+          "AGRS.JK": {
+            "pe": 32.1908278354376,
+            "1yr": 0.0779220779220779,
+            "1mth": 0.152777777777778,
+            "name": "PT Bank IBK Indonesia Tbk.",
+            "last_close": 83
+          },
+          ...
+        }
     }
 }
 ```
