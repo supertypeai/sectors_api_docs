@@ -1,0 +1,117 @@
+---
+title: "List Mining License Auctions"
+api: "GET /v2/mining-license-auctions/"
+description: "Searches and lists mining license auctions with full pagination. Allows filtering by commodity, location, and auction status."
+---
+
+<ResponseExample>
+```json 200
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 7,
+            "commodity": "Coal",
+            "city": "Kotawaringin Timur",
+            "province": "Kalimantan Tengah",
+            "company_name": "Natai Baru Raya",
+            "date_winner": "30 Mei 2024",
+            "auction_status": "Lelang Selesai",
+            "jumlah_peserta": 6
+        },
+        {
+            "id": 4,
+            "commodity": "Coal",
+            "city": "Kapuas",
+            "province": "Kalimantan Tengah",
+            "company_name": "Element Tujuh Sembilan Indonesia",
+            "date_winner": "28 Mei 2024",
+            "auction_status": "Lelang Selesai",
+            "jumlah_peserta": 4
+        }
+    ]
+}
+```
+
+```json 400
+{
+  "error": "Invalid page or page_size parameters. Please provide positive integers."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="commodity" type="string">
+  Filter by commodity (e.g., 'Coal').
+</ParamField>
+<ParamField query="province" type="string">
+  Filter by province name (e.g., 'Kalimantan Tengah').
+</ParamField>
+<ParamField query="status" type="string">
+  Filter by auction status (e.g., 'Lelang Selesai').
+</ParamField>
+<ParamField query="page" type="integer" default="1">
+  A page number within the paginated result set.
+</ParamField>
+<ParamField query="page_size" type="integer" default="20">
+  Number of results to return per page. Maximum value is 30.
+</ParamField>
+
+### Response
+
+<ResponseField name="count" type="integer">
+  The total number of auctions available.
+</ResponseField>
+<ResponseField name="next" type="string | null">
+  The URL for the next page of results, or `null` if no more pages.
+</ResponseField>
+<ResponseField name="previous" type="string | null">
+  The URL for the previous page of results, or `null` if on the first page.
+</ResponseField>
+<ResponseField name="results" type="Auction[]">
+  An array of mining license auction objects.
+  <Expandable title="Auction properties">
+    <ResponseField name="id" type="integer">
+      Unique identifier for the auction.
+    </ResponseField>
+    <ResponseField name="commodity" type="string">
+      The commodity being auctioned.
+    </ResponseField>
+    <ResponseField name="city" type="string">
+      The city or regency of the auction location.
+    </ResponseField>
+    <ResponseField name="province" type="string">
+      The province of the auction location.
+    </ResponseField>
+    <ResponseField name="company_name" type="string">
+      The name of the winning company.
+    </ResponseField>
+    <ResponseField name="date_winner" type="string">
+      The date the winner was announced, in `DD MMMM YYYY` format.
+    </ResponseField>
+    <ResponseField name="auction_status" type="string">
+      The current status of the auction.
+    </ResponseField>
+    <ResponseField name="jumlah_peserta" type="integer">
+      The number of participants in the auction.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
