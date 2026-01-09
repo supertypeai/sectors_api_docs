@@ -124,7 +124,7 @@ description: "High-performance API for filtering and sorting companies with a SQ
   When `q` is provided, all other query parameters (`where`, `order_by`, etc.)
   are ignored, as the LLM will generate them.
   <Accordion title="Query Capabilities & Logic">
-    - **Smart FY Handling**: To ensure data reliability during transition periods (Jan–Apr), the system intelligently prioritizes the most complete data sets. If a query is made for the current year before fresh filings are fully available, the system automatically defaults to the previous year’s full fiscal data to provide a robust baseline for your analysis.
+    - **Smart FY Handling**: From January to April, queries for the current year automatically default to data from two years prior (e.g., a 2026 query pulls 2024 data). This ensures your results rely on finalized, audited reports rather than incomplete filings.
     - Note for Enhanced Accuracy: For the most precise results, we recommend filtering by specific sectors or industries using our standardized slugs. You can retrieve the complete list of official slugs from [Subsectors](https://docs.sectors.app/api-references/helper-list/subsectors), [Subindustries](https://docs.sectors.app/api-references/helper-list/subindustries), or [Industries](https://docs.sectors.app/api-references/helper-list/industries).
   </Accordion>
 </ParamField>
