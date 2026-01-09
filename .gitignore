@@ -3,3 +3,4 @@ recipes/*/*.py
 __pycache__/
 *.db
 .vscode
+.agent*
