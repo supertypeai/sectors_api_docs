@@ -124,9 +124,8 @@ description: "High-performance API for filtering and sorting companies with a SQ
   When `q` is provided, all other query parameters (`where`, `order_by`, etc.)
   are ignored, as the LLM will generate them.
   <Accordion title="Query Capabilities & Logic">
-    - **Smart FY Handling**: In early months (Jan-Apr), queries for the current year (e.g., "2025") automatically default to the previous year's full data (e.g., 2024) to ensure results, as new data is often sparse.
-    - **Ownership & Affiliates**: Queries about ownership or associations (e.g., "companies owned by Prajogo Pangestu") exhaustively check `affiliates`, `key_executives`, `executives_shareholdings`, and `major_shareholders`.
-    - **Sector Awareness**: The model is aware of all 33 distinct sub-sectors and top 30 industries/sub-industries, allowing for precise categorization filters.
+    - **Smart FY Handling**: To ensure data reliability during transition periods (Jan–Apr), the system intelligently prioritizes the most complete data sets. If a query is made for the current year before fresh filings are fully available, the system automatically defaults to the previous year’s full fiscal data to provide a robust baseline for your analysis.
+    - Note for Enhanced Accuracy: For the most precise results, we recommend filtering by specific sectors or industries using our standardized slugs. You can retrieve the complete list of official slugs from [Subsectors](https://docs.sectors.app/api-references/helper-list/subsectors), [Subindustries](https://docs.sectors.app/api-references/helper-list/subindustries), or [Industries](https://docs.sectors.app/api-references/helper-list/industries).
   </Accordion>
 </ParamField>
 <ParamField query="where" type="string">
@@ -213,11 +212,11 @@ description: "High-performance API for filtering and sorting companies with a SQ
           - **der_mrq**: Debt-to-Equity ratio (Most Recent Quarter).
           - **roa_ttm**: Return on Assets (Trailing Twelve Months).
           - **roe_ttm**: Return on Equity (Trailing Twelve Months).
-          - **total_assets_ttm**: Total assets (Trailing Twelve Months).
-          - **total_equity_ttm**: Total equity (Trailing Twelve Months).
-          - **total_revenue_ttm**: Total revenue (Trailing Twelve Months).
-          - **net_income_ttm**: Net income (Trailing Twelve Months).
-          - **total_liabilities_ttm**: Total liabilities (Trailing Twelve Months).
+          - **total_assets_mrq**: Total assets (Most Recent Quarter).
+          - **total_equity_mrq**: Total equity (Most Recent Quarter).
+          - **total_revenue_mrq**: Total revenue (Most Recent Quarter).
+          - **earnings_mrq**: Net income or earnings (Most Recent Quarter).
+          - **total_liabilities_mrq**: Total liabilities (Most Recent Quarter).
           - **yearly_mcap_change**: The percentage change in market cap over the last year.
           - **dividend_yield_5y_avg**: The average dividend yield over the last 5 years.
           - **ytd_low_price**: Year-to-date low price.
@@ -354,6 +353,57 @@ description: "High-performance API for filtering and sorting companies with a SQ
           - **cost_to_income_ratio[YYYY]**: Cost-to-Income ratio.
           - **historical_eps_value[YYYY]**: The historical Earnings Per Share value for the specified year.
           - **historical_eps_growth[YYYY]**: The year-over-year growth of the historical EPS for the specified year.
+        </Accordion>
+        <Accordion title="Quarterly Financial Data">
+          **How to Use**: You **must** use bracket notation `field[Qi-YYYY]` to access data for a specific quarter.
+          <Accordion title="Examples">
+            - `where=revenue_q[Q1-2024] > 1000000000`
+            - `where=earnings_q[Q4-2023] > earnings_q[Q3-2023]`
+          </Accordion>
+          - **revenue_q[Period]**: Revenue for the specified quarter (e.g., `Q1-2024`).
+          - **earnings_q[Period]**: Earnings/Net Income for the specified quarter.
+          - **gross_profit_q[Period]**: Gross Profit.
+          - **ebit_q[Period]**: EBIT (Earnings Before Interest and Taxes).
+          - **ebitda_q[Period]**: EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization).
+          - **earnings_before_tax_q[Period]**: Earnings Before Tax (EBT).
+          - **tax_q[Period]**: Tax expense.
+          - **cost_of_revenue_q[Period]**: Cost of revenue.
+          - **operating_pnl_q[Period]**: Operating Profit/Loss.
+          - **operating_expense_q[Period]**: Operating expenses.
+          - **interest_income_q[Period]**: Interest income.
+          - **interest_expense_q[Period]**: Interest expense.
+          - **non_operating_income_or_loss_q[Period]**: Non-operating income or loss.
+          - **total_assets_q[Period]**: Total assets.
+          - **total_liabilities_q[Period]**: Total liabilities.
+          - **total_equity_q[Period]**: Total equity.
+          - **total_debt_q[Period]**: Total debt.
+          - **cash_only_q[Period]**: Cash balance.
+          - **current_assets_q[Period]**: Current assets.
+          - **current_liabilities_q[Period]**: Current liabilities.
+          - **non_current_liabilities_q[Period]**: Non-current liabilities.
+          - **operating_cash_flow_q[Period]**: Operating cash flow.
+          - **investing_cash_flow_q[Period]**: Investing cash flow.
+          - **financing_cash_flow_q[Period]**: Financing cash flow.
+          - **free_cash_flow_q[Period]**: Free cash flow.
+          - **capital_expenditure_q[Period]**: Capital expenditure.
+          - **net_interest_income_q[Period]**: Net interest income (Banks).
+          - **non_interest_income_q[Period]**: Non-interest income (Banks).
+          - **gross_loan_q[Period]**: Gross loans (Banks).
+          - **net_loan_q[Period]**: Net loans (Banks).
+          - **total_deposit_q[Period]**: Total deposits (Banks).
+          - **time_deposit_q[Period]**: Time deposits (Banks).
+          - **savings_account_q[Period]**: Savings accounts (Banks).
+          - **current_account_q[Period]**: Current accounts (Banks).
+          - **allowance_for_loans_q[Period]**: Allowance for loans (Banks).
+          - **non_interest_bearing_liabilities_q[Period]**: Non-interest bearing liabilities.
+          - **other_interest_bearing_liabilities_q[Period]**: Other interest-bearing liabilities.
+          - **interest_expense_non_operating_q[Period]**: Non-operating interest expense.
+          - **premium_income_q[Period]**: Premium income (Insurance).
+          - **premium_expense_q[Period]**: Premium expense (Insurance).
+          - **net_premium_income_q[Period]**: Net premium income (Insurance).
+          - **realized_capital_goods_investment_q[Period]**: Realized capital goods investment.
+          - **provision_q[Period]**: Provisions.
+          - **total_cash_and_due_from_banks_q[Period]**: Total cash and due from banks.
         </Accordion>
         <Accordion title="General JSON List Fields">
           **How to Use**: The query checks if **any** object in the list matches the condition. Use `=` or `like` for string properties and numeric operators (`>`, `<`, etc.) for numeric properties.
