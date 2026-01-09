@@ -31,8 +31,7 @@ description: "High-performance API for filtering and sorting companies with a SQ
         "natural_query": "top 2 banks by market cap in 2024",
         "translated_params": {
             "where": "sub_sector = 'banks'",
-            "order_by": "market_cap",
-            "desc": true,
+            "order_by": "-market_cap",
             "limit": 2,
             "offset": 0
         },
@@ -124,6 +123,11 @@ description: "High-performance API for filtering and sorting companies with a SQ
   A natural language query (e.g., `"top 10 tech companies by revenue in 2023"`).
   When `q` is provided, all other query parameters (`where`, `order_by`, etc.)
   are ignored, as the LLM will generate them.
+  <Accordion title="Query Capabilities & Logic">
+    - **Smart FY Handling**: In early months (Jan-Apr), queries for the current year (e.g., "2025") automatically default to the previous year's full data (e.g., 2024) to ensure results, as new data is often sparse.
+    - **Ownership & Affiliates**: Queries about ownership or associations (e.g., "companies owned by Prajogo Pangestu") exhaustively check `affiliates`, `key_executives`, `executives_shareholdings`, and `major_shareholders`.
+    - **Sector Awareness**: The model is aware of all 33 distinct sub-sectors and top 30 industries/sub-industries, allowing for precise categorization filters.
+  </Accordion>
 </ParamField>
 <ParamField query="where" type="string">
   SQL-like conditions for advanced filtering. This parameter is ignored if `q`
@@ -175,7 +179,7 @@ description: "High-performance API for filtering and sorting companies with a SQ
           - **last_close_price**: The last closing price of the stock.
           - **daily_close_change**: The percentage change in the stock's closing price from the previous day.
           - **forward_pe**: The forward Price-to-Earnings ratio based on future earnings estimates.
-          - **eps**: Earnings Per Share from the most recent period.
+
           - **intrinsic_value**: An estimate of the stock's "true" value based on financial modeling.
           - **esg_score**: A score representing the company's Environmental, Social, and Governance performance.
           - **yield_ttm**: The dividend yield over the Trailing Twelve Months.
@@ -244,6 +248,7 @@ description: "High-performance API for filtering and sorting companies with a SQ
           - **annual_dividend_yield[YYYY]**: Dividend yield for the specified year.
           - **total_dividend[YYYY]**: Alias for `annual_dividend_total`.
           - **total_yield[YYYY]**: Alias for `annual_dividend_yield`.
+          - **eps[YYYY]**: Earnings Per Share for the specified year.
           - **allowance_for_loans[YYYY]**: Allowance for loan losses.
           - **capital_expenditure[YYYY]**: Capital expenditure.
           - **cash_and_equivalents[YYYY]**: Cash and equivalents.
@@ -369,16 +374,16 @@ description: "High-performance API for filtering and sorting companies with a SQ
         </Accordion>
       </AccordionGroup>
     </Accordion>
+
   </AccordionGroup>
 </ParamField>
 <ParamField query="order_by" type="string" default="symbol">
-  Field to sort results by (e.g., `"market_cap"` or `"revenue[2024]"`). Use a
-  comma-separated list for multi-level sorting. This parameter is ignored if
-  `q` is present.
-</ParamField>
-<ParamField query="desc" type="string" default="false">
-  Sort direction for `order_by`. Use `true` for descending order. This
-  parameter is ignored if `q` is present.
+  Field to sort results by. 
+  - Use `-` prefix for descending order (e.g., `order_by="-market_cap"`).
+  - Use parentheses for arithmetic expressions to avoid ambiguity with the negative sign (e.g., `order_by="-(earnings[2024]/earnings[2023])"`).
+  - Use a comma-separated list for multi-level sorting.
+  
+  This parameter is ignored if `q` is present.
 </ParamField>
 <ParamField query="limit" type="integer" default="50">
   The maximum number of results to return. Max value is 200. This parameter is
@@ -388,8 +393,23 @@ description: "High-performance API for filtering and sorting companies with a SQ
   The number of results to skip for pagination. This parameter is ignored if
   `q` is present.
 </ParamField>
+<ParamField query="include_query_values" type="boolean" default="false">
+  If set to `true`, the response will include a `query_values` object showing the
+  interpreted values used for the query (e.g., extracted year, country).
+</ParamField>
 
 ### Response
+
+<ResponseField name="query_values" type="object">
+  <Expandable title="Query Values properties">
+    <ResponseField name="year" type="integer">
+      The year extracted from the query, if any.
+    </ResponseField>
+    <ResponseField name="country" type="string">
+      The country name extracted from the query, if any.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
 
 <ResponseField name="results" type="Company[]">
   An array of company objects matching the query.
