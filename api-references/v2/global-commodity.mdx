@@ -1,6 +1,6 @@
 ---
 title: "List Global Commodity Data"
-api: "GET /v2/global-commodity-data/"
+api: "GET /v2/mineral/global-commodity/"
 description: "Retrieves global commodity data, including production, reserves, and trade information. Allows filtering by country and commodity type."
 ---
 
@@ -110,6 +110,9 @@ description: "Retrieves global commodity data, including production, reserves, a
 </ParamField>
 <ParamField query="limit" type="integer" default="20">
   Number of results to return. Maximum value is 30.
+</ParamField>
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip. Used for pagination.
 </ParamField>
 
 ### Response

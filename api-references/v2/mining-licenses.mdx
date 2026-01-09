@@ -1,6 +1,6 @@
 ---
 title: "List Mining Licenses"
-api: "GET /v2/insider/licenses/"
+api: "GET /v2/mineral/licenses/"
 description: "Lists mining licenses with filters for status, commodity, and location. Includes a feature to find licenses that are expiring soon."
 ---
 
@@ -63,6 +63,9 @@ description: "Lists mining licenses with filters for status, commodity, and loca
 </ParamField>
 <ParamField query="limit" type="integer" default="20">
   Number of results to return. Maximum value is 30.
+</ParamField>
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip. Used for pagination.
 </ParamField>
 
 ### Response
