@@ -11,13 +11,17 @@ description: "Aggregates and lists national resources and reserves data, with op
         "province": "Aceh",
         "year": 2024,
         "commodity_type": "Gold",
-        "resources_reserves": "{\"ore_resources_inferred\": 493110000.0, ...}"
+        "resources_reserves": {
+            "ore_resources_inferred": 493110000.0
+        }
     },
     {
         "province": "Banten",
         "year": 2024,
         "commodity_type": "Gold",
-        "resources_reserves": "{\"ore_resources_inferred\": 656634823.0, ...}"
+        "resources_reserves": {
+            "ore_resources_inferred": 656634823.0
+        }
     }
 ]
 ```
@@ -72,8 +76,8 @@ description: "Aggregates and lists national resources and reserves data, with op
     <ResponseField name="commodity_type" type="string">
       The type of commodity.
     </ResponseField>
-    <ResponseField name="resources_reserves" type="string (JSON Object)">
-      A JSON string containing detailed data on resources and reserves.
+    <ResponseField name="resources_reserves" type="object">
+      A JSON Object containing detailed data on resources and reserves.
       <Expandable title="Resources/Reserves Structure">
         <ResponseField name="ore_resources_inferred" type="number" />
         <ResponseField name="resources_inferred" type="number" />

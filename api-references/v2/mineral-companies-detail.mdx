@@ -89,8 +89,8 @@ description: "Retrieves a comprehensive overview of a single mineral company by 
     <ResponseField name="key_operation" type="string">
       A brief description of the company's primary operations.
     </ResponseField>
-    <ResponseField name="activities" type="string (JSON Array)">
-      A JSON string array of the company's business activities.
+    <ResponseField name="activities" type="object">
+      A JSON object containing an array of the company's business activities.
     </ResponseField>
     <ResponseField name="website" type="string">
       Company's official website.
@@ -101,8 +101,8 @@ description: "Retrieves a comprehensive overview of a single mineral company by 
     <ResponseField name="email" type="string">
       Company's contact email address.
     </ResponseField>
-    <ResponseField name="mining_license" type="string (JSON Array)">
-      A JSON string containing an array of detailed mining licenses held by the
+    <ResponseField name="mining_license" type="object">
+      A JSON object containing an array of detailed mining licenses held by the
       company.
       <Expandable title="License Object Structure">
         <ResponseField name="license_type" type="string" />
@@ -113,10 +113,10 @@ description: "Retrieves a comprehensive overview of a single mineral company by 
         <ResponseField name="commodity" type="string" />
       </Expandable>
     </ResponseField>
-    <ResponseField name="mining_contract" type="string (JSON Array)">
+    <ResponseField name="mining_contract" type="string[]">
       A JSON string containing an array of mining contracts.
     </ResponseField>
-    <ResponseField name="commodity" type="string (JSON Array)">
+    <ResponseField name="commodity" type="string[]">
       A JSON string array of commodities the company deals with.
     </ResponseField>
     <ResponseField name="aggregates" type="object">
