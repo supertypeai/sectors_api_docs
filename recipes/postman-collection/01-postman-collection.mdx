@@ -39,7 +39,7 @@ To start using our API, follow these steps to import the **Sectors Financial API
 
 1. **Download the Postman Collection**:
 
-   - Click here [Postman Collection](https://github.com/supertypeai/sectors_api_docs/blob/feat/postman_collection/recipes/postman-collection/json/Supertype_API_09-2025_v1.0.postman_collection.json) and download the latest version of the Postman collection file.
+   - Click here [Postman Collection](https://github.com/supertypeai/sectors_api_docs/blob/feat/postman_collection/recipes/postman-collection/json/Supertype_API_01-2026_v1.2.postman_collection.json) and download the latest version of the Postman collection file.
 
 2. **Open Postman**:
 
@@ -47,7 +47,7 @@ To start using our API, follow these steps to import the **Sectors Financial API
 
 3. **Import the Collection**:
    - Click on the **Import** button in the top-left corner of the Postman interface.
-   - Select the downloaded `Supertype_API_09-2025_v1.0.postman_collection.json` file and click **Open**.
+   - Select the downloaded `Supertype_API_01-2026_v1.2.postman_collection.json` file and click **Open**.
    - The collection will now appear in your Postman workspace under the **Collections** tab.
 
 ---
@@ -62,41 +62,81 @@ The collection is organized into folders, each representing a specific functiona
 
 ### Folder Structure:
 
+#### v1
+
 - **Helper List**
-  - `GET Subsectors`
-  - `GET Subindustries`
-  - `GET Industries`
-  - `GET Companies by Index`
-  - `GET Companies by Subsector`
-  - `GET Companies by Subindustry`
-  - `GET Companies with Revenue and Cost Segments`
-  - `GET Quarterly Financial Dates of a Company`
+  - `GET v1/subsectors/`
+  - `GET v1/subindustries/`
+  - `GET v1/tags`
+  - `GET v1/industries/`
+  - `GET v1/index/{{index}}/`
+  - `GET v1/companies/`
+  - `GET v1/companies/list_companies_with_segments/`
+  - `GET v1/company/get_quarterly_financial_dates/{{ticker}}/`
 - **Since IPO Performance**
-  - `GET Company's Performance since IPO`
-- **Detailed Reports**
-  - `GET Company Report`
-  - `GET Company Revenue and Cost Segments`
-  - `GET Company Quarterly Financials`
-  - `GET Subsector Aggregated Statistics`
+  - `GET v1/listing-performance`
+- **Company News**
+  - `GET v1/news/`
+  - `GET v1/filings/`
+- **Detailed Report**
+  - `GET v1/company/report/{{ticker}}/?sections={{sections}}`
+  - `GET v1/company/get-segments/{{ticker}}/`
+  - `GET v1/financials/quarterly/{{ticker}}/?report_date={{report_date}}&approx=true`
+  - `GET v1/subsector/report/{{sector}}/?sections={{sections}}`
 - **Company Ranking by Dimensions**
-  - `GET Most Traded Stocks by Volume`
-  - `GET Top Companies Ranked`
-  - `GET Top Company Movers`
-  - `GET Top Companies by Growth Metrics`
-- **Historical Market Cap and Transaction Data**
-  - `GET IDX Historical Market Cap Data`
-  - `GET Daily Transaction Data`
-  - `GET Index Daily Transaction Data`
-- **Singapore Stock Exchange (SGX)**
-  - `GET SGX Sectors`
-  - `GET SGX Companies by Sector`
-  - `GET SGX Company Report`
-  - `GET SGX Top Companies Ranked`
-- **Malaysia Stock Exchange (KLSE)**
-  - `GET KLSE Sectors`
-  - `GET KLSE Companies by Sector`
-  - `GET KLSE Company Report`
-  - `GET KLSE Top Companies Ranked`
+  - `GET v1/most-traded/?start={{start_date}}&end={{end_date}}&n_stock=5&sub_sector={{sub_sector}}`
+  - `GET v1/companies/top/?classifications={classifications}&n_stock=5&year=2025&sub_sector={sub_sector}&min_mcap_billion=5000`
+  - `GET v1/companies/top-changes/?classifications={classifications}&n_stock=5&periods={periods}&sub_sector={sub_sector}&min_mcap_billion=5000`
+  - `GET v1/companies/top-growth/?classifications={classifications}&n_stock=5&sub_sector={sub_sector}&min_mcap_billion=5000`
+- **Historical Market Cap and Transactions Data**
+  - `GET v1/idx-total/?start={start_date}&end={end_date}`
+  - `GET v1/daily/{{ticker}}/?start={{start_date}}&end={{end_date}}`
+  - `GET v1/index-daily/{{index_code}}/?start={{start_date}}&end={{end_date}}`
+  - `GET v1/index-daily/{{index_code}}/`
+- **Singapore Stock Exchange**
+  - `GET v1/sgx/sectors/`
+  - `GET v1/sgx/companies/?sector={{sector}}`
+  - `GET v1/sgx/company/report/{{ticker}}/`
+  - `GET v1/sgx/companies/top/?classifications={{classifications}}&min_mcap_million=1000&sector={{sector}}`
+- **Malaysia Stock Exchange**
+  - `GET v1/klse/sectors/`
+  - `GET v1/klse/companies/?sector={{sector}}`
+  - `GET v1/klse/company/report/{{ticker}}/`
+  - `GET v1/klse/companies/top/?classifications={classifications}&min_mcap_million=1000&sector={sector}`
+- **SGX**
+  - `GET v1/sgx/sectors/`
+  - `GET v1/sgx/companies/`
+  - `GET v1/sgx/company/report/{{ticker}}/`
+  - `GET v1/sgx/companies/top/`
+- **KLSE**
+  - `GET v1/klse/sectors/`
+  - `GET v1/klse/companies/`
+  - `GET v1/klse/company/report/{{ticker}}/`
+  - `GET v1/klse/companies/top/`
+
+#### v2
+
+- **Companies**
+  - `GET v2/companies/`
+- **Mineral**
+  - **Mineral Companies**
+    - `GET v2/mineral/mineral-companies/`
+    - `GET v2/mineral/mineral-companies/{{company_id}}/`
+    - `GET v2/mineral/mineral-companies/{{company_id}}/performance/`
+    - `GET v2/mineral/mineral-companies/{{ticker}}/financials/`
+  - **Mining Data**
+    - `GET v2/mineral/mining-sites/`
+    - `GET v2/mineral/production/total/`
+    - `GET v2/mineral/resources-reserves/`
+  - **Commodities & Trade**
+    - `GET v2/mineral/commodities/{{commodity_name}}/price/`
+    - `GET v2/mineral/trade/exports/`
+    - `GET v2/mineral/global-commodity/`
+    - `GET v2/mineral/sales-destination/`
+  - **Licenses & News**
+    - `GET v2/mineral/licenses/`
+    - `GET v2/mineral/mining-license-auctions/`
+    - `GET v2/mineral/news/`
 
 Each request is pre-configured with the necessary parameters and variables.
 
@@ -106,9 +146,18 @@ The collection uses variables to make it reusable and customizable. There are tw
 
 1. **Collection Variables**: These are shared across all requests in the collection. Examples include:
 
-   - `{{environment}}`: The base URL for the API (default data: https://api.sectors.app).
-   - `{{apikey}}`: Your API key (replace this with your own key).
-   - `{{ticker}}`: The stock ticker symbol (e.g., `AAPL`).
+   - `{{environment}}`: The base URL for the API (default: `https://api.sectors.app`).
+   - `{{apikey}}`: Your API key.
+   - `{{ticker}}`: The stock ticker symbol.
+   - `{{index}}`: Index name (e.g. `idxg30`).
+   - `{{index_code}}`: Index code (e.g. `idx30`).
+   - `{{sub_sector}}`: Sub-sector slug.
+   - `{{sub_industry}}`: Sub-industry slug.
+   - `{{sector}}`: Sector slug.
+   - `{{sections}}`: Report sections filter.
+   - `{{report_date}}`: Financial report date.
+   - `{{company_id}}`: Company ID for v2 endpoints.
+   - `{{mineral_ticker}}`: Ticker for mineral companies.
+   - `{{commodity_name}}`: Commodity name (e.g. `Coal`).
 
-2. **Request-Specific Variables**: Some parameters are unique to specific requests and are defined within the request itself. For example:
-   - `{{report_date}}`: The report date for financial data (e.g., `2023-09-30`).
+2. **Request-Specific Variables**: Some parameters are unique to specific requests and are defined within the request itself.
