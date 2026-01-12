@@ -1,0 +1,123 @@
+---
+title: "Comparison Report between Companies by Subsector"
+sidebarTitle: "7. Comparison Report Companies"
+description: "By: [Delisya Jayadi](https://github.com/DelisyaJayadi) · March 21, 2025"
+---
+
+Let’s said, I have a certain data that I want to compare between companies by its subsector or sector. But I want to see it easily, like the total in 1 sector from many sector. To solve it, this recipe is the continuation from the Classification Companies for Subsector to see the comparison easily and can be tried with other aspects too! With the [Sectors Financial API](https://sectors.app/api), you can effortlessly access and visualize the necessary data!
+
+## Install Required Libraries
+To use the recipe, we need to prepare the “ingredients” for the recipe. Let’s prepare the libraries that are used in this recipe. 
+
+- Install the [requests](https://requests.readthedocs.io/en/latest/) library to make HTTP Requests
+- Install [pandas](https://pypi.org/project/pandas/) to do some data exploratory
+- In this recipe we will use [ploty](https://pypi.org/project/matplotlib/) to do the data visualization.
+
+```python
+pip install requests pandas plotly
+```
+
+Before writing your code, you must access your API Keys in the [Sectors Financial API Page](https://sectors.app/api) Page. We will use that API Key later as an authorization for the API.
+
+## Data Exploration
+
+In this recipe, we will be using 2 API from Sectors to get:
+- List of All Companies by Subsector API to retrieve all the companies in a subsector
+- Subsector Report per Section API to retrieve the financial data for each company by subsector
+
+By using this API, we will get the data we need to see from each subsector about the section we want to know. Now remember, this is the continuation recipe from the [Classification Companies for Subsector](https://docs.sectors.app/recipes/quick-start-in-python/07-classification-companies-for-subsector). You can take a look at it first to see how the total companies work for the subsector. 
+
+## Data Fetching
+
+To start, don't forget the API key you have! Now let's put it into the code to call the first API.
+```python
+API_KEYS = "Your API Keys"
+
+# Fetch subsectors and sectors
+headers = {"Authorization": API_KEYS}
+response = requests.get("https://api.sectors.app/v1/subsectors/", headers=headers)
+
+if response.status_code == 200:
+    data_all_subsectors = response.json()
+else:
+    print(f"Failed to fetch subsectors. Status code: {response.status_code}")
+    data_all_subsectors = []
+```
+## Data processing
+After using the first API, now let's jump to the second API and process it with the result of the first API! But for the second API, we'll only be using it with "Market Cap" report section for the `total_market_cap`.
+
+```python
+result_data = []
+for data in data_all_subsectors:
+    subsector = data["subsector"]
+    sector = data["sector"].title()  # Ensure sector names are capitalized
+    response = requests.get(f"https://api.sectors.app/v1/subsector/report/{subsector}/?sections=market_cap", headers=headers)
+
+    if response.status_code == 200:
+        response_data = response.json()
+        # Ensure the response is a dictionary with the expected keys
+        if isinstance(response_data, dict) and "market_cap" in response_data:
+                market_cap = response_data["market_cap"]
+                total_market_cap = market_cap.get("total_market_cap", 0)  # Directly use as int
+                result_data.append([sector, subsector, total_market_cap])
+        else:
+            print(f"Unexpected response format for {subsector}: {response_data}")
+
+# Create a DataFrame from the result_data 
+## df_stability is to store he processed data for subsectors, their corresponding sectors, and their total market capitalization.
+df_stability = pd.DataFrame(result_data, columns=["sector", "subsector", "total_market_cap"])
+df_stability.head()
+```
+
+The output should look like this:
+
+|     | sector                     | subsector                              | total_market_cap  |
+| --- | -------------------------- | -------------------------------------- | ----------------- |
+| 0   | Transportation-Logistic    | transportation                         | 9.879141e+12      |
+| 1   | Infrastructures            | telecommunication                      | 5.137305e+14      |
+| 2   | Properties-Real-Estate     | properties-real-estate                 | 2.604321e+14      |
+| 3   | Infrastructures            | heavy-constructions-civil-engineering  | 3.636698e+13      |
+| 4   | Consumer-Non-Cyclicals     | food-beverage                          | 7.765919e+14      |
+
+We're almost there! Now let's prepare another data for the visualization. 
+
+```python
+## sector_totals is to store the sum of total market capitalization for each sector.
+sector_totals = df_stability.groupby("sector")[["total_market_cap"]].sum().reset_index()
+sector_totals.head()
+```
+
+The output should look like this:
+|     | sector                 | total_market_cap  |
+| --- | ---------------------- | ----------------- |
+| 0   | Basic-Materials        | 1.584896e+15      |
+| 1   | Consumer-Cyclicals	   | 4.257916e+14      |
+| 2   | Consumer-Non-Cyclicals | 1.034098e+15      |
+| 3   | Energy                 | 1.591561e+15      |
+| 4   | Financials	           | 3.107592e+15      |
+
+All the data are ready! Let's go to visualization!
+
+## Visualization Time!
+
+The "dough" is ready! Now let's "bake" it! To visualize it, we're going to use plotly with the provided code.
+
+```python
+labels = list(sector_totals["sector"]) + list(df_stability["subsector"])
+parents = [""] * len(sector_totals) + list(df_stability["sector"])
+values = list(sector_totals["total_market_cap"]) + list(df_stability["total_market_cap"])
+
+fig = go.Figure(go.Sunburst(
+    labels=labels,
+    parents=parents,
+    values=values,
+    branchvalues="total"
+))
+fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
+
+fig.show()
+```
+
+![sunburst_full](/recipes/quick-start-in-python/images/sunburst02_classification_hover.png)
+
+Wohoo! Visualization is done! We can also hover the sectors and subsector to see each the total market capitalization too! This only one of the variables from the API response, you can try it with other variables or other API too! Be creative and don't stop!

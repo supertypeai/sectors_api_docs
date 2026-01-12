@@ -1,0 +1,209 @@
+---
+title: "Classification Companies for Subsector"
+sidebarTitle: "6. Classification Companies for Subsector"
+description: "By: [Delisya Jayadi](https://github.com/DelisyaJayadi) · March 21, 2025"
+---
+
+Have you ever wondered how companies compare across different subsectors? By analyzing their total distribution, we can uncover fascinating insights into industry trends, market dominance, and business growth. With the help of plotly and data from the Sectors, this recipe will show the step of giving the visualization that can be seen from the companies by subsector helping you understand which areas are thriving and which are shrinking. 
+
+## Install required libraries
+As the saying goes, prepare an umbrella before rain, let’s prepare the libraries that are used in this recipe. 
+
+- Install the [requests](https://requests.readthedocs.io/en/latest/) library to make HTTP Requests
+- Install [pandas](https://pypi.org/project/pandas/) to do some data exploratory
+- In this recipe we will use [plotly](https://plotly.com/graphing-libraries/) to do the data visualization
+
+```python
+pip install requests pandas plotly
+```
+
+## Data Fetching
+
+Before diving into data fetching and processing, we’ll start by importing the necessary packages for this recipe. If the required libraries haven't been installed, don’t forget to check the previous step to make sure you have all the required libraries!
+
+```python
+import pandas as pd
+import requests 
+import plotly.graph_objects as go
+```
+
+All required libraries are ready! Now let's access the API keys from the [Sectors Financial API Page](https://sectors.app/api) Page. We will use that API Key later as an authorization for the API. Then, we can start the code!
+
+```python
+API_KEYS = "Your API Keys"
+
+headers = {
+    "Authorization": API_KEYS
+}
+response = requests.get("https://api.sectors.app/v1/subsectors/", headers = headers)
+
+if response.status_code == 200:
+    data_all_subsectors = response.json()
+else:
+    # Handle error
+    print(response.status_code)
+```
+
+To see the output, try to print `data_all_subsectors` by using `print(data_all_subsectors)` and you’ll have a list that look like this:
+
+```
+[
+ {'sector': 'infrastructures', 'subsector': 'telecommunication'},
+ {'sector': 'energy', 'subsector': 'oil-gas-coal'},
+ {'sector': 'financials', 'subsector': 'financing-service'},
+ {'sector': 'financials', 'subsector': 'investment-service'},
+ {'sector': 'consumer-cyclicals', 'subsector': 'apparel-luxury-goods'},
+  ...
+]
+```
+
+## Data Processing
+### Transforming data to Pandas DataFrame
+
+Before doing data visualization, let’s use pandas to perform a little bit of data processing. Begin by converting the list of subsectors to a pandas DataFrame. Because we’re going to use subsectors and sectors data, make sure to get both of them. 
+
+```python
+# For your information the response data type is a list
+df = pd.DataFrame(data_all_subsectors)
+df.head()
+```
+
+To check the data, let’s try with the `df.head()` to see the result. 
+The results will look like the following:
+
+|     | sector                     | subsector                              | 
+| --- | -------------------------- | ---------------------------------------|
+| 0   | transportation-logistic    | transportation                         |
+| 1   | infrastructures            | telecommunication                      |
+| 2   | properties-real-estate     | properties-real-estate                 |
+| 3   | infrastructures            | heavy-constructions-civil-engineering  |
+| 4   | consumer-non-cyclicals     | food-beverage                          |
+
+Now we have the sector and subsector, but the naming standard isn’t really good to read, so let’s fix that by giving a naming standard that good to read! Let’s add a help with some `replace()` and `title()` to make it more readable!
+```python
+df["subsector"] = df["subsector"].str.replace("-", " ").str.title()
+df["sector"] = df["sector"].str.replace("-", " ").str.title() 
+df.head()
+
+After the data processing, it whould look like this.
+
+```
+|     | sector                     | subsector                              | 
+| --- | -------------------------- | ---------------------------------------|
+| 0   | Transportation Logistic    | Transportation                         |
+| 1   | Infrastructures            | Telecommunication                      |
+| 2   | Properties Real Estate     | Properties Real Estate                 |
+| 3   | Infrastructures            | Heavy Constructions Civil Engineering  |
+| 4   | Consumer Non Cyclicals     | Food Beverage                          |
+
+Much better isn’t it? Now we have data of sectors and subsectors that look more readable. Now let’s jump into data visualization!
+
+## Data Visualization
+
+To visualize the classification, we’re gonna be using plotly! But before that, let’s take another API to help us in the classification!
+
+### Let's see the other API
+
+The Financial API for all subsectors only provides a basic list, which isn’t very insightful. Instead, let’s explore another [Sectors Financial API Page](https://sectors.app/api) that categorizes companies by subsector. This will give us more data to work with and serve as a foundation for our data visualization later.
+
+### Collect Data
+
+We will join the data from both API to a single list using the code below:
+
+```python
+result_data = []
+for data in data_all_subsectors:
+    subsector = data["subsector"]
+    sector = data["sector"].title()
+    response = requests.get(f"https://api.sectors.app/v1/companies/?sub_sector={subsector}", headers=headers)
+
+
+    if response.status_code == 200:
+        list_companies_by_subsectors = response.json()
+        for company in list_companies_by_subsectors:
+            result_data.append([sector, subsector, company["symbol"]])
+    else:
+        print(f"Error fetching companies for {subsector}. Status code: {response.status_code}")
+```
+
+The code above retrieves a complete list of companies from all subsectors. The output should look like this:
+```
+[
+ ['telecommunication', 'BALI.JK'],
+ ['telecommunication', 'BTEL.JK'],
+ ['telecommunication', 'CENT.JK'],
+ ['telecommunication', 'DATA.JK'],
+ ['telecommunication', 'EXCL.JK'],
+ ...
+]
+```
+
+Now since we already join the data, we’re gonna do one last step before visualizing the data.
+
+### Total Companies by Subsector
+
+Before visualizing it, we have to sort the total companies by subsector using the data that we already have. To do that, we clean our data using the same way and group the data by subsector and sector so we can get the total of companies by each subsector and sector. 
+
+```python
+# Create a DataFrame for subsectors and companies
+df_companies = pd.DataFrame(result_data, columns=["sector", "subsector", "company"])
+df_companies["sector"] = df_companies["sector"].str.title()
+df_grouped = df_companies.groupby(["sector", "subsector"]).size().reset_index(name="total_companies")
+
+
+# Calculate total companies for each sector
+sector_totals = df_companies.groupby("sector").size().reset_index(name="total_companies")
+```
+
+Using the `sector_totals.head()`, the output would be like this:
+
+|     | sector                  | total_companies   | 
+| --- | ----------------------- | ------------------|
+| 0   | Basic-Materials         | 113               |
+| 1   | Consumer-cyclicals      | 178               |
+| 2   | Consumer-Non-Cyclicals  | 129               |
+| 3   | Energy                  | 90                |
+| 4   | Financials              | 106               |
+
+Out data is all ready! Now Let's do the final step! 
+
+### Visualization Time!
+
+Now let’s do the visualization using plotly by trying with the provided code.
+
+```python
+# Combine sector and subsector data
+labels = list(sector_totals["sector"]) + list(df_grouped["subsector"])
+parents = [""] * len(sector_totals) + list(df_grouped["sector"])
+values = list(sector_totals["total_companies"]) + list(df_grouped["total_companies"])
+
+fig = go.Figure(go.Sunburst(
+    labels=labels,
+    parents=parents,
+    values=values,
+    branchvalues="total"
+))
+fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
+
+fig.show()
+```
+
+You might wonder what these variables do, so I will list and explain it for you!
+
+- `sector_tools` = It calculates the total number of companies for each sector.
+- `df_grouped` = It calculates the total number of companies for each combination of sector and subsector.
+- `labels` = Combines the sector names (sector_totals["sector"]) and subsector names (df_grouped["subsector"]) to form the labels for the sunburst chart.
+- `parents` = Specifies the parent-child relationship. Sectors have no parent (""), while subsectors have their corresponding sector as the parent (df_grouped["sector"]).
+- `values` = Combines the total companies for sectors (sector_totals["total_companies"]) and subsectors (df_grouped["total_companies"]) to define the size of each segment in the chart.
+
+![sunburst_full](/recipes/quick-start-in-python/images/sunburst01_classification.png)
+
+Well done! You have created a wheel-ish visualization using the subsector and sectors. With the visualization, you can see the total companies too by hovering to each node you would like to see!
+
+![sunburst_hover](/recipes/quick-start-in-python/images/sunburst01_classification_hover.png)
+
+Not only that, we can see the “consumer cyclicals” much more detail for each subsector it has. 
+
+![sunburst_detail](/recipes/quick-start-in-python/images/sunburst01_classification_detail.png)
+
+And now we have a visualization of the sector and subsector with the information of the total companies in each sector and subsector too! We’ve demonstrated its use by visualizing and comparing total companies in the sector and subsector. The Sectors Financial API has much more to offer. This is just a glimpse of its potential— you can try so many with the API (and with the sunburst diagram too!).
