@@ -3,6 +3,36 @@ title: v1 Changelog
 sidebarTitle: Changelog
 ---
 
+## 2026-01-09
+
+- Added new available index `idxvesta28` to the companies by index endpoint
+
+  - [https://api.sectors.app/v1/index/idxvesta28/](../api-references/helper-list/companies-index)
+
+- Modified [KLSE company report endpoint](../api-references/malaysia/klse-company-report) response
+
+  - Removed `five_year_eps_growth`, `five_year_sales_growth`, `five_year_capital_spending_growth`, `asset_turnover`, `inventory_turnover_ttm`, `receivable_turnover` from the `financials` response section
+
+- Modified [IDX company quarterly financials endpoint](../api-references/report/company-quarterly-financials) response
+
+  - Renamed the following parameters:
+  
+    - `net_operating_cash_flow` to `operating_cash_flow`
+
+    - `total_current_liabilities` to `current_liabilities`
+
+    - `total_revenue` to `revenue`
+
+    - `gross_income` to `gross_profit`
+
+    - `income_taxed` to `tax`
+
+    - `operating_income` to `operating_pnl`
+
+  - Added `non_interest_bearing_liabilities` parameter
+
+- Added `sgx_filings` and `sgx_buybacks` parameters to the `overview` response section in the [SGX company report endpoint](../api-references/singapore/sgx-company-report)
+
 ## 2025-12-16
 
 - Modified [IDX company report endpoint](../api-references/report/company) response

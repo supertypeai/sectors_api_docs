@@ -5,12 +5,19 @@ sidebarTitle: Changelog
 
 ## 2026-01-09
 
-- Adjusted all mining related endpoints to use `/mining` instead of `/insider`
-- Updated Postman collection and recipe to match the latest API version
-- Multiple refinements to the Companies Screener V2 documentation, including:
-  - Adding \_q capability for quarterly data.
-  - Clarifying eps columns and sort orders.
-  - Updated company report documentation for SGX and KLSE
+- Adjusted [all mining related endpoints](./mining-companies) to use `/mining` instead of `/insider`
+- Updated Postman collection to match the latest API version
+- Multiple refinements to the [companies screener endpoint](./companies), including:
+  - Added smart FY handling and enhanced accuracy for `q` query parameter
+  - Removed `eps` from the direct fields in the `where` query parameter
+  - Added `[fieldname]_q` to the available field in the `where` query parameter for querying quarterly data
+  - Renamed several field names in the `where` query parameter
+  - Removed `desc` query parameter and changed it to `-` prefix in the `order_by` query parameter
+  - Added parentheses forcing for arithmetic expression on `order_by` query parameter to avoid ambiguity with the negative sign
+  - Added capability to have multiple-level sorting in `order_by` query parameter
+  - Added `include_query_values` query parameter
+  - Added `query_values` response
+  - Enhanced the `llm_translation` response to no longer having `desc` parameter, but adding `-` prefix in the `order_by` parameter for descending order
 
 ## 2025-10-24
 
