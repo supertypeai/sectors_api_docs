@@ -3,19 +3,35 @@ title: v2 Changelog
 sidebarTitle: Changelog
 ---
 
+## 2026-01-09
+
+- Adjusted [all mining related endpoints](./mining-companies) to use `/mining` instead of `/insider`
+- Updated Postman collection to match the latest API version
+- Multiple refinements to the [companies screener endpoint](./companies), including:
+  - Added smart FY handling and enhanced accuracy for `q` query parameter
+  - Removed `eps` from the direct fields in the `where` query parameter
+  - Added `[fieldname]_q` to the available field in the `where` query parameter for querying quarterly data
+  - Renamed several field names in the `where` query parameter
+  - Removed `desc` query parameter and changed it to `-` prefix in the `order_by` query parameter
+  - Added parentheses forcing for arithmetic expression on `order_by` query parameter to avoid ambiguity with the negative sign
+  - Added capability to have multiple-level sorting in `order_by` query parameter
+  - Added `include_query_values` query parameter
+  - Added `query_values` response
+  - Enhanced the `llm_translation` response to no longer having `desc` parameter, but adding `-` prefix in the `order_by` parameter for descending order
+
 ## 2025-10-24
 
 - Added new endpoint to retrieve global commodity data, including production, reserves, and trade information
 
-    - [https://api.sectors.app/v2/global-commodity-data/](./global-commodity)
+  - [https://api.sectors.app/v2/global-commodity-data/](./global-commodity)
 
 - Added new endpoint to retrieve mining license auctions
 
-    - [https://api.sectors.app/v2/mining-license-auctions/](./mining-license-auctions)
+  - [https://api.sectors.app/v2/mining-license-auctions/](./mining-license-auctions)
 
 - Added new endpoint to retrieve and aggregate sales destination data for a specific company ticker
 
-    - [https://api.sectors.app/v2/sales-destination/](./sales-destination)
+  - [https://api.sectors.app/v2/sales-destination/](./sales-destination)
 
 - Updated insider-related endpoints to use the `/v2/insider/` base path for improved consistency
 

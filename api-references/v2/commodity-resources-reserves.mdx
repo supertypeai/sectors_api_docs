@@ -1,6 +1,6 @@
 ---
 title: "National Resources and Reserves"
-api: "GET /v2/insider/resources-reserves/"
+api: "GET /v2/mining/resources-reserves/"
 description: "Aggregates and lists national resources and reserves data, with options to filter by location, year, and commodity."
 ---
 
@@ -11,13 +11,17 @@ description: "Aggregates and lists national resources and reserves data, with op
         "province": "Aceh",
         "year": 2024,
         "commodity_type": "Gold",
-        "resources_reserves": "{\"ore_resources_inferred\": 493110000.0, ...}"
+        "resources_reserves": {
+            "ore_resources_inferred": 493110000.0
+        }
     },
     {
         "province": "Banten",
         "year": 2024,
         "commodity_type": "Gold",
-        "resources_reserves": "{\"ore_resources_inferred\": 656634823.0, ...}"
+        "resources_reserves": {
+            "ore_resources_inferred": 656634823.0
+        }
     }
 ]
 ```
@@ -58,6 +62,9 @@ description: "Aggregates and lists national resources and reserves data, with op
 <ParamField query="limit" type="integer" default="20">
   Number of results to return. Maximum value is 30.
 </ParamField>
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip. Used for pagination.
+</ParamField>
 
 ### Response
 
@@ -72,8 +79,8 @@ description: "Aggregates and lists national resources and reserves data, with op
     <ResponseField name="commodity_type" type="string">
       The type of commodity.
     </ResponseField>
-    <ResponseField name="resources_reserves" type="string (JSON Object)">
-      A JSON string containing detailed data on resources and reserves.
+    <ResponseField name="resources_reserves" type="object">
+      A JSON Object containing detailed data on resources and reserves.
       <Expandable title="Resources/Reserves Structure">
         <ResponseField name="ore_resources_inferred" type="number" />
         <ResponseField name="resources_inferred" type="number" />

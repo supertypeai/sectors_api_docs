@@ -1,6 +1,6 @@
 ---
-title: "Mineral Company Financials"
-api: "GET /v2/insider/mineral-companies/{ticker}/financials/"
+title: "Mining Company Financials"
+api: "GET /v2/mining/companies/{ticker}/financials/"
 description: "Retrieves financial records for a company by its IDX ticker, allowing for comparison across multiple years."
 ---
 
@@ -8,37 +8,49 @@ description: "Retrieves financial records for a company by its IDX ticker, allow
 ```json 200
 [
     {
-        "company_id": 39,
+
         "idx_ticker": "ITMG.JK",
         "name": "PT Indo Tambang Megah",
         "year": 2024,
         "assets": 2406.54,
         "revenue": 2304.5,
-        "revenue_breakdown": "{\"Coal\": 2288.76, \"Services\": 5.29}",
+        "revenue_breakdown": {
+            "Coal": 2288.76,
+            "Services": 5.29
+        },
         "cost_of_revenue": 1605.69,
-        "cost_of_revenue_breakdown": "{\"Royalty\": 260.19, ...}",
+        "cost_of_revenue_breakdown": {
+            "Royalty": 260.19
+        },
         "net_profit": 375.6
     },
     {
-        "company_id": 39,
+
         "idx_ticker": "ITMG.JK",
         "name": "PT Indo Tambang Megah",
         "year": 2023,
         "assets": 2187.85,
         "revenue": 2374.32,
-        "revenue_breakdown": "{\"Coal\": 2368.32, \"Services\": 6.0}",
+        "revenue_breakdown": {
+            "Coal": 2368.32,
+            "Services": 6.0
+        },
         "cost_of_revenue": 1631.77,
-        "cost_of_revenue_breakdown": "{\"Royalty\": 332.11, ...}",
+        "cost_of_revenue_breakdown": {
+            "Royalty": 332.11
+        },
         "net_profit": 499.62
     }
+
 ]
-```
+
+````
 
 ```json 400
 {
   "error": "Invalid years parameter. Please provide a comma-separated list of integers."
 }
-```
+````
 
 ```json 429
 {
@@ -73,9 +85,7 @@ description: "Retrieves financial records for a company by its IDX ticker, allow
 
 <ResponseField name="[]" type="FinancialRecord">
   <Expandable title="Financial Record properties">
-    <ResponseField name="company_id" type="integer">
-      Unique identifier of the company.
-    </ResponseField>
+
     <ResponseField name="idx_ticker" type="string">
       The company's IDX ticker.
     </ResponseField>
@@ -91,17 +101,18 @@ description: "Retrieves financial records for a company by its IDX ticker, allow
     <ResponseField name="revenue" type="number">
       Total revenue for the year.
     </ResponseField>
-    <ResponseField name="revenue_breakdown" type="string (JSON Object)">
-      JSON string detailing the sources of revenue.
+    <ResponseField name="revenue_breakdown" type="object">
+      JSON object detailing the sources of revenue.
     </ResponseField>
     <ResponseField name="cost_of_revenue" type="number">
       Total cost of revenue for the year.
     </ResponseField>
-    <ResponseField name="cost_of_revenue_breakdown" type="string (JSON Object)">
-      JSON string detailing the components of the cost of revenue.
+    <ResponseField name="cost_of_revenue_breakdown" type="object">
+      JSON object detailing the components of the cost of revenue.
     </ResponseField>
     <ResponseField name="net_profit" type="number">
       Net profit for the year.
     </ResponseField>
+
   </Expandable>
 </ResponseField>

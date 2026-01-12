@@ -1,6 +1,6 @@
 ---
 title: "List Global Commodity Data"
-api: "GET /v2/global-commodity-data/"
+api: "GET /v2/mining/global-commodity/"
 description: "Retrieves global commodity data, including production, reserves, and trade information. Allows filtering by country and commodity type."
 ---
 
@@ -14,8 +14,32 @@ description: "Retrieves global commodity data, including production, reserves, a
         "resources_reserves": null,
         "resources_reserves_share": null,
         "export_import": null,
-        "production_volume": "{\"2014\": 274, \"2015\": 279.2, \"2016\": 287.7, \"2017\": 292.5, \"2018\": 313, \"2019\": 325.1, \"2020\": 328, \"2021\": 307.2, \"2022\": 306.3, \"2023\": 296.1, \"2024\": 284}",
-        "production_share": "{\"2014\": 8.38, \"2015\": 8.3, \"2016\": 8.18, \"2017\": 8.17, \"2018\": 8.56, \"2019\": 9.01, \"2020\": 9.42, \"2021\": 8.59, \"2022\": 8.4, \"2023\": 8.13, \"2024\": 7.76}"
+        "production_volume": {
+            "2014": 274, 
+            "2015": 279.2, 
+            "2016": 287.7, 
+            "2017": 292.5, 
+            "2018": 313, 
+            "2019": 325.1, 
+            "2020": 328, 
+            "2021": 307.2, 
+            "2022": 306.3, 
+            "2023": 296.1, 
+            "2024": 284
+        },
+        "production_share": {
+            "2014": 8.38, 
+            "2015": 8.3, 
+            "2016": 8.18, 
+            "2017": 8.17, 
+            "2018": 8.56, 
+            "2019": 9.01, 
+            "2020": 9.42, 
+            "2021": 8.59, 
+            "2022": 8.4, 
+            "2023": 8.13, 
+            "2024": 7.76
+        }
     },
     {
         "id": 15,
@@ -24,8 +48,32 @@ description: "Retrieves global commodity data, including production, reserves, a
         "resources_reserves": null,
         "resources_reserves_share": null,
         "export_import": null,
-        "production_volume": "{\"2014\": 90.4, \"2015\": 95.4, \"2016\": 98.9, \"2017\": 95.4, \"2018\": 97, \"2019\": 100, \"2020\": 98.9, \"2021\": 93.2, \"2022\": 90.1, \"2023\": 81.5, \"2024\": 83.7}",
-        "production_share": "{\"2014\": 2.76, \"2015\": 2.84, \"2016\": 2.81, \"2017\": 2.66, \"2018\": 2.65, \"2019\": 2.77, \"2020\": 2.84, \"2021\": 2.61, \"2022\": 2.47, \"2023\": 2.24, \"2024\": 2.29}"
+        "production_volume": {
+            "2014": 90.4, 
+            "2015": 95.4, 
+            "2016": 98.9, 
+            "2017": 95.4, 
+            "2018": 97, 
+            "2019": 100, 
+            "2020": 98.9, 
+            "2021": 93.2, 
+            "2022": 90.1, 
+            "2023": 81.5, 
+            "2024": 83.7
+        },
+        "production_share": {
+            "2014": 2.76, 
+            "2015": 2.84, 
+            "2016": 2.81, 
+            "2017": 2.66, 
+            "2018": 2.65, 
+            "2019": 2.77, 
+            "2020": 2.84, 
+            "2021": 2.61, 
+            "2022": 2.47, 
+            "2023": 2.24, 
+            "2024": 2.29
+        }
     }
 ]
 ```
@@ -63,6 +111,9 @@ description: "Retrieves global commodity data, including production, reserves, a
 <ParamField query="limit" type="integer" default="20">
   Number of results to return. Maximum value is 30.
 </ParamField>
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip. Used for pagination.
+</ParamField>
 
 ### Response
 
@@ -86,11 +137,11 @@ description: "Retrieves global commodity data, including production, reserves, a
     <ResponseField name="export_import" type="string | null">
       Indicates if the country is a net exporter or importer.
     </ResponseField>
-    <ResponseField name="production_volume" type="string (JSON Object) | null">
-      A JSON string representing a dictionary of production volumes by year.
+    <ResponseField name="production_volume" type="object | null">
+      A JSON object representing a dictionary of production volumes by year.
     </ResponseField>
-    <ResponseField name="production_share" type="string (JSON Object) | null">
-      A JSON string representing a dictionary of production shares by year.
+    <ResponseField name="production_share" type="object | null">
+      A JSON object representing a dictionary of production shares by year.
     </ResponseField>
   </Expandable>
 </ResponseField>

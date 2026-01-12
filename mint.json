@@ -60,6 +60,12 @@
       "url": "recipes"
     },
     {
+      "name": "Postman Collection",
+      "version": "v2",
+      "icon": "lightbulb",
+      "url": "recipes/postman-collection/01-postman-collection"
+    },
+    {
       "name": "Generative AI Series",
       "version": "v1",
       "icon": "microchip-ai",
@@ -189,13 +195,13 @@
               ]
             },
             {
-              "group": "Mineral Company Insider",
+              "group": "Mining Companies (Extension)",
               "icon": "gem",
               "pages": [
-                "api-references/v2/mineral-companies",
-                "api-references/v2/mineral-companies-detail",
-                "api-references/v2/mineral-companies-performance",
-                "api-references/v2/mineral-companies-financials",
+                "api-references/v2/mining-companies",
+                "api-references/v2/mining-companies-detail",
+                "api-references/v2/mining-companies-performance",
+                "api-references/v2/mining-companies-financials",
                 "api-references/v2/mining-sites",
                 "api-references/v2/mining-licenses",
                 "api-references/v2/commodity-production",

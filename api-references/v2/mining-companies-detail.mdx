@@ -1,30 +1,34 @@
 ---
-title: "Mineral Company Detail"
-api: "GET /v2/insider/mineral-companies/{company_id}/"
-description: "Retrieves a comprehensive overview of a single mineral company by its ID, including operational details, contact info, licenses, and aggregate counts."
+title: "Mining Company Detail"
+api: "GET /v2/mining/companies/{company_id}/"
+description: "Retrieves a comprehensive overview of a single mining company by its ID, including operational details, contact info, licenses, and aggregate counts."
 ---
 
 <ResponseExample>
 ```json 200
 {
-    "id": 8,
-    "name": "PT Aneka Tambang Tbk",
-    "idx_ticker": "ANTM.JK",
+    "id": 1,
+    "name": "PT Adaro Andalan Indonesia Tbk",
+    "idx_ticker": "AADI.JK",
     "operation_province": "Jakarta",
     "operation_kabkot": "Jakarta Selatan",
-    "representative_address": "Gedung Aneka Tambang Tower A...",
-    "company_type": "Mine Owner",
-    "key_operation": "Mining",
-    "activities": "[\"Holding\", \"Gold Mining\", \"Silver Mining\"]",
-    "website": "www.antam.com",
-    "phone_number": "021-7891234",
-    "email": "corsec@antam.com",
-    "mining_license": "[{\"license_type\": \"IUP\", \"license_number\": \"1103/1/IUP/PMDN/2022\", ...}]",
-    "mining_contract": "[]",
-    "commodity": "[\"Nickel\", \"Gold\"]",
+    "representative_address": "Cyber 2 Tower Lantai 26, Jl. H.R. Rasuna Said Blok X-5, No.13, Jakarta 12950",
+    "company_type": "Holding",
+    "key_operation": "Coal Trading",
+    "activities": [
+        "Trading"
+    ],
+    "website": "www.adaroindonesia.com",
+    "phone_number": "021-25533065",
+    "email": "corsec@adaroindonesia.com",
+    "mining_license": [],
+    "mining_contract": [],
+    "commodity": [
+        "Coal"
+    ],
     "aggregates": {
-        "mining_site_count": 3,
-        "mining_license_count": 19
+        "mining_site_count": 0,
+        "mining_license_count": 0
     }
 }
 ```
@@ -54,7 +58,7 @@ description: "Retrieves a comprehensive overview of a single mineral company by 
 ### Path Parameters
 
 <ParamField path="company_id" type="integer" required>
-  The unique identifier of the mineral company.
+  The unique identifier of the mining company.
 </ParamField>
 
 ### Response
@@ -85,8 +89,8 @@ description: "Retrieves a comprehensive overview of a single mineral company by 
     <ResponseField name="key_operation" type="string">
       A brief description of the company's primary operations.
     </ResponseField>
-    <ResponseField name="activities" type="string (JSON Array)">
-      A JSON string array of the company's business activities.
+    <ResponseField name="activities" type="object">
+      A JSON object containing an array of the company's business activities.
     </ResponseField>
     <ResponseField name="website" type="string">
       Company's official website.
@@ -97,8 +101,8 @@ description: "Retrieves a comprehensive overview of a single mineral company by 
     <ResponseField name="email" type="string">
       Company's contact email address.
     </ResponseField>
-    <ResponseField name="mining_license" type="string (JSON Array)">
-      A JSON string containing an array of detailed mining licenses held by the
+    <ResponseField name="mining_license" type="object">
+      A JSON object containing an array of detailed mining licenses held by the
       company.
       <Expandable title="License Object Structure">
         <ResponseField name="license_type" type="string" />
@@ -109,10 +113,10 @@ description: "Retrieves a comprehensive overview of a single mineral company by 
         <ResponseField name="commodity" type="string" />
       </Expandable>
     </ResponseField>
-    <ResponseField name="mining_contract" type="string (JSON Array)">
+    <ResponseField name="mining_contract" type="string[]">
       A JSON string containing an array of mining contracts.
     </ResponseField>
-    <ResponseField name="commodity" type="string (JSON Array)">
+    <ResponseField name="commodity" type="string[]">
       A JSON string array of commodities the company deals with.
     </ResponseField>
     <ResponseField name="aggregates" type="object">

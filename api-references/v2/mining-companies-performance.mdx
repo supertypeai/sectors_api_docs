@@ -1,7 +1,7 @@
 ---
-title: "Mineral Company Performance"
-api: "GET /v2/insider/mineral-companies/{company_id}/performance/"
-description: "Retrieves and compares performance data for a specific mineral company across multiple years."
+title: "Mining Company Performance"
+api: "GET /v2/mining/companies/{company_id}/performance/"
+description: "Retrieves and compares performance data for a specific mining company across multiple years."
 ---
 
 <ResponseExample>
@@ -11,13 +11,19 @@ description: "Retrieves and compares performance data for a specific mineral com
         "year": 2022,
         "commodity_type": "Coal",
         "commodity_sub_type": "Sub-bituminous & Metallurgical Coal",
-        "commodity_stats": "{\"unit\": \"Mt\", \"production_volume\": 49.1, ...}"
+        "commodity_stats": {
+            "unit": "Mt",
+            "production_volume": 49.1
+        }
     },
     {
         "year": 2019,
         "commodity_type": "Coal",
         "commodity_sub_type": "Sub-bituminous & Metallurgical Coal",
-        "commodity_stats": "{\"unit\": \"Mt\", \"production_volume\": 51.6, ...}"
+        "commodity_stats": {
+            "unit": "Mt",
+            "production_volume": 51.6
+        }
     }
 ]
 ```
@@ -47,7 +53,7 @@ description: "Retrieves and compares performance data for a specific mineral com
 ### Path Parameters
 
 <ParamField path="company_id" type="integer" required>
-  The unique identifier of the mineral company.
+  The unique identifier of the mining company.
 </ParamField>
 
 ### Query Parameters
@@ -70,8 +76,8 @@ description: "Retrieves and compares performance data for a specific mineral com
     <ResponseField name="commodity_sub_type" type="string">
       The specific sub-type of the commodity.
     </ResponseField>
-    <ResponseField name="commodity_stats" type="string (JSON Object)">
-      A JSON string containing detailed statistics.
+    <ResponseField name="commodity_stats" type="object">
+      A JSON object containing detailed statistics.
       <Expandable title="Commodity Stats Structure">
         <ResponseField name="unit" type="string">
           Unit of measurement (e.g., "Mt").

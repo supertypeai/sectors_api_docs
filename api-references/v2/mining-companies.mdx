@@ -1,7 +1,7 @@
 ---
-title: "List Mineral Companies"
-api: "GET /v2/insider/mineral-companies/"
-description: "Searches for mineral companies. Provides powerful search across name, ticker, and key operations, and allows filtering by commodity."
+title: "List Mining Companies"
+api: "GET /v2/mining/companies/"
+description: "Searches for mining companies. Provides powerful search across name, ticker, and key operations, and allows filtering by commodity."
 ---
 
 <ResponseExample>
@@ -57,6 +57,9 @@ description: "Searches for mineral companies. Provides powerful search across na
 </ParamField>
 <ParamField query="limit" type="integer" default="20">
   Number of results to return. Maximum value is 30.
+</ParamField>
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip. Used for pagination.
 </ParamField>
 
 ### Response

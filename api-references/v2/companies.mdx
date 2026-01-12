@@ -1,5 +1,5 @@
 ---
-title: "Companies V2"
+title: "Companies Screener"
 api: "GET /v2/companies/"
 description: "High-performance API for filtering and sorting companies with a SQL-like interface. Supports both structured queries (`where`, `order_by`) and natural language queries (`q`). Returns a paginated list of companies."
 ---
@@ -31,8 +31,7 @@ description: "High-performance API for filtering and sorting companies with a SQ
         "natural_query": "top 2 banks by market cap in 2024",
         "translated_params": {
             "where": "sub_sector = 'banks'",
-            "order_by": "market_cap",
-            "desc": true,
+            "order_by": "-market_cap",
             "limit": 2,
             "offset": 0
         },
@@ -124,6 +123,10 @@ description: "High-performance API for filtering and sorting companies with a SQ
   A natural language query (e.g., `"top 10 tech companies by revenue in 2023"`).
   When `q` is provided, all other query parameters (`where`, `order_by`, etc.)
   are ignored, as the LLM will generate them.
+  <Accordion title="Query Capabilities & Logic">
+    - **Smart FY Handling**: To account for reporting lags, "latest year" queries made between January to April default to the previous audited year (e.g., 2026 queries use 2024 data).
+    - Note for Enhanced Accuracy: For the most precise results, we recommend filtering by specific sectors or industries using our standardized slugs. You can retrieve the complete list of official slugs from [Subsectors](https://docs.sectors.app/api-references/helper-list/subsectors), [Subindustries](https://docs.sectors.app/api-references/helper-list/subindustries), or [Industries](https://docs.sectors.app/api-references/helper-list/industries).
+  </Accordion>
 </ParamField>
 <ParamField query="where" type="string">
   SQL-like conditions for advanced filtering. This parameter is ignored if `q`
@@ -175,7 +178,7 @@ description: "High-performance API for filtering and sorting companies with a SQ
           - **last_close_price**: The last closing price of the stock.
           - **daily_close_change**: The percentage change in the stock's closing price from the previous day.
           - **forward_pe**: The forward Price-to-Earnings ratio based on future earnings estimates.
-          - **eps**: Earnings Per Share from the most recent period.
+
           - **intrinsic_value**: An estimate of the stock's "true" value based on financial modeling.
           - **esg_score**: A score representing the company's Environmental, Social, and Governance performance.
           - **yield_ttm**: The dividend yield over the Trailing Twelve Months.
@@ -209,13 +212,14 @@ description: "High-performance API for filtering and sorting companies with a SQ
           - **der_mrq**: Debt-to-Equity ratio (Most Recent Quarter).
           - **roa_ttm**: Return on Assets (Trailing Twelve Months).
           - **roe_ttm**: Return on Equity (Trailing Twelve Months).
-          - **total_assets_ttm**: Total assets (Trailing Twelve Months).
-          - **total_equity_ttm**: Total equity (Trailing Twelve Months).
-          - **total_revenue_ttm**: Total revenue (Trailing Twelve Months).
-          - **net_income_ttm**: Net income (Trailing Twelve Months).
-          - **total_liabilities_ttm**: Total liabilities (Trailing Twelve Months).
+          - **total_assets_mrq**: Total assets (Most Recent Quarter).
+          - **total_equity_mrq**: Total equity (Most Recent Quarter).
+          - **total_revenue_mrq**: Total revenue (Most Recent Quarter).
+          - **earnings_mrq**: Net income or earnings (Most Recent Quarter).
+          - **total_liabilities_mrq**: Total liabilities (Most Recent Quarter).
           - **yearly_mcap_change**: The percentage change in market cap over the last year.
-          - **dividend_yield_5y_avg**: The average dividend yield over the last 5 years.
+          - **dividend_yield_avg**: The average dividend yield.
+          - **dividend_yield_avg_period**: The period used for the average dividend yield calculation.
           - **ytd_low_price**: Year-to-date low price.
           - **ytd_low_date**: Date of year-to-date low price.
           - **ytd_high_price**: Year-to-date high price.
@@ -240,10 +244,9 @@ description: "High-performance API for filtering and sorting companies with a SQ
             - `where=roe[2023] > 0.15 and roe[2022] > 0.15`
             - `where=pe[2024] < pe_peer_avg[2024]`
           </Accordion>
-          - **annual_dividend_total[YYYY]**: Total dividend for the specified year.
-          - **annual_dividend_yield[YYYY]**: Dividend yield for the specified year.
-          - **total_dividend[YYYY]**: Alias for `annual_dividend_total`.
-          - **total_yield[YYYY]**: Alias for `annual_dividend_yield`.
+          - **total_dividend[YYYY]**: Total dividend for the specified year.
+          - **total_yield[YYYY]**: Dividend yield for the specified year.
+          - **eps[YYYY]**: Earnings Per Share for the specified year.
           - **allowance_for_loans[YYYY]**: Allowance for loan losses.
           - **capital_expenditure[YYYY]**: Capital expenditure.
           - **cash_and_equivalents[YYYY]**: Cash and equivalents.
@@ -347,8 +350,58 @@ description: "High-performance API for filtering and sorting companies with a SQ
           - **efficiency_ratio[YYYY]**: Efficiency ratio.
           - **net_interest_margin[YYYY]**: Net Interest Margin (NIM).
           - **cost_to_income_ratio[YYYY]**: Cost-to-Income ratio.
-          - **historical_eps_value[YYYY]**: The historical Earnings Per Share value for the specified year.
-          - **historical_eps_growth[YYYY]**: The year-over-year growth of the historical EPS for the specified year.
+          - **eps_growth[YYYY]**: The year-over-year growth of Earnings Per Share for the specified year.
+        </Accordion>
+        <Accordion title="Quarterly Financial Data">
+          **How to Use**: You **must** use bracket notation `field[Qi-YYYY]` to access data for a specific quarter.
+          <Accordion title="Examples">
+            - `where=revenue_q[Q1-2024] > 1000000000`
+            - `where=earnings_q[Q4-2023] > earnings_q[Q3-2023]`
+          </Accordion>
+          - **revenue_q[Period]**: Revenue for the specified quarter (e.g., `Q1-2024`).
+          - **earnings_q[Period]**: Earnings/Net Income for the specified quarter.
+          - **gross_profit_q[Period]**: Gross Profit.
+          - **ebit_q[Period]**: EBIT (Earnings Before Interest and Taxes).
+          - **ebitda_q[Period]**: EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization).
+          - **earnings_before_tax_q[Period]**: Earnings Before Tax (EBT).
+          - **tax_q[Period]**: Tax expense.
+          - **cost_of_revenue_q[Period]**: Cost of revenue.
+          - **operating_pnl_q[Period]**: Operating Profit/Loss.
+          - **operating_expense_q[Period]**: Operating expenses.
+          - **interest_income_q[Period]**: Interest income.
+          - **interest_expense_q[Period]**: Interest expense.
+          - **non_operating_income_or_loss_q[Period]**: Non-operating income or loss.
+          - **total_assets_q[Period]**: Total assets.
+          - **total_liabilities_q[Period]**: Total liabilities.
+          - **total_equity_q[Period]**: Total equity.
+          - **total_debt_q[Period]**: Total debt.
+          - **cash_only_q[Period]**: Cash balance.
+          - **current_assets_q[Period]**: Current assets.
+          - **current_liabilities_q[Period]**: Current liabilities.
+          - **non_current_liabilities_q[Period]**: Non-current liabilities.
+          - **operating_cash_flow_q[Period]**: Operating cash flow.
+          - **investing_cash_flow_q[Period]**: Investing cash flow.
+          - **financing_cash_flow_q[Period]**: Financing cash flow.
+          - **free_cash_flow_q[Period]**: Free cash flow.
+          - **capital_expenditure_q[Period]**: Capital expenditure.
+          - **net_interest_income_q[Period]**: Net interest income (Banks).
+          - **non_interest_income_q[Period]**: Non-interest income (Banks).
+          - **gross_loan_q[Period]**: Gross loans (Banks).
+          - **net_loan_q[Period]**: Net loans (Banks).
+          - **total_deposit_q[Period]**: Total deposits (Banks).
+          - **time_deposit_q[Period]**: Time deposits (Banks).
+          - **savings_account_q[Period]**: Savings accounts (Banks).
+          - **current_account_q[Period]**: Current accounts (Banks).
+          - **allowance_for_loans_q[Period]**: Allowance for loans (Banks).
+          - **non_interest_bearing_liabilities_q[Period]**: Non-interest bearing liabilities.
+          - **other_interest_bearing_liabilities_q[Period]**: Other interest-bearing liabilities.
+          - **interest_expense_non_operating_q[Period]**: Non-operating interest expense.
+          - **premium_income_q[Period]**: Premium income (Insurance).
+          - **premium_expense_q[Period]**: Premium expense (Insurance).
+          - **net_premium_income_q[Period]**: Net premium income (Insurance).
+          - **realized_capital_goods_investment_q[Period]**: Realized capital goods investment.
+          - **provision_q[Period]**: Provisions.
+          - **total_cash_and_due_from_banks_q[Period]**: Total cash and due from banks.
         </Accordion>
         <Accordion title="General JSON List Fields">
           **How to Use**: The query checks if **any** object in the list matches the condition. Use `=` or `like` for string properties and numeric operators (`>`, `<`, etc.) for numeric properties.
@@ -369,16 +422,16 @@ description: "High-performance API for filtering and sorting companies with a SQ
         </Accordion>
       </AccordionGroup>
     </Accordion>
+
   </AccordionGroup>
 </ParamField>
 <ParamField query="order_by" type="string" default="symbol">
-  Field to sort results by (e.g., `"market_cap"` or `"revenue[2024]"`). Use a
-  comma-separated list for multi-level sorting. This parameter is ignored if
-  `q` is present.
-</ParamField>
-<ParamField query="desc" type="string" default="false">
-  Sort direction for `order_by`. Use `true` for descending order. This
-  parameter is ignored if `q` is present.
+  Field to sort results by. 
+  - Use `-` prefix for descending order (e.g., `order_by="-market_cap"`).
+  - Use parentheses for arithmetic expressions to avoid ambiguity with the negative sign (e.g., `order_by="-(earnings[2024]/earnings[2023])"`).
+  - Use a comma-separated list for multi-level sorting.
+  
+  This parameter is ignored if `q` is present.
 </ParamField>
 <ParamField query="limit" type="integer" default="50">
   The maximum number of results to return. Max value is 200. This parameter is
@@ -388,8 +441,23 @@ description: "High-performance API for filtering and sorting companies with a SQ
   The number of results to skip for pagination. This parameter is ignored if
   `q` is present.
 </ParamField>
+<ParamField query="include_query_values" type="boolean" default="false">
+  If set to `true`, the response will include a `query_values` object showing the
+  interpreted values used for the query (e.g., extracted year, country).
+</ParamField>
 
 ### Response
+
+<ResponseField name="query_values" type="object">
+  <Expandable title="Query Values properties">
+    <ResponseField name="year" type="integer">
+      The year extracted from the query, if any.
+    </ResponseField>
+    <ResponseField name="country" type="string">
+      The country name extracted from the query, if any.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
 
 <ResponseField name="results" type="Company[]">
   An array of company objects matching the query.
