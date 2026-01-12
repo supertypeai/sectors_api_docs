@@ -218,7 +218,8 @@ description: "High-performance API for filtering and sorting companies with a SQ
           - **earnings_mrq**: Net income or earnings (Most Recent Quarter).
           - **total_liabilities_mrq**: Total liabilities (Most Recent Quarter).
           - **yearly_mcap_change**: The percentage change in market cap over the last year.
-          - **dividend_yield_5y_avg**: The average dividend yield over the last 5 years.
+          - **dividend_yield_avg**: The average dividend yield.
+          - **dividend_yield_avg_period**: The period used for the average dividend yield calculation.
           - **ytd_low_price**: Year-to-date low price.
           - **ytd_low_date**: Date of year-to-date low price.
           - **ytd_high_price**: Year-to-date high price.
@@ -243,10 +244,8 @@ description: "High-performance API for filtering and sorting companies with a SQ
             - `where=roe[2023] > 0.15 and roe[2022] > 0.15`
             - `where=pe[2024] < pe_peer_avg[2024]`
           </Accordion>
-          - **annual_dividend_total[YYYY]**: Total dividend for the specified year.
-          - **annual_dividend_yield[YYYY]**: Dividend yield for the specified year.
-          - **total_dividend[YYYY]**: Alias for `annual_dividend_total`.
-          - **total_yield[YYYY]**: Alias for `annual_dividend_yield`.
+          - **total_dividend[YYYY]**: Total dividend for the specified year.
+          - **total_yield[YYYY]**: Dividend yield for the specified year.
           - **eps[YYYY]**: Earnings Per Share for the specified year.
           - **allowance_for_loans[YYYY]**: Allowance for loan losses.
           - **capital_expenditure[YYYY]**: Capital expenditure.
@@ -351,8 +350,7 @@ description: "High-performance API for filtering and sorting companies with a SQ
           - **efficiency_ratio[YYYY]**: Efficiency ratio.
           - **net_interest_margin[YYYY]**: Net Interest Margin (NIM).
           - **cost_to_income_ratio[YYYY]**: Cost-to-Income ratio.
-          - **historical_eps_value[YYYY]**: The historical Earnings Per Share value for the specified year.
-          - **historical_eps_growth[YYYY]**: The year-over-year growth of the historical EPS for the specified year.
+          - **eps_growth[YYYY]**: The year-over-year growth of Earnings Per Share for the specified year.
         </Accordion>
         <Accordion title="Quarterly Financial Data">
           **How to Use**: You **must** use bracket notation `field[Qi-YYYY]` to access data for a specific quarter.
