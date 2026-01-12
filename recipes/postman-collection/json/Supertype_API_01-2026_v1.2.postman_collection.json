@@ -1473,7 +1473,7 @@
 							"name": "Mineral Companies",
 							"item": [
 								{
-									"name": "v2/mineral/mineral-companies/",
+									"name": "v2/mining/mineral-companies/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1484,7 +1484,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/companies/?limit=50&offset=0",
+											"raw": "{{environment}}/v2/mining/companies/?limit=50&offset=0",
 											"host": [
 												"{{environment}}"
 											],
@@ -1509,7 +1509,7 @@
 									"response": []
 								},
 								{
-									"name": "v2/mineral/mineral-companies/{{company_id}}/",
+									"name": "v2/mining/mineral-companies/{{company_id}}/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1520,7 +1520,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/companies/{{company_id}}/",
+											"raw": "{{environment}}/v2/mining/companies/{{company_id}}/",
 											"host": [
 												"{{environment}}"
 											],
@@ -1536,7 +1536,7 @@
 									"response": []
 								},
 								{
-									"name": "v2/mineral/mineral-companies/{{company_id}}/performance/",
+									"name": "v2/mining/mineral-companies/{{company_id}}/performance/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1547,7 +1547,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/companies/{{company_id}}/performance/",
+											"raw": "{{environment}}/v2/mining/companies/{{company_id}}/performance/",
 											"host": [
 												"{{environment}}"
 											],
@@ -1564,7 +1564,7 @@
 									"response": []
 								},
 								{
-									"name": "v2/mineral/mineral-companies/{{ticker}}/financials/",
+									"name": "v2/mining/mineral-companies/{{ticker}}/financials/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1575,7 +1575,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/companies/ITMG.JK/financials/",
+											"raw": "{{environment}}/v2/mining/companies/ITMG.JK/financials/",
 											"host": [
 												"{{environment}}"
 											],
@@ -1597,7 +1597,7 @@
 							"name": "Mining Data",
 							"item": [
 								{
-									"name": "v2/mineral/mining-sites/",
+									"name": "v2/mining/sites/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1608,14 +1608,14 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/mining-sites/?limit=50&offset=0",
+											"raw": "{{environment}}/v2/mining/sites/?limit=50&offset=0",
 											"host": [
 												"{{environment}}"
 											],
 											"path": [
 												"v2",
 												"mineral",
-												"mining-sites",
+												"sites",
 												""
 											],
 											"query": [
@@ -1633,7 +1633,7 @@
 									"response": []
 								},
 								{
-									"name": "v2/mineral/production/total/",
+									"name": "v2/mining/production/total/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1644,7 +1644,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/production/total/?year=2024&commodity_type=Coal",
+											"raw": "{{environment}}/v2/mining/production/total/?year=2024&commodity_type=Coal",
 											"host": [
 												"{{environment}}"
 											],
@@ -1670,7 +1670,7 @@
 									"response": []
 								},
 								{
-									"name": "v2/mineral/resources-reserves/",
+									"name": "v2/mining/resources-reserves/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1681,7 +1681,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/resources-reserves/?commodity=gold",
+											"raw": "{{environment}}/v2/mining/resources-reserves/?commodity=gold",
 											"host": [
 												"{{environment}}"
 											],
@@ -1707,7 +1707,7 @@
 							"name": "Commodities & Trade",
 							"item": [
 								{
-									"name": "v2/mineral/commodities/{{commodity_name}}/price/",
+									"name": "v2/mining/commodities/{{commodity_name}}/price/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1718,7 +1718,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/commodities/{{commodity_name}}/price/",
+											"raw": "{{environment}}/v2/mining/commodities/{{commodity_name}}/price/",
 											"host": [
 												"{{environment}}"
 											],
@@ -1735,7 +1735,7 @@
 									"response": []
 								},
 								{
-									"name": "v2/mineral/trade/exports/",
+									"name": "v2/mining/trade/exports/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1746,7 +1746,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/trade/exports/?year=2023&commodity_type=Coal",
+											"raw": "{{environment}}/v2/mining/trade/exports/?year=2023&commodity_type=Coal",
 											"host": [
 												"{{environment}}"
 											],
@@ -1772,7 +1772,7 @@
 									"response": []
 								},
 								{
-									"name": "v2/mineral/global-commodity/",
+									"name": "v2/mining/global-commodity/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1783,7 +1783,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/global-commodity/",
+											"raw": "{{environment}}/v2/mining/global-commodity/",
 											"host": [
 												"{{environment}}"
 											],
@@ -1798,7 +1798,7 @@
 									"response": []
 								},
 								{
-									"name": "v2/mineral/sales-destination/",
+									"name": "v2/mining/sales-destination/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1809,7 +1809,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/sales-destination/?ticker=ITMG.JK",
+											"raw": "{{environment}}/v2/mining/sales-destination/?ticker=ITMG.JK",
 											"host": [
 												"{{environment}}"
 											],
@@ -1835,7 +1835,7 @@
 							"name": "Licenses & News",
 							"item": [
 								{
-									"name": "v2/mineral/licenses/",
+									"name": "v2/mining/licenses/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1846,7 +1846,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/licenses/?status=active",
+											"raw": "{{environment}}/v2/mining/licenses/?status=active",
 											"host": [
 												"{{environment}}"
 											],
@@ -1867,7 +1867,7 @@
 									"response": []
 								},
 								{
-									"name": "v2/mineral/mining-license-auctions/",
+									"name": "v2/mining/license-auctions/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1878,14 +1878,14 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/mining-license-auctions/",
+											"raw": "{{environment}}/v2/mining/license-auctions/",
 											"host": [
 												"{{environment}}"
 											],
 											"path": [
 												"v2",
 												"mineral",
-												"mining-license-auctions",
+												"license-auctions",
 												""
 											]
 										}
@@ -1893,7 +1893,7 @@
 									"response": []
 								},
 								{
-									"name": "v2/mineral/news/",
+									"name": "v2/mining/news/",
 									"request": {
 										"method": "GET",
 										"header": [
@@ -1904,7 +1904,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{environment}}/v2/mineral/news/?limit=20",
+											"raw": "{{environment}}/v2/mining/news/?limit=20",
 											"host": [
 												"{{environment}}"
 											],
