@@ -25,21 +25,36 @@ To add financial data capabilities to Claude, simply edit your configuration fil
 {
   "mcpServers": {
     "sectors": {
-      "transport": {
-        "type": "sse",
-        "url": "https://sectors-mcp.aidityasadhakim250.workers.dev/sse",
-        "headers": {
-          "Authorization": "Bearer YOUR_SECTORS_API_KEY"
-        }
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://sectors-mcp.aidityasadhakim250.workers.dev/sse",
+        "--header",
+        "Authorization:${AUTH_TOKEN}"
+      ],
+      "env": {
+        "AUTH_TOKEN": "Bearer YOUR_API_KEY_HERE"
       }
     }
   }
 }
 ```
 
+This uses `mcp-remote` to bridge the SSE connection into stdio.
+
 > **Note:** You can get your API key at [sectors.app](https://sectors.app).
 
-### Using with Other MCP Clients
+### Using with Claude Code
+
+Add the Sectors MCP server using the CLI:
+
+```bash
+claude mcp add --transport sse sectors https://sectors-mcp.aidityasadhakim250.workers.dev/sse \
+  --header "Authorization: Bearer YOUR_API_KEY_HERE"
+```
+
+### Using with Other MCP Clients (Programmatic)
 
 For any standard MCP client (TypeScript/Python/Go), use the following connection details:
 
