@@ -1,4 +1,7 @@
-# Sectors API Agent Skill - User Guide
+---
+title: "Sectors API Agent Skill - User Guide"
+sidebarTitle: "2. Agent Skills Guide"
+---
 
 A comprehensive skill for AI agents to fetch financial market data from the Sectors API, supporting both Indonesia Stock Exchange (IDX) and Singapore Exchange (SGX).
 
@@ -42,6 +45,66 @@ Select your AI agent below and follow the integration steps:
 - [Claude Code Integration](#claude-code-integration)
 - [OpenCode Integration](#opencode-integration)
 - [OpenClaw Integration](#openclaw-integration)
+
+---
+
+<Accordion title="📋 Installation Guide for LLM (Click to expand if your human asked you to install this skill)">
+
+If your human user is asking you to install the Sectors API skill, follow these steps:
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/supertypeai/sectors-agent-skills/
+cd sectors-agent-skills
+```
+
+### Step 2: Read the SKILL.md File
+
+The main skill definition is in `SKILL.md`. Read this file completely - it contains:
+- Constraints you MUST follow (line 25-30)
+- Setup instructions (line 32-63)
+- Endpoint decision tables (line 81-137)
+- Code patterns and examples (line 139-242)
+- Important warnings and gotchas (line 253-278)
+
+### Step 3: Verify Environment
+
+Check that `SECTORS_API_KEY` is set:
+
+```python
+import os
+api_key = os.environ.get("SECTORS_API_KEY")
+if not api_key:
+    print("Please ask your human to set SECTORS_API_KEY")
+    print("Get a key at: https://sectors.app/api")
+```
+
+### Step 4: Test the Connection
+
+Make a test API call to verify everything works:
+
+```python
+import requests
+import os
+
+API_KEY = os.environ["SECTORS_API_KEY"]
+BASE_URL = "https://api.sectors.app/v1"
+headers = {"Authorization": API_KEY}
+
+response = requests.get(f"{BASE_URL}/subsectors/", headers=headers)
+if response.ok:
+    print(f"Success! Found {len(response.json())} subsectors")
+```
+
+**Important Notes:**
+- **NEVER** hardcode or guess an API key
+- Always read the key from `SECTORS_API_KEY` environment variable
+- The Authorization header uses the raw key (no "Bearer" prefix)
+- All endpoints are GET requests to `https://api.sectors.app/v1`
+- If the env var is not set, prompt the user to set it
+
+</Accordion>
 
 ---
 

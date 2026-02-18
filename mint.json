@@ -231,9 +231,10 @@
       ]
     },
     {
-      "group": "Sectors MCP",
+      "group": "Sectors for AI Agents",
       "pages": [
-        "recipes/sectors-mcp/00-sectors-mcp-guide"
+        "recipes/sectors-for-ai-agents/00-sectors-mcp-guide",
+        "recipes/sectors-for-ai-agents/01-agent-skills-guide"
       ]
     },
     {
