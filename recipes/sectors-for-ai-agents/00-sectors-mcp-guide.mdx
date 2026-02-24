@@ -3,23 +3,57 @@ title: "Use Sectors MCP Server for Financial Analysis"
 sidebarTitle: "1. MCP Server Guide"
 ---
 
-# Sectors MCP Server Documentation
+## Overview
 
-Welcome to the official documentation for the **Sectors MCP Server**. This Model Context Protocol (MCP) server connects your AI agents (like Claude Desktop) directly to real-time financial market data, stock analysis, and company reports for the Indonesia Stock Exchange (IDX) and Singapore Exchange (SGX).
+### What is Sectors?
+[Sectors](https://sectors.app) is a financial data platform focused on Southeast Asian stock markets — covering **IDX** (Indonesia), **SGX** (Singapore), and **KLSE** (Malaysia). It provides data like company reports, quarterly financials, market indices, sector analysis, top movers, dividends, IPO calendars, and more.
 
-## 🚀 Quick Start
+### What is MCP?
+Before MCP, connecting AI assistants to external tools was fragmented — each service required a custom interface, its own authentication setup, and separate execution logic. As the number of tools grew, maintaining all these integrations became increasingly complex.
 
-**No installation required!** You can connect directly to our cloud-hosted server using Server-Sent Events (SSE).
+**Model Context Protocol (MCP)** was developed in 2024 by Anthropic to solve this: a shared standard that AI clients and external tools both speak, removing the need for one-off integrations on either side.
 
-### Using with Claude Desktop
+Think of it like English as the common language of international business — instead of every pair of countries needing a dedicated translator, everyone learns one shared language and communication just works.
 
-To add financial data capabilities to Claude, simply edit your configuration file:
+MCP, while developed by Anthropic, is **not Claude-specific**. MCP is supported by Claude Desktop, Cursor, Windsurf, VS Code, JetBrains IDEs, and more.
 
-1.  Open your Claude Desktop config file:
-    *   **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-    *   **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+MCP uses a **client-server model** where the AI app (client) connects to an MCP server, then discovers what tools are available, and calls them during conversations.
 
-2.  Add the `sectors` server configuration:
+There are two transport types in MCP, which determine how the server connects and runs:
+- **stdio**: Local subprocess. This means that the MCP server runs on your local machine.
+- **SSE** (Server-Sent Events): Remote server over HTTP. This means that the MCP server runs remotely and is accessible over the internet.
+
+### What is Sectors MCP?
+The **Sectors MCP Server** is a cloud-hosted service built on MCP that gives your AI assistant access to **financial market data and analytics** through a standardized interface. Once connected, you can fetch a variety of market and company data, such as:
+- **Company Reports & Financials**: Detailed company profiles, quarterly financials, dividends, and performance metrics.
+- **Market Indices & Rankings**: Stock market indices, top movers, most traded stocks, and daily transactions.
+- **Sector & Industry Analysis**: Tools for analyzing companies by sector, subsector, and industry.
+- **IDX & SGX Coverage**: Comprehensive tools for Indonesian and Singapore Exchange listed companies.
+- **Advanced Metrics**: Earnings yield, historical volatility, and more.
+
+The server is **cloud-hosted** on Cloudflare Workers with **40+ tools** covering IDX, SGX, and KLSE data — no local installation required.
+
+## Prerequisites
+Before beginning, make sure you have:
+1. **A Sectors API key** — requires an Insider plan.
+<Card title="Get your API key" horizontal icon="key" href="https://sectors.app">
+  Sign up for an Insider plan to get access to the Sectors API
+</Card>
+
+2. **An MCP-compatible client** — any of the following will work:
+   - [Claude Desktop](https://claude.ai/download)
+   - [Cursor](https://cursor.com)
+   - [VS Code](https://code.visualstudio.com) (with GitHub Copilot)
+   - [Windsurf](https://windsurf.com/), [JetBrains IDEs](https://www.jetbrains.com/), or any client that supports SSE transport
+
+## Quick Start Setup
+
+### Claude Desktop
+Open your Claude Desktop config file:
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+Add the following to your `mcpServers` object:
 
 ```json
 {
@@ -41,69 +75,340 @@ To add financial data capabilities to Claude, simply edit your configuration fil
 }
 ```
 
-This uses `mcp-remote` to bridge the SSE connection into stdio.
+Replace `YOUR_API_KEY_HERE` with your Sectors API key, then restart Claude Desktop. The Sectors tools will appear in the tools panel.
 
-> **Note:** You can get your API key at [sectors.app](https://sectors.app).
-
-### Using with Claude Code
-
-Add the Sectors MCP server using the CLI:
+### Claude Code
+Run the following command in your terminal:
 
 ```bash
 claude mcp add --transport sse sectors https://sectors-mcp.aidityasadhakim250.workers.dev/sse \
   --header "Authorization: Bearer YOUR_API_KEY_HERE"
 ```
 
-### Using with Other MCP Clients (Programmatic)
+Replace `YOUR_API_KEY_HERE` with your Sectors API key. The server will be available in your next Claude Code session.
 
-For any standard MCP client (TypeScript/Python/Go), use the following connection details:
+### Cursor
+Open or create `~/.cursor/mcp.json` and add the following:
 
-*   **Transport Type**: `sse`
-*   **URL**: `https://sectors-mcp.aidityasadhakim250.workers.dev/sse`
-*   **Headers**: `Authorization: Bearer <YOUR_API_KEY>`
+```json
+{
+  "mcpServers": {
+    "sectors": {
+      "url": "https://sectors-mcp.aidityasadhakim250.workers.dev/sse",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}
+```
+
+Replace `YOUR_API_KEY_HERE` with your Sectors API key, then restart Cursor. The Sectors tools will be available in Agent mode.
+
+### VS Code (Copilot)
+Create a `.vscode/mcp.json` file in your workspace and add the following:
+
+```json
+{
+  "servers": {
+    "sectors": {
+      "type": "sse",
+      "url": "https://sectors-mcp.aidityasadhakim250.workers.dev/sse",
+      "headers": {
+        "Authorization": "Bearer ${input:sectors-api-key}"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "sectors-api-key",
+      "description": "Your Sectors API key",
+      "password": true
+    }
+  ]
+}
+```
+
+VS Code will securely prompt you for your Sectors API key the first time the server starts. This config is workspace-scoped, so you'll need it in each project where you want Sectors data.
+
+### Generic SSE Client
+If you're using any other MCP-compatible client that supports SSE transport, connect with these settings:
+
+| Setting | Value |
+|---|---|
+| Transport | `sse` |
+| URL | `https://sectors-mcp.aidityasadhakim250.workers.dev/sse` |
+| Authorization header | `Bearer YOUR_API_KEY_HERE` |
+
+## Usage Examples
+
+### Example 1: Company Overview
+> "Give me an overview of Bank Central Asia (BBCA)"
+
+**Tool called:** `fetch-company-report`
+
+```json
+{
+  "ticker": "BBCA",
+  "sections": "overview"
+}
+```
+
+**Sample output:**
+
+```json
+{
+  "symbol": "BBCA.JK",
+  "company_name": "PT Bank Central Asia Tbk.",
+  "overview": {
+    "sector": "Financials",
+    "sub_sector": "Banks",
+    "market_cap": 887857728862500,
+    "market_cap_rank": 2,
+    "employee_num": 27937,
+    "listing_date": "2000-05-31",
+    "last_close_price": 7275,
+    "indices": ["LQ45", "IDX30", "KOMPAS100", "IDXHIDIV20", "..."]
+  }
+}
+```
+
+### Example 2: Market Screening
+> "What are the top 5 banking stocks in Indonesia by market cap?"
+
+**Tool called:** `fetch-top-companies`
+
+```json
+{
+  "sub_sector": "banks",
+  "classifications": "market_cap",
+  "n_stock": 5
+}
+```
+
+**Sample output:**
+
+```json
+{
+  "market_cap": [
+    { "symbol": "BBCA.JK", "company_name": "PT Bank Central Asia Tbk.",              "market_cap": 887857728862500 },
+    { "symbol": "BBRI.JK", "company_name": "PT Bank Rakyat Indonesia (Persero) Tbk", "market_cap": 574666266378210 },
+    { "symbol": "BMRI.JK", "company_name": "PT Bank Mandiri (Persero) Tbk",          "market_cap": 487409999978900 },
+    { "symbol": "BBNI.JK", "company_name": "PT Bank Negara Indonesia (Persero) Tbk", "market_cap": 165790285639140 },
+    { "symbol": "BNLI.JK", "company_name": "Bank Permata Tbk",                       "market_cap": 145069160996250 }
+  ]
+}
+```
+
+### Example 3: Comparing Stocks
+> "Compare BBCA, BMRI, and BBRI — show me their PE ratio and market cap"
+
+**Tool called:** `get-companies-report`
+
+```json
+{
+  "symbols": ["BBCA.JK", "BMRI.JK", "BBRI.JK"],
+  "columns": ["company_name", "market_cap", "forward_pe", "last_close_price"]
+}
+```
+
+**Sample output:**
+
+```json
+[
+  {
+    "symbol": "BBCA.JK",
+    "company_name": "PT Bank Central Asia Tbk.",
+    "market_cap": 887857728862500,
+    "forward_pe": 44.70,
+    "last_close_price": 7275
+  },
+  {
+    "symbol": "BBRI.JK",
+    "company_name": "PT Bank Rakyat Indonesia (Persero) Tbk",
+    "market_cap": 574666266378210,
+    "forward_pe": null,
+    "last_close_price": 3830
+  },
+  {
+    "symbol": "BMRI.JK",
+    "company_name": "PT Bank Mandiri (Persero) Tbk",
+    "market_cap": 487409999978900,
+    "forward_pe": null,
+    "last_close_price": 5275
+  }
+]
+```
+
+### Example 4: Dividend Analysis
+> "Show me BBCA's dividend payments in 2024"
+
+**Tool called:** `fetch-company-report`
+
+```json
+{
+  "ticker": "BBCA",
+  "sections": "dividend"
+}
+```
+
+**Sample output:**
+
+```json
+{
+  "symbol": "BBCA.JK",
+  "dividend": {
+    "historical_dividends": {
+      "2024": {
+        "breakdown": [
+          { "date": "2024-03-25", "total": 227.5, "yield": 0.0228 },
+          { "date": "2024-11-21", "total": 50.0,  "yield": 0.0050 }
+        ],
+        "total_dividend": 277.5,
+        "total_yield": 0.0278
+      }
+    },
+    "dividend_ttm": 305,
+    "payout_ratio": 0.647
+  }
+}
+```
+
+## Tools Reference
+
+### Company Analysis
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `fetch-company-report` | Full company report with selectable sections (overview, valuation, future, peers, financials, dividend, management, ownership) | `ticker`, `sections` |
+| `get-companies-report` | Fetch specific columns for one or more companies in a single call | `symbols[]`, `columns[]` |
+| `fetch-company-segments` | Business segment breakdown by revenue/profit for a given year | `ticker`, `financialYear` |
+| `fetch-listing-performance` | IPO and post-listing price performance | `ticker` |
+| `get-companies-nipe` | Net Income Per Employee — productivity metric across companies | `symbols[]` |
+
+### Market Screening & Rankings
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `fetch-top-companies` | Rank companies by market cap, PE, PB, PS, dividend yield, revenue, or earnings — with optional filters | `classifications`, `sub_sector`, `n_stock`, `filters` |
+| `fetch-top-company-movers` | Top price gainers and losers over 1d / 7d / 14d / 30d / 365d | `periods`, `classifications`, `sub_sector`, `n_stock` |
+| `fetch-most-traded-stocks` | Most traded stocks by transaction volume over a date range | `startDate`, `endDate`, `nStock`, `subSector` |
+| `fetch-top-growth-companies` | Top earnings and revenue growth gainers/losers | `classifications`, `sub_sector`, `n_stock` |
+| `get-top-companies-by-metrics` | Rank IDX companies by a single metric (market cap, EPS, dividend, employee count) | `metric`, `subsector`, `limit` |
+
+### Financial Data
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `fetch-quarterly-financials` | Quarterly income statement and balance sheet | `ticker`, `nQuarters`, `reportDate` |
+| `fetch-quarterly-financial-dates` | List of available quarterly report dates for a company | `ticker` |
+| `get-company-financial` | Latest financial snapshot — PE, PB, ROE, ROA, DAR, DER | `symbol` (`.JK` suffix) |
+| `get-company-dividend` | Dividend payments and yield for a specific year | `symbol` (`.JK` suffix), `year` |
+| `get-companies-historical-financial` | Yearly historical financials — revenue, earnings, assets, equity, cash flow, and more | `symbol` (`.JK` suffix), `fields[]` |
+
+### Market Indices & Daily Data
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `fetch-index` | Current snapshot of a market index | `index` |
+| `fetch-index-daily` | Daily index price history over a date range | `index_code`, `start_date`, `end_date` |
+| `fetch-idx-market-cap` | Historical total IDX market capitalization | `startDate`, `endDate` |
+| `get-daily-transaction` | Daily close price, volume, and market cap for specific stocks | `symbols[]`, `startDate`, `endDate` |
+| `fetch-companies-by-index` | List all companies in a given index (e.g. `lq45`, `idx30`, `kompas100`) | `index` |
+
+### Sector & Industry Classification
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `get-subsectors` | List all available subsectors with their parent sectors | — |
+| `fetch-industries` | List all industries | — |
+| `fetch-subindustries` | List all sub-industries | — |
+| `fetch-companies-by-subsector` | All companies in a given subsector | `subSector` |
+| `fetch-companies-by-subindustry` | All companies in a given sub-industry | `subIndustry` |
+| `fetch-companies-with-segments` | All companies that have segment-level financial data available | — |
+| `get-subsector-report` | Aggregated metrics and company list for a subsector | `subsector`, `columns[]` |
+| `fetch-ipo-companies` | Recently listed IPO companies, filterable by sector and date range | `startDate`, `endDate`, `sector`, `subSector` |
+
+### Singapore (SGX) Tools
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `fetch-sgx-sectors` | List all available SGX sectors | — |
+| `fetch-sgx-company-report` | Comprehensive SGX company report — overview, valuation, financials, dividend | `ticker` |
+| `fetch-sgx-companies-by-sector` | List SGX companies in a given sector | `sector` |
+| `fetch-sgx-top-companies` | Top SGX companies by dividend yield, revenue, earnings, market cap, or PE | `classifications`, `sector`, `minMarketCapMillion` |
+| `get-singapore-companies-report` | Fetch specific columns for one or more SGX companies | `symbols[]`, `columns[]` |
+| `get-singapore-company-historical-financial` | Yearly historical revenue and earnings for an SGX company | `symbol` |
+| `get-singapore-daily-transaction` | Daily close price, volume, and market cap for SGX stocks | `symbols[]`, `startDate`, `endDate` |
+| `get-singapore-company-dividend` | SGX dividend breakdown and yield for a specific year | `symbol`, `year` |
+| `get-singapore-top-companies-by-metrics` | Rank SGX companies by a single metric (market cap, PE, PB, dividend yield, EPS, etc.) | `metric`, `subsector`, `limit` |
+| `calculate-singapore-earnings-yield` | Calculates earnings yield (1 ÷ PE) for an SGX company | `symbol` |
+| `calculate-singapore-historical-volatility` | Estimates annualized historical volatility from price range data | `symbol`, `useTimeframe` |
+
+## Troubleshooting & FAQ
+
+### Connection & Setup
+**The server doesn't appear in my MCP client after setup.**
+Restart your client completely after adding the config — most clients only load MCP servers on startup. For Claude Code, run `claude mcp list` in the terminal to confirm the server is registered.
+
+**VS Code keeps prompting me for the API key on every session.**
+This is expected behavior. The VS Code config uses `${input:sectors-api-key}` which prompts you once per session and stores it securely in memory. It won't persist across restarts by design.
+
+**I'm on Windows and the server fails to connect in Claude Desktop.**
+Claude Desktop on Windows runs MCP servers via stdio, which requires wrapping `npx` calls with `cmd /c`. Update your config to:
+
+```json
+{
+  "mcpServers": {
+    "sectors": {
+      "command": "cmd",
+      "args": [
+        "/c", "npx", "-y", "mcp-remote",
+        "https://sectors-mcp.aidityasadhakim250.workers.dev/sse",
+        "--header", "Authorization:${AUTH_TOKEN}"
+      ],
+      "env": {
+        "AUTH_TOKEN": "Bearer YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}
+```
 
 ---
 
-## 📊 Available Data & Tools
+### Authentication
+**I'm getting a `401 Unauthorized` error.**
 
-Once connected, your AI assistant will have access to the following tools:
+Check that:
+1. Your API key is correct and belongs to an active Insider plan account
+2. The key is formatted as `Bearer YOUR_API_KEY_HERE` (the `Bearer ` prefix is required)
+3. There are no extra spaces or line breaks in the key value
 
-### 🇮🇩 Indonesia Stock Exchange (IDX)
+**My API key works on the Sectors website but not in the MCP server.**
 
-#### **Company Analysis**
-*   **Get Company Reports**: Fetch comprehensive reports including overview, financials, and valuation (`fetch-company-report`).
-*   **Revenue Segments**: Breakdown of company revenue sources (`fetch-company-segments`).
-*   **IPO Data**: Information on recent Initial Public Offerings (`fetch-ipo-companies`).
-
-#### **Financials**
-*   **Quarterly Statements**: Access detailed quarterly financial reports (`fetch-quarterly-financials`).
-*   **Dividends**: Get dividend history and payout information (`fetch-company-dividend`).
-*   **Historical Data**: Retrieve long-term financial performance (`fetch-historical-financial`).
-
-#### **Market Movers & Indices**
-*   **Top Movers**: Identify top gainers and losers in the market (`fetch-top-company-movers`).
-*   **Most Traded**: See which stocks have the highest trading volume (`fetch-most-traded-stocks`).
-*   **Indices**: Get data for specific market indices like IHSG (`fetch-index`, `fetch-index-daily`).
-
-#### **Sector Analysis**
-*   **Industry Breakdown**: Analyze specific subsectors and industries (`fetch-subsector-report`, `fetch-industries`).
-*   **NIPE Metrics**: Compare companies using Net Income to Price to Equity ratios (`fetch-companies-nipe`).
-
-### 🇸🇬 Singapore Exchange (SGX)
-
-#### **Company Data**
-*   **SGX Reports**: Specialized reports for Singapore-listed companies (`fetch-sgx-company-report`).
-*   **Financials**: Historical financial data for SGX entities (`fetch-singapore-company-historical-financial`).
-
-#### **Advanced Metrics**
-*   **Earnings Yield**: Rank companies by earnings yield (`fetch-singapore-earnings-yield`).
-*   **Volatility**: Analyze historical price volatility (`fetch-singapore-historical-volatility`).
-*   **Top Performers**: Find top SGX companies by custom metrics (`fetch-sgx-top-companies`).
+The MCP server uses the same key as the Sectors API. Make sure you're copying the key from your [Sectors API settings page](https://sectors.app) and not a cached or expired token.
 
 ---
 
-## Support
+### Data & Coverage
+**Which markets does the Sectors MCP server cover?**
 
-This tool is part of the **Sectors** financial data platform.
+The server covers three Southeast Asian exchanges:
+- **IDX** — Indonesia Stock Exchange (primary coverage, 40+ tools)
+- **SGX** — Singapore Exchange (full company reports, rankings, dividends)
+- **KLSE** — Bursa Malaysia (basic company report and sector data)
 
-*   **Website & API Keys**: [Sectors App](https://sectors.app)
+**What ticker format should I use?**
+
+Most IDX tools accept the bare ticker (e.g. `BBCA`, `TLKM`). A handful of tools — specifically those that use the `.JK` suffix in their parameter description — require the full format (e.g. `BBCA.JK`). SGX tickers use their SGX code directly (e.g. `D05`, `O39`).
+
+**A tool returned an empty array or no results.**
+
+The most common causes:
+- **Wrong subsector slug** — subsector names are in kebab-case (e.g. `banks`, `software-it-services`). Use `get-subsectors` to get the exact list.
+- **Ticker not found** — double-check the symbol and whether the `.JK` suffix is required for that tool.
+- **Date range too narrow** — for daily transaction tools, ensure your date range includes trading days.
+
+**How fresh is the data?**
+
+Market prices and daily transaction data are updated at end-of-day. Quarterly financials are updated as companies file their reports. Dividend data is updated when announcements are made.
+
+## Next Steps
+{/* Links to Sectors platform, MCP docs, other recipes */}
+
