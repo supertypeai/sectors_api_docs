@@ -1,0 +1,405 @@
+---
+title: "Sectors API Agent Skill - User Guide"
+sidebarTitle: "2. Agent Skills Guide"
+---
+
+A comprehensive skill for AI agents to fetch financial market data from the Sectors API, supporting both Indonesia Stock Exchange (IDX) and Singapore Exchange (SGX).
+
+---
+
+## What You Can Do
+
+With this skill, your AI agent can help you with financial market data:
+
+- **Query company reports** - Get financials, valuations, and company details for any IDX or SGX stock
+- **Track historical prices** - Access stock prices and market indices over time
+- **Discover companies** - Find companies by sector, subsector, or index
+- **Get top performers** - See top gainers, losers, and growth companies
+- **Access market rankings** - View companies ranked by P/E, dividend yield, market cap, and more
+
+**Supported Exchanges:**
+- **IDX** (Indonesia Stock Exchange) - 19 endpoints
+- **SGX** (Singapore Exchange) - 6 endpoints
+
+---
+
+## Quick Start
+
+### 1. Get Your API Key
+
+Visit [https://sectors.app/api](https://sectors.app/api) to obtain your API key.
+
+### 2. Download the Skill
+
+Clone the repository to your local machine:
+
+```bash
+git clone https://github.com/supertypeai/sectors-agent-skills/
+cd sectors-agent-skills
+```
+
+### 3. Choose Your AI Agent
+
+Select your AI agent below and follow the integration steps:
+
+- [Claude Code Integration](#claude-code-integration)
+- [OpenCode Integration](#opencode-integration)
+- [OpenClaw Integration](#openclaw-integration)
+
+---
+
+<Accordion title="📋 Installation Guide for LLM (Click to expand if your human asked you to install this skill)">
+
+If your human user is asking you to install the Sectors API skill, follow these steps:
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/supertypeai/sectors-agent-skills/
+cd sectors-agent-skills
+```
+
+### Step 2: Read the SKILL.md File
+
+The main skill definition is in `SKILL.md`. Read this file completely - it contains:
+- Constraints you MUST follow (line 25-30)
+- Setup instructions (line 32-63)
+- Endpoint decision tables (line 81-137)
+- Code patterns and examples (line 139-242)
+- Important warnings and gotchas (line 253-278)
+
+### Step 3: Verify Environment
+
+Check that `SECTORS_API_KEY` is set:
+
+```python
+import os
+api_key = os.environ.get("SECTORS_API_KEY")
+if not api_key:
+    print("Please ask your human to set SECTORS_API_KEY")
+    print("Get a key at: https://sectors.app/api")
+```
+
+### Step 4: Test the Connection
+
+Make a test API call to verify everything works:
+
+```python
+import requests
+import os
+
+API_KEY = os.environ["SECTORS_API_KEY"]
+BASE_URL = "https://api.sectors.app/v1"
+headers = {"Authorization": API_KEY}
+
+response = requests.get(f"{BASE_URL}/subsectors/", headers=headers)
+if response.ok:
+    print(f"Success! Found {len(response.json())} subsectors")
+```
+
+**Important Notes:**
+- **NEVER** hardcode or guess an API key
+- Always read the key from `SECTORS_API_KEY` environment variable
+- The Authorization header uses the raw key (no "Bearer" prefix)
+- All endpoints are GET requests to `https://api.sectors.app/v1`
+- If the env var is not set, prompt the user to set it
+
+</Accordion>
+
+---
+
+## Claude Code Integration
+
+### Step 1: Set the API Key
+
+Configure Claude Code with your Sectors API key:
+
+```bash
+claude config set env SECTORS_API_KEY your-api-key-here
+```
+
+Or add it to your Claude Code configuration file (usually at `~/.config/claude/settings.json`):
+
+```json
+{
+  "env": {
+    "SECTORS_API_KEY": "your-api-key-here"
+  }
+}
+```
+
+### Step 2: Point Claude to the Skill
+
+When starting Claude Code from the `sectors-agent-skills` directory, it will automatically read the `SKILL.md` file. You can also explicitly reference it:
+
+```bash
+claude --skill ./SKILL.md
+```
+
+Or within Claude Code:
+
+```
+/claude read ./SKILL.md
+```
+
+### Step 3: Start Chatting
+
+Once configured, you can ask Claude questions like:
+
+- "What is the current market cap of BBCA?"
+- "Show me the top 5 gainers in the LQ45 index over the last 7 days"
+- "Get the quarterly financials for BBRI for the last 4 quarters"
+- "Compare the P/E ratios of banks in the IDX"
+- "What are the top dividend yield stocks in Singapore?"
+
+---
+
+## OpenCode Integration
+
+### Step 1: Set the API Key
+
+Configure OpenCode with your Sectors API key in your configuration file (usually at `~/.config/opencode/config.json`):
+
+```json
+{
+  "env": {
+    "SECTORS_API_KEY": "your-api-key-here"
+  }
+}
+```
+
+Or set it via environment variable before starting OpenCode:
+
+```bash
+export SECTORS_API_KEY="your-api-key-here"
+opencode
+```
+
+### Step 2: Load the Skill
+
+OpenCode will automatically detect `SKILL.md` in the current directory. You can also manually load it:
+
+```
+/load-skill ./SKILL.md
+```
+
+### Step 3: Start Chatting
+
+Ask OpenCode questions about financial data:
+
+- "What companies are in the banking subsector?"
+- "Get the company report for D05 (DBS Group)"
+- "Show me IDX historical data for the last 30 days"
+
+---
+
+## OpenClaw Integration
+
+[OpenClaw](https://openclaw.ai) is a locally-running AI assistant that you can chat with via WhatsApp, Telegram, Discord, or other messaging platforms.
+
+### Step 1: Install the Skill
+
+OpenClaw manages skills through [ClawHub](https://www.clawhub.ai), the official skills registry. To install the Sectors API skill:
+
+```bash
+openclaw skills install sectors-api
+```
+
+Or simply tell your OpenClaw agent:
+
+```
+Install the sectors-api skill
+```
+
+### Step 2: Set the API Key
+
+Configure the Sectors API key in your OpenClaw environment:
+
+```bash
+openclaw config set SECTORS_API_KEY your-api-key-here
+```
+
+Or add it to your OpenClaw configuration file:
+
+```json
+{
+  "env": {
+    "SECTORS_API_KEY": "your-api-key-here"
+  }
+}
+```
+
+### Step 3: Start Chatting
+
+Once installed, message your OpenClaw agent on your preferred platform:
+
+- "What's the market cap of BBCA?"
+- "Show me top gainers this week"
+- "Compare valuations of banks in IDX"
+- "Get company report for D05"
+
+### Alternative: Manual Installation
+
+If the skill is not yet available on ClawHub, you can manually install it:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/supertypeai/sectors-agent-skills/
+   ```
+
+2. Copy the skill to your OpenClaw skills directory:
+   ```bash
+   cp -r sectors-agent-skills ~/.openclaw/skills/sectors-api
+   ```
+
+3. Set your API key and restart OpenClaw
+
+---
+
+## Example Conversations
+
+### Example 1: Simple Query
+
+**You:** "What's the market cap of Bank Central Asia?"
+
+**Agent:** "Bank Central Asia (BBCA) has a market cap of approximately Rp 875 trillion."
+
+### Example 2: Comparative Analysis
+
+**You:** "Compare the P/E ratios of the top 3 banks"
+
+**Agent:** "Here are the P/E ratios for the top 3 banks by market cap:
+- BBCA: 22.5
+- BBRI: 18.3
+- BMRI: 15.7"
+
+### Example 3: Market Movers
+
+**You:** "Show me the biggest gainers this week in the LQ45"
+
+**Agent:** "Top 5 gainers in LQ45 over the last 7 days:
+1. ABCD +12.5%
+2. EFGH +8.3%
+3. ..."
+
+### Example 4: Historical Data
+
+**You:** "What was BBCA's stock price on January 1, 2025?"
+
+**Agent:** "On January 1, 2025, BBCA closed at Rp 9,250 with a volume of 12.5 million shares."
+
+---
+
+## Tips for Better Results
+
+### Ticker Format
+
+Your agent understands various ticker formats and will normalize them automatically:
+
+| What You Type | Normalized To |
+|---------------|---------------|
+| `bbca.jk` | `BBCA` |
+| `bbca` | `BBCA` |
+| `d05.si` | `D05` |
+| `d05` | `D05` |
+
+### Common Queries
+
+Here are examples of questions that work well:
+
+| You Ask | What Happens |
+|---------|--------------|
+| "Market cap of BBCA" | Gets company overview data |
+| "Top 5 gainers this week" | Shows top 5 stocks with highest price increase |
+| "BBRI quarterly earnings" | Retrieves last 4 quarters of financial data |
+| "Companies in banking" | Lists all companies in the banking subsector |
+| "LQ45 companies" | Shows all companies in the LQ45 index |
+| "Top dividend yield stocks" | Ranks stocks by dividend yield |
+
+---
+
+## Troubleshooting
+
+### API Key Issues
+
+**Problem:** `403 Forbidden` or "Invalid API key"
+
+**Solutions:**
+1. Verify key is set: `echo $SECTORS_API_KEY`
+2. Check no extra spaces: `export SECTORS_API_KEY="$(echo $SECTORS_API_KEY | tr -d ' ')"`
+3. Verify your key at https://sectors.app/api
+
+### Environment Variable Not Set
+
+**Problem:** "SECTORS_API_KEY environment variable is not set"
+
+**Solutions:**
+```bash
+# Set in current shell
+export SECTORS_API_KEY="your-key"
+
+# Or add to shell profile
+echo 'export SECTORS_API_KEY="your-key"' >> ~/.bashrc
+source ~/.bashrc
+
+# For Claude Code
+claude config set env SECTORS_API_KEY your-key
+
+# For OpenClaw
+openclaw config set SECTORS_API_KEY your-key
+```
+
+### Module Not Found
+
+**Problem:** `ImportError: No module named 'requests'`
+
+**Solution:**
+```bash
+pip install requests
+```
+
+### Network Issues
+
+**Problem:** "Cannot reach https://api.sectors.app"
+
+**Solutions:**
+1. Check internet connection
+2. Verify no firewall blocking the domain
+3. Try: `curl -I https://api.sectors.app/v1/subsectors/`
+
+### Invalid Ticker
+
+**Problem:** "Resource not found" for ticker
+
+**Solutions:**
+1. Remove `.JK` or `.SI` suffix (agent does this automatically)
+2. Use uppercase: `bbca` → `BBCA`
+3. Check available companies in sector/index first
+
+---
+
+## Data Reference
+
+### Available Indices (IDX)
+
+`ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`, `idxhidiv20`, `idxq30`, `idxv30`, `jii70`, `kompas100`, `lq45`, `sminfra18`, `srikehati`, `economic30`, `idxvesta28`
+
+### Top Companies Classifications
+
+**IDX:** `dividend_yield`, `total_dividend`, `revenue`, `earnings`, `market_cap`, `pb`, `pe`, `ps`
+
+**SGX:** `dividend_yield`, `revenue`, `earnings`, `market_cap`, `pe`
+
+**Growth:** `top_earnings_growth_gainers`, `top_earnings_growth_losers`, `top_revenue_growth_gainers`, `top_revenue_growth_losers`
+
+**Movers:** `top_gainers`, `top_losers`
+
+---
+
+## Need More Help?
+
+- **API Documentation:** Visit [https://sectors.app/api](https://sectors.app/api)
+- **Skill Repository:** [https://github.com/supertypeai/sectors-agent-skills](https://github.com/supertypeai/sectors-agent-skills)
+- **Issues & Bugs:** Open an issue on the GitHub repository
+
+**Ready to start?** Set your API key and ask your AI agent about financial data!
