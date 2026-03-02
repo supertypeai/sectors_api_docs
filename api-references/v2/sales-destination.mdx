@@ -1,62 +1,29 @@
 ---
-title: "Get Sales Destination Data"
-api: "GET /v2/mining/sales-destination/"
-description: "Retrieves and aggregates sales destination data for a specific company ticker. The data is structured by year, then by country, providing a comprehensive overview of a company's sales distribution over time and across different locations."
+title: "Company Sales Destinations"
+api: "GET /v2/mining/sales-destination/{slug}/"
+description: "Retrieves sales destination breakdown for a specific mining company by its slug, showing revenue and volume distribution by country for a specific year (defaults to latest)."
 ---
 
 <ResponseExample>
 ```json 200
 {
-    "2023": {
-        "Bangladesh": {
-            "revenue": null,
-            "percentage_of_total_revenue": 0.34,
-            "volume": 0.27,
-            "percentage_of_sales_volume": null
-        },
+    "year": 2024,
+    "data": {
         "China": {
-            "revenue": null,
-            "percentage_of_total_revenue": 26.72,
-            "volume": 20.966,
-            "percentage_of_sales_volume": 29.0
+            "revenue_usd": null,
+            "percentage_of_total_revenue": null,
+            "volume": null,
+            "percentage_of_sales_volume": 16.0,
+            "commodity_type": "Coal",
+            "unit": "Mt"
         },
         "India": {
-            "revenue": null,
-            "percentage_of_total_revenue": 14.13,
-            "volume": 11.088,
-            "percentage_of_sales_volume": 16.8
-        },
-        "Indonesia": {
-            "revenue": 587.0,
-            "percentage_of_total_revenue": 35.19,
-            "volume": 27.61,
-            "percentage_of_sales_volume": null
-        },
-        "Japan": {
-            "revenue": null,
-            "percentage_of_total_revenue": 7.16,
-            "volume": 5.619,
-            "percentage_of_sales_volume": 7.5
-        }
-    },
-    "2024": {
-        "China": {
-            "revenue": null,
+            "revenue_usd": null,
             "percentage_of_total_revenue": null,
-            "volume": 9.2,
-            "percentage_of_sales_volume": 38.0
-        },
-        "Indonesia": {
-            "revenue": null,
-            "percentage_of_total_revenue": null,
-            "volume": 5.6,
-            "percentage_of_sales_volume": 23.0
-        },
-        "Japan": {
-            "revenue": null,
-            "percentage_of_total_revenue": null,
-            "volume": 4.3,
-            "percentage_of_sales_volume": 18.0
+            "volume": null,
+            "percentage_of_sales_volume": 11.0,
+            "commodity_type": "Coal",
+            "unit": "Mt"
         }
     }
 }
@@ -64,14 +31,7 @@ description: "Retrieves and aggregates sales destination data for a specific com
 
 ```json 400
 {
-  "error": "Query parameter 'ticker' is required."
-}
-```
-
-```json 429
-{
-  "code": 429,
-  "message": "Rate limit exceeded."
+  "error": "Query parameter 'slug' is required."
 }
 ```
 
@@ -84,33 +44,45 @@ description: "Retrieves and aggregates sales destination data for a specific com
   key.
 </ParamField>
 
+### Path Parameters
+
+<ParamField path="slug" type="string" required>
+  The company's unique identifier slug (e.g., `adaro-energy`).
+</ParamField>
+
 ### Query Parameters
 
-<ParamField query="ticker" type="string" required>
-  The company's stock ticker (e.g., 'ITMG.JK').
+<ParamField query="year" type="integer">
+  The year to retrieve. Defaults to the latest available year.
 </ParamField>
 
 ### Response
 
-<ResponseField name="[year]" type="object">
-  An object where each key is a year, containing sales data for that period.
-  <Expandable title="Year properties">
-    <ResponseField name="[country]" type="object">
-      An object where each key is a country name, detailing sales performance.
-      <Expandable title="Country properties">
-        <ResponseField name="revenue" type="number | null">
-          The total revenue from sales to this country.
-        </ResponseField>
-        <ResponseField name="percentage_of_total_revenue" type="number | null">
-          The percentage this country's revenue contributes to the total.
-        </ResponseField>
-        <ResponseField name="volume" type="number | null">
-          The total sales volume to this country.
-        </ResponseField>
-        <ResponseField name="percentage_of_sales_volume" type="number | null">
-          The percentage this country's volume contributes to the total.
-        </ResponseField>
-      </Expandable>
+<ResponseField name="year" type="integer">
+  The year for which sales destination data is returned.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  An object where each key is a country name, detailing sales performance.
+  <Expandable title="Country properties">
+    <ResponseField name="revenue_usd" type="number | null">
+      The total revenue from sales to this country in USD.
+    </ResponseField>
+    <ResponseField name="percentage_of_total_revenue" type="number | null">
+      The percentage this country's revenue contributes to the total.
+    </ResponseField>
+    <ResponseField name="volume" type="number | null">
+      The total sales volume to this country.
+    </ResponseField>
+    <ResponseField name="percentage_of_sales_volume" type="number | null">
+      The percentage this country's volume contributes to the total sales
+      volume.
+    </ResponseField>
+    <ResponseField name="commodity_type" type="string">
+      The type of commodity sold (e.g., "Coal").
+    </ResponseField>
+    <ResponseField name="unit" type="string">
+      The unit of measurement for the volume (e.g., "Mt").
     </ResponseField>
   </Expandable>
 </ResponseField>

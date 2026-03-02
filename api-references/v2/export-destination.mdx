@@ -1,6 +1,6 @@
 ---
 title: "Top Export Destinations"
-api: "GET /v2/mining/trade/exports/"
+api: "GET /v2/mining/exports/"
 description: "Ranks countries by total export value for a given year and commodity, showing the top destinations for exports."
 ---
 
@@ -24,13 +24,6 @@ description: "Ranks countries by total export value for a given year and commodi
 }
 ```
 
-```json 429
-{
-  "code": 429,
-  "message": "Rate limit exceeded."
-}
-```
-
 </ResponseExample>
 
 ### Header
@@ -43,12 +36,12 @@ description: "Ranks countries by total export value for a given year and commodi
 ### Query Parameters
 
 <ParamField query="year" type="integer" required>
-  The year to analyze export data for.
+  The year to analyze export data for (e.g., `2024`).
 </ParamField>
 <ParamField query="commodity_type" type="string" required>
-  The commodity to analyze (e.g., `Gold`).
+  The commodity to analyze (e.g., `Gold`, `Nickel`, `Coal`).
 </ParamField>
-<ParamField query="limit" type="integer" default="20">
+<ParamField query="limit" type="integer" default="10">
   The number of top countries to return. Maximum value is 30.
 </ParamField>
 

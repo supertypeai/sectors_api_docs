@@ -1,43 +1,34 @@
 ---
 title: "Commodity Price History"
-api: "GET /v2/mining/commodities/{commodity_name}/price/"
-description: "Retrieves historical price data for a commodity within a specified date range. The maximum allowed date range is 1 year (365 days)."
+api: "GET /v2/mining/commodities/{name}/price/"
+description: "Retrieves historical price data for a commodity by year range. Maximum range is 3 years."
 ---
 
 <ResponseExample>
 ```json 200
-{
-    "commodity_name": "Coal",
-    "price_history": [
-        {
-            "2023-01-01": "305.21"
-        },
-        {
-            "2023-02-01": "277.05"
-        }
-    ]
-}
+[
+    {
+        "name": "Coal",
+        "date": "2022-01-01",
+        "price_usd_per_ton": 158.5
+    },
+    {
+        "name": "Coal",
+        "date": "2022-02-01",
+        "price_usd_per_ton": 188.38
+    }
+]
 ```
 
 ```json 400
 {
-  "error": "Date range cannot exceed 365 days."
-}
-{
-  "error": "Invalid date format. Use YYYY-MM-DD."
+  "error": "The date range must not exceed 365 days."
 }
 ```
 
 ```json 404
 {
-  "error": "Price data not found for this commodity."
-}
-```
-
-```json 429
-{
-  "code": 429,
-  "message": "Rate limit exceeded."
+  "error": "Commodity 'Gold' not found."
 }
 ```
 
@@ -52,29 +43,31 @@ description: "Retrieves historical price data for a commodity within a specified
 
 ### Path Parameters
 
-<ParamField path="commodity_name" type="string" required>
-  The name of the commodity to retrieve price data for (e.g., `Coal`).
+<ParamField path="name" type="string" required>
+  The name of the commodity to retrieve price data for (e.g., `Coal (HBA 1)`).
 </ParamField>
 
 ### Query Parameters
 
-<ParamField query="start" type="string">
-  The start date for the price history in `YYYY-MM-DD` format.
+<ParamField query="start_year" type="integer">
+  Start year (e.g. 2022). Defaults to current year - 2.
 </ParamField>
-<ParamField query="end" type="string">
-  The end date for the price history in `YYYY-MM-DD` format.
+<ParamField query="end_year" type="integer">
+  End year inclusive (e.g. 2024). Defaults to current year.
 </ParamField>
 
 ### Response
 
-<ResponseField name="<CommodityPrice>" type="object">
-  <Expandable title="Commodity Price properties">
-    <ResponseField name="commodity_name" type="string">
-      The name of the commodity.
-    </ResponseField>
-    <ResponseField name="price_history" type="array">
-      An array of objects, where each object is a key-value pair of a date
-      (`YYYY-MM-DD`) and its corresponding price.
-    </ResponseField>
-  </Expandable>
+The response is a list of price records sorted by date in ascending order.
+
+<ResponseField name="name" type="string">
+  The name of the commodity.
+</ResponseField>
+
+<ResponseField name="date" type="string">
+  The date of the price entry (YYYY-MM-DD).
+</ResponseField>
+
+<ResponseField name="price_usd_per_ton" type="number">
+  The price of the commodity in USD per ton.
 </ResponseField>

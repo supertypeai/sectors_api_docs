@@ -1,61 +1,37 @@
 ---
 title: "Mining Company Financials"
-api: "GET /v2/mining/companies/{ticker}/financials/"
-description: "Retrieves financial records for a company by its IDX ticker, allowing for comparison across multiple years."
+api: "GET /v2/mining/companies/financials/{slug}/"
+description: "Retrieves financial records (assets, revenue, profit) for a mining company by its slug for a single year (defaults to latest)."
 ---
 
 <ResponseExample>
 ```json 200
-[
-    {
-
+{
+    "year": 2024,
+    "available_years": [2022, 2023, 2024],
+    "data": {
         "idx_ticker": "ITMG.JK",
         "name": "PT Indo Tambang Megah",
+        "slug": "indo-tambang-megah",
         "year": 2024,
-        "assets": 2406.54,
-        "revenue": 2304.5,
+        "assets_usd": 2406.54,
+        "revenue_usd": 2304.5,
         "revenue_breakdown": {
             "Coal": 2288.76,
             "Services": 5.29
         },
-        "cost_of_revenue": 1605.69,
+        "cost_of_revenue_usd": 1605.69,
         "cost_of_revenue_breakdown": {
             "Royalty": 260.19
         },
-        "net_profit": 375.6
-    },
-    {
-
-        "idx_ticker": "ITMG.JK",
-        "name": "PT Indo Tambang Megah",
-        "year": 2023,
-        "assets": 2187.85,
-        "revenue": 2374.32,
-        "revenue_breakdown": {
-            "Coal": 2368.32,
-            "Services": 6.0
-        },
-        "cost_of_revenue": 1631.77,
-        "cost_of_revenue_breakdown": {
-            "Royalty": 332.11
-        },
-        "net_profit": 499.62
+        "net_profit_usd": 375.6
     }
-
-]
-
-````
-
-```json 400
-{
-  "error": "Invalid years parameter. Please provide a comma-separated list of integers."
 }
-````
+```
 
-```json 429
+```json 404
 {
-  "code": 429,
-  "message": "Rate limit exceeded."
+  "error": "Company not found."
 }
 ```
 
@@ -70,49 +46,57 @@ description: "Retrieves financial records for a company by its IDX ticker, allow
 
 ### Path Parameters
 
-<ParamField path="ticker" type="string" required>
-  The IDX ticker symbol of the company (e.g., `ITMG.JK` or `ITMG`).
+<ParamField path="slug" type="string" required>
+  The unique identifier (slug) of the mining company.
 </ParamField>
 
 ### Query Parameters
 
-<ParamField query="years" type="string">
-  A comma-separated list of years to retrieve financial data for (e.g.,
-  `2024,2023`). If omitted, data for all available years will be returned.
+<ParamField query="year" type="integer">
+  The year to retrieve (e.g., 2024). Defaults to the latest available year.
 </ParamField>
 
 ### Response
 
-<ResponseField name="[]" type="FinancialRecord">
-  <Expandable title="Financial Record properties">
+<ResponseField name="year" type="integer">
+  The year for which financial data is being returned.
+</ResponseField>
 
-    <ResponseField name="idx_ticker" type="string">
+<ResponseField name="available_years" type="integer[]">
+  A list of all years where financial data is available for this company.
+</ResponseField>
+
+<ResponseField name="results" type="object">
+  <Expandable title="Financial Data properties">
+    <ResponseField name="idx_ticker" type="string | null">
       The company's IDX ticker.
     </ResponseField>
     <ResponseField name="name" type="string">
       The name of the company.
     </ResponseField>
+    <ResponseField name="slug" type="string">
+      The slug of the company.
+    </ResponseField>
     <ResponseField name="year" type="integer">
       The year of the financial record.
     </ResponseField>
-    <ResponseField name="assets" type="number">
-      Total assets for the year.
+    <ResponseField name="assets_usd" type="number | null">
+      Total assets for the year (in USD).
     </ResponseField>
-    <ResponseField name="revenue" type="number">
-      Total revenue for the year.
+    <ResponseField name="revenue_usd" type="number | null">
+      Total revenue for the year (in USD).
     </ResponseField>
     <ResponseField name="revenue_breakdown" type="object">
       JSON object detailing the sources of revenue.
     </ResponseField>
-    <ResponseField name="cost_of_revenue" type="number">
-      Total cost of revenue for the year.
+    <ResponseField name="cost_of_revenue_usd" type="number | null">
+      Total cost of revenue for the year (in USD).
     </ResponseField>
     <ResponseField name="cost_of_revenue_breakdown" type="object">
       JSON object detailing the components of the cost of revenue.
     </ResponseField>
-    <ResponseField name="net_profit" type="number">
-      Net profit for the year.
+    <ResponseField name="net_profit_usd" type="number | null">
+      Net profit for the year (in USD).
     </ResponseField>
-
   </Expandable>
 </ResponseField>

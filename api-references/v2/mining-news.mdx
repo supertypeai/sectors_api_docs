@@ -7,36 +7,36 @@ description: "Searches and lists mining-related news articles, with support for 
 <ResponseExample>
 ```json 200
 {
-    "count": 68,
-    "next": "https://api.example.com/v2/news/?page=2&page_size=20",
-    "previous": null,
     "results": [
         {
-            "id": 237,
             "title": "Indonesia Nickel HPM Climbs to $15,000.33/dmt in September 2025",
             "source": "https://nikel.co.id/2025/09/15/harga-patokan-nikel-naik-jadi-us-15-00033-per-dmt-pada-september-periode-ii/",
-            "timestamp": "2025-09-15 13:34:33"
+            "timestamp": "2025-09-15 13:34:33",
+            "commodity_type": ["Nickel"]
         },
         {
-            "id": 232,
             "title": "Indonesia cites lack of forestry permits in land seizures from nickel miners",
             "source": "https://www.mining.com/web/indonesia-cites-lack-of-forestry-permits-in-land-seizures-from-nickel-miners/",
-            "timestamp": "2025-09-12 00:00:00"
+            "timestamp": "2025-09-12 00:00:00",
+            "commodity_type": ["Nickel"]
         }
-    ]
+    ],
+    "pagination": {
+        "total_count": 68,
+        "showing": 2,
+        "limit": 20,
+        "offset": 0,
+        "has_next": true,
+        "has_previous": false,
+        "next_offset": 20,
+        "previous_offset": null
+    }
 }
 ```
 
 ```json 400
 {
-  "error": "Invalid pagination or limit parameters. Please provide positive integers."
-}
-```
-
-```json 429
-{
-  "code": 429,
-  "message": "Rate limit exceeded."
+  "error": "Invalid pagination parameters. 'limit' and 'offset' must be positive integers."
 }
 ```
 
@@ -54,46 +54,61 @@ description: "Searches and lists mining-related news articles, with support for 
 <ParamField query="keyword" type="string">
   Performs a full-text search on the titles of news articles.
 </ParamField>
-<ParamField query="commodity" type="string">
-  Filters news articles that are related to a specific commodity.
+<ParamField query="commodity_type" type="string">
+  Filters news articles related to a specific commodity (exact match). Options:
+  `Coal`, `Nickel`, `Copper`, `Gold`, `Bauxite`, `Tin`, `Sand, Stone, Gravel`.
 </ParamField>
-<ParamField query="page" type="integer" default="1">
-  The page number for paginated results.
+<ParamField query="limit" type="integer" default="20">
+  Number of results to return per page. Maximum value is 30.
 </ParamField>
-<ParamField query="page_size" type="integer" default="20">
-  The number of items to return per page. Maximum value is 30.
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip. Used for pagination.
 </ParamField>
 
 ### Response
 
-<ResponseField name="<PaginatedNewsResponse>" type="object">
-  <Expandable title="Paginated Response properties">
-    <ResponseField name="count" type="integer">
-      The total number of news articles matching the query.
+<ResponseField name="results" type="NewsArticle[]">
+  <Expandable title="News Article properties">
+    <ResponseField name="title" type="string">
+      The headline of the news article.
     </ResponseField>
-    <ResponseField name="next" type="string | null">
-      The URL for the next page of results, or `null` if this is the last page.
+    <ResponseField name="source" type="string">
+      The original source of the news.
     </ResponseField>
-    <ResponseField name="previous" type="string | null">
-      The URL for the previous page of results, or `null` if this is the first
-      page.
+    <ResponseField name="timestamp" type="string">
+      The publication timestamp of the article.
     </ResponseField>
-    <ResponseField name="results" type="NewsArticle[]">
-      An array of news article objects for the current page.
-      <Expandable title="News Article properties">
-        <ResponseField name="id" type="integer">
-          Unique identifier for the news article.
-        </ResponseField>
-        <ResponseField name="title" type="string">
-          The headline of the news article.
-        </ResponseField>
-        <ResponseField name="source" type="string">
-          The original source of the news.
-        </ResponseField>
-        <ResponseField name="timestamp" type="string">
-          The publication timestamp of the article.
-        </ResponseField>
-      </Expandable>
+    <ResponseField name="commodity_type" type="string[]">
+      List of commodities associated with the news article.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  <Expandable title="Pagination properties">
+    <ResponseField name="total_count" type="integer">
+      Total number of records matching the query.
+    </ResponseField>
+    <ResponseField name="showing" type="integer">
+      Number of records returned in the current response.
+    </ResponseField>
+    <ResponseField name="limit" type="integer">
+      The limit used for the query.
+    </ResponseField>
+    <ResponseField name="offset" type="integer">
+      The offset used for the query.
+    </ResponseField>
+    <ResponseField name="has_next" type="boolean">
+      Whether there are more results available.
+    </ResponseField>
+    <ResponseField name="has_previous" type="boolean">
+      Whether there are previous results available.
+    </ResponseField>
+    <ResponseField name="next_offset" type="integer | null">
+      The offset to use for the next page of results.
+    </ResponseField>
+    <ResponseField name="previous_offset" type="integer | null">
+      The offset to use for the previous page of results.
     </ResponseField>
   </Expandable>
 </ResponseField>

@@ -1,41 +1,48 @@
 ---
-title: "List Mining Sites"
+title: "Mining Sites"
 api: "GET /v2/mining/sites/"
-description: "Lists mining sites with advanced filtering for location, mineral type, and production volume, plus sorting capabilities."
+description: "Lists mining sites with advanced filtering for location, commodity type, and production volume, plus sorting capabilities and detailed site information."
 ---
+
+## List Mining Sites
+
+`GET /v2/mining/sites/`
 
 <ResponseExample>
 ```json 200
-[
-    {
-        "id": 21,
-        "name": "Batubara Benhes 3",
-        "year": 2024,
-        "mineral_type": "Coal",
-        "company_id": 76,
-        "production_volume": null
-    },
-    {
-        "id": 22,
-        "name": "Batubara Long Wehea 1",
-        "year": 2024,
-        "mineral_type": "Coal",
-        "company_id": 77,
-        "production_volume": null
+{
+    "results": [
+        {
+            "name": "Batubara Benhes 3",
+            "project_name": "Project Alpha",
+            "year": 2024,
+            "commodity_type": "Coal",
+            "production_volume": 1200.5,
+            "unit": "Mt",
+            "strip_ratio": 4.5,
+            "province": "Kalimantan Timur",
+            "city": "Kutai Timur",
+            "company_slug": "adaro-energy",
+            "company_name": "PT Adaro Energy Indonesia Tbk",
+            "slug": "batubara-benhes-3"
+        }
+    ],
+    "pagination": {
+        "total_count": 1,
+        "showing": 1,
+        "limit": 20,
+        "offset": 0,
+        "has_next": false,
+        "has_previous": false,
+        "next_offset": null,
+        "previous_offset": null
     }
-]
+}
 ```
 
 ```json 400
 {
-  "error": "Invalid pagination or limit parameters. Please provide positive integers."
-}
-```
-
-```json 429
-{
-  "code": 429,
-  "message": "Rate limit exceeded."
+  "error": "Invalid pagination parameters. 'limit' and 'offset' must be positive integers."
 }
 ```
 
@@ -50,17 +57,25 @@ description: "Lists mining sites with advanced filtering for location, mineral t
 
 ### Query Parameters
 
-<ParamField query="province" type="string">
-  Filter mining sites by province name (e.g., `Kalimantan Timur`).
+<ParamField query="company" type="string">
+  Filter by company slug.
 </ParamField>
-<ParamField query="mineral_type" type="string">
-  Filter sites by the primary type of mineral (e.g., `Coal`).
+<ParamField query="province" type="string">
+  Filter mining sites by exact province name (e.g., Kalimantan Timur).
+</ParamField>
+<ParamField query="commodity_type" type="string">
+  Filter sites by commodity (e.g., `Coal`, `Nickel`, `Gold`, `Copper`).
+  Case-insensitive.
+</ParamField>
+<ParamField query="year" type="integer">
+  Filter by reporting year.
 </ParamField>
 <ParamField query="min_production" type="number">
   Filter for sites with a production volume greater than or equal to this value.
 </ParamField>
-<ParamField query="sort_by" type="string" default="year">
-  Sort results by `production` (descending) or `year` (descending).
+<ParamField query="order_by" type="string" default="-year">
+  Sort field. Allowed: `production_volume`, `year`, `strip_ratio`. Prefix with
+  `-` for descending.
 </ParamField>
 <ParamField query="limit" type="integer" default="20">
   Number of results to return. Maximum value is 30.
@@ -71,25 +86,117 @@ description: "Lists mining sites with advanced filtering for location, mineral t
 
 ### Response
 
-<ResponseField name="[]" type="MiningSite">
+<ResponseField name="results" type="MiningSite[]">
   <Expandable title="Mining Site properties">
-    <ResponseField name="id" type="integer">
-      Unique identifier for the mining site.
-    </ResponseField>
     <ResponseField name="name" type="string">
       The name of the mining site.
+    </ResponseField>
+    <ResponseField name="project_name" type="string">
+      The name of the project associated with the site.
     </ResponseField>
     <ResponseField name="year" type="integer">
       The year the data was recorded.
     </ResponseField>
-    <ResponseField name="mineral_type" type="string">
-      The primary mineral extracted at the site.
-    </ResponseField>
-    <ResponseField name="company_id" type="integer">
-      The ID of the company operating the site.
+    <ResponseField name="commodity_type" type="string">
+      The primary commodity extracted at the site.
     </ResponseField>
     <ResponseField name="production_volume" type="number | null">
       The volume of production for the given year.
     </ResponseField>
+    <ResponseField name="unit" type="string">
+      The unit of measurement for production volume (e.g., "Mt", "kg").
+    </ResponseField>
+    <ResponseField name="strip_ratio" type="float | null">
+      The strip ratio (overburden to ore) for the site.
+    </ResponseField>
+    <ResponseField name="province" type="string">
+      The province where the site is located.
+    </ResponseField>
+    <ResponseField name="city" type="string">
+      The city or regency where the site is located.
+    </ResponseField>
+    <ResponseField name="company_slug" type="string">
+      The slug of the company operating the site.
+    </ResponseField>
+    <ResponseField name="company_name" type="string">
+      The name of the company operating the site.
+    </ResponseField>
+    <ResponseField name="slug" type="string">
+      URL-friendly identifier for the site.
+    </ResponseField>
   </Expandable>
 </ResponseField>
+
+<ResponseField name="pagination" type="object">
+  <Expandable title="Pagination properties">
+    <ResponseField name="total_count" type="integer">
+      Total records matching query.
+    </ResponseField>
+    <ResponseField name="showing" type="integer">
+      Records in current response.
+    </ResponseField>
+    <ResponseField name="limit" type="integer">
+      Query limit.
+    </ResponseField>
+    <ResponseField name="offset" type="integer">
+      Query offset.
+    </ResponseField>
+    <ResponseField name="has_next" type="boolean">
+      True if more results exist.
+    </ResponseField>
+    <ResponseField name="has_previous" type="boolean">
+      True if previous results exist.
+    </ResponseField>
+    <ResponseField name="next_offset" type="integer | null">
+      Offset for next page.
+    </ResponseField>
+    <ResponseField name="previous_offset" type="integer | null">
+      Offset for previous page.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Mining Site Detail
+
+`GET /v2/mining/sites/{slug}/`
+
+Returns full details for a single mining site by its slug, including parsed resources/reserves and location (with lat/long).
+
+<ResponseExample>
+```json 200
+{
+    "name": "Batubara Benhes 3",
+    "project_name": "Project Alpha",
+    "year": 2024,
+    "commodity_type": "Coal",
+    "production_volume": 1200.5,
+    "unit": "Mt",
+    "overburden_removal_volume": 5000.0,
+    "strip_ratio": 4.17,
+    "resources_reserves": [
+        {
+            "category": "Measured Resources",
+            "volume": 50.5,
+            "unit": "Mt"
+        }
+    ],
+    "location": {
+        "province": "Kalimantan Timur",
+        "city": "Kutai Timur",
+        "latitude": 1.234,
+        "longitude": 116.567
+    },
+    "company_slug": "adaro-energy",
+    "company_name": "PT Adaro Energy Indonesia Tbk",
+    "slug": "batubara-benhes-3"
+}
+```
+</ResponseExample>
+
+### Path Parameters
+
+<ParamField path="slug" type="string" required>
+  The unique identifier for the mining site.
+</ParamField>

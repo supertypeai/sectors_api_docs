@@ -185,7 +185,8 @@
               "group": "Company Screener",
               "icon": "bolt",
               "pages": [
-                "api-references/v2/companies"
+                "api-references/v2/companies",
+                "api-references/v2/free-float"
               ]
             },
             {
@@ -196,10 +197,13 @@
                 "api-references/v2/mining-companies-detail",
                 "api-references/v2/mining-companies-performance",
                 "api-references/v2/mining-companies-financials",
+                "api-references/v2/mining-companies-ownership",
                 "api-references/v2/mining-sites",
                 "api-references/v2/mining-licenses",
+                "api-references/v2/mining-contracts",
                 "api-references/v2/commodity-production",
                 "api-references/v2/commodity-resources-reserves",
+                "api-references/v2/commodities",
                 "api-references/v2/commodity-price",
                 "api-references/v2/export-destination",
                 "api-references/v2/mining-news",

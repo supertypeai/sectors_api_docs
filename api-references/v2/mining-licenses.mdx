@@ -6,38 +6,45 @@ description: "Lists mining licenses with filters for status, commodity, and loca
 
 <ResponseExample>
 ```json 200
-[
-    {
-        "id": "3340",
-        "license_number": "503/1573/IUP-OP/BPPMD-PTSP/X/2015",
-        "province": "Kalimantan Timur",
-        "city": "Paser",
-        "permit_expiry_date": "2025-10-02",
-        "commodity": "Coal",
-        "company_name": "PT Jasa Tambang Nusantara"
-    },
-    {
-        "id": "1650",
-        "license_number": "1108/1/IUP/PMDN/2022",
-        "province": "Kalimantan Timur",
-        "city": "Kabupaten Berau",
-        "permit_expiry_date": "2025-10-06",
-        "commodity": "Coal",
-        "company_name": "PT Supra Bara Energi"
+{
+    "results": [
+        {
+            "wiup_code": "3411003442014022",
+            "license_number": "503/1573/IUP-OP/BPPMD-PTSP/X/2015",
+            "license_type": "IUP",
+            "province": "Kalimantan Timur",
+            "city": "Paser",
+            "license_effective_date": "2015-10-02",
+            "license_expiry_date": "2025-10-02",
+            "activity": "Operasi Produksi",
+            "licensed_area_ha": 1500.5,
+            "location": {
+                "type": "Point",
+                "coordinates": [116.123, -1.456]
+            },
+            "commodity_type": "Coal",
+            "company_name": "PT Jasa Tambang Nusantara",
+            "cnc": "CnC",
+            "generation": null,
+            "company_slug": "jasa-tambang-nusantara"
+        }
+    ],
+    "pagination": {
+        "total_count": 1,
+        "showing": 1,
+        "limit": 20,
+        "offset": 0,
+        "has_next": false,
+        "has_previous": false,
+        "next_offset": null,
+        "previous_offset": null
     }
-]
+}
 ```
 
 ```json 400
 {
-  "error": "Invalid pagination or limit parameters. Please provide positive integers."
-}
-```
-
-```json 429
-{
-  "code": 429,
-  "message": "Rate limit exceeded."
+  "error": "Invalid pagination parameters. 'limit' and 'offset' must be positive integers."
 }
 ```
 
@@ -52,14 +59,32 @@ description: "Lists mining licenses with filters for status, commodity, and loca
 
 ### Query Parameters
 
-<ParamField query="province" type="string">
-  Filter licenses by the province they are registered in.
+<ParamField query="company" type="string">
+  Filter by company slug.
 </ParamField>
-<ParamField query="commodity" type="string">
-  Filter licenses by a specific commodity.
+<ParamField query="province" type="string">
+  Filter licenses by the province they are registered in. Exact match.
+</ParamField>
+<ParamField query="commodity_type" type="string">
+  Filter licenses by a specific commodity (e.g., `Coal`, `Nickel`).
+  Case-insensitive.
+</ParamField>
+<ParamField query="license_type" type="string">
+  Filter by license type (e.g., `IUP`, `IUPK`). Case-insensitive.
+</ParamField>
+<ParamField query="activity" type="string">
+  Filter by activity stage (e.g., `Eksplorasi`, `Operasi Produksi`).
+  Case-insensitive.
+</ParamField>
+<ParamField query="cnc" type="string">
+  Filter by Clear & Clean status value. Case-insensitive.
 </ParamField>
 <ParamField query="expiring_soon" type="boolean">
   Set to `true` to find licenses that will expire within the next 365 days.
+</ParamField>
+<ParamField query="order_by" type="string" default="license_expiry_date">
+  Sort field. Allowed: `license_expiry_date`, `license_effective_date`,
+  `licensed_area_ha`, `commodity_type`. Prefix with `-` for descending.
 </ParamField>
 <ParamField query="limit" type="integer" default="20">
   Number of results to return. Maximum value is 30.
@@ -70,13 +95,16 @@ description: "Lists mining licenses with filters for status, commodity, and loca
 
 ### Response
 
-<ResponseField name="[]" type="MiningLicense">
+<ResponseField name="results" type="MiningLicense[]">
   <Expandable title="Mining License properties">
-    <ResponseField name="id" type="string">
-      Unique identifier for the license.
+    <ResponseField name="wiup_code" type="string">
+      Unique WIUP (Wilayah Izin Usaha Pertambangan) code.
     </ResponseField>
     <ResponseField name="license_number" type="string">
       The official license number.
+    </ResponseField>
+    <ResponseField name="license_type" type="string">
+      The type of license (e.g., "IUP", "IUPK").
     </ResponseField>
     <ResponseField name="province" type="string">
       The province where the license is valid.
@@ -84,14 +112,64 @@ description: "Lists mining licenses with filters for status, commodity, and loca
     <ResponseField name="city" type="string">
       The city or regency where the license is valid.
     </ResponseField>
-    <ResponseField name="permit_expiry_date" type="string">
-      The expiry date of the permit in `YYYY-MM-DD` format.
+    <ResponseField name="license_effective_date" type="string">
+      The date the license became effective (YYYY-MM-DD).
     </ResponseField>
-    <ResponseField name="commodity" type="string">
+    <ResponseField name="license_expiry_date" type="string">
+      The date the license expires (YYYY-MM-DD).
+    </ResponseField>
+    <ResponseField name="activity" type="string">
+      The stage of activity (e.g., "Operasi Produksi").
+    </ResponseField>
+    <ResponseField name="licensed_area_ha" type="float">
+      The licensed area in hectares.
+    </ResponseField>
+    <ResponseField name="location" type="object">
+      GeoJSON representation of the license location.
+    </ResponseField>
+    <ResponseField name="commodity_type" type="string">
       The commodity covered by the license.
     </ResponseField>
     <ResponseField name="company_name" type="string">
       The name of the company holding the license.
+    </ResponseField>
+    <ResponseField name="cnc" type="string">
+      Clear & Clean status.
+    </ResponseField>
+    <ResponseField name="generation" type="string | null">
+      Generation of the contract (mostly for older contracts).
+    </ResponseField>
+    <ResponseField name="company_slug" type="string | null">
+      Slug of the company holding the license.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  <Expandable title="Pagination properties">
+    <ResponseField name="total_count" type="integer">
+      Total number of records matching the query.
+    </ResponseField>
+    <ResponseField name="showing" type="integer">
+      Number of records returned in the current response.
+    </ResponseField>
+    <ResponseField name="limit" type="integer">
+      The limit used for the query.
+    </ResponseField>
+    <ResponseField name="offset" type="integer">
+      The offset used for the query.
+    </ResponseField>
+    <ResponseField name="has_next" type="boolean">
+      Whether there are more results available.
+    </ResponseField>
+    <ResponseField name="has_previous" type="boolean">
+      Whether there are previous results available.
+    </ResponseField>
+    <ResponseField name="next_offset" type="integer | null">
+      The offset to use for the next page of results.
+    </ResponseField>
+    <ResponseField name="previous_offset" type="integer | null">
+      The offset to use for the previous page of results.
     </ResponseField>
   </Expandable>
 </ResponseField>

@@ -1,0 +1,71 @@
+---
+title: "Free Float Market Analysis"
+api: "GET /v2/free-float/"
+description: "Retrieve free float percentage for companies, with optional filtering by sector, sub-sector, industry, or sub-industry."
+---
+
+The Free Float API provides the percentage of a company's shares that are held by the public and available for trading on the secondary market.
+
+<Note>
+  Free float is calculated as the `share_percentage` of the 'Public' entry in a
+  company's major shareholders list.
+</Note>
+
+### Query Parameters
+
+<ParamField query="sector" type="string">
+  Filter by sector slug (e.g., `financials`, `energy`).
+</ParamField>
+
+<ParamField query="sub_sector" type="string">
+  Filter by sub-sector slug (e.g., `banks`).
+</ParamField>
+
+<ParamField query="industry" type="string">
+  Filter by industry slug (e.g., `coal-production`).
+</ParamField>
+
+<ParamField query="sub_industry" type="string">
+  Filter by sub-industry slug (e.g., `banks`).
+</ParamField>
+
+<Warning>
+  Query parameters are **mutually exclusive**. You should provide at most one
+  filter parameter in your request.
+</Warning>
+
+### Response
+
+The response is a flat list of companies, ordered by `free_float` in descending order.
+
+<ResponseField name="symbol" type="string">
+  The unique stock ticker symbol (e.g., `BBCA.JK`).
+</ResponseField>
+
+<ResponseField name="company_name" type="string">
+  The full legal name of the company.
+</ResponseField>
+
+<ResponseField name="free_float" type="number">
+  The free float percentage expressed as a decimal (e.g., `0.4512` represents
+  45.12%).
+</ResponseField>
+
+<ResponseExample>
+
+```json 200
+[
+  {
+    "symbol": "BBCA.JK",
+    "company_name": "Bank Central Asia Tbk",
+    "free_float": 0.4512
+  },
+  {
+    "symbol": "BBRI.JK",
+    "company_name": "Bank Rakyat Indonesia (Persero) Tbk",
+    "free_float": 0.4321
+  }
+]
+```
+
+</ResponseExample>
