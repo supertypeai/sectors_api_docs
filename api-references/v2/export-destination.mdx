@@ -9,11 +9,17 @@ description: "Ranks countries by total export value for a given year and commodi
 [
     {
         "country": "Singapore",
-        "total_export_usd": 2319208305
+        "export_usd": 2319208305,
+        "export_volume_bps": 1500000.5,
+        "export_volume_esdm": 1450000.2,
+        "volume_unit": "Mt"
     },
     {
         "country": "Switzerland",
-        "total_export_usd": 404012143
+        "export_usd": 404012143,
+        "export_volume_bps": 50000.0,
+        "export_volume_esdm": 48000.5,
+        "volume_unit": "Mt"
     }
 ]
 ```
@@ -52,9 +58,18 @@ description: "Ranks countries by total export value for a given year and commodi
     <ResponseField name="country" type="string">
       The destination country.
     </ResponseField>
-    <ResponseField name="total_export_usd" type="number">
+    <ResponseField name="export_usd" type="number">
       The total value of exports in USD for the specified commodity and year to
       that country.
+    </ResponseField>
+    <ResponseField name="export_volume_bps" type="number">
+      The volume of exports reported by BPS.
+    </ResponseField>
+    <ResponseField name="export_volume_esdm" type="number">
+      The volume of exports reported by ESDM.
+    </ResponseField>
+    <ResponseField name="volume_unit" type="string">
+      The unit of measurement for volume (e.g., "Mt").
     </ResponseField>
   </Expandable>
 </ResponseField>
