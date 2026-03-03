@@ -85,18 +85,21 @@ latest version of LangChain (0.3.2).
     The **rest of this article outside of this sub-chapter will be using the newest, recommended classes** (as of October '24).
 </Warning>
 
+### Note
+The model `llama3-8b-8192` and `llama3-groq-70b-8192-tool-use-preview` are no longer available. Therefore, this guide changed the models into `openai/gpt-oss-120b`. For other available choices, visit [GROQ Models](https://console.groq.com/docs/models) (Updated: 2026-03-02)
 
 <CodeGroup>
 ```python ConversationChain
-from langchain.memory import ConversationBufferMemory
+from langchain_classic.memory import ConversationBufferMemory
 from langchain_groq import ChatGroq
 from langchain_core.prompts.prompt import PromptTemplate
-from langchain.chains import ConversationChain
+from langchain_classic.chains import ConversationChain
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-llm = ChatGroq(model="llama3-8b-8192")
+# llm = ChatGroq(model="llama3-8b-8192")
+llm = ChatGroq(model="openai/gpt-oss-120b")
 
 template = """The following is a friendly conversation between a human and a financial stock advisor AI with specific knowledge of the Indonesian stock market (IDX). 
 The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know.
@@ -117,15 +120,15 @@ conversation = ConversationChain(
 ```
 
 ```python LLMChain
-from langchain.memory import ConversationBufferMemory
+from langchain_classic.memory import ConversationBufferMemory
 from langchain_groq import ChatGroq
 from langchain_core.prompts.prompt import PromptTemplate
-from langchain.chains import LLMChain
+from langchain_classic.chains import LLMChain
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-llm = ChatGroq(model="llama3-8b-8192")
+llm = ChatGroq(model="openai/gpt-oss-120b")
 
 template = """The following is a friendly conversation between a human and a helpful AI assistant. 
     If the AI does not know the answer to a question, it truthfully says it does not know.
@@ -231,7 +234,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-llm = ChatGroq(model="llama3-8b-8192")
+llm = ChatGroq(model="openai/gpt-oss-120b")
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -769,9 +772,9 @@ Executing `SELECT * FROM message_store` will show you the conversation history s
 ```sql
 id	session_id	message
 1	001_1	{"type": "human", "data": {"content": "hi, my name is Sam. What stocks do i own? I can't remember", "additional_kwargs": {}, "response_metadata": {}, "type": "human", "name": null, "id": null, "example": false}}
-2	001_1	{"type": "ai", "data": {"content": "Hai Sam! Jangan khawatir, kita bisa cek bersama. Kamu memiliki saham dari beberapa perusahaan, yaitu BBCA, ADRO, BBRI, dan GOTO.", "additional_kwargs": {}, "response_metadata": {"token_usage": {"completion_tokens": 45, "prompt_tokens": 104, "total_tokens": 149, "completion_time": 0.0375, "prompt_time": 0.011602009, "queue_time": 0.011325890000000002, "total_time": 0.049102009}, "model_name": "llama3-8b-8192", "system_fingerprint": "fp_af05557ca2", "finish_reason": "stop", "logprobs": null}, "type": "ai", "name": null, "id": "run-eeb5b59e-e257-4093-9cbc-fb40b041dc6f-0", "example": false, "tool_calls": [], "invalid_tool_calls": [], "usage_metadata": {"input_tokens": 104, "output_tokens": 45, "total_tokens": 149}}}
+2	001_1	{"type": "ai", "data": {"content": "Hai Sam! Jangan khawatir, kita bisa cek bersama. Kamu memiliki saham dari beberapa perusahaan, yaitu BBCA, ADRO, BBRI, dan GOTO.", "additional_kwargs": {}, "response_metadata": {"token_usage": {"completion_tokens": 45, "prompt_tokens": 104, "total_tokens": 149, "completion_time": 0.0375, "prompt_time": 0.011602009, "queue_time": 0.011325890000000002, "total_time": 0.049102009}, "model_name": "openai/gpt-oss-120b", "system_fingerprint": "fp_af05557ca2", "finish_reason": "stop", "logprobs": null}, "type": "ai", "name": null, "id": "run-eeb5b59e-e257-4093-9cbc-fb40b041dc6f-0", "example": false, "tool_calls": [], "invalid_tool_calls": [], "usage_metadata": {"input_tokens": 104, "output_tokens": 45, "total_tokens": 149}}}
 3	002_1	{"type": "human", "data": {"content": "hi, what did i say my name was? Also, please print the full name of the companies I own", "additional_kwargs": {}, "response_metadata": {}, "type": "human", "name": null, "id": null, "example": false}}
-4	002_1	{"type": "ai", "data": {"content": "Halo! You didn't mention your name, so I'll just address you as \"user\" for now.\n\nAnd, no problem! You own shares of:\n\n1. Bank Rakyat Indonesia (BBCA)\n2. Adaro Energy Tbk (ADRO)\n3. PT Bank Rakyat Indonesia (Persero) Tbk (BBRI)\n\nLet me know what's on your mind, and I'll do my best to help you with your stock holdings!", "additional_kwargs": {}, "response_metadata": {"token_usage": {"completion_tokens": 97, "prompt_tokens": 105, "total_tokens": 202, "completion_time": 0.080833333, "prompt_time": 0.01259477, "queue_time": 0.0019365489999999992, "total_time": 0.093428103}, "model_name": "llama3-8b-8192", "system_fingerprint": "fp_a97cfe35ae", "finish_reason": "stop", "logprobs": null}, "type": "ai", "name": null, "id": "run-6e36701d-377f-426f-b44f-02da77304602-0", "example": false, "tool_calls": [], "invalid_tool_calls": [], "usage_metadata": {"input_tokens": 105, "output_tokens": 97, "total_tokens": 202}}}
+4	002_1	{"type": "ai", "data": {"content": "Halo! You didn't mention your name, so I'll just address you as \"user\" for now.\n\nAnd, no problem! You own shares of:\n\n1. Bank Rakyat Indonesia (BBCA)\n2. Adaro Energy Tbk (ADRO)\n3. PT Bank Rakyat Indonesia (Persero) Tbk (BBRI)\n\nLet me know what's on your mind, and I'll do my best to help you with your stock holdings!", "additional_kwargs": {}, "response_metadata": {"token_usage": {"completion_tokens": 97, "prompt_tokens": 105, "total_tokens": 202, "completion_time": 0.080833333, "prompt_time": 0.01259477, "queue_time": 0.0019365489999999992, "total_time": 0.093428103}, "model_name": "openai/gpt-oss-120b", "system_fingerprint": "fp_a97cfe35ae", "finish_reason": "stop", "logprobs": null}, "type": "ai", "name": null, "id": "run-6e36701d-377f-426f-b44f-02da77304602-0", "example": false, "tool_calls": [], "invalid_tool_calls": [], "usage_metadata": {"input_tokens": 105, "output_tokens": 97, "total_tokens": 202}}}
 ```
 
 <Card title="New to SQL and SQLite?" horizontal icon="cauldron" href="https://brillian.supertype.ai/essentials/sql">
@@ -805,7 +808,7 @@ def get_company_overview(stock: str) -> str:
 
 llm = ChatGroq(
     temperature=0,
-    model_name="llama3-groq-70b-8192-tool-use-preview",
+    model_name="openai/gpt-oss-120b",
     groq_api_key=GROQ_API_KEY,
 )
 tools = [
@@ -900,7 +903,7 @@ Sequentially, the messages are as follows:
         "website": "www.adaro.com", "phone": "021-25533000", "email": "mahardika.putranto@adaro.com ; aditya.sudjono@adaro.com", "last_close_price": 3800, 
         "latest_close_date": "2024-10-08", "daily_close_change": -0.0231362467866324}}', name='get_company_overview', ...)
 
--> AIMessage(content='Adaro Energy Indonesia Tbk, listed as ADRO.JK, is a coal production company in the energy sector. It is headquartered at Menara Karya 23rd Floor Jl. H.R. Rasuna Said, Block X-5, Kav. 1-2 Jakarta 12950. The company has a market capitalization of 116,883,055,443,968, ranking it 18th in the market. It has 13,180 employees and is listed on the Main board since July 16, 2008. The latest closing price was 3,800 on October 8, 2024, with a daily close change of -0.0231362467866324. For more information, you can visit their website at www.adaro.com or contact them via email at mahardika.putranto@adaro.com or aditya.sudjono@adaro.com, or by phone at 021-25533000.', additional_kwargs={}, response_metadata={'token_usage': {'completion_tokens': 203, 'prompt_tokens': 619, 'total_tokens': 822, 'completion_time': 0.651845143, 'prompt_time': 0.063395509, 'queue_time': 0.0008670310000000042, 'total_time': 0.715240652}, 'model_name': 'llama3-groq-70b-8192-tool-use-preview', 'system_fingerprint': 'fp_ee4b521143', 'finish_reason': 'stop', 'logprobs': None}, id='run-2d411070-5abe-41d1-af07-aec558a58093-0', usage_metadata={'input_tokens': 619, 'output_tokens': 203, 'total_tokens': 822})
+-> AIMessage(content='Adaro Energy Indonesia Tbk, listed as ADRO.JK, is a coal production company in the energy sector. It is headquartered at Menara Karya 23rd Floor Jl. H.R. Rasuna Said, Block X-5, Kav. 1-2 Jakarta 12950. The company has a market capitalization of 116,883,055,443,968, ranking it 18th in the market. It has 13,180 employees and is listed on the Main board since July 16, 2008. The latest closing price was 3,800 on October 8, 2024, with a daily close change of -0.0231362467866324. For more information, you can visit their website at www.adaro.com or contact them via email at mahardika.putranto@adaro.com or aditya.sudjono@adaro.com, or by phone at 021-25533000.', additional_kwargs={}, response_metadata={'token_usage': {'completion_tokens': 203, 'prompt_tokens': 619, 'total_tokens': 822, 'completion_time': 0.651845143, 'prompt_time': 0.063395509, 'queue_time': 0.0008670310000000042, 'total_time': 0.715240652}, 'model_name': 'openai/gpt-oss-120b', 'system_fingerprint': 'fp_ee4b521143', 'finish_reason': 'stop', 'logprobs': None}, id='run-2d411070-5abe-41d1-af07-aec558a58093-0', usage_metadata={'input_tokens': 619, 'output_tokens': 203, 'total_tokens': 822})
 ```
 
 Given how often we want to be interacting with the AI agent, I've wrapped the invocation logic into `chat()` 

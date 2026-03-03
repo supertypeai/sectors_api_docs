@@ -163,8 +163,11 @@ the Mandiri Coal brand -- with a dividend yield of 7.71%.
 Now that we have our tools in place, let us also create a `prompt` object and bind our tools to a LLM model of our choice. 
 Instead of invoking each tool directly like we did earlier, we will create a `runnable` that chains the prompt with the tool-use LLM model.
 
-Our expectation is to be able to prompt the runnable with something like "overview of BBRI" and have the agent invoke the correct tool -- in this case, `get_company_overview` -- along with 
-the correct parameters for us. 
+Our expectation is to be able to prompt the runnable with something like "overview of BBRI" and have the agent invoke the correct tool -- in this case, `get_company_overview` -- along with
+the correct parameters for us.
+
+### Note
+The model `llama3-groq-70b-8192-tool-use-preview` is no longer available. Therefore, this guide changed the model into `openai/gpt-oss-120b`. For other available choices, visit [GROQ Models](https://console.groq.com/docs/models) (Updated: 2026-03-02)
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate
@@ -185,7 +188,8 @@ prompt = ChatPromptTemplate.from_messages(
 
 llm = ChatGroq(
     temperature=0,
-    model_name="llama3-groq-70b-8192-tool-use-preview",
+    # model_name="llama3-groq-70b-8192-tool-use-preview",
+    model_name="openai/gpt-oss-120b",
     groq_api_key=GROQ_API_KEY,
 )
 tools = [
@@ -211,7 +215,7 @@ and then using structuring the output into the desired format. However, LangChai
 [chapter 2](/recipes/generative-ai-python/02-tool-use) we have the `AgentExecutor` class that helps us orchestrate the tools and the LLM model:
 
 ```python
-from langchain.agents import create_tool_calling_agent, AgentExecutor
+from langchain_classic.agents import create_tool_calling_agent, AgentExecutor
 
 agent = create_tool_calling_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools)
@@ -460,7 +464,8 @@ Here is a simple example of one such implementation:
 ```python
 from langchain_core.output_parsers import JsonOutputParser
 
-model = ChatGroq(model="llama3-8b-8192")
+# model = ChatGroq(model="llama3-8b-8192")
+model = ChatGroq(model="openai/gpt-oss-120b")
 app2 = model | JsonOutputParser()
 
 
