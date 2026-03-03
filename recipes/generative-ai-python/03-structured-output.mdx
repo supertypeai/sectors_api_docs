@@ -129,6 +129,10 @@ The `.with_structured_output()` method always takes a schema as input, respectin
 
 When using Pydantic, the model-generated output will be validated against the schema, with Pydantic raising an error if the output does not match the schema (e.g. required fields missing, or fields of the wrong type). Below is an example of creating a structured LLM with Pydantic. I'm choosing to use the `llama3-groq-70b-8192-tool-use-preview` model from Groq, which is fine-tuned for tool use. 
 
+### Note
+The model `llama3-groq-70b-8192-tool-use-preview` is no longer available. Therefore, this guide changed the model into `openai/gpt-oss-120b`. For other available choices, visit [GROQ Models](https://console.groq.com/docs/models) (Updated: 2026-03-02)
+
+
 ```python
 import os
 from dotenv import load_dotenv
@@ -153,7 +157,8 @@ class Stock(BaseModel):
 
 llm = ChatGroq(
     temperature=0,
-    model_name="llama3-groq-70b-8192-tool-use-preview",
+    # model_name="llama3-groq-70b-8192-tool-use-preview",
+    model_name="openai/gpt-oss-120b",
     groq_api_key=GROQ_API_KEY,
 )
 
@@ -214,8 +219,8 @@ The essential functionalities are:
 Consider the following example:
 
 ```python
-from langchain.chat_models import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
 
 model = ChatOpenAI() # use any LLM model here
 prompt = ChatPromptTemplate.from_template("give me information for the stock: {symbol}")
@@ -423,7 +428,8 @@ class Data(BaseModel):
 
 llm = ChatGroq(
     temperature=0,
-    model_name="llama3-groq-70b-8192-tool-use-preview",
+    # model_name="llama3-groq-70b-8192-tool-use-preview",
+    model_name="openai/gpt-oss-120b",
     groq_api_key=GROQ_API_KEY,
     model_kwargs={ "response_format": { "type": "json_object" } },
 )
@@ -440,7 +446,7 @@ The other steps are largely the same as before. We alter the `PromptTemplate` to
 # switch out: 
 # from langchain_core.output_parsers import PydanticOutputParser
 # replace with:
-from langchain.output_parsers.json import SimpleJsonOutputParser
+from langchain_core.output_parsers.json import SimpleJsonOutputParser
 
 prompt = PromptTemplate.from_template(
    """
@@ -557,7 +563,7 @@ from pydantic import BaseModel, Field
 
 from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq 
-from langchain.output_parsers.json import SimpleJsonOutputParser
+from langchain_core.output_parsers.json import SimpleJsonOutputParser
 
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -587,7 +593,8 @@ prompt = PromptTemplate.from_template(
 
 llm = ChatGroq(
     temperature=0,
-    model_name="llama3-groq-70b-8192-tool-use-preview",
+    # model_name="llama3-groq-70b-8192-tool-use-preview",
+    model_name="openai/gpt-oss-120b",
     groq_api_key=GROQ_API_KEY,
     model_kwargs={ "response_format": { "type": "json_object" } },
 )
