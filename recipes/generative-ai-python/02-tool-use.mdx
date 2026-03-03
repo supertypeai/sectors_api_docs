@@ -177,18 +177,20 @@ tools = [
 ### Orchestrating our RAG system
 We'll be using the `llama3-groq-70b-8192-tool-use-preview` model from Groq. Not only 
 is this model state-of-the-art and specializes in tool use, it is also open source and 
-more easily accessible than other proprietary models. 
+more easily accessible than other proprietary models.
 
 In the following code, we instantiate a `ChatGroq` object with the model name and the Groq API key.
 This provides us with the `llm` object that we'll pass, along with `tools` created earlier, to our 
 orchestrator agent. What's missing is the a prompt template that we'll use to 
-specify some system constraints and provide some overall guidance to the LLM. 
+specify some system constraints and provide some overall guidance to the LLM.
 
+### Note
+The model `llama3-groq-70b-8192-tool-use-preview` is no longer available. Therefore, this guide changed the model into `openai/gpt-oss-120b`. For other available choices, visit [GROQ Models](https://console.groq.com/docs/models) (Updated: 2026-03-02)
 
 ```python
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_groq import ChatGroq
-from langchain.agents import create_tool_calling_agent, AgentExecutor
+from langchain_classic.agents import create_tool_calling_agent, AgentExecutor
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -210,11 +212,13 @@ prompt = ChatPromptTemplate.from_messages(
 
 llm = ChatGroq(
     temperature=0,
-    model_name="llama3-groq-70b-8192-tool-use-preview",
+    # model_name="llama3-groq-70b-8192-tool-use-preview",
+    model_name="openai/gpt-oss-120b",
     groq_api_key=GROQ_API_KEY,
 )
 
-agent = create_tool_calling_agent(llm, tools, prompt)
+# agent = create_tool_calling_agent(llm, tools, prompt)
+
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 ```
 
@@ -465,8 +469,3 @@ If you're up for a challenge, I have created two exercises that you can particip
 a copy of the [Colab notebook](https://colab.research.google.com/drive/1PjCGECqB37_TDD3kLHYl3IljlWxPNoXe?usp=sharing) and start working on them.
 
 When you're done, submit your work [following this guide](https://github.com/onlyphantom/llm-python/discussions/19) and I will be grading them.
-
- 
-
-
-
