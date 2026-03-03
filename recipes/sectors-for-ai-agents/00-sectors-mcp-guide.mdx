@@ -63,7 +63,7 @@ Add the following to your `mcpServers` object:
       "args": [
         "-y",
         "mcp-remote",
-        "https://sectors-mcp.aidityasadhakim250.workers.dev/sse",
+        "https://sectors-mcp.supertype.ai/sse",
         "--header",
         "Authorization:${AUTH_TOKEN}"
       ],
@@ -81,7 +81,7 @@ Replace `YOUR_API_KEY_HERE` with your Sectors API key, then restart Claude Deskt
 Run the following command in your terminal:
 
 ```bash
-claude mcp add --transport sse sectors https://sectors-mcp.aidityasadhakim250.workers.dev/sse \
+claude mcp add --transport sse sectors https://sectors-mcp.supertype.ai/sse \
   --header "Authorization: Bearer YOUR_API_KEY_HERE"
 ```
 
@@ -94,7 +94,7 @@ Open or create `~/.cursor/mcp.json` and add the following:
 {
   "mcpServers": {
     "sectors": {
-      "url": "https://sectors-mcp.aidityasadhakim250.workers.dev/sse",
+      "url": "https://sectors-mcp.supertype.ai/sse",
       "headers": {
         "Authorization": "Bearer YOUR_API_KEY_HERE"
       }
@@ -113,7 +113,7 @@ Create a `.vscode/mcp.json` file in your workspace and add the following:
   "servers": {
     "sectors": {
       "type": "sse",
-      "url": "https://sectors-mcp.aidityasadhakim250.workers.dev/sse",
+      "url": "https://sectors-mcp.supertype.ai/sse",
       "headers": {
         "Authorization": "Bearer ${input:sectors-api-key}"
       }
@@ -138,7 +138,7 @@ If you're using any other MCP-compatible client that supports SSE transport, con
 | Setting | Value |
 |---|---|
 | Transport | `sse` |
-| URL | `https://sectors-mcp.aidityasadhakim250.workers.dev/sse` |
+| URL | `https://sectors-mcp.supertype.ai/sse` |
 | Authorization header | `Bearer YOUR_API_KEY_HERE` |
 
 ## Usage Examples
@@ -359,7 +359,7 @@ Claude Desktop on Windows runs MCP servers via stdio, which requires wrapping `n
       "command": "cmd",
       "args": [
         "/c", "npx", "-y", "mcp-remote",
-        "https://sectors-mcp.aidityasadhakim250.workers.dev/sse",
+        "https://sectors-mcp.supertype.ai/sse",
         "--header", "Authorization:${AUTH_TOKEN}"
       ],
       "env": {
