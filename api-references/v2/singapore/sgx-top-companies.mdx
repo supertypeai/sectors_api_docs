@@ -1,0 +1,286 @@
+---
+title: "SGX Top Companies Ranked"
+api: "GET /v2/sgx/companies/top/"
+description: "Return a list of top tickers based on certain classification (dividend yield, revenue, earnings, market cap, or PE ratio)"
+---
+
+<ResponseExample>
+```json 200
+{
+    "dividend_yield": [
+        {
+            "symbol": "E5H",
+            "forward_dividend_yield": 6.68,
+            "company_name": "GoldenAgr"
+        },
+        {
+            "symbol": "EB5",
+            "forward_dividend_yield": 4.93,
+            "company_name": "First Resources Ltd"
+        },
+        {
+            "symbol": "D01",
+            "forward_dividend_yield": 3.85,
+            "company_name": "DFI Retail Holdings"
+        },
+        {
+            "symbol": "EMI",
+            "forward_dividend_yield": 1.52,
+            "company_name": "Emperador"
+        }
+    ],
+    "revenue": [
+        {
+            "symbol": "F34",
+            "revenue": 89614178017.28,
+            "company_name": "Wilmar"
+        },
+        {
+            "symbol": "VC2",
+            "revenue": 56280801280.0,
+            "company_name": "Olam Group"
+        },
+        {
+            "symbol": "E5H",
+            "revenue": 14509925642.24,
+            "company_name": "GoldenAgr"
+        },
+        {
+            "symbol": "Y92",
+            "revenue": 13529166682.5216,
+            "company_name": "Thai Beverage"
+        },
+        {
+            "symbol": "D01",
+            "revenue": 11795636787.2,
+            "company_name": "DFI Retail Holdings"
+        }
+    ],
+    "earnings": [
+        {
+            "symbol": "Y92",
+            "earnings": 1077738710.4,
+            "company_name": "Thai Beverage"
+        },
+        {
+            "symbol": "E5H",
+            "earnings": 488499680.0,
+            "company_name": "GoldenAgr"
+        },
+        {
+            "symbol": "EB5",
+            "earnings": 329361280.0,
+            "company_name": "First Resources Ltd"
+        },
+        {
+            "symbol": "EMI",
+            "earnings": 201972857.4216,
+            "company_name": "Emperador"
+        },
+        {
+            "symbol": "D01",
+            "earnings": 43148000.0,
+            "company_name": "DFI Retail Holdings"
+        }
+    ],
+    "market_cap": [
+        {
+            "symbol": "F34",
+            "market_cap": 20538580992.0,
+            "company_name": "Wilmar"
+        },
+        {
+            "symbol": "Y92",
+            "market_cap": 13067859968.0,
+            "company_name": "Thai Beverage"
+        },
+        {
+            "symbol": "EMI",
+            "market_cap": 4563585024.0,
+            "company_name": "Emperador"
+        },
+        {
+            "symbol": "D01",
+            "market_cap": 4050797811.2,
+            "company_name": "DFI Retail Holdings"
+        },
+        {
+            "symbol": "VC2",
+            "market_cap": 3773567232.0,
+            "company_name": "Olam Group"
+        }
+    ],
+    "pe": [
+        {
+            "symbol": "E5H",
+            "pe": 6.625,
+            "company_name": "GoldenAgr"
+        },
+        {
+            "symbol": "EB5",
+            "pe": 7.714286,
+            "company_name": "First Resources Ltd"
+        },
+        {
+            "symbol": "EMI",
+            "pe": 29.0,
+            "company_name": "Emperador"
+        },
+        {
+            "symbol": "D01",
+            "pe": 33.25,
+            "company_name": "DFI Retail Holdings"
+        }
+    ]
+}
+```
+
+```json 400
+// Possible response bodies:
+{
+  "error": "Invalid query parameters: <Bad Param>."
+}
+{
+  "error": "{n_stock} param expects an integer value."
+}
+{
+  "error": "Invalid classifications provided, select from these choices: dividend_yield, revenue, earnings, market_cap, pe."
+}
+{
+  "error": "The requested sector does not exist."
+}
+{
+  "error": "Invalid min_mcap_million value. Not an integer"
+}
+{
+  "error": "There are no companies matching the criteria, consider adjusting the `min_mcap_million` param value."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="sector" type="string" default="all">
+  Sector from which the list of top company is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sector">
+      Get the available `sector` from the [SGX Sectors](./sgx-sector) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sector">
+      `consumer-defensive`, `industrials`, `technology`, `financial-services`,
+      `transportation`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+<ParamField query="classifications" type="string" default="all">
+  Classification for ranking the top tickers in a given year (default to all).
+  <AccordionGroup>
+    <Accordion title="Available classifications">
+      `dividend_yield`, `revenue`, `earnings`, `market_cap`, `pe`
+    </Accordion>
+    <Accordion title="Format">
+      Use comma to separate each classification when retrieving data of more
+      than one classification.
+    </Accordion>
+    <Accordion title="API call consumption">
+      One classification consumes one API call.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+<ParamField query="min_mcap_million" type="integer" default="1000">
+  Minimum market cap of the retrieved companies in million SGD.
+</ParamField>
+
+### Response
+
+<ResponseField name="dividend_yield" type="DividendYieldData[]">
+  <Expandable title="properties">
+    <ResponseField name="DividendYieldData.symbol" type="string">
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="DividendYieldData.forward_dividend_yield" type="float">
+      The forward dividend yield of the company.
+    </ResponseField>
+    <ResponseField name="DividendYieldData.company_name" type="string">
+      The name of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="revenue" type="RevenueData[]">
+  <Expandable title="properties">
+    <ResponseField name="RevenueData.symbol" type="string">
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="RevenueData.revenue" type="float">
+      The total revenue of the company in SGD.
+    </ResponseField>
+    <ResponseField name="RevenueData.company_name" type="string">
+      The name of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="earnings" type="EarningsData[]">
+  <Expandable title="properties">
+    <ResponseField name="EarningsData.symbol" type="string">
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="EarningsData.earnings" type="float">
+      The total earnings of the company in SGD.
+    </ResponseField>
+    <ResponseField name="EarningsData.company_name" type="string">
+      The name of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="market_cap" type="MarketCapData[]">
+  <Expandable title="properties">
+    <ResponseField name="MarketCapData.symbol" type="string">
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="MarketCapData.market_cap" type="int">
+      The total market cap of the company in SGD.
+    </ResponseField>
+    <ResponseField name="MarketCapData.company_name" type="string">
+      The name of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pe" type="PEData[]">
+  <Expandable title="properties">
+    <ResponseField name="PEData.symbol" type="string">
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="PEData.pe" type="float">
+      The price to earning ratio of the company.
+    </ResponseField>
+    <ResponseField name="PEData.company_name" type="string">
+      The name of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+

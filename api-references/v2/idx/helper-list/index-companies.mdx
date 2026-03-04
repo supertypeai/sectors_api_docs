@@ -1,0 +1,72 @@
+---
+title: "Companies by Index"
+api: "GET /v2/index/{index}/"
+description: "Return list of companies from a stock index"
+---
+
+<ResponseExample>
+```json 200
+[
+  {
+    "symbol": "NISP.JK",
+    "company_name": "PT Bank OCBC NISP Tbk"
+  },
+  {
+    "symbol": "PNBN.JK",
+    "company_name": "Bank Pan Indonesia Tbk"
+  }
+]
+```
+
+```json 400
+{
+  "error": "Index data for 'Bad_Index' is not available."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Path
+
+<ParamField path="index" type="string" required>
+  <Accordion title="Available Index">
+    The index name from which the list of companies is to be retrieved. `ftse`,
+    `idx30`, `idxbumn20`, `idxesgl`, `idxg30`, `idxhidiv20`, `idxq30`, `idxv30`,
+    `jii70`, `kompas100`, `lq45`, `sminfra18`, `srikehati`, `economic30`,
+    `idxvesta28`
+  </Accordion>
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="Company[]">
+  Array of companies of the given index.
+  <Expandable title="properties">
+    <ResponseField name="Company.symbol" type="string">
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="Company.company_name" type="string">
+      The full name of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Usage
+
+This list can be used for the following endpoint:
+
+- [Company Report](../report/company-report)

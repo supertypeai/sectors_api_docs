@@ -1,0 +1,141 @@
+---
+title: "Daily Transaction Data"
+api: "GET /v2/daily/{ticker}/"
+description: "Return daily transaction data of a given ticker on a certain interval (**up to 90 days**)"
+---
+
+<ResponseExample>
+```json 200
+[
+    {
+        "symbol": "GOTO.JK",
+        "date": "2024-05-21",
+        "close": 0,
+        "volume": 0,
+        "market_cap": 0
+    }
+]
+```
+
+```json 400
+// Possible response bodies:
+{
+  "error": "Given stock ticker does not exist in the requested date."
+}
+{
+  "error": "Please provide a valid stock ticker."
+}
+{
+  "error": "Invalid query parameters: <Bad Param>."
+}
+{
+  "error": "Use a valid date format of YYYY-MM-DD."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Path
+
+<ParamField path="ticker" type="string" required>
+  Ticker of the company for which the daily transaction data is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available ticker">
+      Get the available `ticker` from the [Companies](../../../helper-list/companies-list) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the ticker">
+      `ASII`, `BBCA`, `BBRI`, `BMRI`, `BYAN`
+    </Accordion>
+    <Accordion title="Format">
+      A valid `ticker` consists of 4 letters, optionally followed by '.jk', and
+      is **case-insensitive**.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="start" type="string">
+  Start date for which the daily transaction data of a given ticker is to be
+  retrieved.
+  <AccordionGroup>
+    <Accordion title="Format">
+      The API endpoint only accepts `start` date in the `YYYY-MM-DD` format.
+    </Accordion>
+    <Accordion title="Earliest date">
+      The `start` date must be **no earlier than 90 days before the `end`
+      date**. If a date earlier than this is provided, only the most recent 90
+      days of data will be retrieved.
+    </Accordion>
+    <Accordion title="Default value">
+      When only `end` date is provided, the default value of `start` date is **30 days before the `end` date**.
+
+      When `start` and `end` dates are not provided, the default value of `start` date is **30 days before today**.
+    </Accordion>
+
+  </AccordionGroup>
+</ParamField>
+
+<ParamField query="end" type="string">
+  End date for which the daily transaction data of a given ticker is to be
+  retrieved.
+  <AccordionGroup>
+    <Accordion title="Format">
+      The API endpoint only accepts `end` date in the `YYYY-MM-DD` format.
+    </Accordion>
+    <Accordion title="Latest date">
+      The `end` date must be **no later than 90 days after the `start` date**.
+      If a date later than this is provided, only the most recent 90 days of
+      data will be retrieved.
+    </Accordion>
+    <Accordion title="Default value">
+      When only `start` date is provided, the default value of `end` date is **30 days after the `start` date**.
+
+      When `start` and `end` dates are not provided, the default value of `end` date is **today**.
+    </Accordion>
+
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="DailyTransactionData[]">
+  <Expandable title="properties">
+    <ResponseField name="DailyTransactionData.symbol" type="string">
+      The ticker of the company.
+    </ResponseField>
+
+    <ResponseField name="DailyTransactionData.date" type="string">
+      The date of the transaction.
+    </ResponseField>
+
+    <ResponseField name="DailyTransactionData.close" type="integer">
+      The closing price of the given ticker in IDR.
+    </ResponseField>
+
+    <ResponseField name="DailyTransactionData.volume" type="integer">
+      The transaction volume of the given ticker.
+    </ResponseField>
+
+    <ResponseField name="DailyTransactionData.market_cap" type="integer">
+      The market capitalization of the given ticker in IDR.
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+

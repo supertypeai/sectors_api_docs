@@ -1,0 +1,288 @@
+---
+title: "Company Quarterly Financials"
+api: "GET /v2/financials/quarterly/{ticker}/"
+description: "Return quarterly financials metrics of a given ticker"
+---
+
+<ResponseExample>
+```json 200
+// Financial Sectors
+[
+    {
+        "symbol": "BMRI.JK",
+        "financials_sector_metrics": {
+            "interest_income": 40599515000000,
+            "interest_expense": 13445706000000,
+            "net_interest_income": 54045221000000,
+            "gross_loan": 1623216612000000,
+            "allowance_for_loans": 49354645000000,
+            "net_loan": 1672571257000000,
+            "total_earning_assets": null,
+            "current_account": 568576009000000,
+            "savings_account": 580191796000000,
+            "time_deposit": 297467152000000,
+            "total_deposit": 1446234957000000,
+            "other_interest_bearing_liabilities": null,
+            "total_cash_and_due_from_banks": 78364276000000
+        },
+        "date": "2024-12-31",
+        "premium_income": 4982635000000,
+        "premium_expense": 3763798000000,
+        "net_premium_income": 8746433000000,
+        "non_interest_income": 11597082000000,
+        "revenue": 74388736000000,
+        "operating_expense": 18773124000000,
+        "provision": 2294657000000,
+        "operating_pnl": 18733613000000,
+        "non_operating_income_or_loss": 362460000000,
+        "earnings_before_tax": 19058935000000,
+        "tax": 3977068000000,
+        "minorities": 1316479000000,
+        "earnings": 16398346000000,
+        "gross_profit": null,
+        "interest_expense_non_operating": null,
+        "ebit": null,
+        "ebitda": null,
+        "cost_of_revenue": null,
+        "total_assets": 2427223262000000,
+        "non_interest_bearing_liabilities": null,
+        "cash_only": 31665082000000,
+        "total_liabilities": 1860408316000000,
+        "total_equity": 313474681000000,
+        "total_debt": null,
+        "stockholders_equity": 283796429000000,
+        "total_non_current_assets": null,
+        "current_liabilities": null,
+        "cash_and_short_term_investments": null,
+        "non_loan_assets": null,
+        "total_current_asset": null,
+        "total_non_current_liabilities": null,
+        "financing_cash_flow": 29548841000000,
+        "operating_cash_flow": 12267786000000,
+        "investing_cash_flow": -7201870000000,
+        "net_cash_flow": 34614757000000,
+        "free_cash_flow": null,
+        "realized_capital_goods_investment": null
+    }
+]
+````
+
+```json 400
+// Possible response bodies:
+{
+  "error": "Invalid stock ticker and/or data for the specified report date does not exist."
+}
+{
+  "error": "Please provide a valid stock ticker."
+}
+{
+  "error": "Invalid query parameters: <Bad Param>."
+}
+{
+  "error": "Invalid value for 'approx'. Use 'true' or 'false'."
+}
+{
+  "error": "Invalid value for 'n_quarters'. It must be a positive integer."
+}
+{
+  "error": "Please provide a valid report_date."
+}
+{
+  "error": "Use a valid report_date format of YYYY-MM-DD."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Path
+
+<ParamField path="ticker" type="string" required>
+  Ticker of the company for which the quarterly financials are to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available ticker">
+      Get the available `ticker` from the [List Companies With Quarterly
+      Financials](../helper-list/companies-with-quarterly-financials/) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the ticker">
+      `ASII`, `BBCA`, `BBRI`, `BMRI`, `BYAN`
+    </Accordion>
+    <Accordion title="Format">
+      A valid `ticker` consists of 4 letters, optionally followed by '.jk', and
+      is **case-insensitive**.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="report_date" type="string">
+  Report date for which the quarterly financials of a given ticker is to be
+  retrieved.
+  <AccordionGroup>
+    <Accordion title="Format">
+      The API endpoint only accepts `report_date` date in the `YYYY-MM-DD`
+      format.
+    </Accordion>
+    <Accordion title="Get the available report_date">
+      Get the available `report_date` from the [Quarterly Financial Dates of a
+      Company](../helper-list/company-quarterly-dates/) endpoint.
+    </Accordion>
+    <Accordion title="Default value">
+      When `report_date` is not provided, the latest quarterly financials will
+      be retrieved.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+<ParamField query="approx" type="boolean" default="true">
+  When set to `true`, the quarterly financials are retrieved based on the
+  closest available report date to the specified `report_date`. If set to
+  `false`, only the quarterly financials matching the exact specified
+  `report_date` will be retrieved.
+</ParamField>
+<ParamField query="n_quarters" type="integer">
+  The number of latest consecutive quarters for which financial data should be
+  retrieved. When this parameter is provided, it overrides `report_date` and
+  `approx`, returning financial data for the most recent `n_quarters` available.
+</ParamField>
+
+### Response
+
+<ResponseField name="symbol" type="string">
+  The ticker of the company.
+</ResponseField>
+<ResponseField name="date" type="string">
+  The date when the quarterly financials are reported.
+</ResponseField>
+<ResponseField name="operating_cash_flow" type="number">
+  The net cash flow from operating activities.
+</ResponseField>
+<ResponseField name="total_assets" type="number">
+  The total assets owned by the company.
+</ResponseField>
+<ResponseField name="total_liabilities" type="number">
+  The total liabilities of the company.
+</ResponseField>
+<ResponseField name="current_liabilities" type="number">
+  The total current liabilities of the company.
+</ResponseField>
+<ResponseField name="total_equity" type="number">
+  The total equity of the company.
+</ResponseField>
+<ResponseField name="revenue" type="number">
+  The total revenue generated by the company.
+</ResponseField>
+<ResponseField name="net_income" type="number">
+  The net income of the company.
+</ResponseField>
+<ResponseField name="total_debt" type="number">
+  The total debt held by the company.
+</ResponseField>
+<ResponseField name="stockholders_equity" type="number">
+  The equity attributable to stockholders.
+</ResponseField>
+<ResponseField name="ebit" type="number">
+  The earnings before interest and taxes (EBIT).
+</ResponseField>
+<ResponseField name="ebitda" type="number">
+  The earnings before interest, taxes, depreciation, and amortization (EBITDA).
+</ResponseField>
+<ResponseField name="cash_and_short_term_investments" type="number">
+  The cash and short‑term investments available.
+</ResponseField>
+<ResponseField name="cash_only" type="number">
+  The cash only available with the company.
+</ResponseField>
+<ResponseField name="total_cash_and_due_from_banks" type="number">
+  The total cash and funds due from banks.
+</ResponseField>
+<ResponseField name="diluted_shares_outstanding" type="number">
+  The number of diluted shares outstanding.
+</ResponseField>
+<ResponseField name="gross_profit" type="number">
+  The gross income of the company.
+</ResponseField>
+<ResponseField name="pretax_income" type="number">
+  The income earned before taxes.
+</ResponseField>
+<ResponseField name="tax" type="number">
+  The total income taxes paid by the company.
+</ResponseField>
+<ResponseField name="total_non_current_assets" type="number">
+  The total non‑current assets owned by the company.
+</ResponseField>
+<ResponseField name="free_cash_flow" type="number">
+  The free cash flow available after operational and capital expenses.
+</ResponseField>
+<ResponseField name="interest_expense_non_operating" type="number">
+  The interest expenses incurred from non‑operating activities.
+</ResponseField>
+<ResponseField name="operating_pnl" type="number">
+  The income earned from operating activities.
+</ResponseField>
+<ResponseField name="financials_sector_metrics" type="object">
+  A collection of bank‑specific balance‑sheet and income‑statement line items:
+  <ResponseField name="interest_income" type="number">
+    Total interest earned on loans and investments.
+  </ResponseField>
+  <ResponseField name="interest_expense" type="number">
+    Total interest paid on deposits and borrowings.
+  </ResponseField>
+  <ResponseField name="net_interest_income" type="number">
+    interest_income minus interest_expense.
+  </ResponseField>
+  <ResponseField name="gross_loan" type="number">
+    Outstanding loans before allowances.
+  </ResponseField>
+  <ResponseField name="allowance_for_loans" type="number">
+    Loan‐loss reserves.
+  </ResponseField>
+  <ResponseField name="net_loan" type="number">
+    gross_loan less allowance_for_loans.
+  </ResponseField>
+  <ResponseField name="total_earning_assets" type="number">
+    Assets that earn interest (e.g. securities, loans).
+  </ResponseField>
+  <ResponseField name="current_account" type="number">
+    Customer checking balances.
+  </ResponseField>
+  <ResponseField name="savings_account" type="number">
+    Customer savings balances.
+  </ResponseField>
+  <ResponseField name="time_deposit" type="number">
+    Fixed‑term deposit balances.
+  </ResponseField>
+  <ResponseField name="total_deposit" type="number">
+    Sum of all deposit types.
+  </ResponseField>
+  <ResponseField name="non_interest_bearing_liabilities" type="number">
+    Non-interest bearing liabilities (e.g. Accounts Payables)
+  </ResponseField>
+  <ResponseField name="other_interest_bearing_liabilities" type="number">
+    Borrowings and debt other than deposits.
+  </ResponseField>
+  <ResponseField name="total_cash_and_due_from_banks" type="number">
+    Cash and interbank balances.
+  </ResponseField>
+</ResponseField>
+<ResponseField name="capital_expenditure" type="number">
+  Funds spent on property, plant, and equipment.
+  <i>Only for non‑financial companies (e.g. mining, manufacturing).</i>
+</ResponseField>
+<ResponseField name="realized_capital_goods_investment" type="number">
+  Investment in completed capital goods (e.g. machinery output).
+  <i>Also only for non‑financial companies where applicable.</i>
+</ResponseField>

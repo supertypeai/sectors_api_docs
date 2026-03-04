@@ -1,0 +1,47 @@
+---
+title: "KLSE Sectors"
+api: "GET /v2/klse/sectors/"
+description: "Return list of all available sectors in KLSE Index"
+---
+
+<ResponseExample>
+```json 200
+[
+  "consumer-non-cyclicals",
+  "finance",
+  ...
+]
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="Sector[]">
+  <Expandable title="properties">
+    <ResponseField name="Sector" type="array">
+      A broad classification of companies in similar economic areas.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Usage
+
+This list can be used for the following endpoints:
+
+- [KLSE Companies by Sector](./klse-companies-by-sector)
+- [KLSE Top Companies by Sector](./klse-top-companies)

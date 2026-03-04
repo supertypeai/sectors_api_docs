@@ -13,30 +13,62 @@ description: "Lists mining license auctions scraped from the ESDM Minerba portal
 {
     "results": [
         {
-            "commodity_type": "Coal",
-            "city": "Kotawaringin Timur",
-            "province": "Kalimantan Tengah",
-            "company_name": "PT Natai Baru Raya",
-            "winner_date": "2024-05-30",
-            "licensed_area_ha": 4500.0,
-            "license_number": "123/45/678/2024",
-            "area_type": "WIUP",
-            "kdi": "12345",
-            "wiup_code": "3411003442014022",
+            "commodity_type": "Nickel",
+            "city": "Luwu Timur",
+            "province": "Sulawesi Selatan",
+            "company_name": "Aneka Tambang",
+            "winner_date": "2024-06-20",
+            "licensed_area_ha": 4252.0,
+            "license_number": "56.K/MB.01/MEM.B/2023",
+            "area_type": "WIUPK",
+            "kdi": "14409850000",
+            "wiup_code": "1473242122023001",
             "auction_status": "Lelang Selesai",
-            "participant_count": 6,
+            "participant_count": 3,
             "winner": true,
-            "company_slug": "natai-baru-raya"
+            "company_slug": "pt-aneka-tambang-tbk"
+        },
+        {
+            "commodity_type": "Nickel",
+            "city": "Luwu Timur",
+            "province": "Sulawesi Selatan",
+            "company_name": "Sulsel Citra Indonesia Perseroda",
+            "winner_date": "2024-06-20",
+            "licensed_area_ha": 943.0,
+            "license_number": "5.K/MB.01/MEM.B/2023",
+            "area_type": "WIUPK",
+            "kdi": "3378300000",
+            "wiup_code": "1473242122023002",
+            "auction_status": "Lelang Selesai",
+            "participant_count": 3,
+            "winner": true,
+            "company_slug": null
+        },
+        {
+            "commodity_type": "Nickel",
+            "city": "Luwu Timur",
+            "province": "Sulawesi Selatan",
+            "company_name": "Sulsel Citra Indonesia Perseroda",
+            "winner_date": "2024-06-20",
+            "licensed_area_ha": 1665.0,
+            "license_number": "54.K/MB.01/MEM.B/2023",
+            "area_type": "WIUPK",
+            "kdi": "5972500000",
+            "wiup_code": "1473242122023003",
+            "auction_status": "Lelang Selesai",
+            "participant_count": 5,
+            "winner": true,
+            "company_slug": null
         }
     ],
     "pagination": {
-        "total_count": 68,
-        "showing": 1,
+        "total_count": 3,
+        "showing": 3,
         "limit": 20,
         "offset": 0,
-        "has_next": true,
+        "has_next": false,
         "has_previous": false,
-        "next_offset": 20,
+        "next_offset": null,
         "previous_offset": null
     }
 }
@@ -63,7 +95,7 @@ description: "Lists mining license auctions scraped from the ESDM Minerba portal
   Filter by commodity (e.g., `Nickel`, `Coal`). Case-insensitive.
 </ParamField>
 <ParamField query="province" type="string">
-  Filter by province (e.g., `Kalimantan Tengah`). Case-insensitive.
+  Filter by province (e.g., `Sulawesi Selatan`). Case-insensitive.
 </ParamField>
 <ParamField query="area_type" type="string">
   Filter by area type (e.g., `WIUPK`). Case-insensitive.
@@ -169,46 +201,3 @@ description: "Lists mining license auctions scraped from the ESDM Minerba portal
     </ResponseField>
   </Expandable>
 </ResponseField>
-
----
-
-## Auction Detail
-
-`GET /v2/mining/license-auctions/{wiup_code}/`
-
-Retrieves the full record for a single mining license auction, including the parsed phases timeline and participant qualification list.
-
-<ResponseExample>
-```json 200
-{
-    "wiup_code": "3411003442014022",
-    "commodity_type": "Coal",
-    "province": "Kalimantan Tengah",
-    "city": "Kotawaringin Timur",
-    "company_name": "PT Natai Baru Raya",
-    "winner_date": "2024-05-30",
-    "auction_status": "Lelang Selesai",
-    "participant_count": 6,
-    "winner": true,
-    "phases": [
-        {
-            "phase": "Pengumuman Lelang",
-            "date": "2024-01-01",
-            "status": "Selesai"
-        }
-    ],
-    "participants": [
-        {
-            "name": "PT Natai Baru Raya",
-            "qualified": "LOLOS"
-        }
-    ]
-}
-```
-</ResponseExample>
-
-### Path Parameters
-
-<ParamField path="wiup_code" type="string" required>
-  The unique identifier for the auction.
-</ParamField>
