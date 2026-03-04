@@ -234,8 +234,7 @@
       "group": "Sectors for AI Agents",
       "pages": [
         "recipes/sectors-for-ai-agents/00-sectors-mcp-guide",
-        "recipes/sectors-for-ai-agents/01-agent-skills-guide",
-        "recipes/sectors-for-ai-agents/02-multiagent-workflows"
+        "recipes/sectors-for-ai-agents/01-agent-skills-guide"
       ]
     },
     {
@@ -257,7 +256,8 @@
           "group": "Retrieval Augmented Generation",
           "pages": [
             "recipes/generative-ai-python/01-background",
-            "recipes/generative-ai-python/02-tool-use"
+            "recipes/generative-ai-python/02-tool-use",
+            "recipes/generative-ai-python/06-multiagent-workflows"
           ]
         },
         "recipes/generative-ai-python/03-structured-output",
