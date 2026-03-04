@@ -179,66 +179,66 @@
       "version": "v2",
       "pages": [
         {
-          "group": "IDX",
+          "group": "Indonesia",
           "icon": "building-columns",
           "pages": [
             {
               "group": "Company Screener",
               "icon": "bolt",
               "pages": [
-                "api-references/v2/idx/companies",
-                "api-references/v2/idx/free-float"
+                "api-references/v2/indonesia/companies",
+                "api-references/v2/indonesia/free-float"
               ]
             },
             {
               "group": "Helper List",
               "icon": "list-check",
               "pages": [
-                "api-references/v2/idx/helper-list/index-companies",
-                "api-references/v2/idx/helper-list/companies-segments-list",
-                "api-references/v2/idx/helper-list/company-quarterly-dates"
+                "api-references/v2/indonesia/helper-list/index-companies",
+                "api-references/v2/indonesia/helper-list/companies-segments-list",
+                "api-references/v2/indonesia/helper-list/company-quarterly-dates"
               ]
             },
             {
               "group": "Since IPO Performance",
               "icon": "chart-line",
               "pages": [
-                "api-references/v2/idx/ipo/listing-performance"
+                "api-references/v2/indonesia/ipo/listing-performance"
               ]
             },
             {
               "group": "Company News",
               "icon": "newspaper",
               "pages": [
-                "api-references/v2/idx/news/news",
-                "api-references/v2/idx/news/filings"
+                "api-references/v2/indonesia/news/news",
+                "api-references/v2/indonesia/news/filings"
               ]
             },
             {
               "group": "Detailed Reports",
               "icon": "file-contract",
               "pages": [
-                "api-references/v2/idx/report/company-report",
-                "api-references/v2/idx/report/company-segments",
-                "api-references/v2/idx/report/quarterly-financials",
-                "api-references/v2/idx/report/sector-report"
+                "api-references/v2/indonesia/report/company-report",
+                "api-references/v2/indonesia/report/company-segments",
+                "api-references/v2/indonesia/report/quarterly-financials",
+                "api-references/v2/indonesia/report/sector-report"
               ]
             },
             {
               "group": "Company Ranking by Dimensions",
               "icon": "ranking-star",
               "pages": [
-                "api-references/v2/idx/ranking/most-traded",
-                "api-references/v2/idx/ranking/top-changes"
+                "api-references/v2/indonesia/ranking/most-traded",
+                "api-references/v2/indonesia/ranking/top-changes"
               ]
             },
             {
               "group": "Historical Market Cap & Transaction Data",
               "icon": "money-bill-transfer",
               "pages": [
-                "api-references/v2/idx/transaction/idx-total",
-                "api-references/v2/idx/transaction/daily",
-                "api-references/v2/idx/transaction/index-daily"
+                "api-references/v2/indonesia/transaction/idx-total",
+                "api-references/v2/indonesia/transaction/daily",
+                "api-references/v2/indonesia/transaction/index-daily"
               ]
             }
           ]
