@@ -5,9 +5,13 @@ sidebarTitle: "3. Multi-Agent Workflows"
 
 ## Overview
 
-In our previous [Agent Skills Guide](./01-agent-skills-guide), we explored how to give a single AI agent access to Sectors Financial API tools. But what happens when a task is too complex for a single agent to handle reliably? 
+In the [previous chapter on Tool Use](./02-tool-use), we built a RAG system where a single AI agent learned to intelligently select and call multiple tools to answer financial queries. We saw how powerful this approach is—our agent could retrieve company data, analyze stock performance, and compare metrics all within one workflow. (If you've also explored our [Agent Skills Guide](./01-agent-skills-guide), you'll recognize this pattern of giving agents access to Sectors Financial API tools.)
 
-In this recipe, we will build a **Multi-Agent Workflow** using the [OpenAI Agents SDK](https://pypi.org/project/openai-agents/) and the Sectors API. We'll design a robust IDX research assistant using two powerful agentic patterns:
+But what happens when a task is too complex for a single agent to handle reliably? As queries become more complex or require multiple reasoning steps, even a well-designed single agent can struggle with reliability and accuracy.
+
+This is where **multi-agent workflows** come in. Instead of relying on one agent to juggle multiple responsibilities, we can decompose complex tasks into specialized sub-agents, each focused on doing one thing exceptionally well. Think of it as moving from a solo performer to an orchestra—each instrument (agent) plays its part, and together they create something more robust and reliable than any single performer could achieve alone. 
+
+In this recipe, we'll build on the tool-calling concepts from Chapter 2 and take them further by creating a **Multi-Agent Workflow** using the [OpenAI Agents SDK](https://pypi.org/project/openai-agents/) and the Sectors API. We'll design a robust IDX research assistant using two powerful agentic patterns:
 1. **Sequential Chain:** Passing the output of one specialized agent (a screener) to another (a researcher).
 2. **Judge and Critic:** Using a third agent (an evaluator) to rigorously grade the output and demand revisions if it falls short.
 
@@ -35,6 +39,9 @@ import asyncio
 from typing import Literal
 from dataclasses import dataclass
 from agents import Agent, Runner, function_tool
+from dotenv import load_dotenv()
+
+load_dotenv()
 
 API_KEYS = os.getenv("SECTORS_API_KEY")
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
@@ -161,6 +168,105 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 ```
+
+## 4. Output
+
+When you run the workflow with the query "Top 5 IDX banks by market cap", here's what you'll see in the console:
+
+### 1. Screener Agent Output
+
+```python
+screener_resp = await Runner.run(screener_agent, query)
+tickers = screener_resp.final_output
+print(f"Tickers found: {tickers}")
+```
+
+**Output:**
+```
+Tickers found: ['BBCA', 'BBRI', 'BMRI', 'BBNI', 'BRIS']
+```
+The screener agent successfully retrieved the top 5 banking stocks by market capitalization from the IDX.
+
+### 2. Researcher Agent - Initial Draft
+
+```python
+for attempt in range(1, max_attempts + 1):
+    print(f"Evaluating draft (Attempt {attempt}/{max_attempts})...")
+    eval_resp = await Runner.run(evaluator_agent, current_draft)
+```
+
+**Output:**
+```
+Evaluating draft (Attempt 1/3)...
+```
+The researcher agent calls `get_company_overview` for each ticker and compiles the data into a structured JSON format.
+
+### 3. Evaluator Agent - Quality Check
+
+**If the draft passes:**
+
+```python
+if feedback_obj.score == "pass":
+    final_output = current_draft
+    break
+
+# ...later...
+print("Final Output:")
+print(final_output)
+```
+
+**Output:**
+```
+Final Output:
+{
+  "metric_fields": ["ticker", "company_name", "market_cap", "listing_date", "sector"],
+  "results": [
+    {
+      "ticker": "BBCA",
+      "company_name": "PT Bank Central Asia Tbk.",
+      "market_cap": 1263500995330048,
+      "listing_date": "2000-05-31",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "BBRI",
+      "company_name": "PT Bank Rakyat Indonesia Tbk.",
+      "market_cap": 923456789012345,
+      "listing_date": "2003-11-10",
+      "sector": "Financials"
+    },
+    ...
+  ]
+}
+```
+
+**If revision is needed:**
+
+```python
+print(f"Revision needed. Feedback: {feedback_obj.feedback}")
+revision_input = (
+    f"User query: '{query}'\nTickers: {tickers}\n"
+    f"Previous output graded '{feedback_obj.score}'.\n"
+    f"Feedback: {feedback_obj.feedback}\n"
+    "Fix the issues and return the corrected JSON object."
+)
+research_resp = await Runner.run(researcher_agent, revision_input)
+```
+
+**Output:**
+```
+Evaluating draft (Attempt 1/3)...
+Revision needed. Feedback: Missing 'company_name' field in result index 2. Please ensure all results include ticker and company_name.
+
+Evaluating draft (Attempt 2/3)...
+Final Output:
+{
+  "metric_fields": ["ticker", "company_name", "market_cap"],
+  "results": [...]
+}
+```
+
+The evaluator ensures data quality by checking that every result has required fields with valid values. If it finds issues, it sends the draft back to the researcher with specific feedback for correction.
 
 ## Summary
 
