@@ -4,6 +4,10 @@ api: "GET /v1/index/{index}/"
 description: "Return list of companies from a stock index"
 ---
 
+<Warning>
+**Deprecation Notice:** This v1 endpoint will be discontinued at the end of March 2026. Please migrate to the [v2 Companies Screener](/api-references/v2/indonesia/companies) using the `where` parameter to filter by indices. See the [Migration Guide](/get-started/v2/migration-guide#1-companies-by-index) for details.
+</Warning>
+
 <ResponseExample>
 ```json 200
 [

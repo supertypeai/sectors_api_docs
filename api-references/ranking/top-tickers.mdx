@@ -4,6 +4,10 @@ api: "GET /v1/companies/top/"
 description: "Return a list of top tickers in a given year based on selected classifications (dividend yield, total dividend, revenue, earnings, market cap, PB ratio, PE ratio, or PS ratio). Supports filtering, logical combination, and inclusion of null metrics."
 ---
 
+<Warning>
+**Deprecation Notice:** This v1 endpoint will be discontinued at the end of March 2026. Please migrate to the [v2 Companies Screener](/api-references/v2/indonesia/companies) using the `order_by` parameter. See the [Migration Guide](/get-started/v2/migration-guide#2-top-companies-ranked) for details.
+</Warning>
+
 <ResponseExample>
 ```json 200
 {

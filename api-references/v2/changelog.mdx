@@ -3,33 +3,39 @@ title: v2 Changelog
 sidebarTitle: Changelog
 ---
 
-## 2026-03-02
+## 2026-03-06
 
-- **Comprehensive Mining API Update**: Standardized all Turso-powered mining endpoints for consistency and robustness.
-  - **Standardized Pagination**: All list endpoints now use `limit` and `offset` for pagination, returning a consistent `results` and `pagination` object.
-  - **Slug-based Lookups**: Standardized company and site lookups to use `slug` instead of numeric IDs.
+- **Migration Guide Released**: Added comprehensive [migration guide](/get-started/v2/migration-guide) with step-by-step instructions for upgrading from v1 to v2
+- **v1 Endpoints Available in v2**: Most legacy v1 endpoints are now accessible in v2 with enhanced functionality:
+  - **Simple Migration**: Most endpoints can be migrated by simply changing `/v1/` to `/v2/` in the URL
+  - **Enhanced Companies by Index**: Previously limited to single index queries, now supports multiple indices with SQL-style filtering and natural language queries
+  - **Improved Top Companies Ranking**: Expanded from 8 predefined classifications to support sorting by any available metric with advanced filtering
+  - **Advanced Growth Analytics**: Enhanced growth metrics with flexible filtering and natural language query support
+- **Comprehensive Mining API Update**: Standardized all Turso-powered mining endpoints for consistency and robustness
+  - **Standardized Pagination**: All list endpoints now use `limit` and `offset` for pagination, returning a consistent `results` and `pagination` object
+  - **Slug-based Lookups**: Standardized company and site lookups to use `slug` instead of numeric IDs
 - **Enhanced Mining Company Data**:
-  - Updated `MiningCompanyListView` with new filters for `commodity_type`, `company_type`, and `has_financials`.
+  - Updated `MiningCompanyListView` with new filters for `commodity_type`, `company_type`, and `has_financials`
   - Expanded `MiningCompanyDetailView` with total mining site counts.
-  - Added specialized endpoints for `ownership`, `performance`, and `financials` specifically for mining firms.
+  - Added specialized endpoints for `ownership`, `performance`, and `financials` specifically for mining firms
 - **Improved Mining License Tracking**:
-  - Updated `MiningLicenseListView` with new filters (`license_type`, `activity`) and GeoJSON support for site locations.
-  - Corrected `winner` field in `MiningLicenseAuctions` to boolean and expanded documentation to include detailed phase timelines and participant lists.
+  - Updated `MiningLicenseListView` with new filters (`license_type`, `activity`) and GeoJSON support for site locations
+  - Corrected `winner` field in `MiningLicenseAuctions` to boolean and expanded documentation to include detailed phase timelines and participant lists
 - **Production & Resources**:
-  - Restructured `ResourcesAndReserves` into an index-and-detail pattern with updated metric fields (`exploration_target`, `total_inventory`).
-  - Standardized `TotalProduction` and `ExportDestinations` with correct units and endpoint paths.
+  - Restructured `ResourcesAndReserves` into an index-and-detail pattern with updated metric fields (`exploration_target`, `total_inventory`)
+  - Standardized `TotalProduction` and `ExportDestinations` with correct units and endpoint paths
 - **New APIs**:
-  - Added `MiningContractView` documentation for tracking owner-contractor relationships.
-  - Added `CommodityListView` for discovering available mineral data coverage.
-- **Site Analysis**: Updated `MiningSiteListView` and added `MiningSiteDetailView` for deep dives into specific mining operations including resource/reserve breakdowns.
+  - Added `MiningContractView` documentation for tracking owner-contractor relationships
+  - Added `CommodityListView` for discovering available mineral data coverage
+- **Site Analysis**: Updated `MiningSiteListView` and added `MiningSiteDetailView` for deep dives into specific mining operations including resource/reserve breakdowns
 - **API Parameter & Response Refinements**:
-  - Corrected `MiningCompanyPerformanceView` and `MiningCompanyFinancialsView` endpoint paths and standardized on single-year results returning `year`, `available_years`, and `data`.
-  - Refactored `SalesDestinationView` to use `slug` as a path parameter and return a nested object keyed by country.
-  - Updated `CommodityPriceView` to support `start_year` and `end_year` parameters with a 3-year maximum range.
-  - Standardized `GlobalCommodityDataView` to return a list of results and restricted query parameters to `country`, `commodity_type`, and `limit`.
-- **Free Float Analysis**: Added specialized endpoint to retrieve public float percentage for companies, with support for sector-based filtering.
+  - Corrected `MiningCompanyPerformanceView` and `MiningCompanyFinancialsView` endpoint paths and standardized on single-year results returning `year`, `available_years`, and `data`
+  - Refactored `SalesDestinationView` to use `slug` as a path parameter and return a nested object keyed by country
+  - Updated `CommodityPriceView` to support `start_year` and `end_year` parameters with a 3-year maximum range
+  - Standardized `GlobalCommodityDataView` to return a list of results and restricted query parameters to `country`, `commodity_type`, and `limit`
+- **Free Float Analysis**: Added specialized endpoint to retrieve public float percentage for companies, with support for sector-based filtering
   - [GET /v2/free-float/](./free-float)
-- **Postman Collection Update**: Released version 1.3 of the comprehensive Postman collection, including all new mining and analytics endpoints.
+- **Postman Collection Update**: Released version 1.3 of the comprehensive Postman collection, including all new mining and analytics endpoints
 
 ## 2026-01-09
 
@@ -62,4 +68,4 @@ sidebarTitle: Changelog
 
 ## 2025-09-25
 
-- Official launching of the second version of Sectors API.
+- Official launching of the second version of Sectors Financial API.
