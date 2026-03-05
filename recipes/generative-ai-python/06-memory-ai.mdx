@@ -1,14 +1,14 @@
 ---
 title: "Conversational Memory and Tool Use AI Agents"
-sidebarTitle: "5. Conversational Memory AI Agents"
+sidebarTitle: "6. Conversational Memory AI Agents"
 description: "By: [Samuel Chan](https://www.github.com/onlyphantom) · October 16, 2024"
 ---
 import {TOC} from '/snippets/generative-ai-toc.mdx';
 
-<TOC step={5} />
+<TOC step={6} />
 
 <Note>
-    This article is part 5 of the Generative AI for Finance series, and is written using LangChain 0.3.2. 
+    This article is part 6 of the Generative AI for Finance series, and is written using LangChain 0.3.2. 
     
     For best results, it is recommended to consume the series in order, starting from [chapter 1](/recipes/generative-ai-python/01-background).
     
@@ -208,10 +208,10 @@ could not have understood the question about the "central bank of that country" 
 without these information injected into the prompt from the conversation history.
 
 ## Conversational Agents through `RunnableWithMessageHistory`
-If you're going through the Generative AI series on your own, you'd probably be reading this article 
+If you're going through the Generative AI series on your own, you'd probably be reading this article
 closer to the end of 2024 or later. In that case, you should be using the `RunnableWithMessageHistory` class
-along with the LCEL (LangChain Expression Language) to build your conversational AI agents. ReAct agents and LCEL 
-are topics covered in [Chapter 4: Tool-Use ReAct Agents](/recipes/generative-ai-python/04-conversational) of the series.
+along with the LCEL (LangChain Expression Language) to build your conversational AI agents. ReAct agents and LCEL
+are topics covered in [Chapter 5: Tool-Use ReAct Agents](/recipes/generative-ai-python/05-conversational) of the series.
 
 The key changes with LangChain 0.3.2 and above are the use of `RunnableWithMessageHistory` to construct a 
 `runnable` -- consistent with what we've learned in previous chapters of this series -- and a more explictly 
@@ -787,7 +787,7 @@ id	session_id	message
 
 
 ## Adding memory to prebuilt `ReAct` agents
-We've learned about the [prebuilt `ReAct` agents in the previous chapter](/recipes/generative-ai-python/04-conversational). Adding in-memory 
+We've learned about the [prebuilt `ReAct` agents in the previous chapter](/recipes/generative-ai-python/05-conversational). Adding in-memory
 capabilities to these agents is actually fairly straightforward, so let's see a bare minimum example of how to do this.
 
 ```python
