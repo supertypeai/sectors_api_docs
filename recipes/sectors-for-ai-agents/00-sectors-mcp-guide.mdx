@@ -35,9 +35,9 @@ The server is **cloud-hosted** on Cloudflare Workers with **40+ tools** covering
 
 ## Prerequisites
 Before beginning, make sure you have:
-1. **A Sectors API key** — requires an Insider plan.
+1. **A Sectors Financial API key** — requires an Insider plan.
 <Card title="Get your API key" horizontal icon="key" href="https://sectors.app">
-  Sign up for an Insider plan to get access to the Sectors API
+  Sign up for an Insider plan to get access to the Sectors Financial API
 </Card>
 
 2. **An MCP-compatible client** — any of the following will work:
@@ -75,7 +75,7 @@ Add the following to your `mcpServers` object:
 }
 ```
 
-Replace `YOUR_API_KEY_HERE` with your Sectors API key, then restart Claude Desktop. The Sectors tools will appear in the tools panel.
+Replace `YOUR_API_KEY_HERE` with your Sectors Financial API key, then restart Claude Desktop. The Sectors tools will appear in the tools panel.
 
 ### Claude Code
 Run the following command in your terminal:
@@ -85,7 +85,7 @@ claude mcp add --transport sse sectors https://sectors-mcp.supertype.ai/sse \
   --header "Authorization: Bearer YOUR_API_KEY_HERE"
 ```
 
-Replace `YOUR_API_KEY_HERE` with your Sectors API key. The server will be available in your next Claude Code session.
+Replace `YOUR_API_KEY_HERE` with your Sectors Financial API key. The server will be available in your next Claude Code session.
 
 ### Cursor
 Open or create `~/.cursor/mcp.json` and add the following:
@@ -103,7 +103,7 @@ Open or create `~/.cursor/mcp.json` and add the following:
 }
 ```
 
-Replace `YOUR_API_KEY_HERE` with your Sectors API key, then restart Cursor. The Sectors tools will be available in Agent mode.
+Replace `YOUR_API_KEY_HERE` with your Sectors Financial API key, then restart Cursor. The Sectors tools will be available in Agent mode.
 
 ### VS Code (Copilot)
 Create a `.vscode/mcp.json` file in your workspace and add the following:
@@ -123,14 +123,14 @@ Create a `.vscode/mcp.json` file in your workspace and add the following:
     {
       "type": "promptString",
       "id": "sectors-api-key",
-      "description": "Your Sectors API key",
+      "description": "Your Sectors Financial API key",
       "password": true
     }
   ]
 }
 ```
 
-VS Code will securely prompt you for your Sectors API key the first time the server starts. This config is workspace-scoped, so you'll need it in each project where you want Sectors data.
+VS Code will securely prompt you for your Sectors Financial API key the first time the server starts. This config is workspace-scoped, so you'll need it in each project where you want Sectors data.
 
 ### Generic SSE Client
 If you're using any other MCP-compatible client that supports SSE transport, connect with these settings:
@@ -382,7 +382,7 @@ Check that:
 
 **My API key works on the Sectors website but not in the MCP server.**
 
-The MCP server uses the same key as the Sectors API. Make sure you're copying the key from your [Sectors API settings page](https://sectors.app) and not a cached or expired token.
+The MCP server uses the same key as the Sectors Financial API. Make sure you're copying the key from your [Sectors Financial API settings page](https://sectors.app) and not a cached or expired token.
 
 ---
 
