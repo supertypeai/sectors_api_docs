@@ -44,7 +44,7 @@ response = requests.get("https://api.sectors.app/v2/companies/?where=sub_sector=
 list_companies_by_subsectors = []
 if response.status_code == 200:
     data = response.json()
-    for company in data:
+    for company in data.get('results'):
         list_companies_by_subsectors.append(company["symbol"])
 else:
     # Handle error

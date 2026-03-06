@@ -117,7 +117,7 @@ for data in data_all_subsectors:
 
     if response.status_code == 200:
         list_companies_by_subsectors = response.json()
-        for company in list_companies_by_subsectors:
+        for company in list_companies_by_subsectors.get('results'):
             result_data.append([subsector, company["symbol"]])
     else:
         # Handle error

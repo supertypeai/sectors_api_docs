@@ -95,15 +95,21 @@ def get_company_overview(stock: str) -> dict:
 @tool
 def get_top_companies_ranked(dimension: str) -> List[dict]:
     """
-    Return a list of top companies (symbol) based on certain dimension (dividend yield, total dividend, revenue, earnings, market cap,...)
+    Return a list of top companies (symbol and company_name) ranked by certain dimension.
 
-    @param dimension: The dimension to rank the companies by, one of: dividend_yield, total_dividend, revenue, earnings, market_cap, ...
-    @return: A list of top tickers in a given year based on certain classification
+    @param dimension: The dimension to rank companies by.
+        - Static metrics: market_cap, dividend_yield_avg, pe_ttm, etc.
+        - Time-specific metrics require [year] format: revenue[2024], earnings[2023], etc.
+        Examples: "market_cap", "dividend_yield_avg", "revenue[2024]", "earnings[2023]"
+    @return: A list of top tickers ranked by the specified dimension
     """
 
     url = f"https://api.sectors.app/v2/companies/?order_by=-{dimension}"
-
-    return retrieve_from_endpoint(url)
+    
+    response_data = json.loads(retrieve_from_endpoint(url))
+    results = response_data.get('results', response_data)
+    
+    return json.dumps(results)
 ```
 
 With the `@tool` decorator, we turn our functions into LangChain's structured tools, of the type `<class 'langchain_core.tools.structured.StructuredTool'>`, and 
@@ -113,7 +119,7 @@ Just to see how the tools work, let us invoke them directly:
 
 ```python
 out = get_company_overview.invoke({"stock": "BBRI"})
-out2 = get_top_companies_ranked.invoke({"dimension": "dividend_yield"})
+out2 = get_top_companies_ranked.invoke({"dimension": "dividend_yield_avg"})
 print(out)
 print(out2)
 ```
@@ -144,20 +150,61 @@ Here is the result of the above code:
 and: 
 
 ```json
-{"dividend_yield": 
-    [{"symbol": "ITMG.JK", "company_name": "Indo Tambangraya Megah Tbk", "dividend_yield": 0.114533205004812}, 
-    {"symbol": "BJBR.JK", "company_name": "Bank Pembangunan Daerah Jawa Barat dan Banten Tbk", "dividend_yield": 0.0984974124888682}, 
-    {"symbol": "BJTM.JK", "company_name": "Bank Pembangunan Daerah Jawa Timur Tbk", "dividend_yield": 0.0962654856453955}, 
-    {"symbol": "ADMF.JK", "company_name": "Adira Dinamika Multi Finance Tbk", "dividend_yield": 0.0865924276169265}, 
-    {"symbol": "MCOL.JK", "company_name": "PT Prima Andalan Mandiri Tbk", "dividend_yield": 0.0771300448430493}]}
+[
+    {
+      "symbol": "SCPI.JK",
+      "company_name": "PT Organon Pharma Indonesia Tbk"
+    },
+    {
+      "symbol": "TMAS.JK",
+      "company_name": "PT Temas Tbk"
+    },
+    {
+      "symbol": "ADRO.JK",
+      "company_name": "Alamtri Resources Indonesia Tbk"
+    },
+    {
+      "symbol": "BSSR.JK",
+      "company_name": "Baramulti Suksessarana Tbk"
+    },
+    {
+      "symbol": "PTBA.JK",
+      "company_name": "Bukit Asam Tbk"
+    },
+    {
+      "symbol": "HEXA.JK",
+      "company_name": "Hexindo Adiperkasa Tbk"
+    },
+    {
+      "symbol": "ITMG.JK",
+      "company_name": "Indo Tambangraya Megah Tbk"
+    },
+    {
+      "symbol": "GEMS.JK",
+      "company_name": "Golden Energy Mines Tbk"
+    },
+    {
+      "symbol": "MPMX.JK",
+      "company_name": "PT Mitra Pinasthika Mustika Tbk"
+    },
+    {
+      "symbol": "ASDM.JK",
+      "company_name": "Asuransi Dayin Mitra Tbk"
+    },
+    {
+      "symbol": "DMAS.JK",
+      "company_name": "PT Puradelta Lestari Tbk"
+    },
+    {
+      "symbol": "MBAP.JK",
+      "company_name": "PT Mitrabara Adiperdana Tbk"
+    },
+    ...
+]
 ```
 
 The output gives us some assurance that the tool functions are working as expected. We are calling each of the tool with 
 the appropriate parameters, allowing each tool to then fetch the data from Sectors Financial API through our utility function.
-
-At this time of writing, Indo Tambangraya Megah Tbk (ITMG.JK) has the highest dividend yield among the companies listed on IDX (yield of 11.45%), 
-followed by 3 companies in the finance sector each with a yield of around 8.5% to 9.8%. Rounding off the list is PT Prima Andalan Mandari -- owner of 
-the Mandiri Coal brand -- with a dividend yield of 7.71%.
 
 ### Bringing in our LLM 
 Now that we have our tools in place, let us also create a `prompt` object and bind our tools to a LLM model of our choice. 
@@ -322,7 +369,7 @@ tools = [
     get_top_companies_ranked,
 ]
 
-system_message = "You are an expert tool calling agent meant for financial data retriever and summarization. Use tools to get the information you need. If you do not know the answer to a question, say so. Whenever possible, answer with markdown-formatted code."
+system_message = "You are an expert tool calling agent meant for financial data retriever and summarization. Use tools to get the information you need. If you do not know the answer to a question, say so. Whenever possible, answer with markdown-formatted code. When ranking companies by time-specific financial metrics (revenue, earnings, etc.), use the format 'metric[year]' (e.g., 'revenue[2024]', 'earnings[2023]'). For static metrics like market_cap or dividend_yield_avg, use them as-is."
 
 app = create_react_agent(llm, tools, state_modifier=system_message)
 
@@ -367,23 +414,39 @@ by the agent.
 We can also query the agent for the top 5 companies ranked by a certain metric:
 
 ```python
-query = "Top 5 companies with the highest market cap, along with their full company name and market cap"
+query = "Top 5 companies ranked by market cap, along with their full company name"
 
 out_agent2 = query_app(query)
 
 print(out_agent2[-1].content)
 
 # output:
-# The top 5 companies with the highest market cap are as follows:
-# 1. **PT Bank Central Asia Tbk.** with a market cap of 1285141859139584
-# 2. **PT Barito Renewables Energy Tbk.** with a market cap of 916434083381248
-# 3. **PT Chandra Asri Pacific Tbk.** with a market cap of 763463991296000
-# 4. **PT Bank Rakyat Indonesia (Persero) Tbk** with a market cap of 741808095100928
-# 5. **PT Amman Mineral Internasional Tbk.** with a market cap of 654476713132032
+# Here are the top 5 companies ranked by market cap:
+# 1. **PT Bank Central Asia Tbk.** (BBCA.JK)
+# 2. **PT Barito Renewables Energy Tbk.** (BREN.JK)
+# 3. **PT Chandra Asri Pacific Tbk** (TPIA.JK)
+# 4. **PT Bank Rakyat Indonesia (Persero) Tbk** (BBRI.JK)
+# 5. **PT Bank Mandiri (Persero) Tbk** (BMRI.JK)
 ```
 
 We observe that the agent is able to understand the query, and the instructions in `state_modifier` were also 
 being followed as the agent responded with a markdown-formatted answer (ordered lists, along with bolded text syntax). 
+
+```python
+query = "Top 5 companies by revenue in 2024"
+
+out_agent3 = query_app(query)
+
+print(out_agent3[-1].content)
+
+# output:
+# Here are the top 5 companies by revenue in 2024:
+# 1. **PT Bank Rakyat Indonesia (Persero) Tbk** (BBRI.JK)
+# 2. **PT Bank Central Asia Tbk.** (BBCA.JK)
+# 3. **PT Bank Mandiri (Persero) Tbk** (BMRI.JK)
+# 4. **PT Astra International Tbk** (ASII.JK)
+# 5. **PT Telkom Indonesia (Persero) Tbk** (TLKM.JK)
+```
 
 ### Streaming the agent's response
 The last section of this chapter will demonstrate the idea of streaming. Streaming is a concept where we want to make our AI 
@@ -399,7 +462,7 @@ for chunk in app.stream(
     {
         "messages": [
             HumanMessage(
-                content="Top 5 companies with the highest market cap, along with their full company name and market cap"
+                content="Top 5 companies ranked by market cap"
             )
         ]
     }
@@ -426,14 +489,14 @@ The output of the streaming code will be similar to the one below:
 
 # ----
 {'tools': {'messages': [
-    ToolMessage(content='{"market_cap": [{"symbol": "BBCA.JK", "company_name": "PT Bank Central Asia Tbk.", "market_cap": 1291305674080256}, {"symbol": "BREN.JK", "company_name": "PT Barito Renewables Energy Tbk.", "market_cap": 929812705181696}, {"symbol": "TPIA.JK", "company_name": "PT Chandra Asri Pacific Tbk", "market_cap": 748324500013056}, {"symbol": "BBRI.JK", "company_name": "PT Bank Rakyat Indonesia (Persero) Tbk", "market_cap": 732761686016000}, {"symbol": "BMRI.JK", "company_name": "PT Bank Mandiri (Persero) Tbk", "market_cap": 648666427686912}]}', 
+    ToolMessage(content='[{"symbol": "BBCA.JK", "company_name": "PT Bank Central Asia Tbk."}, {"symbol": "BREN.JK", "company_name": "PT Barito Renewables Energy Tbk."}, {"symbol": "TPIA.JK", "company_name": "PT Chandra Asri Pacific Tbk"}, {"symbol": "BBRI.JK", "company_name": "PT Bank Rakyat Indonesia (Persero) Tbk"}, {"symbol": "BMRI.JK", "company_name": "PT Bank Mandiri (Persero) Tbk"}]', 
         name='get_top_companies_ranked', ... 
     )]}}
 
 # ----
 
 {'agent': {'messages': [
-    AIMessage(content='Here are the top 5 companies with the highest market cap:\n1. **PT Bank Central Asia Tbk.** - Market Cap: 1,291,305,674,080,256\n2. **PT Barito Renewables Energy Tbk.** - Market Cap: 929,812,705,181,696\n3. **PT Chandra Asri Pacific Tbk** - Market Cap: 748,324,500,013,056\n4. **PT Bank Rakyat Indonesia (Persero) Tbk** - Market Cap: 732,761,686,016,000\n5. **PT Bank Mandiri (Persero) Tbk** - Market Cap: 648,666,427,686,912', 
+    AIMessage(content='Here are the top 5 companies ranked by market cap:\n1. **PT Bank Central Asia Tbk.** (BBCA.JK)\n2. **PT Barito Renewables Energy Tbk.** (BREN.JK)\n3. **PT Chandra Asri Pacific Tbk** (TPIA.JK)\n4. **PT Bank Rakyat Indonesia (Persero) Tbk** (BBRI.JK)\n5. **PT Bank Mandiri (Persero) Tbk** (BMRI.JK)', 
         ...
     )]}}
 ```
@@ -535,18 +598,18 @@ For reference, at the time of this writing, the top 7 companies by P/E values re
 Depending on the time you attempt this challenge, the companies and their P/E values may differ:
 
 ```python
-query = "Top 7 companies based on P/E values, along with their full company name and PE values"
+query = "Top 7 companies based on P/E values, along with their full company name"
 
 # response:
 """
 Here are the top 7 companies based on their P/E values:
-1. **ABM Investama Tbk** (ABMM.JK) - P/E: 3.09
-2. **PT Jasa Marga Tbk** (JSMR.JK) - P/E: 4.43
-3. **Pabrik Kertas Tjiwi Kimia Tbk** (TKIM.JK) - P/E: 4.50
-4. **Adaro Energy Indonesia Tbk** (ADRO.JK) - P/E: 4.79
-5. **Energi Mega Persada Tbk** (ENRG.JK) - P/E: 5.01
-6. **PT Jasa Marga Tbk** (JSMR.JK) - P/E: 4.43
-7. **Pabrik Kertas Tjiwi Kimia Tbk** (TKIM.JK) - P/E: 4.50
+1. **ABM Investama Tbk** (ABMM.JK)
+2. **PT Jasa Marga Tbk** (JSMR.JK)
+3. **Pabrik Kertas Tjiwi Kimia Tbk** (TKIM.JK)
+4. **Adaro Energy Indonesia Tbk** (ADRO.JK)
+5. **Energi Mega Persada Tbk** (ENRG.JK)
+6. **PT Jasa Marga Tbk** (JSMR.JK)
+7. **Pabrik Kertas Tjiwi Kimia Tbk** (TKIM.JK)
 """
 ```
 
