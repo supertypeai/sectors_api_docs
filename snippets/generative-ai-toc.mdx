@@ -46,12 +46,22 @@ export const TOC = ({ step }) => (
           (known as "tool-use" or "function-calling" in LLM)
         </Step>
         <Step
-          title="Structured Output from AIs"
+          title="Multi-Agent Workflows"
           icon={step === 3 ? "chevron-right" : 3}
           iconType="solid"
         >
+          <a href="/recipes/generative-ai-python/03-multiagent-workflows">
+            Building robust financial research systems with specialized agents
+          </a>{" "}
+          using sequential chains and judge-critic patterns for improved reliability.
+        </Step>
+        <Step
+          title="Structured Output from AIs"
+          icon={step === 4 ? "chevron-right" : 4}
+          iconType="solid"
+        >
           From{" "}
-          <a href="/recipes/generative-ai-python/03-structured-output">
+          <a href="/recipes/generative-ai-python/04-structured-output">
             using Generative AI to extract from unstructured data
           </a>{" "}
           or perform actions like database queries, API calls, JSON parsing and
@@ -59,11 +69,11 @@ export const TOC = ({ step }) => (
         </Step>
         <Step
           title="Tool-use ReAct Agents w/ Streaming"
-          icon={step === 4 ? "chevron-right" : 4}
+          icon={step === 5 ? "chevron-right" : 5}
           iconType="solid"
         >
           Updated for LangChain v0.3.2, we explore{" "}
-          <a href="/recipes/generative-ai-python/04-conversational">
+          <a href="/recipes/generative-ai-python/05-conversational">
             streaming, LCEL expressions and ReAct agents
           </a>{" "}
           following the most up-to-date practices for creating conversational AI
@@ -71,11 +81,11 @@ export const TOC = ({ step }) => (
         </Step>
         <Step
           title="Conversational Memory AI Agents"
-          icon={step === 5 ? "chevron-right" : 5}
+          icon={step === 6 ? "chevron-right" : 6}
           iconType="solid"
         >
           Updated for LangChain v0.2.3, we dive into{" "}
-          <a href="/recipes/generative-ai-python/05-memory-ai">
+          <a href="/recipes/generative-ai-python/06-memory-ai">
             Creating AI Agents with Conversational Memory
           </a>
         </Step>

@@ -67,7 +67,7 @@ def find_companies_screener(order_by: str, limit: int, where: str = "") -> str:
 @function_tool
 def get_company_overview(ticker: str) -> str:
     """Get company overview and financials for an IDX ticker"""
-    url = f"https://api.sectors.app/v1/company/report/{ticker}/?sections=overview,financials"
+    url = f"https://api.sectors.app/v2/company/report/{ticker}/?sections=overview,financials"
     response = requests.get(url, headers=HEADERS)
     return json.dumps(response.json())
 ```
@@ -272,17 +272,17 @@ Final Output:
 
 The evaluator ensures data quality by checking that every result has required fields with valid values. If it finds issues, it sends the draft back to the researcher with specific feedback for correction.
 
-## Visualizing the Results
+## Step 4: Visualizing the Results
 
 Once your multi-agent workflow produces structured JSON output, you can create **visualizations** for better insights using standard data science tools like pandas, matplotlib, and seaborn. Because our agents are designed to output clean, structured data, the transition from agent output to visualization is seamless—no manual data wrangling required.
 
-### Step 1: Install Visualization Dependencies
+### 1. Install Visualization Dependencies
 
 ```bash
 pip install pandas matplotlib seaborn
 ```
 
-### Step 2: Create Visualization Helper Functions
+### 2. Create Visualization Helper Functions
 
 ```python
 import matplotlib.pyplot as plt
@@ -331,9 +331,9 @@ def create_bar_chart(data_json, title="Market Cap Comparison", x_col='ticker', y
 print("Visualization functions defined")
 ```
 
-### Step 3: Visualize Your Agent's Output
+### 3. Visualize Your Agent's Output
 
-After running your multi-agent workflow and obtaining `final_output`:
+After running your multi-agent workflow and obtaining `final_output`, run the codes below:
 
 ```python
 # Display bar chart
@@ -368,6 +368,14 @@ These visualization functions help you quickly understand the data returned by y
 
 ## Summary
 
-By separating concerns into highly specialized agents, we built an AI workflow infinitely more reliable than a single generic prompt. The **Screener** acts as a targeted retrieval mechanism, the **Researcher** executes complex data fetching against our financial API, and the **Evaluator** ensures the final JSON structure matches strict application requirements. 
+In this chapter, we advanced beyond single-agent RAG systems to build a robust **multi-agent workflow** that demonstrates two powerful agentic patterns:
 
-You can now reliably pipe this JSON output into a data analysis tool like `pandas` or build an interactive dashboard!
+1. **Sequential Chain Pattern**: We created specialized agents that work in sequence—a Screener agent retrieves relevant tickers, then passes them to a Researcher agent that gathers detailed company data. Each agent has a narrow, well-defined responsibility, reducing complexity and improving reliability.
+
+2. **Judge-Critic Pattern**: We implemented an Evaluator agent that rigorously validates the Researcher's output against strict quality criteria. If issues are detected, the evaluator provides specific feedback and the researcher revises its output—implementing a self-improving loop that dramatically increases output quality.
+
+By designing agents to produce structured JSON output, we've created a system that integrates seamlessly with standard data science tools. The final output can be:
+- Visualized with pandas, matplotlib, and seaborn for exploratory analysis
+- Stored in databases for historical tracking
+- Fed into dashboards for real-time monitoring
+- Used as input for other AI systems or business logic
