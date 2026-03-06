@@ -129,14 +129,27 @@ description: "Return a list of IDX company filings, with optional filtering cond
 ### Query Parameters
 
 <ParamField query="sector" type="string">
-  Exact match on the company's sector (e.g. `financials`,
-  `communication-services`).
-</ParamField> <ParamField query="sub_sector" type="string">
+  Exact match on the company's sector.
+  <AccordionGroup>
+    <Accordion title="Get the available sector">
+      Get the available `sector` from the
+      [Subsectors](./helper-list/subsectors) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sector">
+      `infrastructures`, `transportation-logistic`, `healthcare`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sector` in the **kebab case** format (lowercase
+      and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+<ParamField query="sub_sector" type="string">
   Exact match on the company's subsector.
   <AccordionGroup>
     <Accordion title="Get the available sub_sector">
       Get the available `sub_sector` from the
-      [Subsectors](../../../helper-list/subsectors) endpoint.
+      [Subsectors](../helper-list/subsectors) endpoint.
     </Accordion>
     <Accordion title="Examples of the sub_sector">
       `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
@@ -146,36 +159,56 @@ description: "Return a list of IDX company filings, with optional filtering cond
       (lowercase and separated by "-").
     </Accordion>
   </AccordionGroup>
-</ParamField> <ParamField query="tags" type="string">
+</ParamField> 
+<ParamField query="tags" type="string">
   Comma‑separated list of tags associated with the filing (e.g. `Bullish,
   Investment, insider-trading`).
   <AccordionGroup>
     <Accordion title="Get the available filing tags">
-      Get the available `tags` from the [News Tags](../../../helper-list/tags) endpoint.
+      Get the available `tags` from the [News Tags](../helper-list/tags) endpoint.
     </Accordion>
     <Accordion title="Examples of the tags">
       `acquisition`, `allocation-service`, `ai`, `b2b`, `automotive`
     </Accordion>
     <Accordion title="Format">
-      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      The API endpoint only accepts `tags` in the **kebab case** format
       (lowercase and separated by "-").
     </Accordion>
   </AccordionGroup>
-</ParamField> <ParamField query="tickers" type="string">
-  Comma‑separated list of normalized IDX ticker symbols (e.g. `BBCA.JK,
-  TLKM.JK`).
-</ParamField> <ParamField query="transaction_type" type="string">
+</ParamField> 
+<ParamField query="tickers" type="string">
+  Comma‑separated list of ticker symbols  to filter by (e.g. `BBNI, BBCA, BMRI`).
+  <AccordionGroup>
+    <Accordion title="Get the available ticker">
+      Get the available `ticker` from the
+      [Companies Screener](../companies) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the ticker">
+      `ASII`, `BBCA`, `BBRI`, `BMRI`, `BYAN`
+    </Accordion>
+    <Accordion title="Format">
+      A valid `ticker` consists of 4 letters, optionally followed by '.jk', and
+      is **case-insensitive**.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+<ParamField query="transaction_type" type="string">
   Filter by transaction type: `buy` or `sell`.
-</ParamField> <ParamField query="start" type="string">
+</ParamField> 
+<ParamField query="start" type="string">
   ISO date (YYYY‑MM‑DD) for the start of the filing timestamp filter range.
-</ParamField> <ParamField query="end" type="string">
+</ParamField> 
+<ParamField query="end" type="string">
   ISO date (YYYY‑MM‑DD) for the end of the filing timestamp filter range.
-</ParamField> <ParamField query="n" type="integer">
+</ParamField> 
+<ParamField query="n" type="integer">
   Return the top N most recent articles, up to a maximum of 30. If a value for N
   isn't provided, it will default to 20. This setting overrides any pagination.
-</ParamField> <ParamField query="page" type="integer">
+</ParamField> 
+<ParamField query="page" type="integer">
   Page number for paginated results (default is 1).
-</ParamField> <ParamField query="page_size" type="integer">
+</ParamField> 
+<ParamField query="page_size" type="integer">
   Number of items per page (default defined in `CustomNewsPagination`).
 </ParamField>
 

@@ -14,20 +14,76 @@ The Free Float API provides the percentage of a company's shares that are held b
 ### Query Parameters
 
 <ParamField query="sector" type="string">
-  Filter by sector slug (e.g., `financials`, `energy`).
+  The slug of the sector for which the report is to be
+  retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sector">
+      Get the available `sector` from the
+      [Subsectors](./helper-list/subsectors) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sector">
+      `infrastructures`, `transportation-logistic`, `healthcare`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sector` in the **kebab case** format (lowercase
+      and separated by "-").
+    </Accordion>
+  </AccordionGroup>
 </ParamField>
 
 <ParamField query="sub_sector" type="string">
-  Filter by sub-sector slug (e.g., `banks`).
+  The slug of the subsector for which the report is to be
+  retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available subsector">
+      Get the available `sub_sector` from the
+      [Subsectors](./helper-list/subsectors) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the subsector">
+      `banks`, `basic-materials`, `food-beverage`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_sector` in the **kebab case** format (lowercase
+      and separated by "-").
+    </Accordion>
+  </AccordionGroup>
 </ParamField>
 
 <ParamField query="industry" type="string">
-  Filter by industry slug (e.g., `coal-production`).
-</ParamField>
+  The slug of the industry for which the report is to be
+  retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available industry">
+      Get the available `industry` from the [Industries](./helper-list/industries)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the industry">
+      `oil-gas`, `electrical`, `chemicals`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `industry` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField> 
 
 <ParamField query="sub_industry" type="string">
-  Filter by sub-industry slug (e.g., `banks`).
-</ParamField>
+  The slug of the subindustry for which the report is to be
+  retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sub_industry">
+      Get the available `sub_industry` from the [Subindustries](./helper-list/subindustries)
+      endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sub_industry">
+      `paper`, `life-insurance`, `personal-care-products`, `software`, `gold`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sub_industry` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField> 
 
 <Warning>
   Query parameters are **mutually exclusive**. You should provide at most one

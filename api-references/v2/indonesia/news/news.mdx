@@ -1,77 +1,106 @@
 ---
 title: "News Articles"
 api: "GET /v2/news/"
-description: "Return a list of IDX news articles, with optional filtering conditions, pagination, or top‑N retrieval."
+description: "Return a list of news articles from IDX or mining sources, with optional filtering, pagination, and search capabilities. Use the extension parameter to specify the news source."
 ---
 
 <ResponseExample>
 ```json 200
-[
-  {
-      "id": 5642,
-      "created_at": "2025-06-28T04:21:45.467814Z",
-      "title": "Bank Indonesia Records 43.77% Increase in Financial Surplus in 2024",
-      "body": "Bank Indonesia reported a financial surplus of IDR 52.19 trillion in 2024, a 43.77% increase from IDR 36.3 trillion in 2023, driven by high revenue of IDR 228.66 trillion and expenses of IDR 161.3 trillion.",
-      "source": "https://insight.kontan.co.id/news/surplus-bank-indonesia-naik-berkat-kebijakan-moneter",
-      "timestamp": "2025-06-28T04:35:00Z",
-      "sector": "financials",
+// IDX News Response (extension=idx)
+{
+  "results": [
+    {
+      "created_at": "2026-03-06T03:58:02.988713+00:00",
+      "title": "1 Inti Dot Com buy Shares of PT NFC Indonesia Tbk",
+      "body": "Shareholder 1 Inti Dot Com purchased 1,061,000 PT NFC Indonesia Tbk shares on 3 March 2026 at IDR 1,890 per share, raising its holding from 78,987,400 to 80,048,400 shares.",
+      "source": "https://www.idx.co.id/StaticData/NewsAndAnnouncement/ANNOUNCEMENTSTOCK/From_KSEI/LK-06032026-6106-00.pdf-0.pdf",
+      "timestamp": "2026-03-06T10:46:27",
+      "sector": "technology",
       "sub_sector": [
-          "banks"
+        "software-it-services"
       ],
       "tags": [
-          "Bank Indonesia",
-          "Financial Ratios",
-          "Capital Allocation",
-          "Profit",
-          "Revenue",
-          "Bullish"
-      ],
-      "tickers": [],
-      "dimension": {
-          "future": 0,
-          "dividend": 0,
-          "ownership": 0,
-          "technical": 0,
-          "valuation": 0,
-          "financials": 2,
-          "management": 0,
-          "sustainability": 0
-      }
-  },
-  {
-      "id": 5646,
-      "created_at": "2025-06-28T04:32:52.825906Z",
-      "title": "Indonesian Banks Host Large Events to Attract New Customers and Boost Digital Transactions",
-      "body": "Several national banks in Indonesia are hosting large events, such as concerts and marathons, to attract new customers and increase digital transactions. Bank Tabungan Negara (BTN) is expecting a 15-20% increase in transactions and digital service activations through its Jakarta International Marathon event.",
-      "source": "https://insight.kontan.co.id/news/bank-menjaring-nasabah-lewat-event-lari-hingga-konser-musik",
-      "timestamp": "2025-06-27T06:30:00Z",
-      "sector": "financials",
-      "sub_sector": [
-          "banks"
-      ],
-      "tags": [
-          "Bank Indonesia",
-          "Digital Payments",
-          "Financial Ratios",
-          "Loan Growth",
-          "Bullish"
+        "Insider Trading"
       ],
       "tickers": [
-          "BTPN.JK"
+        "NFCX.JK"
+      ],
+      "dimension": null
+    },
+    {
+      "created_at": "2026-03-05T08:39:28.281002+00:00",
+      "title": "PT Vale Indonesia Tbk's outlook improves with HPAL projects and higher nickel quota prospects",
+      "body": "Analysts see PT Vale Indonesia Tbk's prospects as attractive as it nears completion of the Pomalaa and Morowali HPAL smelter projects and a potential 30% rise in its 2026 nickel production quota.",
+      "source": "https://investasi.kontan.co.id/news/kuota-rkab-dan-proyek-hpal-dorong-prospek-saham-vale-indonesia-inco",
+      "timestamp": "2026-03-05T05:33:11",
+      "sector": "basic-materials",
+      "sub_sector": [
+        "basic-materials"
+      ],
+      "tags": [
+        "Analyst Ratings",
+        "Financial Metrics",
+        "Business Expansion",
+        "Bullish"
+      ],
+      "tickers": [
+        "INCO.JK"
       ],
       "dimension": {
-          "future": 2,
-          "dividend": 0,
-          "ownership": 0,
-          "technical": 0,
-          "valuation": 0,
-          "financials": 1,
-          "management": 0,
-          "sustainability": 0
+        "future": 2,
+        "dividend": 0,
+        "ownership": 0,
+        "technical": 0,
+        "valuation": 2,
+        "financials": 0,
+        "management": 0,
+        "sustainability": 0
       }
-  },
-  ...
-]
+    }
+  ],
+  "pagination": {
+    "total_count": 3824,
+    "showing": 2,
+    "limit": 2,
+    "offset": 0,
+    "has_next": true,
+    "has_previous": false,
+    "next_offset": 2,
+    "previous_offset": null
+  }
+}
+
+// Mining News Response (extension=mining)
+{
+  "results": [
+    {
+      "title": "Indonesia freezes 80 environmental permits for coal and nickel extraction projects",
+      "source": "https://ima-api.org/klh-bekukan-80-izin-lingkungan-tambang-batu-bara-nikel-usai-evaluasi/",
+      "timestamp": "2026-02-26 00:00:00",
+      "commodity_type": [
+        "Nickel"
+      ]
+    },
+    {
+      "title": "PT Merdeka Gold Resources (EMAS) achieves first gold pour at Pani Mine in Indonesia",
+      "source": "https://ima-api.org/tambang-emas-pani-first-gold-pour-merdeka-gold-resources-masuk-fase-produksi/",
+      "timestamp": "2026-02-20 00:00:00",
+      "commodity_type": [
+        "Gold"
+      ]
+    }
+  ],
+  "pagination": {
+    "total_count": 348,
+    "showing": 2,
+    "limit": 2,
+    "offset": 0,
+    "has_next": true,
+    "has_previous": false,
+    "next_offset": 2,
+    "previous_offset": null
+  }
+}
 ```
 
 ```json 400
@@ -80,13 +109,16 @@ description: "Return a list of IDX news articles, with optional filtering condit
   "error": "Use a valid date format of YYYY-MM-DD for 'start' and 'end'."
 }
 {
-  "error": "Invalid format. The 'n' parameter must be a positive integer."
-}
-{
   "error": "Invalid sub_sector provided: <Bad_Sub_Sector>."
 }
 {
   "error": "Invalid query parameters: <Bad_Param>."
+}
+{
+  "error": "Parameter(s) [<Bad_Param>] are not valid for extension=mining. Valid params: ['commodity_type', 'end', 'extension', 'keyword', 'limit', 'offset', 'start']."
+}
+{
+  "error": "Parameter(s) [<Bad_Param>] are not valid for extension=idx. Valid params: ['end', 'extension', 'limit', 'offset', 'sector', 'start', 'sub_sector', 'tags', 'tickers']."
 }
 ```
 
@@ -108,15 +140,56 @@ description: "Return a list of IDX news articles, with optional filtering condit
 
 ### Query Parameters
 
+#### Extension Parameter
+
+The `/v2/news/` endpoint now supports **extension** parameter that determine the news source and available filtering parameters:
+
+<ParamField query="extension" type="string" default="idx">
+  - `idx` (default) – Indonesian Stock Exchange news with filters for sectors, subsectors, tags, and tickers
+  - `mining` – Mining industry news with keyword search and commodity type filters
+</ParamField>
+
+**Note:** The other query parameters are extension-specific. Using IDX parameters with `extension=mining` (or vice versa) will return a 400 error.
+
+#### Shared Parameters between Extensions
+
+<ParamField query="start" type="string">
+  ISO date (YYYY‑MM‑DD) for filtering articles on or after this date.
+</ParamField>
+<ParamField query="end" type="string">
+  ISO date (YYYY‑MM‑DD) for filtering articles on or before this date.
+</ParamField>
+<ParamField query="limit" type="integer" default="20">
+  Number of items per page. Maximum is 30.
+</ParamField>
+<ParamField query="offset" type="integer" default="0">
+  Number of items to skip for pagination.
+</ParamField>
+
+#### IDX Extension Parameters (`extension=idx`)
+
 <ParamField query="sector" type="string">
-  Exact match on the news sector (e.g. `energy`, `financials`).
+  Comma‑separated list of sector slugs to filter by.
+  <AccordionGroup>
+    <Accordion title="Get the available sector">
+      Get the available `sector` from the
+      [Subsectors](./helper-list/subsectors) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sector">
+      `infrastructures`, `transportation-logistic`, `healthcare`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sector` in the **kebab case** format (lowercase
+      and separated by "-").
+    </Accordion>
+  </AccordionGroup>
 </ParamField>
 <ParamField query="sub_sector" type="string">
-  Comma‑separated list of subsectors to filter by.
+  Comma‑separated list of subsector slugs to filter by.
   <AccordionGroup>
     <Accordion title="Get the available sub_sector">
       Get the available `sub_sector` from the
-      [Subsectors](../../../helper-list/subsectors) endpoint.
+      [Subsectors](../helper-list/subsectors) endpoint.
     </Accordion>
     <Accordion title="Examples of the sub_sector">
       `banks`, `financing-service`, `insurance`, `retailing`, `tobacco`
@@ -128,49 +201,75 @@ description: "Return a list of IDX news articles, with optional filtering condit
   </AccordionGroup>
 </ParamField>
 <ParamField query="tags" type="string">
-  Comma‑separated list of tags (e.g. `Bank Indonesia, Digital Payments,
-  Bullish`).
+  Comma‑separated list of tags to filter by.
   <AccordionGroup>
     <Accordion title="Get the available news tags">
-      Get the available `tags` from the [News Tags](../../../helper-list/tags) endpoint.
+      Get the available `tags` from the [News Tags](../helper-list/tags) endpoint.
     </Accordion>
     <Accordion title="Examples of the tags">
       `acquisition`, `allocation-service`, `ai`, `b2b`, `automotive`
     </Accordion>
     <Accordion title="Format">
-      The API endpoint only accepts `sub_sector` in the **kebab case** format
+      The API endpoint only accepts tags in the **kebab case** format
       (lowercase and separated by "-").
     </Accordion>
   </AccordionGroup>
 </ParamField>
 <ParamField query="tickers" type="string">
-  Comma‑separated list of normalized ticker symbols (e.g. `BBNI, BBCA, BMRI`).
+  Comma‑separated list of ticker symbols  to filter by (e.g. `BBNI, BBCA, BMRI`).
+  <AccordionGroup>
+    <Accordion title="Get the available ticker">
+      Get the available `ticker` from the
+      [Companies Screener](../companies) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the ticker">
+      `ASII`, `BBCA`, `BBRI`, `BMRI`, `BYAN`
+    </Accordion>
+    <Accordion title="Format">
+      A valid `ticker` consists of 4 letters, optionally followed by '.jk', and
+      is **case-insensitive**.
+    </Accordion>
+  </AccordionGroup>
 </ParamField>
-<ParamField query="start" type="string">
-  ISO date (YYYY‑MM‑DD) for the start of the timestamp filter range.
+
+#### Mining Extension Parameters (`extension=mining`)
+
+<ParamField query="keyword" type="string">
+  Full-text search on article titles (case-insensitive, LIKE query).
 </ParamField>
-<ParamField query="end" type="string">
-  ISO date (YYYY‑MM‑DD) for the end of the timestamp filter range.
+<ParamField query="commodity_type" type="string">
+  Filter by commodity type (e.g. `coal`, `nickel`). Case-insensitive.
 </ParamField>
-<ParamField query="n" type="integer">
-  Return the top N most recent articles, up to a maximum of 30. If a value for N
-  isn't provided, it will default to 20. This setting overrides any pagination.
-</ParamField>
-<ParamField query="page" type="integer">
-  Page number for paginated results (default is 1).
-</ParamField>
-<ParamField query="page_size" type="integer">
-  Number of items per page (default defined in `CustomNewsPagination`).
-</ParamField>
+
+### Usage Examples
+
+```bash
+# IDX news (default extension)
+GET /v2/news/
+
+# IDX news with sector filter and limit
+GET /v2/news/?extension=idx&sector=Financials&limit=5
+
+# IDX news with ticker filters
+GET /v2/news/?extension=idx&tickers=BBCA,BBRI
+
+# Mining news with keyword search
+GET /v2/news/?extension=mining&keyword=nickel
+
+# Mining news filtered by commodity and date range
+GET /v2/news/?extension=mining&commodity_type=Coal&start=2024-01-01
+
+# Cross-extension error examples (these will return 400 errors)
+GET /v2/news/?extension=mining&sector=Finance          # sector is IDX-only
+GET /v2/news/?extension=idx&commodity_type=Coal        # commodity_type is mining-only
+```
 
 ### Response
 
-<ResponseField name="[]" type="Idx News"> 
-  <Expandable title="Idx News properties"> 
-    <ResponseField name="id" type="integer"> 
-      Unique news article identifier. 
-    </ResponseField>
+<ResponseField name="results" type="array">
+  Array of news articles. The structure of each article varies by extension:
 
+  <Expandable title="IDX News Article (extension=idx)">
     <ResponseField name="created_at" type="string">
       Creation datetime in ISO 8601 format (UTC).
     </ResponseField>
@@ -188,15 +287,15 @@ description: "Return a list of IDX news articles, with optional filtering condit
     </ResponseField>
 
     <ResponseField name="timestamp" type="string">
-      Publication datetime in ISO 8601 format (UTC).
+      Publication datetime in ISO 8601 format.
     </ResponseField>
 
     <ResponseField name="sector" type="string">
-      Sector classification (e.g. `financials`).
+      Sector classification (e.g. `financials`, `technology`).
     </ResponseField>
 
     <ResponseField name="sub_sector" type="string[]">
-      List of subsector tags (e.g. `["banks"]`).
+      List of subsector tags (e.g. `["banks"]`, `["software-it-services"]`).
     </ResponseField>
 
     <ResponseField name="tags" type="string[]">
@@ -204,11 +303,11 @@ description: "Return a list of IDX news articles, with optional filtering condit
     </ResponseField>
 
     <ResponseField name="tickers" type="string[]">
-      List of relevant stock tickers (e.g. `["BBNI", "BBCA", "BMRI"]`).
+      List of relevant stock tickers (e.g. `["BBNI.JK", "BBCA.JK"]`).
     </ResponseField>
 
-    <ResponseField name="dimension" type="object">
-      Scoring dimensions applied to the article:
+    <ResponseField name="dimension" type="object | null">
+      Scoring dimensions applied to the article (can be `null`):
       <Expandable title="Scoring dimensions">
         <ResponseField name="future" type="integer">Future outlook score.</ResponseField>
         <ResponseField name="dividend" type="integer">Dividend relevance score.</ResponseField>
@@ -220,7 +319,61 @@ description: "Return a list of IDX news articles, with optional filtering condit
         <ResponseField name="sustainability" type="integer">ESG/sustainability score.</ResponseField>
       </Expandable>
     </ResponseField>
+  </Expandable>
 
+  <Expandable title="Mining News Article (extension=mining)">
+    <ResponseField name="title" type="string">
+      Headline of the news article.
+    </ResponseField>
+
+    <ResponseField name="source" type="string">
+      URL of the news article.
+    </ResponseField>
+
+    <ResponseField name="timestamp" type="string">
+      Publication datetime (format: YYYY-MM-DD HH:MM:SS).
+    </ResponseField>
+
+    <ResponseField name="commodity_type" type="string[]">
+      List of commodity types mentioned in the article (e.g. `["Coal"]`, `["Nickel"]`, `["Gold", "Copper"]`).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  Pagination metadata for the results:
+  <Expandable title="Pagination properties">
+    <ResponseField name="total_count" type="integer">
+      Total number of articles matching the query.
+    </ResponseField>
+
+    <ResponseField name="showing" type="integer">
+      Number of articles in the current response.
+    </ResponseField>
+
+    <ResponseField name="limit" type="integer">
+      Maximum number of articles per page (as specified in query).
+    </ResponseField>
+
+    <ResponseField name="offset" type="integer">
+      Current offset position in the result set.
+    </ResponseField>
+
+    <ResponseField name="has_next" type="boolean">
+      Whether there are more results available.
+    </ResponseField>
+
+    <ResponseField name="has_previous" type="boolean">
+      Whether there are previous results available.
+    </ResponseField>
+
+    <ResponseField name="next_offset" type="integer | null">
+      Offset value for the next page (null if no next page).
+    </ResponseField>
+
+    <ResponseField name="previous_offset" type="integer | null">
+      Offset value for the previous page (null if no previous page).
+    </ResponseField>
   </Expandable>
 </ResponseField>
 

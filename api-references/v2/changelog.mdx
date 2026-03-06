@@ -11,6 +11,8 @@ sidebarTitle: Changelog
   - **Enhanced Companies by Index**: Previously limited to single index queries, now supports multiple indices with SQL-style filtering and natural language queries
   - **Improved Top Companies Ranking**: Expanded from 8 predefined classifications to support sorting by any available metric with advanced filtering
   - **Advanced Growth Analytics**: Enhanced growth metrics with flexible filtering and natural language query support
+- **Unified News API**: Consolidated news endpoints into a single `/v2/news/` endpoint with extension support for IDX companies and mining sources 
+   - [https://api.sectors.app/v2/news/?extension=idx](./indonesia/news/news)
 - **Comprehensive Mining API Update**: Standardized all Turso-powered mining endpoints for consistency and robustness
   - **Standardized Pagination**: All list endpoints now use `limit` and `offset` for pagination, returning a consistent `results` and `pagination` object
   - **Slug-based Lookups**: Standardized company and site lookups to use `slug` instead of numeric IDs

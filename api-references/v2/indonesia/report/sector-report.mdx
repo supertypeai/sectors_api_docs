@@ -180,19 +180,19 @@ description: "Return report of a given subsector, organized into distinct sectio
 
 ### Path
 
-<ParamField path="pk" type="string" required>
-  The primary key (slug) of the subsector for which the report is to be
+<ParamField path="sub_sector" type="string" required>
+  The slug of the subsector for which the report is to be
   retrieved.
   <AccordionGroup>
     <Accordion title="Get the available subsector">
       Get the available `sub_sector` from the
-      [Subsectors](../../../../helper-list/subsectors) endpoint.
+      [Subsectors](../helper-list/subsectors) endpoint.
     </Accordion>
     <Accordion title="Examples of the subsector">
       `banks`, `basic-materials`, `food-beverage`
     </Accordion>
     <Accordion title="Format">
-      The API endpoint only accepts `pk` in the **kebab case** format (lowercase
+      The API endpoint only accepts `sub_sector` in the **kebab case** format (lowercase
       and separated by "-").
     </Accordion>
   </AccordionGroup>

@@ -195,7 +195,10 @@
               "group": "Helper List",
               "icon": "list-check",
               "pages": [
-                "api-references/v2/indonesia/helper-list/index-companies",
+                "api-references/v2/indonesia/helper-list/subsectors",
+                "api-references/v2/indonesia/helper-list/industries",
+                "api-references/v2/indonesia/helper-list/subindustries",
+                "api-references/v2/indonesia/helper-list/tags",
                 "api-references/v2/indonesia/helper-list/companies-segments-list",
                 "api-references/v2/indonesia/helper-list/company-quarterly-dates"
               ]
@@ -302,12 +305,6 @@
                 "api-references/v2/mining/licenses-auctions/mining-licenses",
                 "api-references/v2/mining/licenses-auctions/mining-license-auctions",
                 "api-references/v2/mining/licenses-auctions/mining-license-auctions-detail"
-              ]
-            },
-            {
-              "group": "News",
-              "pages": [
-                "api-references/v2/mining/news/mining-news"
               ]
             },
             {

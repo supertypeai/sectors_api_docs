@@ -1,15 +1,16 @@
 ---
-title: "KLSE Sectors"
-api: "GET /v2/klse/sectors/"
-description: "Return list of all available sectors in KLSE Index"
+title: "Subsectors"
+api: "GET /v2/subsectors/"
+description: "Return list of all available subsectors"
 ---
 
 <ResponseExample>
 ```json 200
 [
-  "consumer-non-cyclicals",
-  "finance",
-  ...
+  {
+    "sector": "infrastructures",
+    "subsector": "telecommunication"
+  }
 ]
 ```
 
@@ -31,11 +32,16 @@ description: "Return list of all available sectors in KLSE Index"
 
 ### Response
 
-<ResponseField name="payload" type="Sector[]">
+<ResponseField name="payload" type="Subsector[]">
   <Expandable title="properties">
-    <ResponseField name="Sector" type="array">
+    <ResponseField name="Subsector.sector" type="string">
       A broad classification of companies in similar economic areas.
     </ResponseField>
+
+    <ResponseField name="Subsector.subsector" type="string">
+      A specific classification within a sector.
+    </ResponseField>
+
   </Expandable>
 </ResponseField>
 
@@ -43,5 +49,6 @@ description: "Return list of all available sectors in KLSE Index"
 
 This list can be used for the following endpoints:
 
-- [KLSE Companies](./klse-companies)
-- [KLSE Top Companies Ranked](./klse-top-companies)
+- [Companies Screener](../companies)
+- [Sector Report](../report/sector-report)
+- [Free Float Market Analysis](../free-float)
