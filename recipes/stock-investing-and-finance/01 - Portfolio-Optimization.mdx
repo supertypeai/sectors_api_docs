@@ -78,7 +78,7 @@ from google.colab import userdata
 api_key = userdata.get('SECTORS_API_KEY')
 
 # Define the API URL
-url = "https://api.sectors.app/v1/index/sminfra18/"
+url = "https://api.sectors.app/v2/index/sminfra18/"
 
 # Pass the API key in the header
 headers = {"Authorization": api_key}
@@ -126,7 +126,7 @@ history_sminfra18 = []
 for i, x in enumerate(response_company_index.json()):
 
   # Define the URL for the API endpoint
-  url = "https://api.sectors.app/v1/daily/" + response_company_index.json()[i]['symbol'] + "/"
+  url = "https://api.sectors.app/v2/daily/" + response_company_index.json()[i]['symbol'] + "/"
 
   # Define the query string with the calculated start date
   querystring = {"start": start_date}

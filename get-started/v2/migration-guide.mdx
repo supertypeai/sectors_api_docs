@@ -112,11 +112,11 @@ GET https://api.sectors.app/v1/companies/top/?classification=revenue&year=2023
 ```
 
 ```bash v2 (Basic sorting)
-GET https://api.sectors.app/v2/companies/?order_by=revenue[2023]
+GET https://api.sectors.app/v2/companies/?order_by=-revenue[2023]
 ```
 
 ```bash v2 (With sector filtering)
-GET https://api.sectors.app/v2/companies/?order_by=revenue[2023]&where=sub_sector='banks'
+GET https://api.sectors.app/v2/companies/?order_by=-revenue[2023]&where=sub_sector='banks'
 ```
 </CodeGroup>
 
@@ -136,12 +136,12 @@ url = "https://api.sectors.app/v2/companies/"
 headers = {"Authorization": "YOUR_API_KEY"}
 
 # Basic ranking by revenue for 2023
-params = {"order_by": "revenue[2023]"}
+params = {"order_by": "-revenue[2023]"}
 response = requests.get(url, headers=headers, params=params)
 
 # Ranking with sector filter
 params = {
-    "order_by": "revenue[2023]",
+    "order_by": "-revenue[2023]",
     "where": "sub_sector='banks'"
 }
 response = requests.get(url, headers=headers, params=params)
@@ -153,7 +153,7 @@ const headers = {"Authorization": "YOUR_API_KEY"};
 
 // Basic ranking by revenue for 2023
 const params = new URLSearchParams({
-    order_by: "revenue[2023]"
+    order_by: "-revenue[2023]"
 });
 
 fetch(`${url}?${params}`, { headers })
@@ -162,7 +162,7 @@ fetch(`${url}?${params}`, { headers })
 
 // Ranking with sector filter
 const paramsFiltered = new URLSearchParams({
-    order_by: "revenue[2023]",
+    order_by: "-revenue[2023]",
     where: "sub_sector='banks'"
 });
 

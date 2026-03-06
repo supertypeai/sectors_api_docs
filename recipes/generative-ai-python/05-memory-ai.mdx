@@ -801,7 +801,7 @@ def get_company_overview(stock: str) -> str:
     Get company overview
     """
 
-    url = f"https://api.sectors.app/v1/company/report/{stock}/?sections=overview"
+    url = f"https://api.sectors.app/v2/company/report/{stock}/?sections=overview"
 
     return retrieve_from_endpoint(url)
 

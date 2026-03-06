@@ -89,7 +89,7 @@ import requests
 import os
 
 API_KEY = os.environ["SECTORS_API_KEY"]
-BASE_URL = "https://api.sectors.app/v1"
+BASE_URL = "https://api.sectors.app/v2"
 headers = {"Authorization": API_KEY}
 
 response = requests.get(f"{BASE_URL}/subsectors/", headers=headers)
@@ -101,7 +101,7 @@ if response.ok:
 - **NEVER** hardcode or guess an API key
 - Always read the key from `SECTORS_API_KEY` environment variable
 - The Authorization header uses the raw key (no "Bearer" prefix)
-- All endpoints are GET requests to `https://api.sectors.app/v1`
+- All endpoints are GET requests to `https://api.sectors.app/v2`
 - If the env var is not set, prompt the user to set it
 
 </Accordion>
@@ -365,7 +365,7 @@ pip install requests
 **Solutions:**
 1. Check internet connection
 2. Verify no firewall blocking the domain
-3. Try: `curl -I https://api.sectors.app/v1/subsectors/`
+3. Try: `curl -I https://api.sectors.app/v2/subsectors/`
 
 ### Invalid Ticker
 
