@@ -1,0 +1,3228 @@
+{
+  "info": {
+    "name": "Supertype API 03/2026",
+    "description": "Unified collection containing all Sectors Financial API endpoints from v1 and v2. Exhaustive parameter variation included. Hardcoded paths for immediate testing with dynamic environment URL.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item":[
+    {
+      "name": "v1",
+      "item": [
+        {
+          "name": "Helper List",
+          "item":[
+            {
+              "name": "v1/subsectors/",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/subsectors/",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "subsectors",
+                    ""
+                  ]
+                },
+                "description": "Fetch all unique sector and sub-sector mappings available in the IDX."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/subindustries/",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/subindustries/",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "subindustries",
+                    ""
+                  ]
+                },
+                "description": "Fetch all unique industry and sub-industry mappings."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/tags/",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/tags/",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "tags",
+                    ""
+                  ]
+                },
+                "description": "Fetch all unique tags used across news and regulatory filings."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/industries/",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/industries/",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "industries",
+                    ""
+                  ]
+                },
+                "description": "Fetch all unique sub-sector and industry mappings."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/index/{{index_code}}/",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/index/idxg30/",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "index",
+                    "idxg30",
+                    ""
+                  ]
+                },
+                "description": "List all constituent companies for a given index code (e.g., idx30, lq45)."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/companies/?sub_sector={{sub_sector}}&sort_by={{sort_by}}&desc={{desc}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/companies/?sub_sector=industrial-services&sort_by=dividend_yield&desc=false",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "companies",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sub_sector",
+                      "value": "industrial-services",
+                      "description": "Filter by sub-sector slug"
+                    },
+                    {
+                      "key": "sub_industry",
+                      "value": "coal-distribution",
+                      "description": "Filter by sub-industry slug",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sort_by",
+                      "value": "dividend_yield",
+                      "description": "dividend_yield, total_dividend, revenue, earnings, pb, pe, ps, symbol, company_name, market_cap"
+                    },
+                    {
+                      "key": "desc",
+                      "value": "false",
+                      "description": "Descending order"
+                    }
+                  ]
+                },
+                "description": "List companies in a sub-sector or sub-industry, optionally sorted by financial metrics."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/companies/list_companies_with_segments/",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/companies/list_companies_with_segments/",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "companies",
+                    "list_companies_with_segments",
+                    ""
+                  ]
+                },
+                "description": "List all companies that have granular revenue and cost segment data available."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/company/get_quarterly_financial_dates/{{ticker}}/",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/company/get_quarterly_financial_dates/BBCA.JK/",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "company",
+                    "get_quarterly_financial_dates",
+                    "BBCA.JK",
+                    ""
+                  ]
+                },
+                "description": "List all dates for which quarterly financial statements are available for this company."
+              },
+              "response":[]
+            }
+          ]
+        },
+        {
+          "name": "Since IPO Performance",
+          "item":[
+            {
+              "name": "v1/listing-performance/{{ticker}}/",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/listing-performance/BREN.JK/",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "listing-performance",
+                    "BREN.JK",
+                    ""
+                  ]
+                },
+                "description": "Performance metrics of the stock since its initial listing date."
+              },
+              "response":[]
+            }
+          ]
+        },
+        {
+          "name": "Company News",
+          "item":[
+            {
+              "name": "v1/news/?sub_sector={{sub_sector}}&page={{page}}&page_size={{page_size}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/news/?sub_sector=banks&page=1&page_size=20",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "news",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sector",
+                      "value": "financials",
+                      "description": "Filter by sector",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sub_sector",
+                      "value": "banks",
+                      "description": "Filter by sub-sector (comma-separated slugs)"
+                    },
+                    {
+                      "key": "tags",
+                      "value": "dividend",
+                      "description": "Filter by tag (comma-separated)",
+                      "disabled": true
+                    },
+                    {
+                      "key": "tickers",
+                      "value": "BBCA.JK,ASII.JK",
+                      "description": "Filter by ticker (comma-separated)",
+                      "disabled": true
+                    },
+                    {
+                      "key": "start",
+                      "value": "2024-01-01",
+                      "description": "Start date (YYYY-MM-DD)",
+                      "disabled": true
+                    },
+                    {
+                      "key": "end",
+                      "value": "2024-12-31",
+                      "description": "End date (YYYY-MM-DD)",
+                      "disabled": true
+                    },
+                    {
+                      "key": "n",
+                      "value": "30",
+                      "description": "Get latest n items (overrides pagination)",
+                      "disabled": true
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number"
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "20",
+                      "description": "Page size"
+                    }
+                  ]
+                },
+                "description": "Consolidated news feed for IDX companies with advanced filtering."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/filings/?tags={{tags}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/filings/?tags=Bullish,Strengthening Subsidiary Capital,Investment",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "filings",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sector",
+                      "value": "financials",
+                      "description": "Filter by sector",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sub_sector",
+                      "value": "banks",
+                      "description": "Filter by sub-sector",
+                      "disabled": true
+                    },
+                    {
+                      "key": "tags",
+                      "value": "Bullish,Strengthening Subsidiary Capital,Investment",
+                      "description": "Filter by tag (comma-separated)"
+                    },
+                    {
+                      "key": "tickers",
+                      "value": "SQMI.JK",
+                      "description": "Filter by tickers (comma-separated)",
+                      "disabled": true
+                    },
+                    {
+                      "key": "transaction_type",
+                      "value": "buy",
+                      "description": "Filter by transaction type (buy/sell)",
+                      "disabled": true
+                    },
+                    {
+                      "key": "start",
+                      "value": "2024-01-01",
+                      "description": "Start date",
+                      "disabled": true
+                    },
+                    {
+                      "key": "end",
+                      "value": "2024-12-31",
+                      "description": "End date",
+                      "disabled": true
+                    },
+                    {
+                      "key": "n",
+                      "value": "50",
+                      "description": "Get latest n items (overrides pagination)",
+                      "disabled": true
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Page number",
+                      "disabled": true
+                    },
+                    {
+                      "key": "page_size",
+                      "value": "20",
+                      "description": "Page size",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Official disclosure documents filed by companies with the Indonesia Stock Exchange."
+              },
+              "response":[]
+            }
+          ]
+        },
+        {
+          "name": "Detailed Report",
+          "item":[
+            {
+              "name": "v1/company/report/{{ticker}}/?sections={{sections}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/company/report/BBCA.JK/?sections=overview,valuation,future,peers,financials,dividend,management,ownership",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "company",
+                    "report",
+                    "BBCA.JK",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sections",
+                      "value": "overview,valuation,future,peers,financials,dividend,management,ownership",
+                      "description": "Comma-separated sections to include"
+                    }
+                  ]
+                },
+                "description": "Comprehensive data for a single company, including valuation, financials, and management."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/company/get-segments/{{ticker}}/?financial_year={{financial_year}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/company/get-segments/BBCA.JK/?financial_year=2023",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "company",
+                    "get-segments",
+                    "BBCA.JK",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "financial_year",
+                      "value": "2023",
+                      "description": "Fiscal year"
+                    }
+                  ]
+                },
+                "description": "Fetch the revenue and cost breakdown segments for a company, suitable for Sankey diagrams."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/financials/quarterly/{{ticker}}/?n_quarters={{n_quarters}}&approx={{approx}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/financials/quarterly/BBCA.JK/?approx=true&n_quarters=5",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "financials",
+                    "quarterly",
+                    "BBCA.JK",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "report_date",
+                      "value": "2023-12-31",
+                      "description": "Target report date",
+                      "disabled": true
+                    },
+                    {
+                      "key": "approx",
+                      "value": "true",
+                      "description": "Allow nearest date match"
+                    },
+                    {
+                      "key": "n_quarters",
+                      "value": "5",
+                      "description": "Number of quarters to fetch"
+                    }
+                  ]
+                },
+                "description": "Get detailed balance sheet, income statement, and cash flow data for a specific quarter."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/subsector/report/{{sector}}/?sections={{sections}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/subsector/report/banks/?sections=statistics,market_cap,stability,valuation,growth,companies",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "subsector",
+                    "report",
+                    "banks",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sections",
+                      "value": "statistics,market_cap,stability,valuation,growth,companies",
+                      "description": "Sections to include"
+                    }
+                  ]
+                },
+                "description": "Aggregated financial and valuation metrics for an entire sub-sector."
+              },
+              "response":[]
+            }
+          ]
+        },
+        {
+          "name": "Company Ranking by Dimensions",
+          "item":[
+            {
+              "name": "v1/most-traded/?start={{start_date}}&end={{end_date}}&n_stock={{n_stock}}&sub_sector={{sub_sector}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/most-traded/?start=2024-01-01&end=2024-01-31&n_stock=5&sub_sector=banks&adjusted=true",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "most-traded",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "start",
+                      "value": "2024-01-01",
+                      "description": "Start date"
+                    },
+                    {
+                      "key": "end",
+                      "value": "2024-01-31",
+                      "description": "End date"
+                    },
+                    {
+                      "key": "n_stock",
+                      "value": "5",
+                      "description": "Number of stocks (max 10)"
+                    },
+                    {
+                      "key": "sub_sector",
+                      "value": "banks",
+                      "description": "Filter by sub-sector slug"
+                    },
+                    {
+                      "key": "adjusted",
+                      "value": "true",
+                      "description": "Adjusted prices"
+                    }
+                  ]
+                },
+                "description": "Identify the most actively traded stocks within a specific timeframe."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/companies/top/?classifications={{classifications}}&n_stock={{n_stock}}&sub_sector={{sub_sector}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/companies/top/?classifications=pb,pe&n_stock=5&sub_sector=telecommunication&min_mcap_billion=500&filters=pe > 20, revenue > 1000000&logic=or&sub_industry=paper&include_none=true&year=2024",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "companies",
+                    "top",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "classifications",
+                      "value": "pb,pe",
+                      "description": "Comma-separated metrics"
+                    },
+                    {
+                      "key": "n_stock",
+                      "value": "5",
+                      "description": "Number of stocks"
+                    },
+                    {
+                      "key": "sub_sector",
+                      "value": "telecommunication",
+                      "description": "Filter by sub-sector"
+                    },
+                    {
+                      "key": "min_mcap_billion",
+                      "value": "500",
+                      "description": "Minimum market cap in IDR Billion"
+                    },
+                    {
+                      "key": "filters",
+                      "value": "pe > 20, revenue > 1000000",
+                      "description": "Custom SQL-like filters"
+                    },
+                    {
+                      "key": "logic",
+                      "value": "or",
+                      "description": "Filter logic (and/or)"
+                    },
+                    {
+                      "key": "sub_industry",
+                      "value": "paper",
+                      "description": "Filter by sub-industry slug"
+                    },
+                    {
+                      "key": "include_none",
+                      "value": "true",
+                      "description": "Include companies with null values in ranking"
+                    },
+                    {
+                      "key": "year",
+                      "value": "2024",
+                      "description": "Reference year"
+                    }
+                  ]
+                },
+                "description": "Rank companies based on financial ratios like PE, PB, and Dividend Yield."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/companies/top-changes/?classifications={{classifications}}&n_stock={{n_stock}}&periods={{periods}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/companies/top-changes/?classifications=top_gainers,top_losers&n_stock=5&periods=1d,7d,14d,30d,365d&sub_sector=food-beverage&min_mcap_billion=5000",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "companies",
+                    "top-changes",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "classifications",
+                      "value": "top_gainers,top_losers",
+                      "description": "Metric type (top_gainers, top_losers)"
+                    },
+                    {
+                      "key": "n_stock",
+                      "value": "5",
+                      "description": "Number of stocks"
+                    },
+                    {
+                      "key": "periods",
+                      "value": "1d,7d,14d,30d,365d",
+                      "description": "Time periods for change calculation"
+                    },
+                    {
+                      "key": "sub_sector",
+                      "value": "food-beverage",
+                      "description": "Filter by sub-sector"
+                    },
+                    {
+                      "key": "min_mcap_billion",
+                      "value": "5000",
+                      "description": "Minimum market cap in IDR Billion"
+                    }
+                  ]
+                },
+                "description": "List stocks with the highest price increases or decreases over various time periods."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/companies/top-growth/?classifications={{classifications}}&n_stock={{n_stock}}&sub_sector={{sub_sector}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/companies/top-growth/?n_stock=5&min_mcap_billion=5000&classifications=top_earnings_growth_losers&sub_sector=food-staples-retailing",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "companies",
+                    "top-growth",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "n_stock",
+                      "value": "5",
+                      "description": "Number of stocks"
+                    },
+                    {
+                      "key": "min_mcap_billion",
+                      "value": "5000",
+                      "description": "Minimum market cap in IDR billion"
+                    },
+                    {
+                      "key": "classifications",
+                      "value": "top_earnings_growth_losers",
+                      "description": "Growth metric classifications"
+                    },
+                    {
+                      "key": "sub_sector",
+                      "value": "food-staples-retailing",
+                      "description": "Filter by sub-sector slug"
+                    }
+                  ]
+                },
+                "description": "Identify companies with the fastest revenue or earnings growth."
+              },
+              "response":[]
+            }
+          ]
+        },
+        {
+          "name": "Historical Market Cap and Transactions Data",
+          "item":[
+            {
+              "name": "v1/idx-total/?start={{start_date}}&end={{end_date}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/idx-total/?start=2024-01-01&end=2024-12-31",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "idx-total",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "start",
+                      "value": "2024-01-01",
+                      "description": "Start date (YYYY-MM-DD)"
+                    },
+                    {
+                      "key": "end",
+                      "value": "2024-12-31",
+                      "description": "End date (YYYY-MM-DD)"
+                    }
+                  ]
+                },
+                "description": "Get the aggregate market capitalization of the entire Indonesia Stock Exchange over a time period."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/daily/{{ticker}}/?start={{start_date}}&end={{end_date}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/daily/BBCA.JK/?start=2024-01-01&end=2024-12-31",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "daily",
+                    "BBCA.JK",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "start",
+                      "value": "2024-01-01",
+                      "description": "Start date"
+                    },
+                    {
+                      "key": "end",
+                      "value": "2024-12-31",
+                      "description": "End date"
+                    }
+                  ]
+                },
+                "description": "Daily historical price and volume data for a specific ticker."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/index-daily/{{index_code}}/?start={{start_date}}&end={{end_date}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/index-daily/idx30/?start=2024-01-01&end=2024-12-31",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "index-daily",
+                    "idx30",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "start",
+                      "value": "2024-01-01",
+                      "description": "Start date"
+                    },
+                    {
+                      "key": "end",
+                      "value": "2024-12-31",
+                      "description": "End date"
+                    }
+                  ]
+                },
+                "description": "Daily historical levels for major market indices."
+              },
+              "response":[]
+            }
+          ]
+        },
+        {
+          "name": "SGX",
+          "item":[
+            {
+              "name": "v1/sgx/sectors/",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/sgx/sectors/",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "sgx",
+                    "sectors",
+                    ""
+                  ]
+                },
+                "description": "List all industry sectors available in the Singapore Stock Exchange."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/sgx/companies/?sector={{sector}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/sgx/companies/?sector=energy",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "sgx",
+                    "companies",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sector",
+                      "value": "energy",
+                      "description": "Filter SGX companies by sector slug"
+                    }
+                  ]
+                },
+                "description": "List companies on the SGX filtered by sector."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/sgx/company/report/{{ticker}}/?sections={{sections}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/sgx/company/report/D05.SI/?sections=overview,valuation,financials,dividend",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "sgx",
+                    "company",
+                    "report",
+                    "D05.SI",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sections",
+                      "value": "overview,valuation,financials,dividend",
+                      "description": "Sections to include"
+                    }
+                  ]
+                },
+                "description": "Detailed financial report for a company listed on the Singapore Stock Exchange."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/sgx/companies/top/?classifications={{classifications}}&n_stock={{n_stock}}&sector={{sector}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/sgx/companies/top/?classifications=revenue,earnings,market_cap,dividend_yield,pe&n_stock=5&min_mcap_million=1000&sector=energy",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "sgx",
+                    "companies",
+                    "top",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "classifications",
+                      "value": "revenue,earnings,market_cap,dividend_yield,pe",
+                      "description": "Sort metric"
+                    },
+                    {
+                      "key": "n_stock",
+                      "value": "5",
+                      "description": "Number of results (max 10)"
+                    },
+                    {
+                      "key": "min_mcap_million",
+                      "value": "1000",
+                      "description": "Minimum market cap in SGD Million"
+                    },
+                    {
+                      "key": "sector",
+                      "value": "energy",
+                      "description": "Filter by sector"
+                    }
+                  ]
+                },
+                "description": "Rank SGX companies based on specific financial classifications."
+              },
+              "response":[]
+            }
+          ]
+        },
+        {
+          "name": "KLSE",
+          "item":[
+            {
+              "name": "v1/klse/sectors/",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/klse/sectors/",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "klse",
+                    "sectors",
+                    ""
+                  ]
+                },
+                "description": "List all industry sectors available in the Bursa Malaysia."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/klse/companies/?sector={{sector}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/klse/companies/?sector=energy",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "klse",
+                    "companies",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sector",
+                      "value": "energy",
+                      "description": "Filter KLSE companies by sector slug"
+                    }
+                  ]
+                },
+                "description": "List companies on the KLSE filtered by sector."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/klse/company/report/{{ticker}}/?sections={{sections}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/klse/company/report/1155/?sections=overview,valuation,financials,dividend",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "klse",
+                    "company",
+                    "report",
+                    "1155",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sections",
+                      "value": "overview,valuation,financials,dividend",
+                      "description": "Sections to include"
+                    }
+                  ]
+                },
+                "description": "Detailed financial report for a company listed on the Bursa Malaysia."
+              },
+              "response":[]
+            },
+            {
+              "name": "v1/klse/companies/top/?classifications={{classifications}}&n_stock={{n_stock}}&sector={{sector}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v1/klse/companies/top/?classifications=revenue,earnings,market_cap,dividend_yield,pe&n_stock=5&min_mcap_million=1000&sector=energy",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v1",
+                    "klse",
+                    "companies",
+                    "top",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "classifications",
+                      "value": "revenue,earnings,market_cap,dividend_yield,pe",
+                      "description": "Sort metric classifications"
+                    },
+                    {
+                      "key": "n_stock",
+                      "value": "5",
+                      "description": "Number of results (max 10)"
+                    },
+                    {
+                      "key": "min_mcap_million",
+                      "value": "1000",
+                      "description": "Minimum market cap in MYR Million"
+                    },
+                    {
+                      "key": "sector",
+                      "value": "energy",
+                      "description": "Filter by sector"
+                    }
+                  ]
+                },
+                "description": "Rank KLSE companies based on specific financial classifications."
+              },
+              "response":[]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "v2",
+      "item":[
+        {
+          "name": "indonesia",
+          "item":[
+            {
+              "name": "helper-list",
+              "item":[
+                {
+                  "name": "v2/companies/list_companies_with_segments/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/companies/list_companies_with_segments/",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "companies",
+                        "list_companies_with_segments",
+                        ""
+                      ]
+                    },
+                    "description": "List all companies that have granular revenue and cost segment data available via v2 endpoint."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/company/get_quarterly_financial_dates/{{ticker}}/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/company/get_quarterly_financial_dates/BBCA.JK/",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "company",
+                        "get_quarterly_financial_dates",
+                        "BBCA.JK",
+                        ""
+                      ]
+                    },
+                    "description": "List all dates for which quarterly financial statements are available for this company via v2 endpoint."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/index/{{index_code}}/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/index/idx30/",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "index",
+                        "idx30",
+                        ""
+                      ]
+                    },
+                    "description": "List all constituent companies for a given index code via v2 endpoint."
+                  },
+                  "response":[]
+                }
+              ]
+            },
+            {
+              "name": "ipo",
+              "item":[
+                {
+                  "name": "v2/listing-performance/{{ticker}}/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/listing-performance/BREN.JK/",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "listing-performance",
+                        "BREN.JK",
+                        ""
+                      ]
+                    },
+                    "description": "Performance metrics of the stock since its initial listing date via v2 endpoint."
+                  },
+                  "response":[]
+                }
+              ]
+            },
+            {
+              "name": "news",
+              "item":[
+                {
+                  "name": "v2/news/?sub_sector={{sub_sector}}&page={{page}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/news/?sub_sector=banks&page=1&page_size=20",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "news",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "sector",
+                          "value": "financials",
+                          "description": "Filter by sector",
+                          "disabled": true
+                        },
+                        {
+                          "key": "sub_sector",
+                          "value": "banks",
+                          "description": "Filter by sub-sector (comma-separated slugs)"
+                        },
+                        {
+                          "key": "tags",
+                          "value": "dividend",
+                          "description": "Filter by tag (comma-separated)",
+                          "disabled": true
+                        },
+                        {
+                          "key": "tickers",
+                          "value": "BBCA.JK,ASII.JK",
+                          "description": "Filter by ticker (comma-separated)",
+                          "disabled": true
+                        },
+                        {
+                          "key": "start",
+                          "value": "2024-01-01",
+                          "description": "Start date (YYYY-MM-DD)",
+                          "disabled": true
+                        },
+                        {
+                          "key": "end",
+                          "value": "2024-12-31",
+                          "description": "End date (YYYY-MM-DD)",
+                          "disabled": true
+                        },
+                        {
+                          "key": "n",
+                          "value": "30",
+                          "description": "Get latest n items (overrides pagination)",
+                          "disabled": true
+                        },
+                        {
+                          "key": "page",
+                          "value": "1",
+                          "description": "Page number"
+                        },
+                        {
+                          "key": "page_size",
+                          "value": "20",
+                          "description": "Page size"
+                        }
+                      ]
+                    },
+                    "description": "Consolidated news feed for IDX companies with advanced filtering via v2 endpoint."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/filings/?tags={{tags}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/filings/?tags=Bullish,Strengthening Subsidiary Capital,Investment",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path": [
+                        "v2",
+                        "filings",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "sector",
+                          "value": "financials",
+                          "description": "Filter by sector",
+                          "disabled": true
+                        },
+                        {
+                          "key": "sub_sector",
+                          "value": "banks",
+                          "description": "Filter by sub-sector",
+                          "disabled": true
+                        },
+                        {
+                          "key": "tags",
+                          "value": "Bullish,Strengthening Subsidiary Capital,Investment",
+                          "description": "Filter by tag (comma-separated)"
+                        },
+                        {
+                          "key": "tickers",
+                          "value": "SQMI.JK",
+                          "description": "Filter by tickers (comma-separated)",
+                          "disabled": true
+                        },
+                        {
+                          "key": "transaction_type",
+                          "value": "buy",
+                          "description": "Filter by transaction type (buy/sell)",
+                          "disabled": true
+                        },
+                        {
+                          "key": "start",
+                          "value": "2024-01-01",
+                          "description": "Start date",
+                          "disabled": true
+                        },
+                        {
+                          "key": "end",
+                          "value": "2024-12-31",
+                          "description": "End date",
+                          "disabled": true
+                        },
+                        {
+                          "key": "n",
+                          "value": "50",
+                          "description": "Get latest n items (overrides pagination)",
+                          "disabled": true
+                        },
+                        {
+                          "key": "page",
+                          "value": "1",
+                          "description": "Page number",
+                          "disabled": true
+                        },
+                        {
+                          "key": "page_size",
+                          "value": "20",
+                          "description": "Page size",
+                          "disabled": true
+                        }
+                      ]
+                    },
+                    "description": "Official disclosure documents filed by companies with the Indonesia Stock Exchange via v2 endpoint."
+                  },
+                  "response":[]
+                }
+              ]
+            },
+            {
+              "name": "ranking",
+              "item":[
+                {
+                  "name": "v2/most-traded/?start={{start_date}}&end={{end_date}}&n_stock={{n_stock}}&sub_sector={{sub_sector}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/most-traded/?start=2024-01-01&end=2024-01-31&n_stock=5&sub_sector=banks&adjusted=true",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "most-traded",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "start",
+                          "value": "2024-01-01",
+                          "description": "Start date"
+                        },
+                        {
+                          "key": "end",
+                          "value": "2024-01-31",
+                          "description": "End date"
+                        },
+                        {
+                          "key": "n_stock",
+                          "value": "5",
+                          "description": "Number of stocks (max 10)"
+                        },
+                        {
+                          "key": "sub_sector",
+                          "value": "banks",
+                          "description": "Filter by sub-sector slug"
+                        },
+                        {
+                          "key": "adjusted",
+                          "value": "true",
+                          "description": "Adjusted prices"
+                        }
+                      ]
+                    },
+                    "description": "Identify the most actively traded stocks within a specific timeframe via v2 endpoint."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/companies/top-changes/?classifications={{classifications}}&n_stock={{n_stock}}&periods={{periods}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/companies/top-changes/?classifications=top_gainers,top_losers&n_stock=5&periods=1d,7d,14d,30d,365d&sub_sector=food-beverage&min_mcap_billion=5000",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "companies",
+                        "top-changes",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "classifications",
+                          "value": "top_gainers,top_losers",
+                          "description": "Metric type (top_gainers, top_losers)"
+                        },
+                        {
+                          "key": "n_stock",
+                          "value": "5",
+                          "description": "Number of stocks"
+                        },
+                        {
+                          "key": "periods",
+                          "value": "1d,7d,14d,30d,365d",
+                          "description": "Time periods for change calculation"
+                        },
+                        {
+                          "key": "sub_sector",
+                          "value": "food-beverage",
+                          "description": "Filter by sub-sector"
+                        },
+                        {
+                          "key": "min_mcap_billion",
+                          "value": "5000",
+                          "description": "Minimum market cap in IDR Billion"
+                        }
+                      ]
+                    },
+                    "description": "List stocks with the highest price increases or decreases over various time periods via v2 endpoint."
+                  },
+                  "response":[]
+                }
+              ]
+            },
+            {
+              "name": "report",
+              "item":[
+                {
+                  "name": "v2/company/report/{{ticker}}/?sections={{sections}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/company/report/BBCA.JK/?sections=overview,valuation,future,peers,financials,dividend,management,ownership",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "company",
+                        "report",
+                        "BBCA.JK",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "sections",
+                          "value": "overview,valuation,future,peers,financials,dividend,management,ownership",
+                          "description": "Comma-separated sections to include"
+                        }
+                      ]
+                    },
+                    "description": "Comprehensive data for a single company via v2 endpoint."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/subsector/report/{{sector}}/?sections={{sections}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/subsector/report/banks/?sections=statistics,market_cap,stability,valuation,growth,companies",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "subsector",
+                        "report",
+                        "banks",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "sections",
+                          "value": "statistics,market_cap,stability,valuation,growth,companies",
+                          "description": "Sections to include"
+                        }
+                      ]
+                    },
+                    "description": "Aggregated financial and valuation metrics for an entire sub-sector via v2 endpoint."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/company/get-segments/{{ticker}}/?financial_year={{financial_year}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/company/get-segments/BBCA.JK/?financial_year=2023",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "company",
+                        "get-segments",
+                        "BBCA.JK",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "financial_year",
+                          "value": "2023",
+                          "description": "Fiscal year"
+                        }
+                      ]
+                    },
+                    "description": "Fetch the revenue and cost breakdown segments for a company, suitable for Sankey diagrams via v2 endpoint."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/financials/quarterly/{{ticker}}/?n_quarters={{n_quarters}}&approx={{approx}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/financials/quarterly/BBCA.JK/?approx=true&n_quarters=5",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "financials",
+                        "quarterly",
+                        "BBCA.JK",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "report_date",
+                          "value": "2023-12-31",
+                          "description": "Target report date",
+                          "disabled": true
+                        },
+                        {
+                          "key": "approx",
+                          "value": "true",
+                          "description": "Allow nearest date match"
+                        },
+                        {
+                          "key": "n_quarters",
+                          "value": "5",
+                          "description": "Number of quarters to fetch"
+                        }
+                      ]
+                    },
+                    "description": "Get detailed balance sheet, income statement, and cash flow data for a specific quarter via v2 endpoint."
+                  },
+                  "response":[]
+                }
+              ]
+            },
+            {
+              "name": "transaction",
+              "item":[
+                {
+                  "name": "v2/idx-total/?start={{start_date}}&end={{end_date}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/idx-total/?start=2024-01-01&end=2024-12-31",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "idx-total",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "start",
+                          "value": "2024-01-01",
+                          "description": "Start date (YYYY-MM-DD)"
+                        },
+                        {
+                          "key": "end",
+                          "value": "2024-12-31",
+                          "description": "End date (YYYY-MM-DD)"
+                        }
+                      ]
+                    },
+                    "description": "Get the aggregate market capitalization of the entire Indonesia Stock Exchange via v2 endpoint."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/daily/{{ticker}}/?start={{start_date}}&end={{end_date}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/daily/BBCA.JK/?start=2024-01-01&end=2024-12-31",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "daily",
+                        "BBCA.JK",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "start",
+                          "value": "2024-01-01",
+                          "description": "Start date"
+                        },
+                        {
+                          "key": "end",
+                          "value": "2024-12-31",
+                          "description": "End date"
+                        }
+                      ]
+                    },
+                    "description": "Daily historical price and volume data for a specific ticker via v2 endpoint."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/index-daily/{{index_code}}/?start={{start_date}}&end={{end_date}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/index-daily/idx30/?start=2024-01-01&end=2024-12-31",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "index-daily",
+                        "idx30",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "start",
+                          "value": "2024-01-01",
+                          "description": "Start date"
+                        },
+                        {
+                          "key": "end",
+                          "value": "2024-12-31",
+                          "description": "End date"
+                        }
+                      ]
+                    },
+                    "description": "Daily historical levels for major market indices via v2 endpoint."
+                  },
+                  "response":[]
+                }
+              ]
+            },
+            {
+              "name": "v2/companies/?q={{query}}&where={{where}}&order_by={{order_by}}&limit={{limit}}&offset={{offset}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v2/companies/?q=top 10 banks by market cap&where=market_cap > 1000000000000 and sector = 'Financials'&order_by=-market_cap&limit=50&offset=0&include_query_values=true",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v2",
+                    "companies",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "q",
+                      "value": "top 10 banks by market cap",
+                      "description": "Natural language query translated by LLM"
+                    },
+                    {
+                      "key": "where",
+                      "value": "market_cap > 1000000000000 and sector = 'Financials'",
+                      "description": "SQL-like conditions"
+                    },
+                    {
+                      "key": "order_by",
+                      "value": "-market_cap",
+                      "description": "Sort field with '-' for descending"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "50",
+                      "description": "Max results"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "description": "Pagination offset"
+                    },
+                    {
+                      "key": "include_query_values",
+                      "value": "true",
+                      "description": "Include computed values in response"
+                    }
+                  ]
+                },
+                "description": "High-performance SQL-like interface and Natural Language search for all IDX companies."
+              },
+              "response":[]
+            },
+            {
+              "name": "v2/free-float/?sub_sector={{sub_sector}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v2/free-float/?sub_sector=banks",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path": [
+                    "v2",
+                    "free-float",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sector",
+                      "value": "financials",
+                      "description": "Filter by sector",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sub_sector",
+                      "value": "banks",
+                      "description": "Filter by sub-sector"
+                    },
+                    {
+                      "key": "industry",
+                      "value": "banks",
+                      "description": "Filter by industry",
+                      "disabled": true
+                    },
+                    {
+                      "key": "sub_industry",
+                      "value": "banks",
+                      "description": "Filter by sub-industry",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Get the percentage of shares held by the public for companies in a specific sector category."
+              },
+              "response":[]
+            }
+          ]
+        },
+        {
+          "name": "malaysia",
+          "item":[
+            {
+              "name": "v2/klse/sectors/",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v2/klse/sectors/",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v2",
+                    "klse",
+                    "sectors",
+                    ""
+                  ]
+                },
+                "description": "List all industry sectors available in the Bursa Malaysia via v2 endpoint."
+              },
+              "response":[]
+            },
+            {
+              "name": "v2/klse/companies/?sector={{sector}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v2/klse/companies/?sector=energy",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v2",
+                    "klse",
+                    "companies",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sector",
+                      "value": "energy",
+                      "description": "Filter KLSE companies by sector slug"
+                    }
+                  ]
+                },
+                "description": "List companies on the KLSE filtered by sector via v2 endpoint."
+              },
+              "response":[]
+            },
+            {
+              "name": "v2/klse/company/report/{{ticker}}/?sections={{sections}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v2/klse/company/report/1155/?sections=overview,valuation,financials,dividend",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v2",
+                    "klse",
+                    "company",
+                    "report",
+                    "1155",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sections",
+                      "value": "overview,valuation,financials,dividend",
+                      "description": "Sections to include"
+                    }
+                  ]
+                },
+                "description": "Detailed financial report for a company listed on the Bursa Malaysia via v2 endpoint."
+              },
+              "response":[]
+            },
+            {
+              "name": "v2/klse/companies/top/?classifications={{classifications}}&n_stock={{n_stock}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v2/klse/companies/top/?classifications=revenue,earnings,market_cap,dividend_yield,pe&n_stock=5&min_mcap_million=1000&sector=energy",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v2",
+                    "klse",
+                    "companies",
+                    "top",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "classifications",
+                      "value": "revenue,earnings,market_cap,dividend_yield,pe",
+                      "description": "Sort metric classifications"
+                    },
+                    {
+                      "key": "n_stock",
+                      "value": "5",
+                      "description": "Number of results (max 10)"
+                    },
+                    {
+                      "key": "min_mcap_million",
+                      "value": "1000",
+                      "description": "Minimum market cap in MYR Million"
+                    },
+                    {
+                      "key": "sector",
+                      "value": "energy",
+                      "description": "Filter by sector"
+                    }
+                  ]
+                },
+                "description": "Rank KLSE companies based on specific financial classifications via v2 endpoint."
+              },
+              "response":[]
+            }
+          ]
+        },
+        {
+          "name": "mining",
+          "item":[
+            {
+              "name": "commodities-trade",
+              "item":[
+                {
+                  "name": "v2/mining/commodities/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/commodities/",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "commodities",
+                        ""
+                      ]
+                    },
+                    "description": "List all minerals tracked in the price and production database."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/commodities/{{commodity_name}}/price/?start_year={{start_year}}&end_year={{end_year}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/commodities/Coal/price/?start_year=2022&end_year=2024",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "commodities",
+                        "Coal",
+                        "price",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "start_year",
+                          "value": "2022",
+                          "description": "Search start year"
+                        },
+                        {
+                          "key": "end_year",
+                          "value": "2024",
+                          "description": "Search end year (max 3 years range)"
+                        }
+                      ]
+                    },
+                    "description": "Historical monthly/bi-weekly spot prices for various minerals and coal specifications."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/exports/?commodity_type={{commodity_type}}&year={{year}}&limit={{limit}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/exports/?commodity_type=Coal&year=2023&limit=20",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "exports",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "commodity_type",
+                          "value": "Coal",
+                          "description": "Target commodity"
+                        },
+                        {
+                          "key": "year",
+                          "value": "2023",
+                          "description": "Target year"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "20",
+                          "description": "Top N countries"
+                        }
+                      ]
+                    },
+                    "description": "Ranks export destination countries by value and volume for a specific year."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/global-commodity/?commodity_type={{commodity_type}}&country={{country}}&limit={{limit}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/global-commodity/?commodity_type=Coal&country=China&limit=20",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "global-commodity",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "commodity_type",
+                          "value": "Coal",
+                          "description": "Filter by commodity type"
+                        },
+                        {
+                          "key": "country",
+                          "value": "China",
+                          "description": "Filter by country (case-insensitive)"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "20",
+                          "description": "Pagination limit"
+                        }
+                      ]
+                    },
+                    "description": "Compare Indonesia's production and reserves against other global players."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/contracts/?contractor={{contractor}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/contracts/?contractor=pt-kalimantan-prima-persada",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "contracts",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "contractor",
+                          "value": "pt-kalimantan-prima-persada",
+                          "description": "Filter by contractor slug"
+                        },
+                        {
+                          "key": "mine_owner",
+                          "value": "pt-mitrabara-adiperdana-tbk",
+                          "disabled": true
+                        }
+                      ]
+                    },
+                    "description": "Mapping of B2B relationships between mine owners and specialized mining contractors."
+                  },
+                  "response":[]
+                }
+              ]
+            },
+            {
+              "name": "companies",
+              "item":[
+                {
+                  "name": "v2/mining/companies/?keyword={{keyword}}&commodity_type={{commodity_type}}&company_type={{company_type}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/companies/?keyword=adaro&commodity_type=Coal&company_type=Holding&has_financials=true&limit=20&offset=1",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "companies",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "keyword",
+                          "value": "adaro",
+                          "description": "Full-text search"
+                        },
+                        {
+                          "key": "commodity_type",
+                          "value": "Coal",
+                          "description": "Filter by commodity"
+                        },
+                        {
+                          "key": "company_type",
+                          "value": "Holding",
+                          "description": "Filter by operator type"
+                        },
+                        {
+                          "key": "has_financials",
+                          "value": "true",
+                          "description": "Only companies with financials"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "20",
+                          "description": "Pagination limit"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "1",
+                          "description": "Pagination offset"
+                        }
+                      ]
+                    },
+                    "description": "Discovery and filtering for companies involved in the mining sector."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/companies/{{company_slug}}/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/companies/pt-adaro-andalan-indonesia-tbk/",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "companies",
+                        "pt-adaro-andalan-indonesia-tbk",
+                        ""
+                      ]
+                    },
+                    "description": "Operational deep-dive including site and license counts."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/companies/performance/{{company_slug}}/?year={{year}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/companies/performance/pt-adaro-andalan-indonesia-tbk/?year=2023",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "companies",
+                        "performance",
+                        "pt-adaro-andalan-indonesia-tbk",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "year",
+                          "value": "2023",
+                          "description": "Target year"
+                        }
+                      ]
+                    },
+                    "description": "Yearly production volumes and stats per commodity for a specific company."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/companies/financials/{{company_slug}}/?year={{year}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/companies/financials/pt-adaro-andalan-indonesia-tbk/?year=2024",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "companies",
+                        "financials",
+                        "pt-adaro-andalan-indonesia-tbk",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "year",
+                          "value": "2024",
+                          "description": "Target year"
+                        }
+                      ]
+                    },
+                    "description": "Mining-specific financial data including revenue and cost breakdowns of production."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/companies/ownership/{{company_slug}}/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/companies/ownership/pt-kalimantan-prima-persada/",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "companies",
+                        "ownership",
+                        "pt-kalimantan-prima-persada",
+                        ""
+                      ]
+                    },
+                    "description": "Hierarchical view of parent companies and subsidiaries."
+                  },
+                  "response":[]
+                }
+              ]
+            },
+            {
+              "name": "licenses-auctions",
+              "item":[
+                {
+                  "name": "v2/mining/licenses/?company={{company}}&province={{province}}&commodity_type={{commodity_type}}&license_type={{license_type}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/licenses/?company=pt-aneka-tambang-tbk&province=Jambi&commodity_type=Gold&license_type=IUP&activity=Eksplorasi&cnc=CNC-5&expiring_soon=true&order_by=-license_expiry_date&limit=20&offset=0",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "licenses",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "company",
+                          "value": "pt-aneka-tambang-tbk",
+                          "description": "Filter by company slug"
+                        },
+                        {
+                          "key": "province",
+                          "value": "Jambi",
+                          "description": "Filter by province"
+                        },
+                        {
+                          "key": "commodity_type",
+                          "value": "Gold",
+                          "description": "Filter by commodity"
+                        },
+                        {
+                          "key": "license_type",
+                          "value": "IUP",
+                          "description": "Filter by license type"
+                        },
+                        {
+                          "key": "activity",
+                          "value": "Eksplorasi",
+                          "description": "Filter by stage"
+                        },
+                        {
+                          "key": "cnc",
+                          "value": "CNC-5",
+                          "description": "Filter by Clear & Clean status"
+                        },
+                        {
+                          "key": "expiring_soon",
+                          "value": "true",
+                          "description": "Find soon-to-expire licenses"
+                        },
+                        {
+                          "key": "order_by",
+                          "value": "-license_expiry_date",
+                          "description": "Sort field"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "20",
+                          "description": "Pagination limit"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "description": "Pagination offset"
+                        }
+                      ]
+                    },
+                    "description": "Comprehensive database of mining business licenses (IUP/IUPK) issued by the government."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/license-auctions/?limit={{limit}}&offset={{offset}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/license-auctions/?limit=20&offset=0",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "license-auctions",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "commodity_type",
+                          "value": "Nickel",
+                          "description": "Filter by commodity",
+                          "disabled": true
+                        },
+                        {
+                          "key": "province",
+                          "value": "Sulawesi Tengah",
+                          "description": "Filter by province",
+                          "disabled": true
+                        },
+                        {
+                          "key": "area_type",
+                          "value": "WIUPK",
+                          "description": "Filter by area type",
+                          "disabled": true
+                        },
+                        {
+                          "key": "status",
+                          "value": "Lelang Selesai",
+                          "description": "Filter by auction status",
+                          "disabled": true
+                        },
+                        {
+                          "key": "participant",
+                          "value": "antam",
+                          "description": "Search by company participant",
+                          "disabled": true
+                        },
+                        {
+                          "key": "qualified",
+                          "value": "true",
+                          "description": "Only auctions where participant qualified",
+                          "disabled": true
+                        },
+                        {
+                          "key": "min_participants",
+                          "value": "3",
+                          "description": "Minimum participant count",
+                          "disabled": true
+                        },
+                        {
+                          "key": "order_by",
+                          "value": "-winner_date",
+                          "description": "Sort field",
+                          "disabled": true
+                        },
+                        {
+                          "key": "limit",
+                          "value": "20",
+                          "description": "Pagination limit"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "description": "Pagination offset"
+                        }
+                      ]
+                    },
+                    "description": "Tracking of mining area auctions, including participants, winners, and timelines."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/license-auctions/{{wiup_code}}/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/license-auctions/1473242122023002/",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "license-auctions",
+                        "1473242122023002",
+                        ""
+                      ]
+                    },
+                    "description": "Complete results and timeline for a specific auction code."
+                  },
+                  "response":[]
+                }
+              ]
+            },
+            {
+              "name": "news",
+              "item":[
+                {
+                  "name": "v2/mining/news/?keyword={{keyword}}&commodity_type={{commodity_type}}&limit={{limit}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/news/?keyword=nickel&commodity_type=Coal&limit=20&offset=0",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "news",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "keyword",
+                          "value": "nickel",
+                          "description": "Search in titles"
+                        },
+                        {
+                          "key": "commodity_type",
+                          "value": "Coal",
+                          "description": "Filter by mineral type"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "20",
+                          "description": "Pagination limit"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "description": "Pagination offset"
+                        }
+                      ]
+                    },
+                    "description": "Automated news crawler for Indonesia's mining and mineral sector."
+                  },
+                  "response":[]
+                }
+              ]
+            },
+            {
+              "name": "sales",
+              "item":[
+                {
+                  "name": "v2/mining/sales-destination/{{company_slug}}/?year={{year}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/sales-destination/pt-adaro-andalan-indonesia-tbk/?year=2024",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "sales-destination",
+                        "pt-adaro-andalan-indonesia-tbk",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "year",
+                          "value": "2024",
+                          "description": "Target year"
+                        }
+                      ]
+                    },
+                    "description": "Breakdown of sales revenue and volume by destination country."
+                  },
+                  "response":[]
+                }
+              ]
+            },
+            {
+              "name": "sites-production",
+              "item":[
+                {
+                  "name": "v2/mining/total-production/?commodity_type={{commodity_type}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/total-production/?commodity_type=Coal",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "total-production",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "commodity_type",
+                          "value": "Coal",
+                          "description": "Target commodity"
+                        }
+                      ]
+                    },
+                    "description": "National-level aggregate production volumes with Year-over-Year growth analysis."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/resources-reserves/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/resources-reserves/",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "resources-reserves",
+                        ""
+                      ]
+                    },
+                    "description": "Discovery index of provinces with available mineral resources and reserves data."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/resources-reserves/{{province}}/?commodity_type={{commodity_type}}&year={{year}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/resources-reserves/Kalimantan Timur/?commodity_type=Coal&year=2024",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "resources-reserves",
+                        "Kalimantan Timur",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "commodity_type",
+                          "value": "Coal",
+                          "description": "Filter by commodity"
+                        },
+                        {
+                          "key": "year",
+                          "value": "2024",
+                          "description": "Filter by year"
+                        }
+                      ]
+                    },
+                    "description": "Detailed inventory of mineral reserves and resources within a specific province."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/sites/?company={{company_slug}}&province={{province}}&commodity_type={{commodity_type}}&year={{year}}",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/sites/?company=pt-arutmin-indonesia&province=Kalimantan Selatan&commodity_type=Coal&year=2023&min_production=2&order_by=-production_volume&limit=20&offset=0",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "sites",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "company",
+                          "value": "pt-arutmin-indonesia",
+                          "description": "Filter by company slug"
+                        },
+                        {
+                          "key": "province",
+                          "value": "Kalimantan Selatan",
+                          "description": "Filter by province"
+                        },
+                        {
+                          "key": "commodity_type",
+                          "value": "Coal",
+                          "description": "Filter by commodity"
+                        },
+                        {
+                          "key": "year",
+                          "value": "2023",
+                          "description": "Filter by report year"
+                        },
+                        {
+                          "key": "min_production",
+                          "value": "2",
+                          "description": "Minimum production volume"
+                        },
+                        {
+                          "key": "order_by",
+                          "value": "-production_volume",
+                          "description": "Sort field"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "20",
+                          "description": "Pagination limit"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "description": "Pagination offset"
+                        }
+                      ]
+                    },
+                    "description": "Directory of specific mining sites with production and location data."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/mining/sites/{{site_slug}}/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/mining/sites/Batubara-Long-Wehea-1/",
+                      "host":[
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "mining",
+                        "sites",
+                        "Batubara-Long-Wehea-1",
+                        ""
+                      ]
+                    },
+                    "description": "Granular site data including reserves, resources, and exact coordinates."
+                  },
+                  "response":[]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "singapore",
+          "item":[
+            {
+              "name": "v2/sgx/sectors/",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v2/sgx/sectors/",
+                  "host":[
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v2",
+                    "sgx",
+                    "sectors",
+                    ""
+                  ]
+                },
+                "description": "List all industry sectors available in the Singapore Stock Exchange via v2 endpoint."
+              },
+              "response":[]
+            },
+            {
+              "name": "v2/sgx/companies/?sector={{sector}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v2/sgx/companies/?sector=energy",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v2",
+                    "sgx",
+                    "companies",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sector",
+                      "value": "energy",
+                      "description": "Filter SGX companies by sector slug"
+                    }
+                  ]
+                },
+                "description": "List companies on the SGX filtered by sector via v2 endpoint."
+              },
+              "response":[]
+            },
+            {
+              "name": "v2/sgx/company/report/{{ticker}}/?sections={{sections}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v2/sgx/company/report/D05.SI/?sections=overview,valuation,financials,dividend",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v2",
+                    "sgx",
+                    "company",
+                    "report",
+                    "D05.SI",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "sections",
+                      "value": "overview,valuation,financials,dividend",
+                      "description": "Sections to include"
+                    }
+                  ]
+                },
+                "description": "Detailed financial report for a company listed on the Singapore Stock Exchange via v2 endpoint."
+              },
+              "response":[]
+            },
+            {
+              "name": "v2/sgx/companies/top/?classifications={{classifications}}&n_stock={{n_stock}}",
+              "request": {
+                "method": "GET",
+                "header":[
+                  {
+                    "key": "Authorization",
+                    "value": "{{apikey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{environment}}/v2/sgx/companies/top/?classifications=revenue,earnings,market_cap,dividend_yield,pe&n_stock=5&min_mcap_million=1000&sector=energy",
+                  "host": [
+                    "{{environment}}"
+                  ],
+                  "path":[
+                    "v2",
+                    "sgx",
+                    "companies",
+                    "top",
+                    ""
+                  ],
+                  "query":[
+                    {
+                      "key": "classifications",
+                      "value": "revenue,earnings,market_cap,dividend_yield,pe",
+                      "description": "Sort metric classifications"
+                    },
+                    {
+                      "key": "n_stock",
+                      "value": "5",
+                      "description": "Number of results (max 10)"
+                    },
+                    {
+                      "key": "min_mcap_million",
+                      "value": "1000",
+                      "description": "Minimum market cap in SGD Million"
+                    },
+                    {
+                      "key": "sector",
+                      "value": "energy",
+                      "description": "Filter by sector"
+                    }
+                  ]
+                },
+                "description": "Rank SGX companies based on specific financial classifications via v2 endpoint."
+              },
+              "response":[]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event":[
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable":[
+    {
+      "key": "environment",
+      "value": "https://api.sectors.app"
+    },
+    {
+      "key": "apikey",
+      "value": "YOUR_API_KEY_HERE"
+    }
+  ]
+}

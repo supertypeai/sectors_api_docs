@@ -1,0 +1,53 @@
+---
+title: "Industries"
+api: "GET /v2/industries/"
+description: "Return list of all available industries"
+---
+
+<ResponseExample>
+```json 200
+[
+  {
+    "subsector": "oil-gas-coal",
+    "industry": "oil-gas"
+  }
+]
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="Industry[]">
+  <Expandable title="properties">
+    <ResponseField name="Industry.subsector" type="string">
+      A specific classification within a sector.
+    </ResponseField>
+
+    <ResponseField name="Industry.industry" type="string">
+      A specific classification within a subsector.
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+### Usage
+
+This list can be used for the following endpoint:
+
+- [Companies Screener](../companies)
+- [Free Float Market Analysis](../free-float)

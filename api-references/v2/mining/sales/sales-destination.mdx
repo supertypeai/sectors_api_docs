@@ -1,0 +1,88 @@
+---
+title: "Company Sales Destinations"
+api: "GET /v2/mining/sales-destination/{slug}/"
+description: "Retrieves sales destination breakdown for a specific mining company by its slug, showing revenue and volume distribution by country for a specific year (defaults to latest)."
+---
+
+<ResponseExample>
+```json 200
+{
+    "year": 2024,
+    "data": {
+        "China": {
+            "revenue_usd": null,
+            "percentage_of_total_revenue": null,
+            "volume": null,
+            "percentage_of_sales_volume": 16.0,
+            "commodity_type": "Coal",
+            "unit": "Mt"
+        },
+        "India": {
+            "revenue_usd": null,
+            "percentage_of_total_revenue": null,
+            "volume": null,
+            "percentage_of_sales_volume": 11.0,
+            "commodity_type": "Coal",
+            "unit": "Mt"
+        }
+    }
+}
+```
+
+```json 400
+{
+  "error": "Slug is required."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="slug" type="string" required>
+  The company's unique identifier slug (e.g., `adaro-energy`).
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="year" type="integer">
+  The year to retrieve. Defaults to the latest available year.
+</ParamField>
+
+### Response
+
+<ResponseField name="year" type="integer">
+  The year for which sales destination data is returned.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  An object where each key is a country name, detailing sales performance.
+  <Expandable title="Country properties">
+    <ResponseField name="revenue_usd" type="number | null">
+      The total revenue from sales to this country in USD.
+    </ResponseField>
+    <ResponseField name="percentage_of_total_revenue" type="number | null">
+      The percentage this country's revenue contributes to the total.
+    </ResponseField>
+    <ResponseField name="volume" type="number | null">
+      The total sales volume to this country.
+    </ResponseField>
+    <ResponseField name="percentage_of_sales_volume" type="number | null">
+      The percentage this country's volume contributes to the total sales
+      volume.
+    </ResponseField>
+    <ResponseField name="commodity_type" type="string">
+      The type of commodity sold (e.g., "Coal").
+    </ResponseField>
+    <ResponseField name="unit" type="string">
+      The unit of measurement for the volume (e.g., "Mt").
+    </ResponseField>
+  </Expandable>
+</ResponseField>

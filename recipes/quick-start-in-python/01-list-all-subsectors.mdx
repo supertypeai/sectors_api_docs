@@ -24,7 +24,7 @@ API_KEYS = "Your API Keys"
 headers = {
     "Authorization": API_KEYS
 }
-response = requests.get("https://api.sectors.app/v1/subsectors/", headers = headers)
+response = requests.get("https://api.sectors.app/v2/subsectors/", headers = headers)
 
 if response.status_code == 200:
     data_all_subsectors = response.json()
@@ -61,7 +61,7 @@ df.head()
 
 The results will look like the following:
 
-|     | subsectors           |
+|     | subsector            |
 | --- | -------------------- |
 | 0   | telecommunication    |
 | 1   | oil-gas-coal         |
@@ -81,7 +81,7 @@ df.head()
 
 After the data processing, now it should look more readable.
 
-|     | subsectors           |
+|     | subsector            |
 | --- | -------------------- |
 | 0   | Telecommunication    |
 | 1   | Oil Gas Coal         |
@@ -104,17 +104,20 @@ We will join the data from both API to a single list using the code below:
 ```python
 result_data = []
 for data in data_all_subsectors:
-    subsector = data["subsector"]
+    subsector_raw = data["subsector"]
+    subsector = subsector_raw.replace("-", " ")
+    subsector = subsector.title()
+
     headers = {
     "Authorization": API_KEYS
     }
 
 
-    response = requests.get(f"https://api.sectors.app/v1/companies/?sub_sector={subsector}", headers = headers)
+    response = requests.get(f"https://api.sectors.app/v2/companies/?where=sub_sector='{subsector}'", headers = headers)
 
     if response.status_code == 200:
         list_companies_by_subsectors = response.json()
-        for company in list_companies_by_subsectors:
+        for company in list_companies_by_subsectors.get('results'):
             result_data.append([subsector, company["symbol"]])
     else:
         # Handle error

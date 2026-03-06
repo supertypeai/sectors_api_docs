@@ -4,6 +4,10 @@ api: "GET /v1/companies/top-growth/"
 description: "Return a list of top tickers based on certain growth classification (earning growth gainers / losers or revenue growth gainers / losers)"
 ---
 
+<Warning>
+**Deprecation Notice:** This v1 endpoint will be discontinued at the end of March 2026. Please migrate to the [v2 Companies Screener](/api-references/v2/indonesia/companies) using the `order_by` parameter. See the [Migration Guide](/get-started/v2/migration-guide#3-top-companies-by-growth) for details.
+</Warning>
+
 <ResponseExample>
 ```json 200
 {

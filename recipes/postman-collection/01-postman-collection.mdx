@@ -38,126 +38,52 @@ If you're new to Postman, check out their official [documentation](https://learn
 To start using our API, follow these steps to import the **Sectors Financial API Postman Collection**:
 
 1. **Download the Postman Collection**:
-
-   - Click here [Postman Collection](https://github.com/supertypeai/sectors_api_docs/blob/feat/postman_collection/recipes/postman-collection/json/Supertype_API_01-2026_v1.2.postman_collection.json) and download the latest version of the Postman collection file.
+   - Click here [Latest Postman Collection (v1.3 - 2026-03)](https://github.com/supertypeai/sectors_api_docs/blob/main/recipes/postman-collection/json/Supertype_API_03-2026_v1.3.postman_collection.json) to download the latest all-in-one version.
 
 2. **Open Postman**:
-
    - Launch the Postman application on your computer.
 
 3. **Import the Collection**:
    - Click on the **Import** button in the top-left corner of the Postman interface.
-   - Select the downloaded `Supertype_API_01-2026_v1.2.postman_collection.json` file and click **Open**.
+   - Select the downloaded `Supertype_API_03-2026_v1.3.postman_collection.json` file and click **Open**.
    - The collection will now appear in your Postman workspace under the **Collections** tab.
 
 ---
 
 ## API Endpoints
 
-Our API provides several endpoints to fetch different types of financial data. Here is the full [API Reference](https://docs.sectors.app/api-references) for you to check the details
+Our API provides several endpoints to fetch different types of financial data. Here is the full [API Reference](../../api-references) for you to check the details
 
 ## Collection Structure
 
-The collection is organized into folders, each representing a specific functionality or endpoint group. Each folder contains one or more requests.
+The collection is organized into two main folders for **v1** and **v2**, with logical sub-groupings for easy discovery.
 
 ### Folder Structure:
 
-#### v1
+#### v1 (Legacy & Core)
 
-- **Helper List**
-  - `GET v1/subsectors/`
-  - `GET v1/subindustries/`
-  - `GET v1/tags`
-  - `GET v1/industries/`
-  - `GET v1/index/{{index}}/`
-  - `GET v1/companies/`
-  - `GET v1/companies/list_companies_with_segments/`
-  - `GET v1/company/get_quarterly_financial_dates/{{ticker}}/`
-- **Since IPO Performance**
-  - `GET v1/listing-performance`
-- **Company News**
-  - `GET v1/news/`
-  - `GET v1/filings/`
-- **Detailed Report**
-  - `GET v1/company/report/{{ticker}}/?sections={{sections}}`
-  - `GET v1/company/get-segments/{{ticker}}/`
-  - `GET v1/financials/quarterly/{{ticker}}/?report_date={{report_date}}&approx=true`
-  - `GET v1/subsector/report/{{sector}}/?sections={{sections}}`
-- **Company Ranking by Dimensions**
-  - `GET v1/most-traded/?start={{start_date}}&end={{end_date}}&n_stock=5&sub_sector={{sub_sector}}`
-  - `GET v1/companies/top/?classifications={classifications}&n_stock=5&year=2025&sub_sector={sub_sector}&min_mcap_billion=5000`
-  - `GET v1/companies/top-changes/?classifications={classifications}&n_stock=5&periods={periods}&sub_sector={sub_sector}&min_mcap_billion=5000`
-  - `GET v1/companies/top-growth/?classifications={classifications}&n_stock=5&sub_sector={sub_sector}&min_mcap_billion=5000`
-- **Historical Market Cap and Transactions Data**
-  - `GET v1/idx-total/?start={start_date}&end={end_date}`
-  - `GET v1/daily/{{ticker}}/?start={{start_date}}&end={{end_date}}`
-  - `GET v1/index-daily/{{index_code}}/?start={{start_date}}&end={{end_date}}`
-  - `GET v1/index-daily/{{index_code}}/`
-- **Singapore Stock Exchange**
-  - `GET v1/sgx/sectors/`
-  - `GET v1/sgx/companies/?sector={{sector}}`
-  - `GET v1/sgx/company/report/{{ticker}}/`
-  - `GET v1/sgx/companies/top/?classifications={{classifications}}&min_mcap_million=1000&sector={{sector}}`
-- **Malaysia Stock Exchange**
-  - `GET v1/klse/sectors/`
-  - `GET v1/klse/companies/?sector={{sector}}`
-  - `GET v1/klse/company/report/{{ticker}}/`
-  - `GET v1/klse/companies/top/?classifications={classifications}&min_mcap_million=1000&sector={sector}`
-- **SGX**
-  - `GET v1/sgx/sectors/`
-  - `GET v1/sgx/companies/`
-  - `GET v1/sgx/company/report/{{ticker}}/`
-  - `GET v1/sgx/companies/top/`
-- **KLSE**
-  - `GET v1/klse/sectors/`
-  - `GET v1/klse/companies/`
-  - `GET v1/klse/company/report/{{ticker}}/`
-  - `GET v1/klse/companies/top/`
+- **Metadata & Enumerations**: Standard helper lists like subsectors, industries, and tags.
+- **Detailed Reports**: Company reports, segments, and historical financials.
+- **Market Movers & Rankings**: Top companies, price changes, and growth stats.
+- **Regional Markets**: Dedicated folders for **SGX** (Singapore) and **KLSE** (Malaysia) data.
 
-#### v2
+#### v2 (Modern & Mining Extension)
 
-- **Companies**
-  - `GET v2/companies/`
-- **Mineral**
-  - **Mining Companies**
-    - `GET v2/mining/companies/`
-    - `GET v2/mining/companies/{{company_id}}/`
-    - `GET v2/mining/companies/{{company_id}}/performance/`
-    - `GET v2/mining/companies/{{ticker}}/financials/`
-  - **Mining Data**
-    - `GET v2/mining/sites/`
-    - `GET v2/mining/production/total/`
-    - `GET v2/mining/resources-reserves/`
-  - **Commodities & Trade**
-    - `GET v2/mining/commodities/{{commodity_name}}/price/`
-    - `GET v2/mining/trade/exports/`
-    - `GET v2/mining/global-commodity/`
-    - `GET v2/mining/sales-destination/`
-  - **Licenses & News**
-    - `GET v2/mining/licenses/`
-    - `GET v2/mining/license-auctions/`
-    - `GET v2/mining/news/`
+- **Unified Screener**: The powerful SQL-style and Natural Language search interface.
+- **Mining Intelligence Service**:
+  - **Companies & Operators**: Discovery and deep-dives into mining firms.
+  - **Mining Sites & Assets**: Ground-level data on specific mine sites and production.
+  - **National Stats & Commodities**: Aggregated statistics and mineral price history.
+  - **Legal & Regulatory**: License tracking and auction results.
+- **Migrated v1 Endpoints (v2 namespace)**: V1-equivalent endpoints reachable via the `/v2/` base path for consistency.
 
 Each request is pre-configured with the necessary parameters and variables.
 
 ## Using Variables
 
-The collection uses variables to make it reusable and customizable. There are two types of variables:
+The collection is designed to be plug-and-play. Only one variable is required to be set at the collection level:
 
-1. **Collection Variables**: These are shared across all requests in the collection. Examples include:
+1. **Collection Variables**:
+   - `{{apikey}}`: Your unique API key.
 
-   - `{{environment}}`: The base URL for the API (default: `https://api.sectors.app`).
-   - `{{apikey}}`: Your API key.
-   - `{{ticker}}`: The stock ticker symbol.
-   - `{{index}}`: Index name (e.g. `idxg30`).
-   - `{{index_code}}`: Index code (e.g. `idx30`).
-   - `{{sub_sector}}`: Sub-sector slug.
-   - `{{sub_industry}}`: Sub-industry slug.
-   - `{{sector}}`: Sector slug.
-   - `{{sections}}`: Report sections filter.
-   - `{{report_date}}`: Financial report date.
-   - `{{company_id}}`: Company ID for v2 endpoints.
-   - `{{mineral_ticker}}`: Ticker for mineral companies.
-   - `{{commodity_name}}`: Commodity name (e.g. `Coal`).
-
-2. **Request-Specific Variables**: Some parameters are unique to specific requests and are defined within the request itself.
+All other parameters (like `ticker`, `slug`, `index_code`, `year`, etc.) are hardcoded with working examples in each request for immediate testing. You can easily override these examples in the **Params** tab of each request in Postman.

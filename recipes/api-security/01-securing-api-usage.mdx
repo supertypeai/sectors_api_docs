@@ -147,7 +147,7 @@ To ensure that you are securely connecting to the **Sectors Financial API**, alw
 ```python
 import requests
 
-url = "https://api.sectors.app/v1/company/report/<company-name>"
+url = "https://api.sectors.app/v2/company/report/<company-name>"
 response = requests.get(url)
 
 # Verify request was successful
@@ -171,7 +171,7 @@ A common security flaw is hardcoding API keys directly in source code, making th
 ```python
 # Hardcoded API Key (Insecure)
 API_KEY = "sk_test_1234567890abcdef"
-response = requests.get(f"https://api.sectors.app/v1/data?apikey={API_KEY}")
+response = requests.get(f"https://api.sectors.app/v2/data?apikey={API_KEY}")
 ```
 If this code is accidentally pushed to a public repository, attackers can extract and misuse the API key.
 
@@ -197,7 +197,7 @@ A safer approach is to store API keys in environment variables and load them dyn
     if not API_KEY:
         raise ValueError("API key not found! Ensure the SECTORS_API_KEY environment variable is set.")
 
-    response = requests.get(f"https://api.sectors.app/v1/company/report/<company-name>", headers={"Authorization": f"Bearer {API_KEY}"})
+    response = requests.get(f"https://api.sectors.app/v2/company/report/<company-name>", headers={"Authorization": f"Bearer {API_KEY}"})
 
     if response.status_code == 200:
         print("Data retrieved successfully!")
@@ -230,7 +230,7 @@ Instead of storing API keys directly in the source code, you can store them in a
     if not API_KEY:
         raise ValueError("API key missing. Please set it in the .env file.")
 
-    response = requests.get(f"https://api.sectors.app/v1/data", headers={"Authorization": f"Bearer {API_KEY}"})
+    response = requests.get(f"https://api.sectors.app/v2/data", headers={"Authorization": f"Bearer {API_KEY}"})
 
     print(response.json())
     ```
@@ -268,7 +268,7 @@ Instead of exposing raw error messages, display user-friendly error messages whi
 ```python
 import requests
 
-API_URL = "https://api.sectors.app/v1/company/report/<company-name>"
+API_URL = "https://api.sectors.app/v2/company/report/<company-name>"
 API_KEY = "your_api_key_here"
 
 headers = {"Authorization": f"Bearer {API_KEY}"}
@@ -385,7 +385,7 @@ To maintain a secure and efficient environment while using the **Sectors Financi
   - Avoid logging sensitive information such as API keys, query parameters containing personal data, or any other confidential details.
   - Example log format:
     ```
-    [2023-10-15 14:23:45] INFO: GET /api/v1/company/report/<company-name> - Status: 200 - User ID: 123xx45
+    [2023-10-15 14:23:45] INFO: GET /api/v2/company/report/<company-name> - Status: 200 - User ID: 123xx45
     ```
 
 - **Integrating with Log Management Tools:**

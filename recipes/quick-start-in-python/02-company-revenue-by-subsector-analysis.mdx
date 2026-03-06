@@ -39,12 +39,12 @@ API_KEYS = "Your API Keys"
 headers = {
     "Authorization": API_KEYS
 }
-response = requests.get("https://api.sectors.app/v1/companies/?sub_sector=tobacco", headers = headers)
+response = requests.get("https://api.sectors.app/v2/companies/?where=sub_sector='Tobacco'", headers = headers)
 
 list_companies_by_subsectors = []
 if response.status_code == 200:
     data = response.json()
-    for company in data:
+    for company in data.get('results'):
         list_companies_by_subsectors.append(company["symbol"])
 else:
     # Handle error
@@ -82,7 +82,7 @@ for company in list_companies_by_subsectors:
     headers = {
         "Authorization": API_KEYS
     }
-    response = requests.get(f"https://api.sectors.app/v1/company/report/{company}/?sections=financials", headers = headers)
+    response = requests.get(f"https://api.sectors.app/v2/company/report/{company}/?sections=financials", headers = headers)
 
     if response.status_code == 200:
         financial_report = response.json()

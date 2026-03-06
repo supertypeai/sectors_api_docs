@@ -34,7 +34,7 @@ To follow this recipe, you need the following prerequisites:
 - Enter the URL of the API endpoint.
 
   For this first request, we are going to use the endpoint to track the daily trading data of a company (I will use BBCA for my example).
-  Here is the url: `https://api.sectors.app/v1/daily/bbca`
+  Here is the url: `https://api.sectors.app/v2/daily/bbca`
 
   For the HTTP request header parameters, fill in `Authorization` on the left cell, and then your `<API Key>` on the right cell. Afterwards, click OK.
 
@@ -57,12 +57,12 @@ To follow this recipe, you need the following prerequisites:
   Go to `View` tab > `Advanced Editor`, and this editor will pop up:
   ![Step_5](/recipes/non-programmatical-tools/01-excel/images/step5.png)
 
-  Don't worry, as I promised, this recipe doesn't require any programming steps. All you need to do is replace the url `https://api.sectors.app/health/` to `https://api.sectors.app/v1/daily/bbca`, and click Done!
+  Don't worry, as I promised, this recipe doesn't require any programming steps. All you need to do is replace the url `https://api.sectors.app/health/` to `https://api.sectors.app/v2/daily/bbca`, and click Done!
   This is the "code" block:
 
   ```
   let
-      Source = Json.Document(Web.Contents("https://api.sectors.app/v1/daily/bbca", [Headers=[Authorization="<API Key>"]]))
+      Source = Json.Document(Web.Contents("https://api.sectors.app/v2/daily/bbca", [Headers=[Authorization="<API Key>"]]))
   in
       Source
   ```
@@ -102,7 +102,7 @@ If your JSON data contains nested objects or arrays, you will see in the preview
 
 Obviously, we don't want this to happen as we will be losing valuable informations contained in the data. Unfortunately, Excel's Power Query doesn't expand these structures out of the box, but instead we can add steps that handle these according to our usecases as well.
 To start, create a new sheet. We can name it `Company Report Query`, then establish a new connection to the API just like what we just did on the previous section.
-Our target url for this will be: `https://api.sectors.app/v1/company/report/bbca/`.
+Our target url for this will be: `https://api.sectors.app/v2/company/report/bbca/`.
 
 - Our starting point would look like this:
 

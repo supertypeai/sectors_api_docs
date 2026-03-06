@@ -1,9 +1,9 @@
 ---
-title: "Sectors API Agent Skill - User Guide"
+title: "Sectors Financial API Agent Skill - User Guide"
 sidebarTitle: "2. Agent Skills Guide"
 ---
 
-A comprehensive skill for AI agents to fetch financial market data from the Sectors API, supporting both Indonesia Stock Exchange (IDX) and Singapore Exchange (SGX).
+A comprehensive skill for AI agents to fetch financial market data from the Sectors Financial API, supporting both Indonesia Stock Exchange (IDX) and Singapore Exchange (SGX).
 
 ---
 
@@ -50,7 +50,7 @@ Select your AI agent below and follow the integration steps:
 
 <Accordion title="📋 Installation Guide for LLM (Click to expand if your human asked you to install this skill)">
 
-If your human user is asking you to install the Sectors API skill, follow these steps:
+If your human user is asking you to install the Sectors Financial API skill, follow these steps:
 
 ### Step 1: Clone the Repository
 
@@ -89,7 +89,7 @@ import requests
 import os
 
 API_KEY = os.environ["SECTORS_API_KEY"]
-BASE_URL = "https://api.sectors.app/v1"
+BASE_URL = "https://api.sectors.app/v2"
 headers = {"Authorization": API_KEY}
 
 response = requests.get(f"{BASE_URL}/subsectors/", headers=headers)
@@ -101,7 +101,7 @@ if response.ok:
 - **NEVER** hardcode or guess an API key
 - Always read the key from `SECTORS_API_KEY` environment variable
 - The Authorization header uses the raw key (no "Bearer" prefix)
-- All endpoints are GET requests to `https://api.sectors.app/v1`
+- All endpoints are GET requests to `https://api.sectors.app/v2`
 - If the env var is not set, prompt the user to set it
 
 </Accordion>
@@ -112,7 +112,7 @@ if response.ok:
 
 ### Step 1: Set the API Key
 
-Configure Claude Code with your Sectors API key:
+Configure Claude Code with your Sectors Financial API key:
 
 ```bash
 claude config set env SECTORS_API_KEY your-api-key-here
@@ -158,7 +158,7 @@ Once configured, you can ask Claude questions like:
 
 ### Step 1: Set the API Key
 
-Configure OpenCode with your Sectors API key in your configuration file (usually at `~/.config/opencode/config.json`):
+Configure OpenCode with your Sectors Financial API key in your configuration file (usually at `~/.config/opencode/config.json`):
 
 ```json
 {
@@ -199,7 +199,7 @@ Ask OpenCode questions about financial data:
 
 ### Step 1: Install the Skill
 
-OpenClaw manages skills through [ClawHub](https://www.clawhub.ai), the official skills registry. To install the Sectors API skill:
+OpenClaw manages skills through [ClawHub](https://www.clawhub.ai), the official skills registry. To install the Sectors Financial API skill:
 
 ```bash
 openclaw skills install sectors-api
@@ -213,7 +213,7 @@ Install the sectors-api skill
 
 ### Step 2: Set the API Key
 
-Configure the Sectors API key in your OpenClaw environment:
+Configure the Sectors Financial API key in your OpenClaw environment:
 
 ```bash
 openclaw config set SECTORS_API_KEY your-api-key-here
@@ -365,7 +365,7 @@ pip install requests
 **Solutions:**
 1. Check internet connection
 2. Verify no firewall blocking the domain
-3. Try: `curl -I https://api.sectors.app/v1/subsectors/`
+3. Try: `curl -I https://api.sectors.app/v2/subsectors/`
 
 ### Invalid Ticker
 

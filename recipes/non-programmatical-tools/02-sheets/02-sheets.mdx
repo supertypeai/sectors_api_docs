@@ -34,7 +34,7 @@ Alternatively, you can also start by opening up a new Google Sheet file, go to `
   ![Step_1](/recipes/non-programmatical-tools/02-sheets/images/step1.png)
 
   Similar with how we created a connection in Excel, all we need to do is change the `Request URL` and add the headers with `Authorization` and value of your `<API Key>`.
-  For the first trial, we are going to use `https://api.sectors.app/v1/daily/bbca` and track the daily trading data of BBCA.JK. Feel free to change the ticker with your personal watchlist!
+  For the first trial, we are going to use `https://api.sectors.app/v2/daily/bbca` and track the daily trading data of BBCA.JK. Feel free to change the ticker with your personal watchlist!
 
   ![Step_2](/recipes/non-programmatical-tools/02-sheets/images/step2.png)
 
@@ -55,7 +55,7 @@ Alternatively, you can also start by opening up a new Google Sheet file, go to `
   ![Result_1](/recipes/non-programmatical-tools/02-sheets/images/result1.png)
 
 - Using Excel, handling nested JSON is quite complex since it requires you to expand the values one by one as needed. In contrast, `API Connector` is able to automatically expand your nested JSON objects and explode them to new columns per values.
-  Try creating a new request to `https://api.sectors.app/v1/company/report/bbca/`!
+  Try creating a new request to `https://api.sectors.app/v2/company/report/bbca/`!
 
   ![Step_6](/recipes/non-programmatical-tools/02-sheets/images/step6.png)
 
@@ -92,7 +92,7 @@ The platform is accessible directly within Google Sheets, making it convenient t
   ```JavaScript
   function ImportDailyData(ticker, query, parseOptions) {
       var header = {headers: {Authorization: <API key>}}
-      var url = "https://api.sectors.app/v1/daily/" + ticker;
+      var url = "https://api.sectors.app/v2/daily/" + ticker;
       var jsondata = UrlFetchApp.fetch(url, header);
       var object   = JSON.parse(jsondata.getContentText());
 
@@ -101,7 +101,7 @@ The platform is accessible directly within Google Sheets, making it convenient t
 
   function ImportCompanyReport(ticker, section, query, parseOptions) {
       var header = {headers: {Authorization: <API key>}}
-      var url = "https://api.sectors.app/v1/company/report/" + ticker;
+      var url = "https://api.sectors.app/v2/company/report/" + ticker;
       var jsondata = UrlFetchApp.fetch(url, header);
       var object   = JSON.parse(jsondata.getContentText());
 

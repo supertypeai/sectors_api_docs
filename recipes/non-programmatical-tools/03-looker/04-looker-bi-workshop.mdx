@@ -28,9 +28,9 @@ Let’s embark on this exciting journey and explore more about IDX market overvi
 
 ### Data Fetching using Google Sheets
 
-In this recipe, we'll use Google Sheets to fetch data from the [Sectors API](https://sectors.app/api). Note that this is not the only way to access data from the [Sectors API](https://sectors.app/api)
+In this recipe, we'll use Google Sheets to fetch data from the [Sectors Financial API](https://sectors.app/api). Note that this is not the only way to access data from the [Sectors Financial API](https://sectors.app/api)
 you can also use tools like Postman or any programming language to call the API. However, to keep things as low-code as possible, we'll be using Google Sheets in this example.
-Before getting started, you’ll need two tools: the API Connector extension and a [Sectors API key](https://sectors.app/api). For instructions on how to use the API Connector extension in Google Sheets, refer to [this tutorial in the previous recipe](../02-sheets/02-sheets#api-connector).
+Before getting started, you’ll need two tools: the API Connector extension and a [Sectors Financial API key](https://sectors.app/api). For instructions on how to use the API Connector extension in Google Sheets, refer to [this tutorial in the previous recipe](../02-sheets/02-sheets#api-connector).
 
 If you already familiar with the API Connector Extension, now you just need to change the all we need to do is change the `Request URL` and add the headers with `Authorization` and value of your `<API Key>`.
 
@@ -38,49 +38,44 @@ This time we will fetch these data:
 
 <Accordion title="Historical IDX Market Cap">
   - **Definition:** The 30 days historical IDX Market Capitalization Value. -
-  **URL:** `https://api.sectors.app/v1/idx-total/`
+  **URL:** `https://api.sectors.app/v2/idx-total/`
 </Accordion>
 <Accordion title="Historical LQ45 Index Price">
   - **Definition:** The 30 days historical LQ45 Index Price - **URL:**
-  `https://api.sectors.app/v1/index-daily/lq45/`
+  `https://api.sectors.app/v2/index-daily/lq45/`
 </Accordion>
 <Accordion title="Historical IDX30 Index Price">
   - **Definition:** The 30 days historical IDX30 Index Price - **URL:**
-  `https://api.sectors.app/v1/index-daily/idx30/`
+  `https://api.sectors.app/v2/index-daily/idx30/`
 </Accordion>
 <Accordion title="Historical JII70 Index Price">
   - **Definition:** The 30 days historical JII70 Index Price - **URL:**
-  `https://api.sectors.app/v1/index-daily/jii70/`
+  `https://api.sectors.app/v2/index-daily/jii70/`
 </Accordion>
 <Accordion title="Top 10 Companies based on Market Capitalization">
   - **Definition:** The top 10 companies based on market capitalization
   parameter in the current year - **URL:**
-  `https://api.sectors.app/v1/companies/top/?classifications=market_cap&n_stock=10`
-</Accordion>
-<Accordion title="Top 10 Companies based on Dividend Yield">
-  - **Definition:** The top 10 companies based on dividend yield parameter in
-  the current year - **URL:**
-  `https://api.sectors.app/v1/companies/top/?classifications=market_cap&n_stock=10`
+  `https://api.sectors.app/v2/companies/?order_by=-market_cap&limit=10`
 </Accordion>
 <Accordion title="Top 10 Companies based on Revenue">
   - **Definition:** The top 10 companies based on revenue parameter in 2023 -
   **URL:**
-  `https://api.sectors.app/v1/companies/top/?classifications=revenue&n_stock=10&year=2023`
+  `https://api.sectors.app/v2/companies/?order_by=-revenue[2023]&limit=10`
 </Accordion>
 <Accordion title="Top 10 Companies based on Earnings">
   - **Definition:** The top 10 companies based on earnings parameter in the 2023
   - **URL:**
-  `https://api.sectors.app/v1/companies/top/?classifications=earnings&n_stock=10&year=2023`
+  `https://api.sectors.app/v2/companies/?order_by=-earnings[2023]&limit=10`
 </Accordion>
 <Accordion title="Top 10 Thirty Days Gainers">
   - **Definition:** The top 10 companies with the highest percentage change in
   price in the last 30 days - **URL:**
-  `'https://api.sectors.app/v1/companies/top-changes/?classifications=top_gainers&n_stock=10&periods=30d'`
+  `https://api.sectors.app/v2/companies/top-changes/?classifications=top_gainers&n_stock=10&periods=30d`
 </Accordion>
 <Accordion title="Top 10 Thirty Days Losers">
   - **Definition:** The top 10 companies with the lowest percentage change in
   price in the last 30 days - **URL:**
-  `'https://api.sectors.app/v1/companies/top-changes/?classifications=top_losers&n_stock=10&periods=30d'`
+  `https://api.sectors.app/v2/companies/top-changes/?classifications=top_losers&n_stock=10&periods=30d`
 </Accordion>
 
 After finish configuring the API connector and fetch the data, then you will have the google sheets file that supposedly look like this

@@ -1,0 +1,297 @@
+---
+title: "Migration Guide: v1 to v2"
+sidebarTitle: "v1 to v2 Migration"
+description: "Step-by-step guide to migrate from Sectors Financial API v1 to v2"
+icon: "arrow-right-arrow-left"
+---
+
+<Warning>
+**v1 Deprecation:** Sectors Financial API v1 will be deprecated and discontinued at the end of March 2026. Please migrate to v2 as soon as possible.
+</Warning>
+
+## Overview
+
+Migrating from Sectors Financial API v1 to v2 is straightforward for most endpoints. The v2 API offers improved performance, better data structures, enhanced filtering capabilities, and natural language query support.
+
+## General Migration Pattern
+
+For most endpoints, migration is as simple as updating the URL path from `/v1/` to `/v2/`:
+
+<CodeGroup>
+```bash v1 (Old)
+https://api.sectors.app/v1/...
+```
+
+```bash v2 (New)
+https://api.sectors.app/v2/...
+```
+</CodeGroup>
+
+<Note>
+While most endpoints follow this pattern, some endpoints have been redesigned with enhanced functionality. See the sections below for specific migration paths.
+</Note>
+
+## Endpoint-Specific Migrations
+
+The following endpoints have improved functionality in v2 and require specific migration instructions:
+
+### 1. Companies by Index
+
+**v1 Limitation:** Could only query from a single index at a time.
+
+<CodeGroup>
+```bash v1 (Deprecated)
+GET https://api.sectors.app/v1/index/{index}/
+```
+
+```bash v2 (SQL-style filtering)
+GET https://api.sectors.app/v2/companies/?where=indices in ['idxbumn20', 'lq45']
+```
+
+```bash v2 (Natural Language Query)
+GET https://api.sectors.app/v2/companies/?q=find me all companies in lq45 and/or idxbumn20
+```
+</CodeGroup>
+
+**Benefits:**
+- Query multiple indices simultaneously
+- Use natural language queries for easier filtering
+- More flexible filtering with SQL-like syntax
+
+**Example:**
+
+<CodeGroup>
+```python Python
+import requests
+
+url = "https://api.sectors.app/v2/companies/"
+headers = {"Authorization": "YOUR_API_KEY"}
+
+# Method 1: SQL-style filtering
+params = {"where": "indices in ['idxbumn20', 'lq45']"}
+response = requests.get(url, headers=headers, params=params)
+
+# Method 2: Natural Language Query
+params = {"q": "find me all companies in lq45 and/or idxbumn20"}
+response = requests.get(url, headers=headers, params=params)
+```
+
+```javascript JavaScript
+const url = "https://api.sectors.app/v2/companies/";
+const headers = {"Authorization": "YOUR_API_KEY"};
+
+// Method 1: SQL-style filtering
+const params = new URLSearchParams({
+    where: "indices in ['idxbumn20', 'lq45']"
+});
+
+fetch(`${url}?${params}`, { headers })
+    .then(response => response.json())
+    .then(data => console.log(data));
+
+// Method 2: Natural Language Query
+const paramsNL = new URLSearchParams({
+    q: "find me all companies in lq45 and/or idxbumn20"
+});
+
+fetch(`${url}?${paramsNL}`, { headers })
+    .then(response => response.json())
+    .then(data => console.log(data));
+```
+</CodeGroup>
+
+---
+
+### 2. Top Companies Ranked
+
+**v1 Limitation:** Limited to specific classifications: `dividend_yield`, `total_dividend`, `revenue`, `earnings`, `market_cap`, `pb`, `pe`, `ps`.
+
+<CodeGroup>
+```bash v1 (Deprecated)
+GET https://api.sectors.app/v1/companies/top/?classification=revenue&year=2023
+```
+
+```bash v2 (Basic sorting)
+GET https://api.sectors.app/v2/companies/?order_by=-revenue[2023]
+```
+
+```bash v2 (With sector filtering)
+GET https://api.sectors.app/v2/companies/?order_by=-revenue[2023]&where=sub_sector='banks'
+```
+</CodeGroup>
+
+**Benefits:**
+- Sort by any available metric, not just predefined classifications
+- Combine sorting with advanced filtering
+- Specify year or quarter for time-series data
+- More flexible and powerful queries
+
+**Example:**
+
+<CodeGroup>
+```python Python
+import requests
+
+url = "https://api.sectors.app/v2/companies/"
+headers = {"Authorization": "YOUR_API_KEY"}
+
+# Basic ranking by revenue for 2023
+params = {"order_by": "-revenue[2023]"}
+response = requests.get(url, headers=headers, params=params)
+
+# Ranking with sector filter
+params = {
+    "order_by": "-revenue[2023]",
+    "where": "sub_sector='banks'"
+}
+response = requests.get(url, headers=headers, params=params)
+```
+
+```javascript JavaScript
+const url = "https://api.sectors.app/v2/companies/";
+const headers = {"Authorization": "YOUR_API_KEY"};
+
+// Basic ranking by revenue for 2023
+const params = new URLSearchParams({
+    order_by: "-revenue[2023]"
+});
+
+fetch(`${url}?${params}`, { headers })
+    .then(response => response.json())
+    .then(data => console.log(data));
+
+// Ranking with sector filter
+const paramsFiltered = new URLSearchParams({
+    order_by: "-revenue[2023]",
+    where: "sub_sector='banks'"
+});
+
+fetch(`${url}?${paramsFiltered}`, { headers })
+    .then(response => response.json())
+    .then(data => console.log(data));
+```
+</CodeGroup>
+
+---
+
+### 3. Top Companies by Growth
+
+**v1 Limitation:** Limited growth metrics and filtering options.
+
+<CodeGroup>
+```bash v1 (Deprecated)
+GET https://api.sectors.app/v1/companies/top-growth/?min_mcap_billion=4000
+```
+
+```bash v2 (SQL-style)
+GET https://api.sectors.app/v2/companies/?order_by=-yoy_quarter_revenue_growth
+```
+
+```bash v2 (Natural Language Query)
+GET https://api.sectors.app/v2/companies/?q=give me the top growing banking companies by revenue in 2024
+```
+</CodeGroup>
+
+**Benefits:**
+- More granular growth metrics
+- Natural language queries for complex filters
+- Combine multiple filters easily
+- Negative sign (`-`) for descending order
+
+**Example:**
+
+<CodeGroup>
+```python Python
+import requests
+
+url = "https://api.sectors.app/v2/companies/"
+headers = {"Authorization": "YOUR_API_KEY"}
+
+# Method 1: Direct sorting by growth
+params = {"order_by": "-yoy_quarter_revenue_growth"}
+response = requests.get(url, headers=headers, params=params)
+
+# Method 2: Natural Language Query
+params = {"q": "give me the top growing banking companies by revenue in 2024"}
+response = requests.get(url, headers=headers, params=params)
+```
+
+```javascript JavaScript
+const url = "https://api.sectors.app/v2/companies/";
+const headers = {"Authorization": "YOUR_API_KEY"};
+
+// Method 1: Direct sorting by growth
+const params = new URLSearchParams({
+    order_by: "-yoy_quarter_revenue_growth"
+});
+
+fetch(`${url}?${params}`, { headers })
+    .then(response => response.json())
+    .then(data => console.log(data));
+
+// Method 2: Natural Language Query
+const paramsNL = new URLSearchParams({
+    q: "give me the top growing banking companies by revenue in 2024"
+});
+
+fetch(`${url}?${paramsNL}`, { headers })
+    .then(response => response.json())
+    .then(data => console.log(data));
+```
+</CodeGroup>
+
+---
+
+## Key Improvements in v2
+
+<CardGroup cols={2}>
+  <Card title="Natural Language Queries" icon="message">
+    Use the `q` parameter to query data using plain English, making complex filters easier to write.
+  </Card>
+  <Card title="SQL-like Filtering" icon="filter">
+    Use the `where` parameter with SQL-like syntax for precise, powerful filtering.
+  </Card>
+  <Card title="Flexible Sorting" icon="arrow-down-wide-short">
+    Sort by any available metric using `order_by`, with support for time-series data.
+  </Card>
+  <Card title="Better Performance" icon="bolt">
+    Optimized query engine delivers faster responses and handles complex queries efficiently.
+  </Card>
+</CardGroup>
+
+## Migration Checklist
+
+<Steps>
+  <Step title="Audit Your v1 Usage">
+    Review all v1 endpoints currently in use in your application.
+  </Step>
+  <Step title="Update Base URLs">
+    Change `/v1/` to `/v2/` for standard endpoints.
+  </Step>
+  <Step title="Refactor Special Endpoints">
+    Update the three special endpoints (Companies by Index, Top Companies Ranked, Top Companies by Growth) using the examples above.
+  </Step>
+  <Step title="Test Thoroughly">
+    Test all endpoints in a development environment to ensure responses match expectations.
+  </Step>
+  <Step title="Deploy">
+    Roll out the migration to production before the v1 deprecation deadline (end of March 2026).
+  </Step>
+</Steps>
+
+## Need Help?
+
+<CardGroup cols={2}>
+  <Card title="API Reference" icon="book" href="/api-references/v2/indonesia/companies">
+    Explore the complete v2 API documentation
+  </Card>
+  <Card title="Community Support" icon="discord" href="https://discord.com/invite/TAnZMmNS4X">
+    Join our Discord community for help
+  </Card>
+  <Card title="Email Support" icon="envelope" href="mailto:sectors@supertype.ai">
+    Contact our team directly
+  </Card>
+  <Card title="Get Started" icon="rocket" href="/get-started/v2/overview">
+    v2 Getting Started Guide
+  </Card>
+</CardGroup>

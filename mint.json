@@ -37,8 +37,8 @@
     }
   ],
   "versions": [
-    "v1",
-    "v2"
+    "v2",
+    "v1"
   ],
   "anchors": [
     {
@@ -55,13 +55,13 @@
     },
     {
       "name": "Recipes",
-      "version": "v1",
+      "version": "v2",
       "icon": "lightbulb",
       "url": "recipes"
     },
     {
       "name": "Generative AI Series",
-      "version": "v1",
+      "version": "v2",
       "icon": "microchip-ai",
       "url": "recipes/generative-ai-python"
     },
@@ -83,7 +83,8 @@
       "group": "",
       "version": "v2",
       "pages": [
-        "get-started/v2/overview"
+        "get-started/v2/overview",
+        "get-started/v2/migration-guide"
       ]
     },
     {
@@ -180,32 +181,136 @@
       "pages": [
         {
           "group": "Indonesia",
+          "icon": "building-columns",
           "pages": [
             {
               "group": "Company Screener",
               "icon": "bolt",
               "pages": [
-                "api-references/v2/companies"
+                "api-references/v2/indonesia/companies",
+                "api-references/v2/indonesia/free-float"
               ]
             },
             {
-              "group": "Mining Companies (Extension)",
-              "icon": "gem",
+              "group": "Helper List",
+              "icon": "list-check",
               "pages": [
-                "api-references/v2/mining-companies",
-                "api-references/v2/mining-companies-detail",
-                "api-references/v2/mining-companies-performance",
-                "api-references/v2/mining-companies-financials",
-                "api-references/v2/mining-sites",
-                "api-references/v2/mining-licenses",
-                "api-references/v2/commodity-production",
-                "api-references/v2/commodity-resources-reserves",
-                "api-references/v2/commodity-price",
-                "api-references/v2/export-destination",
-                "api-references/v2/mining-news",
-                "api-references/v2/global-commodity",
-                "api-references/v2/mining-license-auctions",
-                "api-references/v2/sales-destination"
+                "api-references/v2/indonesia/helper-list/subsectors",
+                "api-references/v2/indonesia/helper-list/industries",
+                "api-references/v2/indonesia/helper-list/subindustries",
+                "api-references/v2/indonesia/helper-list/tags",
+                "api-references/v2/indonesia/helper-list/companies-segments-list",
+                "api-references/v2/indonesia/helper-list/company-quarterly-dates"
+              ]
+            },
+            {
+              "group": "Since IPO Performance",
+              "icon": "chart-line",
+              "pages": [
+                "api-references/v2/indonesia/ipo/listing-performance"
+              ]
+            },
+            {
+              "group": "Company News",
+              "icon": "newspaper",
+              "pages": [
+                "api-references/v2/indonesia/news/news",
+                "api-references/v2/indonesia/news/filings"
+              ]
+            },
+            {
+              "group": "Detailed Reports",
+              "icon": "file-contract",
+              "pages": [
+                "api-references/v2/indonesia/report/company-report",
+                "api-references/v2/indonesia/report/company-segments",
+                "api-references/v2/indonesia/report/quarterly-financials",
+                "api-references/v2/indonesia/report/sector-report"
+              ]
+            },
+            {
+              "group": "Company Ranking by Dimensions",
+              "icon": "ranking-star",
+              "pages": [
+                "api-references/v2/indonesia/ranking/most-traded",
+                "api-references/v2/indonesia/ranking/top-changes"
+              ]
+            },
+            {
+              "group": "Historical Market Cap & Transaction Data",
+              "icon": "money-bill-transfer",
+              "pages": [
+                "api-references/v2/indonesia/transaction/idx-total",
+                "api-references/v2/indonesia/transaction/daily",
+                "api-references/v2/indonesia/transaction/index-daily"
+              ]
+            }
+          ]
+        },
+        {
+          "group": "Singapore",
+          "icon": "building",
+          "pages": [
+            "api-references/v2/singapore/sgx-sectors",
+            "api-references/v2/singapore/sgx-companies",
+            "api-references/v2/singapore/sgx-report",
+            "api-references/v2/singapore/sgx-top-companies"
+          ]
+        },
+        {
+          "group": "Malaysia",
+          "icon": "landmark",
+          "pages": [
+            "api-references/v2/malaysia/klse-sectors",
+            "api-references/v2/malaysia/klse-companies",
+            "api-references/v2/malaysia/klse-report",
+            "api-references/v2/malaysia/klse-top-companies"
+          ]
+        },
+        {
+          "group": "Mining Companies (Extension)",
+          "icon": "gem",
+          "pages": [
+            {
+              "group": "Companies",
+              "pages": [
+                "api-references/v2/mining/companies/mining-companies",
+                "api-references/v2/mining/companies/mining-companies-detail",
+                "api-references/v2/mining/companies/mining-companies-performance",
+                "api-references/v2/mining/companies/mining-companies-financials",
+                "api-references/v2/mining/companies/mining-companies-ownership"
+              ]
+            },
+            {
+              "group": "Sites & Production",
+              "pages": [
+                "api-references/v2/mining/sites-production/mining-sites",
+                "api-references/v2/mining/sites-production/commodity-production",
+                "api-references/v2/mining/sites-production/commodity-resources-reserves"
+              ]
+            },
+            {
+              "group": "Commodities & Trade",
+              "pages": [
+                "api-references/v2/mining/commodities-trade/commodities",
+                "api-references/v2/mining/commodities-trade/commodity-price",
+                "api-references/v2/mining/commodities-trade/export-destination",
+                "api-references/v2/mining/commodities-trade/global-commodity",
+                "api-references/v2/mining/commodities-trade/mining-contracts"
+              ]
+            },
+            {
+              "group": "Licenses & Auctions",
+              "pages": [
+                "api-references/v2/mining/licenses-auctions/mining-licenses",
+                "api-references/v2/mining/licenses-auctions/mining-license-auctions",
+                "api-references/v2/mining/licenses-auctions/mining-license-auctions-detail"
+              ]
+            },
+            {
+              "group": "Sales",
+              "pages": [
+                "api-references/v2/mining/sales/sales-destination"
               ]
             }
           ]
@@ -213,6 +318,7 @@
         "api-references/v2/changelog"
       ]
     },
+
     {
       "group": "Quick Start in Python",
       "pages": [
@@ -257,15 +363,16 @@
           "group": "Retrieval Augmented Generation",
           "pages": [
             "recipes/generative-ai-python/01-background",
-            "recipes/generative-ai-python/02-tool-use"
+            "recipes/generative-ai-python/02-tool-use",
+            "recipes/generative-ai-python/03-multiagent-workflows"
           ]
         },
-        "recipes/generative-ai-python/03-structured-output",
+        "recipes/generative-ai-python/04-structured-output",
         {
           "group": "Conversational Financial Agents",
           "pages": [
-            "recipes/generative-ai-python/04-conversational",
-            "recipes/generative-ai-python/05-memory-ai"
+            "recipes/generative-ai-python/05-conversational",
+            "recipes/generative-ai-python/06-memory-ai"
           ]
         }
       ]

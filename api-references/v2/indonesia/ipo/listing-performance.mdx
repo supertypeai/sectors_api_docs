@@ -1,0 +1,81 @@
+---
+title: "Company IPO & Listing Performance"
+api: "GET /v2/listing-performance/{ticker}/"
+description: "Return actual gain since listing date of a given ticker"
+---
+
+<ResponseExample>
+```json 200
+{
+  "symbol": "GOTO.JK",
+  "chg_7d": -0.0104712,
+  "chg_30d": -0.418848,
+  "chg_90d": -0.115183,
+  "chg_365d": -0.740838
+}
+```
+
+```json 400
+// Possible response bodies:
+{
+  "error": "Given stock ticker does not exist for this data."
+}
+{
+  "error": "Please provide a valid stock ticker."
+}
+```
+
+```json 429
+{ "code": 429, "message": "Rate limit exceeded. Consider upgrading." }
+```
+
+</ResponseExample>
+
+### Notes
+
+Listing performance data is accessible only for tickers listed **after May 2005**.
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Path
+
+<ParamField path="ticker" type="string" required>
+  Ticker of the company for which the percentage gain since listing date is to
+  be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available ticker">
+      Get the available `ticker` from the
+      [Companies Screener](../companies) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the ticker">
+      `ARTO`, `ASLI`, `BREN`, `BUKA`, `GOTO`
+    </Accordion>
+    <Accordion title="Format">
+      A valid `ticker` consists of 4 letters, optionally followed by '.jk', and
+      is **case-insensitive**.
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="symbol" type="string">
+  The ticker of the listed performance data.
+</ResponseField>
+<ResponseField name="chg_7d" type="float">
+  The price change in the last 7 days.
+</ResponseField>
+<ResponseField name="chg_30d" type="float">
+  The price change in the last 30 days.
+</ResponseField>
+<ResponseField name="chg_90d" type="float">
+  The price change in the last 90 days.
+</ResponseField>
+<ResponseField name="chg_365d" type="float">
+  The price change in the last 365 days.
+</ResponseField>

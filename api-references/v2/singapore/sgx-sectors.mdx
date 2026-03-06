@@ -1,0 +1,66 @@
+---
+title: "SGX Sectors"
+api: "GET /v2/sgx/sectors/"
+description: "Return list of all available sectors in SGX Index"
+---
+
+<ResponseExample>
+```json 200
+[
+    "energy-minerals",
+    "holding-companies",
+    "real-estate",
+    "healthcare",
+    "retailers",
+    "energy",
+    "utilities",
+    "financial-services",
+    "consumer-defensive",
+    "communication-services",
+    "cyclical-consumer-services",
+    "industrial-commercial-services",
+    "commercial-services",
+    "industrial-goods",
+    "transportation",
+    "industrial-services",
+    "basic-materials",
+    "industrials",
+    "consumer-cyclical",
+    "technology",
+    "retail-trade",
+    "personal-household-products-services"
+]
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="Sector[]">
+  <Expandable title="properties">
+    <ResponseField name="Sector" type="array">
+      A broad classification of companies in similar economic areas.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Usage
+
+This list can be used for the following endpoints:
+
+- [SGX Companies](./sgx-companies)
+- [SGX Top Companies Ranked](./sgx-top-companies)

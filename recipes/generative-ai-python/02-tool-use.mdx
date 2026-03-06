@@ -32,7 +32,7 @@ form the basis of their text generation. Let's take one more look at the archite
 
 Broadly speaking, the system consists of three main components:
 1. **Orchestrator**: We will be implementing this is Python using the LangChain framework. This script will be responsible for taking in the user's input and passing it to the retriever and LLM components along with some pre-defined constraints.
-2. **Retriever**: We will create tools that retrieve data from Sector's, a financial API platform. These retrievers are in the form of some Python functions that take in some parameters and retrieve data accordingly from our data source ("Sectors API").
+2. **Retriever**: We will create tools that retrieve data from Sector's, a financial API platform. These retrievers are in the form of some Python functions that take in some parameters and retrieve data accordingly from our data source ("Sectors Financial API").
 3. **LLM**: The language model we will be using is `llama3-groq-70b-8192-tool-use-preview`, which is [state-of-the-art and finetuned](https://wow.groq.com/introducing-llama-3-groq-tool-use-models/) specifically for tool use.
 
 > Llama-3-Groq-70B-Tool-Use is the highest performing model on the Berkeley Function Calling Leaderboard (BFCL), outperforming all other open source and proprietary models.
@@ -74,12 +74,12 @@ In a new Python file, you should be able to initiate a request with your key:
 import requests
 
 headers = {
-    # your Sectors API key
+    # your Sectors Financial API key
     "Authorization": "7c39xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 }
 
 def get_overview(stock: str, section: str) -> requests:
-    url = f"https://api.sectors.app/v1/company/report/{stock}/?sections={section}"
+    url = f"https://api.sectors.app/v2/company/report/{stock}/?sections={section}"
     response = requests.get(url, headers=headers)
     return response
 
@@ -120,7 +120,7 @@ def retrieve_from_endpoint(url: str) -> dict:
 ```
 
 Notice that `retrieve_from_endpoint` is just a convenience function 
-that we can use to retrieve data from the Sectors API. We are creating 
+that we can use to retrieve data from the Sectors Financial API. We are creating 
 an abstraction layer so we can re-use this function throughout our script.
 
 ### Building tools for our tool-use model
@@ -142,7 +142,7 @@ def get_company_overview(stock: str) -> str:
     """
     Get company overview
     """
-    url = f"https://api.sectors.app/v1/company/report/{stock}/?sections=overview"
+    url = f"https://api.sectors.app/v2/company/report/{stock}/?sections=overview"
 
     return retrieve_from_endpoint(url)
 
@@ -153,7 +153,7 @@ def get_top_companies_by_tx_volume(
     """
     Get top companies by transaction volume
     """
-    url = f"https://api.sectors.app/v1/most-traded/?start={start_date}&end={end_date}&n_stock={top_n}"
+    url = f"https://api.sectors.app/v2/most-traded/?start={start_date}&end={end_date}&n_stock={top_n}"
 
     return retrieve_from_endpoint(url)
 
@@ -162,7 +162,7 @@ def get_daily_tx(stock: str, start_date: str, end_date: str) -> str:
     """
     Get daily transaction for a stock
     """
-    url = f"https://api.sectors.app/v1/daily/{stock}/?start={start_date}&end={end_date}"
+    url = f"https://api.sectors.app/v2/daily/{stock}/?start={start_date}&end={end_date}"
 
     return retrieve_from_endpoint(url)
 

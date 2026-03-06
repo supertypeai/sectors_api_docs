@@ -1,0 +1,141 @@
+---
+title: "List Mining Companies"
+api: "GET /v2/mining/companies/"
+description: "Searches for mining companies. Provides powerful search across name, ticker, slug, and key operations, and allows filtering by commodity and company type."
+---
+
+<ResponseExample>
+```json 200
+{
+    "results": [
+        {
+            "slug": "adaro-andalan-indonesia",
+            "name": "PT Adaro Andalan Indonesia Tbk",
+            "idx_ticker": "AADI.JK",
+            "company_type": "Holding",
+            "key_operation": "Coal Trading",
+            "commodity_type": ["Coal"]
+        },
+        {
+            "slug": "adaro-minerals-indonesia",
+            "name": "PT Adaro Minerals Indonesia Tbk",
+            "idx_ticker": "ADMR.JK",
+            "company_type": "Holding",
+            "key_operation": "Mining",
+            "commodity_type": ["Nickel", "Coal"]
+        }
+    ],
+    "pagination": {
+        "total_count": 2,
+        "showing": 2,
+        "limit": 20,
+        "offset": 0,
+        "has_next": false,
+        "has_previous": false,
+        "next_offset": null,
+        "previous_offset": null
+    }
+}
+```
+
+```json 400
+{
+  "error": "Invalid pagination parameters. 'limit' and 'offset' must be positive integers."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="keyword" type="string">
+  A search query that matches against the company name, IDX ticker, slug, or key
+  operations.
+</ParamField>
+<ParamField query="commodity_type" type="string">
+  Filter companies by a specific commodity (e.g., `Coal`, `Nickel`, `Gold`).
+  Case-insensitive.
+</ParamField>
+<ParamField query="company_type" type="string">
+  Filter by company type. Valid values include: `Mine Owner`, `Contractor`,
+  `Holding`, `Manufacturer`, `Trader`, `Consultant`.
+</ParamField>
+<ParamField query="has_financials" type="boolean">
+  Set to `true` to only return companies with financial data available.
+</ParamField>
+<ParamField query="limit" type="integer" default="20">
+  Number of results to return. Maximum value is 30.
+</ParamField>
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip. Used for pagination.
+</ParamField>
+
+### Response
+
+<ResponseField name="results" type="Company[]">
+  <Expandable title="Company properties">
+    <ResponseField name="slug" type="string">
+      Unique URL-friendly identifier for the company.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      The full name of the company.
+    </ResponseField>
+    <ResponseField name="idx_ticker" type="string | null">
+      The company's ticker symbol on the Indonesia Stock Exchange. Can be
+      `null`.
+    </ResponseField>
+    <ResponseField name="company_type" type="string">
+      The legal or functional type of the company (e.g., "Holding", "Mine
+      Owner").
+    </ResponseField>
+    <ResponseField name="key_operation" type="string">
+      A brief description of the company's primary operations.
+    </ResponseField>
+    <ResponseField name="commodity_type" type="string[]">
+      List of commodities the company is involved with.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="pagination" type="object">
+  <Expandable title="Pagination properties">
+    <ResponseField name="total_count" type="integer">
+      Total number of records matching the query.
+    </ResponseField>
+    <ResponseField name="showing" type="integer">
+      Number of records returned in the current response.
+    </ResponseField>
+    <ResponseField name="limit" type="integer">
+      The limit used for the query.
+    </ResponseField>
+    <ResponseField name="offset" type="integer">
+      The offset used for the query.
+    </ResponseField>
+    <ResponseField name="has_next" type="boolean">
+      Whether there are more results available.
+    </ResponseField>
+    <ResponseField name="has_previous" type="boolean">
+      Whether there are previous results available.
+    </ResponseField>
+    <ResponseField name="next_offset" type="integer | null">
+      The offset to use for the next page of results.
+    </ResponseField>
+    <ResponseField name="previous_offset" type="integer | null">
+      The offset to use for the previous page of results.
+    </ResponseField>
+  </Expandable>
+</ResponseField>

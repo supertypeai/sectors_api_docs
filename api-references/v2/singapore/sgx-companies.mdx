@@ -1,0 +1,224 @@
+---
+title: "SGX Companies"
+api: "GET /v2/sgx/companies/"
+description: "Return list of companies in SGX Index from a sector"
+---
+
+<ResponseExample>
+```json 200
+[
+    {
+        "symbol": "GRQ",
+        "company_name": "Don Agro Intl"
+    },
+    {
+        "symbol": "F99",
+        "company_name": "F & N"
+    },
+    {
+        "symbol": "NR7",
+        "company_name": "Raffles Education Corporation Ltd"
+    },
+    {
+        "symbol": "BKV",
+        "company_name": "China Shenshan Orchard Holdings"
+    },
+    {
+        "symbol": "D03",
+        "company_name": "Del Monte Pacific Ltd"
+    },
+    {
+        "symbol": "BHD",
+        "company_name": "China Mining International Ltd"
+    },
+    {
+        "symbol": "P34",
+        "company_name": "Delfi"
+    },
+    {
+        "symbol": "F03",
+        "company_name": "Food Empire Holdings Ltd"
+    },
+    {
+        "symbol": "K03",
+        "company_name": "Khong Guan Flour"
+    },
+    {
+        "symbol": "OV8",
+        "company_name": "Sheng Siong Group Ltd"
+    },
+    {
+        "symbol": "UD2",
+        "company_name": "Japfa Ltd"
+    },
+    {
+        "symbol": "5JS",
+        "company_name": "Indofood Agri Resources Ltd"
+    },
+    {
+        "symbol": "E5H",
+        "company_name": "GoldenAgr"
+    },
+    {
+        "symbol": "VC2",
+        "company_name": "Olam Group"
+    },
+    {
+        "symbol": "579",
+        "company_name": "Oceanus Group Ltd"
+    },
+    {
+        "symbol": "EMI",
+        "company_name": "Emperador"
+    },
+    {
+        "symbol": "F34",
+        "company_name": "Wilmar"
+    },
+    {
+        "symbol": "P8Z",
+        "company_name": "Bumitama Agri Ltd"
+    },
+    {
+        "symbol": "MV4",
+        "company_name": "Mewah International Inc"
+    },
+    {
+        "symbol": "D01",
+        "company_name": "DFI Retail Holdings"
+    },
+    {
+        "symbol": "Y92",
+        "company_name": "Thai Beverage"
+    },
+    {
+        "symbol": "EB5",
+        "company_name": "First Resources Ltd"
+    },
+    {
+        "symbol": "RQ1",
+        "company_name": "Overseas Education Ltd"
+    },
+    {
+        "symbol": "P74",
+        "company_name": "China Kangda Food Co Ltd"
+    },
+    {
+        "symbol": "BNE",
+        "company_name": "Kencana Agri Ltd"
+    },
+    {
+        "symbol": "AZR",
+        "company_name": "United Food Holdings Ltd"
+    },
+    {
+        "symbol": "42W",
+        "company_name": "Zixin Holdings"
+    },
+    {
+        "symbol": "Q01",
+        "company_name": "QAF Ltd"
+    },
+    {
+        "symbol": "5HG",
+        "company_name": "Edition Ltd"
+    },
+    {
+        "symbol": "BQD",
+        "company_name": "Envictus International Holdings Ltd"
+    },
+    {
+        "symbol": "AAJ",
+        "company_name": "SunMoon Food Company Ltd"
+    },
+    {
+        "symbol": "5EV",
+        "company_name": "Hosen Group Ltd"
+    },
+    {
+        "symbol": "5EG",
+        "company_name": "Zhongxin Fruit and Juice Ltd"
+    },
+    {
+        "symbol": "BEW",
+        "company_name": "JB Foods Ltd"
+    },
+    {
+        "symbol": "Y03",
+        "company_name": "Yeo Hiap Seng Ltd"
+    },
+    {
+        "symbol": "BKZ",
+        "company_name": "Suntar Eco-City Ltd"
+    },
+    {
+        "symbol": "CNE",
+        "company_name": "MindChamps PreSchool"
+    },
+    {
+        "symbol": "OTS",
+        "company_name": "OTS Holdings"
+    }
+]
+```
+
+```json 400
+{
+  "error": "The requested sector does not exist."
+}
+```
+
+```json 429
+{
+  "code": 429,
+  "message": "Rate limit exceeded. Consider upgrading."
+}
+```
+
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="sector" type="string" required>
+  Sector from which the list of companies is to be retrieved.
+  <AccordionGroup>
+    <Accordion title="Get the available sector">
+      Get the available `sector` from the [SGX Sectors](./sgx-sectors) endpoint.
+    </Accordion>
+    <Accordion title="Examples of the sector">
+      `consumer-defensive`, `industrials`, `technology`, `financial-services`,
+      `transportation`
+    </Accordion>
+    <Accordion title="Format">
+      The API endpoint only accepts `sector` in the **kebab case** format
+      (lowercase and separated by "-").
+    </Accordion>
+  </AccordionGroup>
+</ParamField>
+
+### Response
+
+<ResponseField name="payload" type="Company[]">
+  Array of companies of the given subsector.
+  <Expandable title="properties">
+    <ResponseField name="Company.symbol" type="string">
+      The ticker of the company.
+    </ResponseField>
+    <ResponseField name="Company.company_name" type="string">
+      The full name of the company.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Usage
+
+This list can be used for the following endpoint:
+
+- [SGX Company Report](./sgx-report)

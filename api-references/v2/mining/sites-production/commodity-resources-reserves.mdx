@@ -1,0 +1,108 @@
+---
+title: "National Resources and Reserves"
+api: "GET /v2/mining/resources-reserves/"
+description: "Province index for national resources and reserves data, with full details for each province."
+---
+
+## Resources & Reserves Index
+
+`GET /v2/mining/resources-reserves/`
+
+Returns a discovery list of provinces showing which years and commodities have data.
+
+<Note>This index endpoint does not accept any query parameters.</Note>
+
+<ResponseExample>
+```json 200
+{
+    "Aceh": {
+        "Gold": [2024, 2023, 2022],
+        "Copper": [2024, 2023]
+    },
+    "Banten": {
+        "Gold": [2024, 2023]
+    }
+}
+```
+</ResponseExample>
+
+### Header
+
+<ParamField header="Authorization" type="string" required>
+  Authorization header that should be filled with your Sectors Financial API
+  key.
+</ParamField>
+
+---
+
+## Province Data Detail
+
+`GET /v2/mining/resources-reserves/{province}/`
+
+Returns resources and reserves data for a single province, nested by year then by commodity.
+
+<ResponseExample>
+```json 200
+{
+    "province": "Aceh",
+    "data": {
+        "2024": {
+            "Gold": {
+                "exploration_target": 493110000.0,
+                "total_inventory": 12345000.0,
+                "resources": 250.5,
+                "reserves": 50.2,
+                "unit": "Mt"
+            }
+        }
+    }
+}
+```
+
+```json 404
+{
+  "error": "Province 'Aceh' not found."
+}
+```
+
+</ResponseExample>
+
+### Path Parameters
+
+<ParamField path="province" type="string" required>
+  Filter mining sites by exact province name (e.g., Kalimantan Timur).
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="year" type="integer">
+  Restrict results to a specific year.
+</ParamField>
+<ParamField query="commodity_type" type="string">
+  Restrict results to a specific commodity (e.g., `Gold`, `Nickel`, `Coal`).
+</ParamField>
+
+### Response
+
+<ResponseField name="province" type="string">
+  The name of the requested province.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  A nested object where keys are years, containing commodity data.
+  <Expandable title="Data Structure">
+    <ResponseField name="{year}" type="object">
+      <Expandable title="Commodity Data">
+        <ResponseField name="{commodity_type}" type="object">
+          <Expandable title="Commodity properties">
+            <ResponseField name="exploration_target" type="number" />
+            <ResponseField name="total_inventory" type="number" />
+            <ResponseField name="resources" type="number" />
+            <ResponseField name="reserves" type="number" />
+            <ResponseField name="unit" type="string" />
+          </Expandable>
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
