@@ -208,7 +208,7 @@ If you're using any other MCP-compatible client that supports SSE transport, con
 
 ```json
 {
-  "symbols": ["BBCA.JK", "BMRI.JK", "BBRI.JK"],
+  "symbols": ["BBCA", "BMRI", "BBRI"],
   "columns": ["company_name", "market_cap", "forward_pe", "last_close_price"]
 }
 ```
@@ -300,9 +300,9 @@ If you're using any other MCP-compatible client that supports SSE transport, con
 |------|-------------|----------------|
 | `fetch-quarterly-financials` | Quarterly income statement and balance sheet | `ticker`, `nQuarters`, `reportDate` |
 | `fetch-quarterly-financial-dates` | List of available quarterly report dates for a company | `ticker` |
-| `get-company-financial` | Latest financial snapshot — PE, PB, ROE, ROA, DAR, DER | `symbol` (`.JK` suffix) |
-| `get-company-dividend` | Dividend payments and yield for a specific year | `symbol` (`.JK` suffix), `year` |
-| `get-companies-historical-financial` | Yearly historical financials — revenue, earnings, assets, equity, cash flow, and more | `symbol` (`.JK` suffix), `fields[]` |
+| `get-company-financial` | Latest financial snapshot — PE, PB, ROE, ROA, DAR, DER | `symbol` |
+| `get-company-dividend` | Dividend payments and yield for a specific year | `symbol`, `year` |
+| `get-companies-historical-financial` | Yearly historical financials — revenue, earnings, assets, equity, cash flow, and more | `symbol`, `fields[]` |
 
 ### Market Indices & Daily Data
 | Tool | Description | Key Parameters |
@@ -396,7 +396,7 @@ The server covers three Southeast Asian exchanges:
 
 **What ticker format should I use?**
 
-Most IDX tools accept the bare ticker (e.g. `BBCA`, `TLKM`). A handful of tools — specifically those that use the `.JK` suffix in their parameter description — require the full format (e.g. `BBCA.JK`). SGX tickers use their SGX code directly (e.g. `D05`, `O39`).
+All IDX tools accept the bare ticker **without** the `.JK` suffix (e.g. `BBCA`, `TLKM`). Do not include `.JK` in your requests — the API will handle the formatting internally. SGX tickers use their SGX code directly (e.g. `D05`, `O39`).
 
 **A tool returned an empty array or no results.**
 
