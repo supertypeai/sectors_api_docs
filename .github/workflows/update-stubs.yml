@@ -1,0 +1,45 @@
+name: Update MDX stubs from schema
+
+on:
+  repository_dispatch:
+    types: [schema-updated]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Fetch schema.json
+        run: |
+          curl -fsSL "${{ github.event.client_payload.schema_url }}" -o schema.json
+
+      - name: Run stub generator
+        run: python scripts/generate_mdx_stubs.py --schema schema.json --mintlify-root api-references
+
+      - name: Commit and push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B new-schema
+          git add schema.json
+          git add -A
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "chore: sync schema + MDX stubs (${{ github.event.client_payload.ref }})"
+          git push origin new-schema --force
+          
+      - name: Open PR if not exists
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_REPO_PAT }}
+        run: |
+          gh pr create \
+            --repo supertypeai/sectors_api_docs \
+            --head new-schema \
+            --base main \
+            --title "chore: sync schema + MDX stubs (${{ github.event.client_payload.ref }})" \
+            --body "Auto-generated from sectors_api push to ${{ github.event.client_payload.ref }}." \
+            2>/dev/null || echo "PR already exists"

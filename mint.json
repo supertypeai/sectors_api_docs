@@ -422,6 +422,7 @@
   "api": {
     "baseUrl": "https://api.sectors.app"
   },
+  "openapi": "/schema.json",
   "analytics": {
     "ga4": {
       "measurementId": "G-3CS7QC5CFR"
