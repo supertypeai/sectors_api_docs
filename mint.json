@@ -340,8 +340,7 @@
       "group": "Sectors for AI Agents",
       "pages": [
         "recipes/sectors-for-ai-agents/00-sectors-mcp-guide",
-        "recipes/sectors-for-ai-agents/01-agent-skills-guide",
-        "recipes/sectors-for-ai-agents/02-multiagent-workflows"
+        "recipes/sectors-for-ai-agents/01-agent-skills-guide"
       ]
     },
     {
@@ -393,7 +392,14 @@
         "recipes/non-programmatical-tools/01-excel/01-excel",
         "recipes/non-programmatical-tools/02-sheets/02-sheets",
         "recipes/non-programmatical-tools/03-looker/03-looker",
-        "recipes/non-programmatical-tools/03-looker/04-looker-bi-workshop"
+        "recipes/non-programmatical-tools/03-looker/04-looker-bi-workshop",
+        {
+          "group": "5. Financial API in Workflow Automation",
+          "pages": [
+            "recipes/non-programmatical-tools/04-n8n/01-n8n-sectors-api-guide",
+            "recipes/non-programmatical-tools/04-n8n/02-n8n-natural-language-screener"
+          ]
+        }
       ]
     },
     {

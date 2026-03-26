@@ -473,7 +473,7 @@
                     }
                   ]
                 },
-                "description": "Comprehensive data for a single company, including valuation, financials, and management."
+                "description": "Detailed financial and valuation data for a single company."
               },
               "response":[]
             },
@@ -1270,7 +1270,7 @@
                         ""
                       ]
                     },
-                    "description": "List all companies that have granular revenue and cost segment data available via v2 endpoint."
+                    "description": "List all companies that have granular revenue and cost segment data available."
                   },
                   "response":[]
                 },
@@ -1297,7 +1297,7 @@
                         ""
                       ]
                     },
-                    "description": "List all dates for which quarterly financial statements are available for this company via v2 endpoint."
+                    "description": "List all dates for which quarterly financial statements are available for this company."
                   },
                   "response":[]
                 },
@@ -1323,7 +1323,157 @@
                         ""
                       ]
                     },
-                    "description": "List all constituent companies for a given index code via v2 endpoint."
+                    "description": "List all constituent companies for a given index code."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/subsectors/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/subsectors/",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "subsectors",
+                        ""
+                      ]
+                    },
+                    "description": "List all unique sector and sub-sector mappings available in the IDX."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/industries/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/industries/",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "industries",
+                        ""
+                      ]
+                    },
+                    "description": "List all unique industry and sub-industry mappings."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/subindustries/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/subindustries/",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "subindustries",
+                        ""
+                      ]
+                    },
+                    "description": "List all unique industry and sub-industry mappings."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/tags/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/tags/",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "tags",
+                        ""
+                      ]
+                    },
+                    "description": "List all unique news tags used across articles and filings."
+                  },
+                  "response":[]
+                },
+                {
+                  "name": "v2/free-float/",
+                  "request": {
+                    "method": "GET",
+                    "header":[
+                      {
+                        "key": "Authorization",
+                        "value": "{{apikey}}"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{environment}}/v2/free-float/?sector=financials",
+                      "host": [
+                        "{{environment}}"
+                      ],
+                      "path":[
+                        "v2",
+                        "free-float",
+                        ""
+                      ],
+                      "query":[
+                        {
+                          "key": "sector",
+                          "value": "financials",
+                          "description": "Filter by sector slug"
+                        },
+                        {
+                          "key": "sub_sector",
+                          "value": "banks",
+                          "description": "Filter by sub-sector",
+                          "disabled": true
+                        },
+                        {
+                          "key": "industry",
+                          "value": "oil-gas",
+                          "description": "Filter by industry",
+                          "disabled": true
+                        },
+                        {
+                          "key": "sub_industry",
+                          "value": "paper",
+                          "description": "Filter by sub-industry",
+                          "disabled": true
+                        }
+                      ]
+                    },
+                    "description": "Analyze company free float percentages by sector, subsector, or industry."
                   },
                   "response":[]
                 }
@@ -1354,7 +1504,7 @@
                         ""
                       ]
                     },
-                    "description": "Performance metrics of the stock since its initial listing date via v2 endpoint."
+                    "description": "Performance metrics of the stock since its initial listing date."
                   },
                   "response":[]
                 }
@@ -1364,7 +1514,7 @@
               "name": "news",
               "item":[
                 {
-                  "name": "v2/news/?sub_sector={{sub_sector}}&page={{page}}",
+                  "name": "v2/news/?sub_sector={{sub_sector}}&limit={{limit}}&offset={{offset}}",
                   "request": {
                     "method": "GET",
                     "header":[
@@ -1374,7 +1524,7 @@
                       }
                     ],
                     "url": {
-                      "raw": "{{environment}}/v2/news/?sub_sector=banks&page=1&page_size=20",
+                      "raw": "{{environment}}/v2/news/?sub_sector=banks&limit=20&offset=0",
                       "host":[
                         "{{environment}}"
                       ],
@@ -1426,18 +1576,18 @@
                           "disabled": true
                         },
                         {
-                          "key": "page",
-                          "value": "1",
-                          "description": "Page number"
+                          "key": "limit",
+                          "value": "20",
+                          "description": "Results per page"
                         },
                         {
-                          "key": "page_size",
-                          "value": "20",
-                          "description": "Page size"
+                          "key": "offset",
+                          "value": "0",
+                          "description": "Pagination offset"
                         }
                       ]
                     },
-                    "description": "Consolidated news feed for IDX companies with advanced filtering via v2 endpoint."
+                    "description": "Consolidated news feed for IDX companies with advanced filtering."
                   },
                   "response":[]
                 },
@@ -1523,7 +1673,7 @@
                         }
                       ]
                     },
-                    "description": "Official disclosure documents filed by companies with the Indonesia Stock Exchange via v2 endpoint."
+                    "description": "Official disclosure documents filed by companies with the Indonesia Stock Exchange."
                   },
                   "response":[]
                 }
@@ -1580,7 +1730,7 @@
                         }
                       ]
                     },
-                    "description": "Identify the most actively traded stocks within a specific timeframe via v2 endpoint."
+                    "description": "Identify the most actively traded stocks within a specific timeframe."
                   },
                   "response":[]
                 },
@@ -1633,7 +1783,7 @@
                         }
                       ]
                     },
-                    "description": "List stocks with the highest price increases or decreases over various time periods via v2 endpoint."
+                    "description": "List stocks with the highest price increases or decreases over various time periods."
                   },
                   "response":[]
                 }
@@ -1672,7 +1822,7 @@
                         }
                       ]
                     },
-                    "description": "Comprehensive data for a single company via v2 endpoint."
+                    "description": "Comprehensive data for a single company."
                   },
                   "response":[]
                 },
@@ -1706,7 +1856,7 @@
                         }
                       ]
                     },
-                    "description": "Aggregated financial and valuation metrics for an entire sub-sector via v2 endpoint."
+                    "description": "Aggregated financial and valuation metrics for an entire sub-sector."
                   },
                   "response":[]
                 },
@@ -1740,7 +1890,7 @@
                         }
                       ]
                     },
-                    "description": "Fetch the revenue and cost breakdown segments for a company, suitable for Sankey diagrams via v2 endpoint."
+                    "description": "Fetch the revenue and cost breakdown segments for a company, suitable for Sankey diagrams."
                   },
                   "response":[]
                 },
@@ -1785,7 +1935,7 @@
                         }
                       ]
                     },
-                    "description": "Get detailed balance sheet, income statement, and cash flow data for a specific quarter via v2 endpoint."
+                    "description": "Get detailed balance sheet, income statement, and cash flow data for a specific quarter."
                   },
                   "response":[]
                 }
@@ -1827,7 +1977,7 @@
                         }
                       ]
                     },
-                    "description": "Get the aggregate market capitalization of the entire Indonesia Stock Exchange via v2 endpoint."
+                    "description": "Get the aggregate market capitalization of the entire Indonesia Stock Exchange."
                   },
                   "response":[]
                 },
@@ -1865,7 +2015,7 @@
                         }
                       ]
                     },
-                    "description": "Daily historical price and volume data for a specific ticker via v2 endpoint."
+                    "description": "Daily historical price and volume data for a specific ticker."
                   },
                   "response":[]
                 },
@@ -1903,7 +2053,7 @@
                         }
                       ]
                     },
-                    "description": "Daily historical levels for major market indices via v2 endpoint."
+                    "description": "Daily historical levels for major market indices."
                   },
                   "response":[]
                 }
@@ -1962,7 +2112,7 @@
                     }
                   ]
                 },
-                "description": "High-performance SQL-like interface and Natural Language search for all IDX companies."
+                "description": "SQL-like interface and Natural Language search for all IDX companies."
               },
               "response":[]
             },
@@ -2043,7 +2193,7 @@
                     ""
                   ]
                 },
-                "description": "List all industry sectors available in the Bursa Malaysia via v2 endpoint."
+                "description": "List all industry sectors available in the Bursa Malaysia."
               },
               "response":[]
             },
@@ -2076,7 +2226,7 @@
                     }
                   ]
                 },
-                "description": "List companies on the KLSE filtered by sector via v2 endpoint."
+                "description": "List companies on the KLSE filtered by sector."
               },
               "response":[]
             },
@@ -2111,7 +2261,7 @@
                     }
                   ]
                 },
-                "description": "Detailed financial report for a company listed on the Bursa Malaysia via v2 endpoint."
+                "description": "Detailed financial report for a company listed on the Bursa Malaysia."
               },
               "response":[]
             },
@@ -2160,7 +2310,7 @@
                     }
                   ]
                 },
-                "description": "Rank KLSE companies based on specific financial classifications via v2 endpoint."
+                "description": "Rank KLSE companies based on specific financial classifications."
               },
               "response":[]
             }
@@ -2421,7 +2571,7 @@
                         }
                       ]
                     },
-                    "description": "Discovery and filtering for companies involved in the mining sector."
+                    "description": "Filter and list companies in the mining sector."
                   },
                   "response":[]
                 },
@@ -2629,7 +2779,7 @@
                         }
                       ]
                     },
-                    "description": "Comprehensive database of mining business licenses (IUP/IUPK) issued by the government."
+                    "description": "List of mining business licenses (IUP/IUPK) issued by authorities."
                   },
                   "response":[]
                 },
@@ -2752,7 +2902,7 @@
               "name": "news",
               "item":[
                 {
-                  "name": "v2/mining/news/?keyword={{keyword}}&commodity_type={{commodity_type}}&limit={{limit}}",
+                  "name": "v2/news/?extension=mining&keyword={{keyword}}&commodity_type={{commodity_type}}&limit={{limit}}",
                   "request": {
                     "method": "GET",
                     "header":[
@@ -2762,17 +2912,21 @@
                       }
                     ],
                     "url": {
-                      "raw": "{{environment}}/v2/mining/news/?keyword=nickel&commodity_type=Coal&limit=20&offset=0",
+                      "raw": "{{environment}}/v2/news/?extension=mining&keyword=nickel&commodity_type=Coal&limit=20&offset=0",
                       "host": [
                         "{{environment}}"
                       ],
                       "path":[
                         "v2",
-                        "mining",
                         "news",
                         ""
                       ],
                       "query":[
+                        {
+                          "key": "extension",
+                          "value": "mining",
+                          "description": "Mining source switch"
+                        },
                         {
                           "key": "keyword",
                           "value": "nickel",
@@ -2898,7 +3052,7 @@
                         ""
                       ]
                     },
-                    "description": "Discovery index of provinces with available mineral resources and reserves data."
+                    "description": "List of provinces with available mineral resources and reserves data."
                   },
                   "response":[]
                 },
@@ -3065,7 +3219,7 @@
                     ""
                   ]
                 },
-                "description": "List all industry sectors available in the Singapore Stock Exchange via v2 endpoint."
+                "description": "List all industry sectors available in the Singapore Stock Exchange."
               },
               "response":[]
             },
@@ -3098,7 +3252,7 @@
                     }
                   ]
                 },
-                "description": "List companies on the SGX filtered by sector via v2 endpoint."
+                "description": "List companies on the SGX filtered by sector."
               },
               "response":[]
             },
@@ -3133,7 +3287,7 @@
                     }
                   ]
                 },
-                "description": "Detailed financial report for a company listed on the Singapore Stock Exchange via v2 endpoint."
+                "description": "Detailed financial report for a company listed on the Singapore Stock Exchange."
               },
               "response":[]
             },
@@ -3182,7 +3336,7 @@
                     }
                   ]
                 },
-                "description": "Rank SGX companies based on specific financial classifications via v2 endpoint."
+                "description": "Rank SGX companies based on specific financial classifications."
               },
               "response":[]
             }
