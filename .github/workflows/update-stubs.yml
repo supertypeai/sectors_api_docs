@@ -15,9 +15,14 @@ jobs:
           python-version: "3.10"
 
       - name: Fetch schema.json
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_REPO_PAT }}
         run: |
-          curl -fsSL "${{ github.event.client_payload.schema_url }}" -o schema.json
-
+          curl -fsSL \
+            -H "Authorization: token $GH_TOKEN" \
+            "${{ github.event.client_payload.schema_url }}" \
+            -o schema.json
+            
       - name: Run stub generator
         run: python scripts/generate_mdx_stubs.py --schema schema.json --mintlify-root api-references
 
@@ -31,7 +36,7 @@ jobs:
           git diff --cached --quiet && echo "No changes" && exit 0
           git commit -m "chore: sync schema + MDX stubs (${{ github.event.client_payload.ref }})"
           git push origin new-schema --force
-          
+
       - name: Open PR if not exists
         env:
           GH_TOKEN: ${{ secrets.DOCS_REPO_PAT }}
