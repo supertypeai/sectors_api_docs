@@ -218,12 +218,11 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "RateLimitExceeded": {
+                                    "RateLimit": {
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit exceeded"
+                                        }
                                     }
                                 }
                             }
@@ -294,8 +293,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -454,8 +452,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -560,8 +557,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -685,8 +681,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -809,8 +804,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -933,8 +927,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -1051,8 +1044,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -1265,8 +1257,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -1392,8 +1383,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -1495,8 +1485,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -1605,8 +1594,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -1726,8 +1714,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -1793,8 +1780,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -1894,8 +1880,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -2041,8 +2026,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -2186,8 +2170,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -2331,8 +2314,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -2400,8 +2382,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -2494,8 +2475,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -2554,6 +2534,22 @@
                         "description": "List of commodities with data coverage metadata."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -2633,12 +2629,58 @@
                         "description": "List of monthly price records ordered by date ascending."
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "Invalid year parameters or date range exceeds 3 years."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Invalid year parameters or date range exceeds 3 years."
                     },
                     "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Commodity not found or no data in specified range."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Commodity not found or no data in specified range."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -2765,9 +2807,8 @@
                                     "RateLimit": {
                                         "value": {
                                             "code": 429,
-                                            "message": "Rate limit exceeded."
-                                        },
-                                        "summary": "Rate limit"
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
                                     }
                                 }
                             }
@@ -2869,9 +2910,8 @@
                                     "RateLimit": {
                                         "value": {
                                             "code": 429,
-                                            "message": "Rate limit exceeded."
-                                        },
-                                        "summary": "Rate limit"
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
                                     }
                                 }
                             }
@@ -2985,9 +3025,8 @@
                                     "RateLimit": {
                                         "value": {
                                             "code": 429,
-                                            "message": "Rate limit exceeded."
-                                        },
-                                        "summary": "Rate limit"
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
                                     }
                                 }
                             }
@@ -3090,9 +3129,8 @@
                                     "RateLimit": {
                                         "value": {
                                             "code": 429,
-                                            "message": "Rate limit exceeded."
-                                        },
-                                        "summary": "Rate limit"
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
                                     }
                                 }
                             }
@@ -3213,9 +3251,8 @@
                                     "RateLimit": {
                                         "value": {
                                             "code": 429,
-                                            "message": "Rate limit exceeded."
-                                        },
-                                        "summary": "Rate limit"
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
                                     }
                                 }
                             }
@@ -3297,9 +3334,8 @@
                                     "RateLimit": {
                                         "value": {
                                             "code": 429,
-                                            "message": "Rate limit exceeded."
-                                        },
-                                        "summary": "Rate limit"
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
                                     }
                                 }
                             }
@@ -3389,12 +3425,58 @@
                         "description": "Ranked list of export destinations by export value."
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "`year` and `commodity_type` are required."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "`year` and `commodity_type` are required."
                     },
                     "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "No export data found for given filters."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "No export data found for given filters."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -3486,9 +3568,40 @@
                         "description": "List of global commodity data records."
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "At least one of `commodity_type` or `country` is required."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "At least one of `commodity_type` or `country` is required."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -3653,9 +3766,40 @@
                         "description": "Paginated list of mining license auctions."
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "Invalid query parameters."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Invalid query parameters."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -3741,9 +3885,40 @@
                         "description": "Full auction record with phases and participants."
                     },
                     "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Auction not found."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Auction not found."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -3915,9 +4090,40 @@
                         "description": "Paginated list of mining licenses."
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "Invalid query parameters."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Invalid query parameters."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -3977,6 +4183,22 @@
                         "description": "Nested object: `{province: {commodity: [years]}}` in descending year order."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -4058,9 +4280,40 @@
                         "description": "Nested resources and reserves data: `{province, data: {year: {commodity: {...}}}}`."
                     },
                     "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Province not found or no data for given filters."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Province not found or no data for given filters."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -4141,12 +4394,58 @@
                         "description": "Sales destination data nested by country for the requested year."
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "Slug is required."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Slug is required."
                     },
                     "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "No sales destination data found for company."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "No sales destination data found for company."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -4292,9 +4591,40 @@
                         "description": "Paginated list of mining sites."
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "Invalid query parameters."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Invalid query parameters."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -4372,9 +4702,40 @@
                         "description": "Full mining site record."
                     },
                     "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Mining site not found."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Mining site not found."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -4442,12 +4803,58 @@
                         "description": "List of annual production records with year-over-year change."
                     },
                     "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "`commodity_type` parameter is required."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "`commodity_type` parameter is required."
                     },
                     "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "No production data found for the given commodity."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "No production data found for the given commodity."
                     },
                     "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "description": "Rate limit exceeded."
                     }
                 },
@@ -4572,8 +4979,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -4808,8 +5214,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -4909,8 +5314,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -5056,8 +5460,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -5195,8 +5598,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -5334,8 +5736,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -5402,8 +5803,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -5469,8 +5869,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -5583,8 +5982,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -5697,8 +6095,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -5764,8 +6161,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
@@ -5828,8 +6224,7 @@
                                         "value": {
                                             "code": 429,
                                             "message": "Rate limit exceeded. Consider upgrading."
-                                        },
-                                        "summary": "Rate limit"
+                                        }
                                     }
                                 }
                             }
