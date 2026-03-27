@@ -32,9 +32,12 @@ jobs:
         run: python scripts/generate_mdx_stubs.py --schema schema.json --mintlify-root api-references
 
       - name: Commit and push
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_REPO_PAT }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/supertypeai/sectors_api_docs.git
           git checkout -B new-schema
           git add schema.json
           git add -A
