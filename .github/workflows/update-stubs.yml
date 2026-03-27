@@ -1,6 +1,11 @@
 name: Update MDX stubs from schema
 
 on:
+  workflow_dispatch:
+    inputs:
+      schema_url:
+        description: 'schema.json URL'
+        default: 'https://raw.githubusercontent.com/supertypeai/sectors_api/staging/schema.json'
   repository_dispatch:
     types: [schema-updated]
 
@@ -20,7 +25,7 @@ jobs:
         run: |
           curl -fsSL \
             -H "Authorization: token $GH_TOKEN" \
-            "${{ github.event.client_payload.schema_url }}" \
+            "${{ github.event.inputs.schema_url || github.event.client_payload.schema_url }}" \
             -o schema.json
             
       - name: Run stub generator
@@ -34,7 +39,7 @@ jobs:
           git add schema.json
           git add -A
           git diff --cached --quiet && echo "No changes" && exit 0
-          git commit -m "chore: sync schema + MDX stubs (${{ github.event.client_payload.ref }})"
+          git commit -m "chore: sync schema + MDX stubs (${{ github.event.client_payload.ref || 'manual' }})"
           git push origin new-schema --force
 
       - name: Open PR if not exists
@@ -45,6 +50,6 @@ jobs:
             --repo supertypeai/sectors_api_docs \
             --head new-schema \
             --base main \
-            --title "chore: sync schema + MDX stubs (${{ github.event.client_payload.ref }})" \
-            --body "Auto-generated from sectors_api push to ${{ github.event.client_payload.ref }}." \
+            --title "chore: sync schema + MDX stubs (${{ github.event.client_payload.ref || 'manual' }})" \
+            --body "Auto-generated from sectors_api push to ${{ github.event.client_payload.ref || 'manual' }}." \
             2>/dev/null || echo "PR already exists"
