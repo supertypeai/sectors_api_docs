@@ -125,8 +125,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/CompanyScreenerResponse"
                                 },
                                 "examples": {
                                     "NaturalLanguageQueryResponse": {
@@ -503,8 +502,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/CompanyRevenueSegments"
                                 },
                                 "examples": {
                                     "RevenueSegments": {
@@ -986,8 +984,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/DailyDataItem"
                                 },
                                 "examples": {
                                     "DailyData": {
@@ -1057,17 +1054,25 @@
         },
         "/v2/filings/": {
             "get": {
-                "operationId": "filings_list",
-                "description": "Returns IDX insider trading filings — buy/sell transactions by company insiders and major shareholders. Supports filtering by sector, subsector, tags, tickers, transaction type, and date range.\n\n<Note>Use `n` for quick top-N retrieval (max 30). For paginated access use `page` + `page_size`. The `n` parameter overrides pagination when set.</Note>",
+                "operationId": "filings_retrieve",
+                "description": "Returns IDX insider trading filings — buy/sell transactions by company insiders and major shareholders. Supports filtering by sector, subsector, tags, symbol, transaction type, and date range.\n\n<Note>IDX ticker: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `BMRI`, `TLKM`.</Note>",
                 "summary": "Company Filings",
                 "parameters": [
+                    {
+                        "in": "query",
+                        "name": "symbol",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "IDX ticker symbol to filter by. E.g. `BBCA`, `BMRI`."
+                    },
                     {
                         "in": "query",
                         "name": "sector",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Kebab-case sector slug. E.g. `healthcare`, `financials`. Get valid values from the [Subsectors](./helper-list/subsectors) endpoint."
+                        "description": "Kebab-case sector slug. E.g. `healthcare`, `financials`. Get valid values from the [Subsectors](../helper-list/subsectors) endpoint."
                     },
                     {
                         "in": "query",
@@ -1075,7 +1080,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Kebab-case subsector slug. E.g. `banks`, `tobacco`. Get valid values from the [Subsectors](./helper-list/subsectors) endpoint."
+                        "description": "Kebab-case subsector slug. E.g. `banks`, `tobacco`. Get valid values from the [Subsectors](../helper-list/subsectors) endpoint."
                     },
                     {
                         "in": "query",
@@ -1095,29 +1100,21 @@
                     },
                     {
                         "in": "query",
-                        "name": "n",
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "description": "Return the latest N filings (max 30). Overrides pagination when set."
-                    },
-                    {
-                        "in": "query",
-                        "name": "page",
-                        "schema": {
-                            "type": "integer",
-                            "default": 1
-                        },
-                        "description": "Page number for paginated results."
-                    },
-                    {
-                        "in": "query",
-                        "name": "page_size",
+                        "name": "limit",
                         "schema": {
                             "type": "integer",
                             "default": 20
                         },
-                        "description": "Number of items per page."
+                        "description": "Number of results to return. Maximum: 30."
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        },
+                        "description": "Number of results to skip for pagination."
                     },
                     {
                         "in": "query",
@@ -1137,15 +1134,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Comma-separated tag slugs. E.g. `Bullish,insider-trading`. Get valid values from the [News Tags](./helper-list/tags) endpoint."
-                    },
-                    {
-                        "in": "query",
-                        "name": "tickers",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "Comma-separated IDX tickers. E.g. `BBCA,BBRI,BMRI`."
+                        "description": "Comma-separated tag slugs. E.g. `Bullish,insider-trading`. Get valid values from the [News Tags](../helper-list/tags) endpoint."
                     }
                 ],
                 "tags": [
@@ -1164,61 +1153,63 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/IdxFilings"
                                 },
                                 "examples": {
                                     "FilingResponse": {
-                                        "value": [
-                                            {
-                                                "id": 378,
-                                                "created_at": "2025-06-23T09:49:40.099180Z",
-                                                "title": "Dato' Sri Chong Thim Pheng Buys Wilton Makmur Indonesia Tbk",
-                                                "body": "Dato' Sri Chong Thim Pheng, an insider, acquired 2,544,900 shares...",
-                                                "source": "https://www.idx.co.id/...",
-                                                "timestamp": "2025-06-23T16:28:00Z",
-                                                "sector": "basic-materials",
-                                                "sub_sector": "basic-materials",
-                                                "tags": [
-                                                    "Bullish",
-                                                    "Investment",
-                                                    "insider-trading"
-                                                ],
-                                                "tickers": [
-                                                    "SQMI.JK"
-                                                ],
-                                                "transaction_type": "buy",
-                                                "holding_before": 3147351329,
-                                                "holding_after": 3152947229,
-                                                "amount_transaction": 5595900,
-                                                "holder_type": "insider",
-                                                "holder_name": "Dato' Sri Chong Thim Pheng",
-                                                "price": "45.6710",
-                                                "transaction_value": "255572700.0000",
-                                                "price_transaction": {
-                                                    "prices": [
-                                                        43,
-                                                        48,
-                                                        42
+                                        "value": {
+                                            "results": [
+                                                {
+                                                    "title": "Wynfield Global Ventures buys shares of PT Wira Global Solusi Tbk",
+                                                    "body": "Wynfield Global Ventures bought 3,500,000 shares of PT Wira Global Solusi Tbk. This increases their holdings from 115,811,000 to 119,311,000 shares. The stated purpose of the transaction was investment.",
+                                                    "source": "https://www.idx.co.id/StaticData/NewsAndAnnouncement/ANNOUNCEMENTSTOCK/From_KSEI/LK-08042026-5269-00.pdf-0.pdf",
+                                                    "timestamp": "2026-04-08T22:53:10",
+                                                    "sector": "technology",
+                                                    "sub_sector": "software-it-services",
+                                                    "tags": [
+                                                        "investment"
                                                     ],
-                                                    "amount_transacted": [
-                                                        2544900,
-                                                        3000000,
-                                                        51000
-                                                    ]
-                                                },
-                                                "share_percentage_before": 20.26,
-                                                "share_percentage_after": 20.29,
-                                                "share_percentage_transaction": 0.03,
-                                                "uid": null
+                                                    "symbol": "WGSH.JK",
+                                                    "transaction_type": "buy",
+                                                    "holder_type": "insider",
+                                                    "holder_name": "Wynfield Global Ventures",
+                                                    "holding_before": 115811000,
+                                                    "holding_after": 119311000,
+                                                    "amount_transaction": 3500000,
+                                                    "price": 260.0,
+                                                    "transaction_value": 910000000.0,
+                                                    "price_transaction": [
+                                                        {
+                                                            "date": "2026-04-01",
+                                                            "type": "buy",
+                                                            "price": 260.0,
+                                                            "amount_transacted": 3500000
+                                                        }
+                                                    ],
+                                                    "share_percentage_before": 11.11,
+                                                    "share_percentage_after": 11.44,
+                                                    "share_percentage_transaction": 0.33,
+                                                    "idx_investor_slug": null,
+                                                    "idx_conglomerates_group_slug": null
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "total_count": 1842,
+                                                "showing": 1,
+                                                "limit": 20,
+                                                "offset": 0,
+                                                "has_next": true,
+                                                "has_previous": false,
+                                                "next_offset": 20,
+                                                "previous_offset": null
                                             }
-                                        ],
+                                        },
                                         "summary": "Filing response"
                                     }
                                 }
                             }
                         },
-                        "description": "Array of insider filing records."
+                        "description": "Paginated list of insider trading filings."
                     },
                     "400": {
                         "content": {
@@ -1228,17 +1219,10 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidDate": {
+                                    "BadRequest": {
                                         "value": {
-                                            "error": "Use a valid date format of YYYY-MM-DD for 'start' and 'end'."
-                                        },
-                                        "summary": "Invalid date"
-                                    },
-                                    "InvalidTransactionType": {
-                                        "value": {
-                                            "error": "Invalid transaction_type provided: hold. Use 'buy' or 'sell'."
-                                        },
-                                        "summary": "Invalid transaction_type"
+                                            "error": "Invalid filter parameters."
+                                        }
                                     }
                                 }
                             }
@@ -1325,8 +1309,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/QuarterlyFinancialItem"
                                 },
                                 "examples": {
                                     "FinancialSectorQuarterly": {
@@ -1449,8 +1432,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/FreeFloatItem"
                                 },
                                 "examples": {
                                     "FreeFloatBySub-sector": {
@@ -1535,8 +1517,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/IDXTotalItem"
                                 },
                                 "examples": {
                                     "IDXTotalMarketCap": {
@@ -1653,8 +1634,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/IndexDailyDataItem"
                                 },
                                 "examples": {
                                     "IndexDaily": {
@@ -1746,8 +1726,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/IndustryItem"
+                                    }
                                 },
                                 "examples": {
                                     "IndustriesList": {
@@ -1755,10 +1737,6 @@
                                             {
                                                 "subsector": "oil-gas-coal",
                                                 "industry": "oil-gas"
-                                            },
-                                            {
-                                                "subsector": "banks",
-                                                "industry": "banks"
                                             }
                                         ],
                                         "summary": "Industries list"
@@ -2425,8 +2403,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/IPOPerformance"
                                 },
                                 "examples": {
                                     "ListingPerformance": {
@@ -2507,8 +2484,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/CommodityListItem"
                                 },
                                 "examples": {
                                     "CommodityList": {
@@ -2604,8 +2580,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/CommodityPriceItem"
                                 },
                                 "examples": {
                                     "CommodityPrice": {
@@ -2760,8 +2735,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/MiningCompanyList"
                                 },
                                 "examples": {
                                     "MiningCompanies": {
@@ -2851,8 +2825,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/MiningCompanyDetail"
                                 },
                                 "examples": {
                                     "CompanyDetail": {
@@ -2962,8 +2935,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/MiningCompanyFinancials"
                                 },
                                 "examples": {
                                     "Financials": {
@@ -3069,8 +3041,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/MiningCompanyOwnership"
                                 },
                                 "examples": {
                                     "Ownership": {
@@ -3189,8 +3160,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/MiningCompanyPerformance"
                                 },
                                 "examples": {
                                     "PerformanceData": {
@@ -3302,8 +3272,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/MiningContractItem"
                                 },
                                 "examples": {
                                     "MiningContracts": {
@@ -3396,8 +3365,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/ExportDestinationItem"
                                 },
                                 "examples": {
                                     "ExportDestinations": {
@@ -3531,8 +3499,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/GlobalCommodityDataItem"
                                 },
                                 "examples": {
                                     "GlobalCommodityData": {
@@ -3723,8 +3690,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/MiningLicenseAuctionList"
                                 },
                                 "examples": {
                                     "MiningLicenseAuctions": {
@@ -3838,8 +3804,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/MiningLicenseAuctionDetail"
                                 },
                                 "examples": {
                                     "AuctionDetail": {
@@ -4040,8 +4005,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/MiningLicenseList"
                                 },
                                 "examples": {
                                     "MiningLicenses": {
@@ -4253,8 +4217,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/ResourcesReservesDetail"
                                 },
                                 "examples": {
                                     "ProvinceResources&Reserves": {
@@ -4360,8 +4323,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/SalesDestinationResponse"
                                 },
                                 "examples": {
                                     "SalesDestination": {
@@ -4550,8 +4512,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/MiningSiteList"
                                 },
                                 "examples": {
                                     "MiningSitesList": {
@@ -4663,8 +4624,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/MiningSiteDetail"
                                 },
                                 "examples": {
                                     "MiningSiteDetail": {
@@ -4774,8 +4734,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/TotalProductionItem"
                                 },
                                 "examples": {
                                     "TotalProduction": {
@@ -5108,8 +5067,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "$ref": "#/components/schemas/NewsArticleList"
                                 },
                                 "examples": {
                                     "IDXNewsResponse": {
@@ -5835,8 +5793,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SubindustryItem"
+                                    }
                                 },
                                 "examples": {
                                     "Sub-industriesList": {
@@ -5844,10 +5804,6 @@
                                             {
                                                 "industry": "metals-minerals",
                                                 "sub_industry": "diversified-metals-minerals"
-                                            },
-                                            {
-                                                "industry": "software",
-                                                "sub_industry": "enterprise-software"
                                             }
                                         ],
                                         "summary": "Sub-industries list"
@@ -6127,8 +6083,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SubsectorItem"
+                                    }
                                 },
                                 "examples": {
                                     "SubsectorsList": {
@@ -6136,10 +6094,6 @@
                                             {
                                                 "sector": "infrastructures",
                                                 "subsector": "telecommunication"
-                                            },
-                                            {
-                                                "sector": "financials",
-                                                "subsector": "banks"
                                             }
                                         ],
                                         "summary": "Subsectors list"
@@ -6237,6 +6191,1981 @@
         }
     },
     "components": {
+        "schemas": {
+            "CommodityListItem": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Commodity name."
+                    },
+                    "data_points": {
+                        "type": "integer",
+                        "description": "Number of price data points."
+                    },
+                    "earliest_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Earliest available date."
+                    },
+                    "latest_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Latest available date."
+                    }
+                },
+                "required": [
+                    "data_points",
+                    "earliest_date",
+                    "latest_date",
+                    "name"
+                ]
+            },
+            "CommodityPriceItem": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Commodity name."
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Price date (monthly)."
+                    },
+                    "price_usd_per_ton": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Price in USD per metric ton."
+                    }
+                },
+                "required": [
+                    "date",
+                    "name",
+                    "price_usd_per_ton"
+                ]
+            },
+            "CompanyRevenueSegments": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "Ticker symbol."
+                    },
+                    "financial_year": {
+                        "type": "integer",
+                        "description": "Financial year of the data."
+                    },
+                    "revenue_breakdown": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SankeyNode"
+                        }
+                    }
+                },
+                "required": [
+                    "financial_year",
+                    "revenue_breakdown",
+                    "symbol"
+                ]
+            },
+            "CompanyScreenerItem": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "Ticker symbol (e.g. BBCA.JK)."
+                    },
+                    "company_name": {
+                        "type": "string",
+                        "description": "Full registered company name."
+                    }
+                },
+                "required": [
+                    "company_name",
+                    "symbol"
+                ]
+            },
+            "CompanyScreenerPagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
+                ]
+            },
+            "CompanyScreenerResponse": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CompanyScreenerItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/CompanyScreenerPagination"
+                    },
+                    "llm_translation": {
+                        "$ref": "#/components/schemas/LLMTranslation"
+                    }
+                },
+                "required": [
+                    "llm_translation",
+                    "pagination",
+                    "results"
+                ]
+            },
+            "DailyDataItem": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "Ticker symbol."
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Trading date."
+                    },
+                    "close": {
+                        "type": "integer",
+                        "description": "Closing price in IDR."
+                    },
+                    "volume": {
+                        "type": "integer",
+                        "description": "Trading volume (shares)."
+                    },
+                    "market_cap": {
+                        "type": "integer",
+                        "description": "Market cap in IDR."
+                    }
+                },
+                "required": [
+                    "close",
+                    "date",
+                    "market_cap",
+                    "symbol",
+                    "volume"
+                ]
+            },
+            "ExportDestinationItem": {
+                "type": "object",
+                "properties": {
+                    "country": {
+                        "type": "string",
+                        "description": "Destination country name."
+                    },
+                    "export_usd": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Export value in USD."
+                    },
+                    "export_volume_bps": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Export volume (BPS source)."
+                    },
+                    "export_volume_esdm": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Export volume (ESDM source)."
+                    },
+                    "volume_unit": {
+                        "type": "string",
+                        "description": "Volume unit (e.g. Mt)."
+                    }
+                },
+                "required": [
+                    "country",
+                    "export_usd",
+                    "export_volume_bps",
+                    "export_volume_esdm",
+                    "volume_unit"
+                ]
+            },
+            "FreeFloatItem": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "Ticker symbol (e.g. BBCA.JK)."
+                    },
+                    "company_name": {
+                        "type": "string",
+                        "description": "Full company name."
+                    },
+                    "free_float": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Free float as a decimal (0.45 = 45%)."
+                    }
+                },
+                "required": [
+                    "company_name",
+                    "free_float",
+                    "symbol"
+                ]
+            },
+            "GlobalCommodityDataItem": {
+                "type": "object",
+                "properties": {
+                    "country": {
+                        "type": "string",
+                        "description": "Country name."
+                    },
+                    "commodity_type": {
+                        "type": "string",
+                        "description": "Commodity type."
+                    },
+                    "resources_reserves": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Total resources/reserves."
+                    },
+                    "resources_reserves_share": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Share of global resources/reserves (%)."
+                    },
+                    "resources_reserves_unit": {
+                        "type": "string",
+                        "description": "Unit for resources/reserves (e.g. ton)."
+                    },
+                    "export_import_usd": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "description": "Trade data keyed by year: `{year: {export, import}}`."
+                    },
+                    "production_volume": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "description": "Production volume keyed by year."
+                    },
+                    "production_share": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "description": "Production share (%) keyed by year."
+                    },
+                    "production_volume_unit": {
+                        "type": "string",
+                        "description": "Unit for production volume (e.g. ton)."
+                    }
+                },
+                "required": [
+                    "commodity_type",
+                    "country",
+                    "export_import_usd",
+                    "production_share",
+                    "production_volume",
+                    "production_volume_unit",
+                    "resources_reserves",
+                    "resources_reserves_share",
+                    "resources_reserves_unit"
+                ]
+            },
+            "IDXTotalItem": {
+                "type": "object",
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Trading date."
+                    },
+                    "idx_total_market_cap": {
+                        "type": "integer",
+                        "description": "Total IDX market cap in IDR."
+                    }
+                },
+                "required": [
+                    "date",
+                    "idx_total_market_cap"
+                ]
+            },
+            "IPOPerformance": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "Ticker symbol."
+                    },
+                    "chg_7d": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Price change since listing at 7 days."
+                    },
+                    "chg_30d": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Price change since listing at 30 days."
+                    },
+                    "chg_90d": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Price change since listing at 90 days."
+                    },
+                    "chg_365d": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Price change since listing at 365 days."
+                    }
+                },
+                "required": [
+                    "chg_30d",
+                    "chg_365d",
+                    "chg_7d",
+                    "chg_90d",
+                    "symbol"
+                ]
+            },
+            "IdxFilings": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/IdxFilingsItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/IdxFilingsPagination"
+                    }
+                },
+                "required": [
+                    "pagination",
+                    "results"
+                ]
+            },
+            "IdxFilingsItem": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Filing title."
+                    },
+                    "body": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Filing body text."
+                    },
+                    "source": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "URL to the original IDX filing."
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true,
+                        "description": "Timestamp of the transaction."
+                    },
+                    "sector": {
+                        "type": "string",
+                        "description": "Sector slug."
+                    },
+                    "sub_sector": {
+                        "type": "string",
+                        "description": "Sub-sector slug."
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "description": "Tag slugs."
+                    },
+                    "symbol": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "IDX ticker symbol. E.g. `BBCA`."
+                    },
+                    "transaction_type": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "`buy` or `sell`."
+                    },
+                    "holder_type": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Type of holder, e.g. `insider` or `major_shareholder`."
+                    },
+                    "holder_name": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Name of the transacting party."
+                    },
+                    "holding_before": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Shares held before the transaction."
+                    },
+                    "holding_after": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Shares held after the transaction."
+                    },
+                    "amount_transaction": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Number of shares transacted."
+                    },
+                    "price": {
+                        "type": "string",
+                        "format": "decimal",
+                        "pattern": "^-?\\d{0,16}(?:\\.\\d{0,4})?$",
+                        "description": "Weighted average price per share (IDR)."
+                    },
+                    "transaction_value": {
+                        "type": "string",
+                        "format": "decimal",
+                        "pattern": "^-?\\d{0,26}(?:\\.\\d{0,4})?$",
+                        "nullable": true,
+                        "description": "Total transaction value (IDR)."
+                    },
+                    "price_transaction": {
+                        "nullable": true,
+                        "description": "Breakdown of prices and amounts transacted."
+                    },
+                    "share_percentage_before": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Ownership percentage before the transaction."
+                    },
+                    "share_percentage_after": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Ownership percentage after the transaction."
+                    },
+                    "share_percentage_transaction": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Percentage of shares transacted."
+                    },
+                    "idx_investor_slug": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Slug for the investor profile."
+                    },
+                    "idx_conglomerates_group_slug": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true,
+                        "description": "Conglomerate group slugs associated with this filing."
+                    }
+                },
+                "required": [
+                    "amount_transaction",
+                    "body",
+                    "holder_name",
+                    "holder_type",
+                    "holding_after",
+                    "holding_before",
+                    "idx_conglomerates_group_slug",
+                    "idx_investor_slug",
+                    "price",
+                    "price_transaction",
+                    "sector",
+                    "share_percentage_after",
+                    "share_percentage_before",
+                    "share_percentage_transaction",
+                    "source",
+                    "sub_sector",
+                    "symbol",
+                    "tags",
+                    "timestamp",
+                    "title",
+                    "transaction_type",
+                    "transaction_value"
+                ]
+            },
+            "IdxFilingsPagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
+                ]
+            },
+            "IndexDailyDataItem": {
+                "type": "object",
+                "properties": {
+                    "index_code": {
+                        "type": "string",
+                        "description": "Index code (e.g. IDX30, LQ45)."
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Trading date."
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Index closing price."
+                    }
+                },
+                "required": [
+                    "date",
+                    "index_code",
+                    "price"
+                ]
+            },
+            "IndustryItem": {
+                "type": "object",
+                "properties": {
+                    "subsector": {
+                        "type": "string",
+                        "description": "Subsector slug (kebab-case)."
+                    },
+                    "industry": {
+                        "type": "string",
+                        "description": "Industry slug (kebab-case)."
+                    }
+                },
+                "required": [
+                    "industry",
+                    "subsector"
+                ]
+            },
+            "LLMTranslation": {
+                "type": "object",
+                "properties": {
+                    "natural_query": {
+                        "type": "string",
+                        "description": "The original natural language query."
+                    },
+                    "translated_params": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "description": "Structured query params generated by the LLM."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Explanation of the translation."
+                    }
+                },
+                "required": [
+                    "message",
+                    "natural_query",
+                    "translated_params"
+                ]
+            },
+            "MiningCompanyDetail": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Full company name."
+                    },
+                    "slug": {
+                        "type": "string",
+                        "description": "URL-friendly company slug."
+                    },
+                    "idx_ticker": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "IDX ticker symbol."
+                    },
+                    "company_type": {
+                        "type": "string",
+                        "description": "Company type (e.g. Holding, Subsidiary)."
+                    },
+                    "operation_province": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Province of operations."
+                    },
+                    "key_operation": {
+                        "type": "string",
+                        "description": "Primary business operation."
+                    },
+                    "activities": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Business activities."
+                    },
+                    "commodity_type": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Commodities produced."
+                    },
+                    "mining_license": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {}
+                        },
+                        "description": "Associated mining licenses."
+                    },
+                    "mining_contract": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {}
+                        },
+                        "description": "Associated mining contracts."
+                    },
+                    "mining_site_count": {
+                        "type": "integer",
+                        "description": "Number of mining sites."
+                    }
+                },
+                "required": [
+                    "activities",
+                    "commodity_type",
+                    "company_type",
+                    "idx_ticker",
+                    "key_operation",
+                    "mining_contract",
+                    "mining_license",
+                    "mining_site_count",
+                    "name",
+                    "operation_province",
+                    "slug"
+                ]
+            },
+            "MiningCompanyFinancials": {
+                "type": "object",
+                "properties": {
+                    "year": {
+                        "type": "integer",
+                        "description": "Requested reporting year."
+                    },
+                    "available_years": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "description": "All years with data."
+                    },
+                    "data": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "description": "Financial data object with assets, revenue, profit in USD millions."
+                    }
+                },
+                "required": [
+                    "available_years",
+                    "data",
+                    "year"
+                ]
+            },
+            "MiningCompanyList": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MiningCompanyListItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/MiningCompanyListPagination"
+                    }
+                },
+                "required": [
+                    "pagination",
+                    "results"
+                ]
+            },
+            "MiningCompanyListItem": {
+                "type": "object",
+                "properties": {
+                    "slug": {
+                        "type": "string",
+                        "description": "URL-friendly company slug."
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "Full company name."
+                    },
+                    "idx_ticker": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "IDX ticker symbol, if listed."
+                    },
+                    "company_type": {
+                        "type": "string",
+                        "description": "E.g. Holding, Subsidiary, Mine Owner."
+                    },
+                    "key_operation": {
+                        "type": "string",
+                        "description": "Primary business operation."
+                    },
+                    "commodity_type": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Commodities produced."
+                    }
+                },
+                "required": [
+                    "commodity_type",
+                    "company_type",
+                    "idx_ticker",
+                    "key_operation",
+                    "name",
+                    "slug"
+                ]
+            },
+            "MiningCompanyListPagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
+                ]
+            },
+            "MiningCompanyOwnership": {
+                "type": "object",
+                "properties": {
+                    "slug": {
+                        "type": "string",
+                        "description": "Company slug."
+                    },
+                    "parents": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OwnershipParentItem"
+                        }
+                    },
+                    "subsidiaries": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OwnershipSubsidiaryItem"
+                        }
+                    }
+                },
+                "required": [
+                    "parents",
+                    "slug",
+                    "subsidiaries"
+                ]
+            },
+            "MiningCompanyPerformance": {
+                "type": "object",
+                "properties": {
+                    "year": {
+                        "type": "integer",
+                        "description": "Requested reporting year."
+                    },
+                    "available_years": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "description": "All years with data."
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {}
+                        },
+                        "description": "Performance records per commodity."
+                    }
+                },
+                "required": [
+                    "available_years",
+                    "data",
+                    "year"
+                ]
+            },
+            "MiningContractItem": {
+                "type": "object",
+                "properties": {
+                    "mine_owner_slug": {
+                        "type": "string",
+                        "description": "Mine owner company slug."
+                    },
+                    "mine_owner_name": {
+                        "type": "string",
+                        "description": "Mine owner company name."
+                    },
+                    "contractor_slug": {
+                        "type": "string",
+                        "description": "Contractor company slug."
+                    },
+                    "contractor_name": {
+                        "type": "string",
+                        "description": "Contractor company name."
+                    },
+                    "contract_period_end": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true,
+                        "description": "Contract end date."
+                    }
+                },
+                "required": [
+                    "contract_period_end",
+                    "contractor_name",
+                    "contractor_slug",
+                    "mine_owner_name",
+                    "mine_owner_slug"
+                ]
+            },
+            "MiningLicenseAuctionDetail": {
+                "type": "object",
+                "properties": {
+                    "commodity_type": {
+                        "type": "string",
+                        "description": "Commodity type."
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "City/regency."
+                    },
+                    "province": {
+                        "type": "string",
+                        "description": "Province."
+                    },
+                    "company_name": {
+                        "type": "string",
+                        "description": "Winning company name."
+                    },
+                    "winner_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true,
+                        "description": "Winner announcement date."
+                    },
+                    "licensed_area_ha": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Licensed area in hectares."
+                    },
+                    "license_number": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "License number."
+                    },
+                    "area_type": {
+                        "type": "string",
+                        "description": "Area type (e.g. WIUPK)."
+                    },
+                    "kdi": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "KDI value."
+                    },
+                    "wiup_code": {
+                        "type": "string",
+                        "description": "WIUP identification code."
+                    },
+                    "auction_status": {
+                        "type": "string",
+                        "description": "Auction status."
+                    },
+                    "participant_count": {
+                        "type": "integer",
+                        "description": "Number of participants."
+                    },
+                    "winner": {
+                        "type": "boolean",
+                        "description": "Whether a winner was declared."
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Record creation date."
+                    },
+                    "last_modified": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Last modified date."
+                    },
+                    "phases": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {}
+                        },
+                        "description": "Auction timeline phases."
+                    },
+                    "participants": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {}
+                        },
+                        "description": "Participant list with qualification results."
+                    },
+                    "company_slug": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Company slug."
+                    }
+                },
+                "required": [
+                    "area_type",
+                    "auction_status",
+                    "city",
+                    "commodity_type",
+                    "company_name",
+                    "company_slug",
+                    "created_at",
+                    "kdi",
+                    "last_modified",
+                    "license_number",
+                    "licensed_area_ha",
+                    "participant_count",
+                    "participants",
+                    "phases",
+                    "province",
+                    "winner",
+                    "winner_date",
+                    "wiup_code"
+                ]
+            },
+            "MiningLicenseAuctionList": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MiningLicenseAuctionListItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/MiningLicenseAuctionListPagination"
+                    }
+                },
+                "required": [
+                    "pagination",
+                    "results"
+                ]
+            },
+            "MiningLicenseAuctionListItem": {
+                "type": "object",
+                "properties": {
+                    "commodity_type": {
+                        "type": "string",
+                        "description": "Commodity type (e.g. Nickel, Coal)."
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "City/regency name."
+                    },
+                    "province": {
+                        "type": "string",
+                        "description": "Province name."
+                    },
+                    "company_name": {
+                        "type": "string",
+                        "description": "Winning company name."
+                    },
+                    "winner_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true,
+                        "description": "Date winner was announced."
+                    },
+                    "licensed_area_ha": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Licensed area in hectares."
+                    },
+                    "license_number": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "License number."
+                    },
+                    "area_type": {
+                        "type": "string",
+                        "description": "Area type (e.g. WIUPK)."
+                    },
+                    "kdi": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "KDI value."
+                    },
+                    "wiup_code": {
+                        "type": "string",
+                        "description": "WIUP identification code."
+                    },
+                    "auction_status": {
+                        "type": "string",
+                        "description": "Auction status (e.g. Lelang Selesai)."
+                    },
+                    "participant_count": {
+                        "type": "integer",
+                        "description": "Number of participants."
+                    },
+                    "winner": {
+                        "type": "boolean",
+                        "description": "Whether a winner was declared."
+                    },
+                    "company_slug": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Winning company slug."
+                    }
+                },
+                "required": [
+                    "area_type",
+                    "auction_status",
+                    "city",
+                    "commodity_type",
+                    "company_name",
+                    "company_slug",
+                    "kdi",
+                    "license_number",
+                    "licensed_area_ha",
+                    "participant_count",
+                    "province",
+                    "winner",
+                    "winner_date",
+                    "wiup_code"
+                ]
+            },
+            "MiningLicenseAuctionListPagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
+                ]
+            },
+            "MiningLicenseList": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MiningLicenseListItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/MiningLicenseListPagination"
+                    }
+                },
+                "required": [
+                    "pagination",
+                    "results"
+                ]
+            },
+            "MiningLicenseListItem": {
+                "type": "object",
+                "properties": {
+                    "wiup_code": {
+                        "type": "string",
+                        "description": "WIUP identification code."
+                    },
+                    "license_number": {
+                        "type": "string",
+                        "description": "Official license number."
+                    },
+                    "license_type": {
+                        "type": "string",
+                        "description": "License type (e.g. IUP, IUPK)."
+                    },
+                    "province": {
+                        "type": "string",
+                        "description": "Province name."
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "City/regency name."
+                    },
+                    "license_effective_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "License start date."
+                    },
+                    "license_expiry_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "License expiry date."
+                    },
+                    "activity": {
+                        "type": "string",
+                        "description": "Activity stage (e.g. Operasi Produksi)."
+                    },
+                    "licensed_area_ha": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Licensed area in hectares."
+                    },
+                    "location": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "nullable": true,
+                        "description": "GeoJSON Point with coordinates."
+                    },
+                    "commodity_type": {
+                        "type": "string",
+                        "description": "Commodity type."
+                    },
+                    "company_name": {
+                        "type": "string",
+                        "description": "License holder company name."
+                    },
+                    "cnc": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Clear & Clean status."
+                    },
+                    "generation": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "License generation."
+                    },
+                    "company_slug": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Company slug."
+                    }
+                },
+                "required": [
+                    "activity",
+                    "city",
+                    "cnc",
+                    "commodity_type",
+                    "company_name",
+                    "company_slug",
+                    "generation",
+                    "license_effective_date",
+                    "license_expiry_date",
+                    "license_number",
+                    "license_type",
+                    "licensed_area_ha",
+                    "location",
+                    "province",
+                    "wiup_code"
+                ]
+            },
+            "MiningLicenseListPagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
+                ]
+            },
+            "MiningSiteDetail": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Mining site name."
+                    },
+                    "project_name": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Project name."
+                    },
+                    "year": {
+                        "type": "integer",
+                        "description": "Reporting year."
+                    },
+                    "commodity_type": {
+                        "type": "string",
+                        "description": "Commodity type."
+                    },
+                    "production_volume": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Production volume."
+                    },
+                    "unit": {
+                        "type": "string",
+                        "description": "Production unit."
+                    },
+                    "overburden_removal_volume": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Overburden removal volume."
+                    },
+                    "strip_ratio": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Strip ratio."
+                    },
+                    "resources_reserves": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {}
+                        },
+                        "description": "Resources and reserves breakdown."
+                    },
+                    "location": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "description": "Location with province, city, latitude, longitude."
+                    },
+                    "company_slug": {
+                        "type": "string",
+                        "description": "Parent company slug."
+                    },
+                    "company_name": {
+                        "type": "string",
+                        "description": "Parent company name."
+                    },
+                    "slug": {
+                        "type": "string",
+                        "description": "Mining site slug."
+                    }
+                },
+                "required": [
+                    "commodity_type",
+                    "company_name",
+                    "company_slug",
+                    "location",
+                    "name",
+                    "overburden_removal_volume",
+                    "production_volume",
+                    "project_name",
+                    "resources_reserves",
+                    "slug",
+                    "strip_ratio",
+                    "unit",
+                    "year"
+                ]
+            },
+            "MiningSiteList": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MiningSiteListItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/MiningSiteListPagination"
+                    }
+                },
+                "required": [
+                    "pagination",
+                    "results"
+                ]
+            },
+            "MiningSiteListItem": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Mining site name."
+                    },
+                    "project_name": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Project name."
+                    },
+                    "year": {
+                        "type": "integer",
+                        "description": "Reporting year."
+                    },
+                    "commodity_type": {
+                        "type": "string",
+                        "description": "Commodity type (e.g. Coal, Nickel)."
+                    },
+                    "production_volume": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Production volume."
+                    },
+                    "unit": {
+                        "type": "string",
+                        "description": "Production unit (e.g. Mt, Kg)."
+                    },
+                    "strip_ratio": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Strip ratio."
+                    },
+                    "province": {
+                        "type": "string",
+                        "description": "Province name."
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "City/regency name."
+                    },
+                    "company_slug": {
+                        "type": "string",
+                        "description": "Parent company slug."
+                    },
+                    "company_name": {
+                        "type": "string",
+                        "description": "Parent company name."
+                    },
+                    "slug": {
+                        "type": "string",
+                        "description": "Mining site slug."
+                    }
+                },
+                "required": [
+                    "city",
+                    "commodity_type",
+                    "company_name",
+                    "company_slug",
+                    "name",
+                    "production_volume",
+                    "project_name",
+                    "province",
+                    "slug",
+                    "strip_ratio",
+                    "unit",
+                    "year"
+                ]
+            },
+            "MiningSiteListPagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
+                ]
+            },
+            "NewsArticleList": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/NewsArticleListItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/NewsArticleListPagination"
+                    }
+                },
+                "required": [
+                    "pagination",
+                    "results"
+                ]
+            },
+            "NewsArticleListItem": {
+                "type": "object",
+                "properties": {
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Article creation timestamp."
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Article headline."
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "Article body text (IDX only)."
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "Source URL."
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "description": "Article publication timestamp."
+                    },
+                    "sector": {
+                        "type": "string",
+                        "description": "Sector slug (IDX only)."
+                    },
+                    "sub_sector": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Subsector slugs (IDX only)."
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Tag slugs (IDX only)."
+                    },
+                    "tickers": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Related ticker symbols (IDX only)."
+                    },
+                    "dimension": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "News dimension (IDX only)."
+                    },
+                    "commodity_type": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Commodity types (mining only)."
+                    }
+                },
+                "required": [
+                    "source",
+                    "timestamp",
+                    "title"
+                ]
+            },
+            "NewsArticleListPagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
+                ]
+            },
+            "OwnershipParentItem": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Parent company name."
+                    },
+                    "slug": {
+                        "type": "string",
+                        "description": "Parent company slug."
+                    },
+                    "idx_ticker": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "IDX ticker."
+                    },
+                    "percentage_ownership": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Ownership stake (%)."
+                    }
+                },
+                "required": [
+                    "idx_ticker",
+                    "name",
+                    "percentage_ownership",
+                    "slug"
+                ]
+            },
+            "OwnershipSubsidiaryItem": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Subsidiary company name."
+                    },
+                    "slug": {
+                        "type": "string",
+                        "description": "Subsidiary company slug."
+                    },
+                    "idx_ticker": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "IDX ticker."
+                    },
+                    "percentage_ownership": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Ownership stake (%)."
+                    }
+                },
+                "required": [
+                    "idx_ticker",
+                    "name",
+                    "percentage_ownership",
+                    "slug"
+                ]
+            },
+            "QuarterlyFinancialItem": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "Ticker symbol."
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Quarterly report date."
+                    },
+                    "revenue": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Quarterly revenue in IDR."
+                    },
+                    "earnings": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Quarterly net earnings in IDR."
+                    },
+                    "total_assets": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Total assets in IDR."
+                    },
+                    "total_equity": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Total equity in IDR."
+                    },
+                    "operating_cash_flow": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Operating cash flow in IDR."
+                    },
+                    "financials_sector_metrics": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "description": "Additional metrics for financial-sector companies (banks, insurance)."
+                    }
+                },
+                "required": [
+                    "date",
+                    "earnings",
+                    "operating_cash_flow",
+                    "revenue",
+                    "symbol",
+                    "total_assets",
+                    "total_equity"
+                ]
+            },
+            "ResourcesReservesDetail": {
+                "type": "object",
+                "properties": {
+                    "province": {
+                        "type": "string",
+                        "description": "Province name."
+                    },
+                    "data": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "description": "Nested data: `{year: {commodity: {exploration_target, total_inventory, resources, reserves, unit}}}`."
+                    }
+                },
+                "required": [
+                    "data",
+                    "province"
+                ]
+            },
+            "SalesDestinationResponse": {
+                "type": "object",
+                "properties": {
+                    "year": {
+                        "type": "integer",
+                        "description": "Reporting year."
+                    },
+                    "data": {
+                        "type": "object",
+                        "additionalProperties": {},
+                        "description": "Sales data keyed by country name. Each entry contains revenue_usd, percentage_of_total_revenue, volume, percentage_of_sales_volume, commodity_type, and unit."
+                    }
+                },
+                "required": [
+                    "data",
+                    "year"
+                ]
+            },
+            "SankeyNode": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Segment value in IDR."
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "Source node label."
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "Target node label."
+                    }
+                },
+                "required": [
+                    "source",
+                    "target",
+                    "value"
+                ]
+            },
+            "SubindustryItem": {
+                "type": "object",
+                "properties": {
+                    "industry": {
+                        "type": "string",
+                        "description": "Industry slug (kebab-case)."
+                    },
+                    "sub_industry": {
+                        "type": "string",
+                        "description": "Sub-industry slug (kebab-case)."
+                    }
+                },
+                "required": [
+                    "industry",
+                    "sub_industry"
+                ]
+            },
+            "SubsectorItem": {
+                "type": "object",
+                "properties": {
+                    "sector": {
+                        "type": "string",
+                        "description": "Sector slug (kebab-case)."
+                    },
+                    "subsector": {
+                        "type": "string",
+                        "description": "Subsector slug (kebab-case)."
+                    }
+                },
+                "required": [
+                    "sector",
+                    "subsector"
+                ]
+            },
+            "TotalProductionItem": {
+                "type": "object",
+                "properties": {
+                    "year": {
+                        "type": "integer",
+                        "description": "Reporting year."
+                    },
+                    "production_volume": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Total production volume."
+                    },
+                    "prev_year_volume": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Previous year production volume."
+                    },
+                    "unit": {
+                        "type": "string",
+                        "description": "Production unit (e.g. Mt, Kg)."
+                    },
+                    "yoy_change_percent": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Year-over-year change (%)."
+                    }
+                },
+                "required": [
+                    "prev_year_volume",
+                    "production_volume",
+                    "unit",
+                    "year",
+                    "yoy_change_percent"
+                ]
+            }
+        },
         "securitySchemes": {
             "ApiKeyAuth": {
                 "type": "apiKey",
