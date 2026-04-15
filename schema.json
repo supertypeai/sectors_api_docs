@@ -2744,7 +2744,7 @@
                                                 {
                                                     "slug": "adaro-andalan-indonesia",
                                                     "name": "PT Adaro Andalan Indonesia Tbk",
-                                                    "idx_ticker": "AADI.JK",
+                                                    "symbol": "AADI.JK",
                                                     "company_type": "Holding",
                                                     "key_operation": "Coal Trading",
                                                     "commodity_type": [
@@ -2832,7 +2832,7 @@
                                         "value": {
                                             "name": "PT Adaro Andalan Indonesia Tbk",
                                             "slug": "adaro-andalan-indonesia",
-                                            "idx_ticker": "AADI.JK",
+                                            "symbol": "AADI.JK",
                                             "company_type": "Holding",
                                             "operation_province": "Jakarta",
                                             "key_operation": "Coal Trading",
@@ -2947,7 +2947,7 @@
                                                 2024
                                             ],
                                             "data": {
-                                                "idx_ticker": "ITMG.JK",
+                                                "symbol": "ITMG.JK",
                                                 "name": "PT Indo Tambang Megah",
                                                 "slug": "indo-tambang-megah",
                                                 "year": 2024,
@@ -3051,7 +3051,7 @@
                                                 {
                                                     "name": "PT Adaro Strategic Investments",
                                                     "slug": "adaro-strategic-investments",
-                                                    "idx_ticker": null,
+                                                    "symbol": null,
                                                     "percentage_ownership": 43.91
                                                 }
                                             ],
@@ -3059,7 +3059,7 @@
                                                 {
                                                     "name": "PT Adaro Minerals Indonesia Tbk",
                                                     "slug": "adaro-minerals-indonesia",
-                                                    "idx_ticker": "ADMR.JK",
+                                                    "symbol": "ADMR.JK",
                                                     "percentage_ownership": 83.26
                                                 }
                                             ]
@@ -6858,7 +6858,7 @@
                         "type": "string",
                         "description": "URL-friendly company slug."
                     },
-                    "idx_ticker": {
+                    "symbol": {
                         "type": "string",
                         "nullable": true,
                         "description": "IDX ticker symbol."
@@ -6915,14 +6915,14 @@
                     "activities",
                     "commodity_type",
                     "company_type",
-                    "idx_ticker",
                     "key_operation",
                     "mining_contract",
                     "mining_license",
                     "mining_site_count",
                     "name",
                     "operation_province",
-                    "slug"
+                    "slug",
+                    "symbol"
                 ]
             },
             "MiningCompanyFinancials": {
@@ -6980,7 +6980,7 @@
                         "type": "string",
                         "description": "Full company name."
                     },
-                    "idx_ticker": {
+                    "symbol": {
                         "type": "string",
                         "nullable": true,
                         "description": "IDX ticker symbol, if listed."
@@ -7004,10 +7004,10 @@
                 "required": [
                     "commodity_type",
                     "company_type",
-                    "idx_ticker",
                     "key_operation",
                     "name",
-                    "slug"
+                    "slug",
+                    "symbol"
                 ]
             },
             "MiningCompanyListPagination": {
@@ -7935,7 +7935,7 @@
                         "type": "string",
                         "description": "Parent company slug."
                     },
-                    "idx_ticker": {
+                    "symbol": {
                         "type": "string",
                         "nullable": true,
                         "description": "IDX ticker."
@@ -7947,10 +7947,10 @@
                     }
                 },
                 "required": [
-                    "idx_ticker",
                     "name",
                     "percentage_ownership",
-                    "slug"
+                    "slug",
+                    "symbol"
                 ]
             },
             "OwnershipSubsidiaryItem": {
@@ -7964,7 +7964,7 @@
                         "type": "string",
                         "description": "Subsidiary company slug."
                     },
-                    "idx_ticker": {
+                    "symbol": {
                         "type": "string",
                         "nullable": true,
                         "description": "IDX ticker."
@@ -7976,10 +7976,10 @@
                     }
                 },
                 "required": [
-                    "idx_ticker",
                     "name",
                     "percentage_ownership",
-                    "slug"
+                    "slug",
+                    "symbol"
                 ]
             },
             "QuarterlyFinancialItem": {
