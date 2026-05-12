@@ -278,7 +278,7 @@
                                 }
                             }
                         },
-                        "description": "Dictionary keyed by ticker (uppercase `.JK` format) with available financial years."
+                        "description": "Dictionary keyed by symbol (uppercase `.JK` format) with available financial years."
                     },
                     "429": {
                         "content": {
@@ -462,19 +462,19 @@
                 "x-mdx-path": "v2/indonesia/ranking/top-changes"
             }
         },
-        "/v2/company/get-segments/{ticker}/": {
+        "/v2/company/get-segments/{symbol}/": {
             "get": {
                 "operationId": "company_get_segments_retrieve",
-                "description": "Returns a Sankey-graph-ready revenue and cost segment breakdown for a given company and financial year. Not all companies have segment data — use the [Companies with Revenue Segments](../helper-list/companies-segments-list) endpoint to check availability.\n\n<Note>IDX ticker: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BUMI`, `TLKM`, `ASII`.</Note>",
+                "description": "Returns a Sankey-graph-ready revenue and cost segment breakdown for a given company and financial year. Not all companies have segment data — use the [Companies with Revenue Segments](../helper-list/companies-segments-list) endpoint to check availability.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BUMI`, `TLKM`, `ASII`.</Note>",
                 "summary": "Company Revenue Segments",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "ticker",
+                        "name": "symbol",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "IDX ticker symbol. E.g. `BUMI`, `TLKM`. Not all companies have segment data — check the [Companies with Revenue Segments](../helper-list/companies-segments-list) helper first.",
+                        "description": "IDX symbol symbol. E.g. `BUMI`, `TLKM`. Not all companies have segment data — check the [Companies with Revenue Segments](../helper-list/companies-segments-list) helper first.",
                         "required": true
                     },
                     {
@@ -534,14 +534,14 @@
                                 "examples": {
                                     "NotFound": {
                                         "value": {
-                                            "error": "Invalid stock ticker and/or data for the specified financial year does not exist."
+                                            "error": "Invalid stock symbol and/or data for the specified financial year does not exist."
                                         },
                                         "summary": "Not found"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid ticker or year."
+                        "description": "Invalid symbol or year."
                     },
                     "429": {
                         "content": {
@@ -566,19 +566,19 @@
                 "x-mdx-path": "v2/indonesia/report/company-segments"
             }
         },
-        "/v2/company/get_quarterly_financial_dates/{ticker}/": {
+        "/v2/company/get_quarterly_financial_dates/{symbol}/": {
             "get": {
                 "operationId": "company_get_quarterly_financial_dates_retrieve",
-                "description": "Returns all available quarterly financial report dates for a given ticker, grouped by year. Use the `report_date` values returned here as inputs to the `report_date` parameter in the Quarterly Financials endpoint.\n\n**Used by:** [Company Quarterly Financials](../report/quarterly-financials)\n\n<Note>IDX ticker: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `ASII`, `BBCA`, `BMRI`.</Note>",
+                "description": "Returns all available quarterly financial report dates for a given symbol, grouped by year. Use the `report_date` values returned here as inputs to the `report_date` parameter in the Quarterly Financials endpoint.\n\n**Used by:** [Company Quarterly Financials](../report/quarterly-financials)\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `ASII`, `BBCA`, `BMRI`.</Note>",
                 "summary": "Quarterly Financial Dates",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "ticker",
+                        "name": "symbol",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "IDX ticker symbol. E.g. `ASII`, `BBCA`.",
+                        "description": "IDX symbol symbol. E.g. `ASII`, `BBCA`.",
                         "required": true
                     }
                 ],
@@ -656,16 +656,16 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidTicker": {
+                                    "InvalidSymbol": {
                                         "value": {
-                                            "error": "Invalid stock ticker or data does not exist."
+                                            "error": "Invalid stock symbol or data does not exist."
                                         },
-                                        "summary": "Invalid ticker"
+                                        "summary": "Invalid symbol"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid ticker."
+                        "description": "Invalid symbol."
                     },
                     "429": {
                         "content": {
@@ -693,16 +693,16 @@
         "/v2/company/report/": {
             "get": {
                 "operationId": "company_report_retrieve",
-                "description": "Returns a comprehensive company report organized into distinct sections. By default all sections are included. Use `sections` to request only the data you need and reduce response size.\n\n<Note>IDX ticker: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BREN`, `BBCA`, `TLKM`.</Note>\n\n<Accordion title=\"Available sections\">\n- **overview**: Company identity, market cap, price history, ESG score, tags, indices, affiliates\n- **valuation**: Close price, forward PE, intrinsic value, historical valuation (PB, PE, PS, PCF, PEG by year)\n- **future**: Analyst forecasts, EPS growth estimates\n- **peers**: Peer comparison within the same subsector\n- **financials**: Historical annual financials (revenue, earnings, assets, equity, margins)\n- **dividend**: Dividend history, yield, payout ratio\n- **management**: Key executives and their shareholdings\n- **ownership**: Major shareholders and ownership structure\n</Accordion>",
+                "description": "Returns a comprehensive company report organized into distinct sections. By default all sections are included. Use `sections` to request only the data you need and reduce response size.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BREN`, `BBCA`, `TLKM`.</Note>\n\n<Accordion title=\"Available sections\">\n- **overview**: Company identity, market cap, price history, ESG score, tags, indices, affiliates\n- **valuation**: Close price, forward PE, intrinsic value, historical valuation (PB, PE, PS, PCF, PEG by year)\n- **future**: Analyst forecasts, EPS growth estimates\n- **peers**: Peer comparison within the same subsector\n- **financials**: Historical annual financials (revenue, earnings, assets, equity, margins)\n- **dividend**: Dividend history, yield, payout ratio\n- **management**: Key executives and their shareholdings\n- **ownership**: Major shareholders and ownership structure\n</Accordion>",
                 "summary": "Company Report",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "ticker",
+                        "name": "symbol",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "IDX ticker symbol. E.g. `BREN`, `BBCA`.",
+                        "description": "IDX symbol symbol. E.g. `BREN`, `BBCA`.",
                         "required": true
                     },
                     {
@@ -779,16 +779,16 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidTicker": {
+                                    "InvalidSymbol": {
                                         "value": {
-                                            "error": "Please provide a valid stock ticker."
+                                            "error": "Please provide a valid stock symbol."
                                         },
-                                        "summary": "Invalid ticker"
+                                        "summary": "Invalid symbol"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid ticker."
+                        "description": "Invalid symbol."
                     },
                     "429": {
                         "content": {
@@ -813,19 +813,19 @@
                 "x-mdx-path": "v2/indonesia/report/company-report"
             }
         },
-        "/v2/company/report/{ticker}/": {
+        "/v2/company/report/{symbol}/": {
             "get": {
                 "operationId": "company_report_retrieve_2",
-                "description": "Returns a comprehensive company report organized into distinct sections. By default all sections are included. Use `sections` to request only the data you need and reduce response size.\n\n<Note>IDX ticker: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BREN`, `BBCA`, `TLKM`.</Note>\n\n<Accordion title=\"Available sections\">\n- **overview**: Company identity, market cap, price history, ESG score, tags, indices, affiliates\n- **valuation**: Close price, forward PE, intrinsic value, historical valuation (PB, PE, PS, PCF, PEG by year)\n- **future**: Analyst forecasts, EPS growth estimates\n- **peers**: Peer comparison within the same subsector\n- **financials**: Historical annual financials (revenue, earnings, assets, equity, margins)\n- **dividend**: Dividend history, yield, payout ratio\n- **management**: Key executives and their shareholdings\n- **ownership**: Major shareholders and ownership structure\n</Accordion>",
+                "description": "Returns a comprehensive company report organized into distinct sections. By default all sections are included. Use `sections` to request only the data you need and reduce response size.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BREN`, `BBCA`, `TLKM`.</Note>\n\n<Accordion title=\"Available sections\">\n- **overview**: Company identity, market cap, price history, ESG score, tags, indices, affiliates\n- **valuation**: Close price, forward PE, intrinsic value, historical valuation (PB, PE, PS, PCF, PEG by year)\n- **future**: Analyst forecasts, EPS growth estimates\n- **peers**: Peer comparison within the same subsector\n- **financials**: Historical annual financials (revenue, earnings, assets, equity, margins)\n- **dividend**: Dividend history, yield, payout ratio\n- **management**: Key executives and their shareholdings\n- **ownership**: Major shareholders and ownership structure\n</Accordion>",
                 "summary": "Company Report",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "ticker",
+                        "name": "symbol",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "IDX ticker symbol. E.g. `BREN`, `BBCA`.",
+                        "description": "IDX symbol symbol. E.g. `BREN`, `BBCA`.",
                         "required": true
                     },
                     {
@@ -902,16 +902,16 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidTicker": {
+                                    "InvalidSymbol": {
                                         "value": {
-                                            "error": "Please provide a valid stock ticker."
+                                            "error": "Please provide a valid stock symbol."
                                         },
-                                        "summary": "Invalid ticker"
+                                        "summary": "Invalid symbol"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid ticker."
+                        "description": "Invalid symbol."
                     },
                     "429": {
                         "content": {
@@ -936,19 +936,19 @@
                 "x-mdx-path": "v2/indonesia/report/company-report"
             }
         },
-        "/v2/daily/{ticker}/": {
+        "/v2/daily/{symbol}/": {
             "get": {
                 "operationId": "daily_retrieve",
-                "description": "Returns daily close price, volume, and market cap for a given IDX ticker over a date range of up to 90 days.\n\n<Note>IDX ticker: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `GOTO`, `TLKM`.</Note>\n\n<Accordion title=\"Date Range Behavior\">\n- Default: last 30 days if neither `start` nor `end` provided.\n- Max window: 90 days. Requests exceeding 90 days are clamped.\n- Format: `YYYY-MM-DD`.\n</Accordion>",
+                "description": "Returns daily close price, volume, and market cap for a given IDX symbol over a date range of up to 90 days.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `GOTO`, `TLKM`.</Note>\n\n<Accordion title=\"Date Range Behavior\">\n- Default: last 30 days if neither `start` nor `end` provided.\n- Max window: 90 days. Requests exceeding 90 days are clamped.\n- Format: `YYYY-MM-DD`.\n</Accordion>",
                 "summary": "Daily Transaction Data",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "ticker",
+                        "name": "symbol",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "IDX ticker. E.g. `BBCA`, `GOTO`, `TLKM`.",
+                        "description": "IDX symbol. E.g. `BBCA`, `GOTO`, `TLKM`.",
                         "required": true
                     },
                     {
@@ -1012,11 +1012,11 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidTicker": {
+                                    "InvalidSymbol": {
                                         "value": {
-                                            "error": "Given stock ticker does not exist in the requested date."
+                                            "error": "Given stock symbol does not exist in the requested date."
                                         },
-                                        "summary": "Invalid ticker"
+                                        "summary": "Invalid symbol"
                                     },
                                     "InvalidFormat": {
                                         "value": {
@@ -1027,7 +1027,7 @@
                                 }
                             }
                         },
-                        "description": "Invalid ticker or date."
+                        "description": "Invalid symbol or date."
                     },
                     "429": {
                         "content": {
@@ -1055,7 +1055,7 @@
         "/v2/filings/": {
             "get": {
                 "operationId": "filings_retrieve",
-                "description": "Returns IDX insider trading filings — buy/sell transactions by company insiders and major shareholders. Supports filtering by sector, subsector, tags, symbol, transaction type, and date range.\n\n<Note>IDX ticker: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `BMRI`, `TLKM`.</Note>",
+                "description": "Returns IDX insider trading filings — buy/sell transactions by company insiders and major shareholders. Supports filtering by sector, subsector, tags, symbol, transaction type, and date range.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `BMRI`, `TLKM`.</Note>",
                 "summary": "Company Filings",
                 "parameters": [
                     {
@@ -1064,7 +1064,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "IDX ticker symbol to filter by. E.g. `BBCA`, `BMRI`."
+                        "description": "IDX symbol symbol to filter by. E.g. `BBCA`, `BMRI`."
                     },
                     {
                         "in": "query",
@@ -1252,19 +1252,19 @@
                 "x-mdx-path": "v2/indonesia/news/filings"
             }
         },
-        "/v2/financials/quarterly/{ticker}/": {
+        "/v2/financials/quarterly/{symbol}/": {
             "get": {
                 "operationId": "financials_quarterly_retrieve",
-                "description": "Returns quarterly financial data for a given IDX ticker. Fields vary by sector — financial-sector companies (banks, insurance) have additional metrics like `net_interest_income`, `gross_loan`, `total_deposit`.\n\n<Note>Use the [Quarterly Financial Dates](../helper-list/company-quarterly-dates) endpoint to get valid `report_date` values for a ticker.</Note>\n\n<Note>IDX ticker: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BMRI`, `BBCA`, `TLKM`.</Note>",
+                "description": "Returns quarterly financial data for a given IDX symbol. Fields vary by sector — financial-sector companies (banks, insurance) have additional metrics like `net_interest_income`, `gross_loan`, `total_deposit`.\n\n<Note>Use the [Quarterly Financial Dates](../helper-list/company-quarterly-dates) endpoint to get valid `report_date` values for a symbol.</Note>\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BMRI`, `BBCA`, `TLKM`.</Note>",
                 "summary": "Company Quarterly Financials",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "ticker",
+                        "name": "symbol",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "IDX ticker symbol. E.g. `BMRI`, `BBCA`.",
+                        "description": "IDX symbol symbol. E.g. `BMRI`, `BBCA`.",
                         "required": true
                     },
                     {
@@ -1346,13 +1346,13 @@
                                 "examples": {
                                     "Invalid": {
                                         "value": {
-                                            "error": "Invalid stock ticker and/or data for the specified report date does not exist."
+                                            "error": "Invalid stock symbol and/or data for the specified report date does not exist."
                                         }
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid ticker or report date."
+                        "description": "Invalid symbol or report date."
                     },
                     "429": {
                         "content": {
@@ -2018,16 +2018,16 @@
         "/v2/klse/company/report/": {
             "get": {
                 "operationId": "klse_company_report_retrieve",
-                "description": "<Note>KLSE ticker: 4-digit numeric code. E.g. `1155`, `4197`, `5225`.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d)\n- **valuation**: PE, PB, PS, PCF ratios (TTM and historical)\n- **financials**: Historical revenue and earnings by year, EPS, margins, ratios\n- **dividend**: Dividend history and yield\n</Accordion>",
-                "summary": "Full company report for a KLSE-listed ticker",
+                "description": "<Note>KLSE symbol: 4-digit numeric code. E.g. `1155`, `4197`, `5225`.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d)\n- **valuation**: PE, PB, PS, PCF ratios (TTM and historical)\n- **financials**: Historical revenue and earnings by year, EPS, margins, ratios\n- **dividend**: Dividend history and yield\n</Accordion>",
+                "summary": "Full company report for a KLSE-listed symbol",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "ticker",
+                        "name": "symbol",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "KLSE ticker symbol (4-digit numeric code). E.g. `1155`, `4197`.",
+                        "description": "KLSE symbol symbol (4-digit numeric code). E.g. `1155`, `4197`.",
                         "required": true
                     },
                     {
@@ -2125,16 +2125,16 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidTicker": {
+                                    "InvalidSymbol": {
                                         "value": {
-                                            "error": "Please provide a valid stock ticker."
+                                            "error": "Please provide a valid stock symbol."
                                         },
-                                        "summary": "Invalid ticker"
+                                        "summary": "Invalid symbol"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid ticker."
+                        "description": "Invalid symbol."
                     },
                     "429": {
                         "content": {
@@ -2159,19 +2159,19 @@
                 "x-mdx-path": "v2/malaysia/klse-report"
             }
         },
-        "/v2/klse/company/report/{ticker}/": {
+        "/v2/klse/company/report/{symbol}/": {
             "get": {
                 "operationId": "klse_company_report_retrieve_2",
-                "description": "<Note>KLSE ticker: 4-digit numeric code. E.g. `1155`, `4197`, `5225`.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d)\n- **valuation**: PE, PB, PS, PCF ratios (TTM and historical)\n- **financials**: Historical revenue and earnings by year, EPS, margins, ratios\n- **dividend**: Dividend history and yield\n</Accordion>",
-                "summary": "Full company report for a KLSE-listed ticker",
+                "description": "<Note>KLSE symbol: 4-digit numeric code. E.g. `1155`, `4197`, `5225`.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d)\n- **valuation**: PE, PB, PS, PCF ratios (TTM and historical)\n- **financials**: Historical revenue and earnings by year, EPS, margins, ratios\n- **dividend**: Dividend history and yield\n</Accordion>",
+                "summary": "Full company report for a KLSE-listed symbol",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "ticker",
+                        "name": "symbol",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "KLSE ticker symbol (4-digit numeric code). E.g. `1155`, `4197`.",
+                        "description": "KLSE symbol symbol (4-digit numeric code). E.g. `1155`, `4197`.",
                         "required": true
                     },
                     {
@@ -2269,16 +2269,16 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidTicker": {
+                                    "InvalidSymbol": {
                                         "value": {
-                                            "error": "Please provide a valid stock ticker."
+                                            "error": "Please provide a valid stock symbol."
                                         },
-                                        "summary": "Invalid ticker"
+                                        "summary": "Invalid symbol"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid ticker."
+                        "description": "Invalid symbol."
                     },
                     "429": {
                         "content": {
@@ -2371,19 +2371,19 @@
                 "x-mdx-path": "v2/malaysia/klse-sectors"
             }
         },
-        "/v2/listing-performance/{ticker}/": {
+        "/v2/listing-performance/{symbol}/": {
             "get": {
                 "operationId": "listing_performance_retrieve",
-                "description": "Returns price change percentages since listing date for a given IDX-listed ticker, across 7, 30, 90, and 365-day windows.\n\n<Note>Listing performance data is only available for tickers listed **after May 2005**.</Note>\n\n<Note>IDX ticker: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `GOTO`, `BREN`, `BUKA`.</Note>",
+                "description": "Returns price change percentages since listing date for a given IDX-listed symbol, across 7, 30, 90, and 365-day windows.\n\n<Note>Listing performance data is only available for tickers listed **after May 2005**.</Note>\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `GOTO`, `BREN`, `BUKA`.</Note>",
                 "summary": "Company IPO & Listing Performance",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "ticker",
+                        "name": "symbol",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "IDX ticker symbol. E.g. `ARTO`, `BREN`, `GOTO`.",
+                        "description": "IDX symbol symbol. E.g. `ARTO`, `BREN`, `GOTO`.",
                         "required": true
                     }
                 ],
@@ -2431,14 +2431,14 @@
                                 "examples": {
                                     "NotFound": {
                                         "value": {
-                                            "error": "Given stock ticker does not exist for this data."
+                                            "error": "Given stock symbol does not exist for this data."
                                         },
                                         "summary": "Not found"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid or unavailable ticker."
+                        "description": "Invalid or unavailable symbol."
                     },
                     "429": {
                         "content": {
@@ -2665,7 +2665,7 @@
         "/v2/mining/companies/": {
             "get": {
                 "operationId": "mining_companies_retrieve",
-                "description": "Searches for Indonesian mining companies by name, ticker, slug, or key operation. Supports filtering by commodity type and company type.",
+                "description": "Searches for Indonesian mining companies by name, symbol, slug, or key operation. Supports filtering by commodity type and company type.",
                 "summary": "List Mining Companies",
                 "parameters": [
                     {
@@ -2700,7 +2700,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Search across company name, IDX ticker, slug, and key operations (case-insensitive)."
+                        "description": "Search across company name, IDX symbol, slug, and key operations (case-insensitive)."
                     },
                     {
                         "in": "query",
@@ -4952,7 +4952,7 @@
         "/v2/news/": {
             "get": {
                 "operationId": "news_retrieve",
-                "description": "Returns paginated news articles from either the IDX (Indonesian Stock Exchange) or mining news sources. Use the `extension` parameter to choose the data source — each extension has its own set of valid filter parameters.\n\n<Warning>Mixing IDX and mining parameters will return a 400 error. E.g. passing `sector` with `extension=mining` is invalid.</Warning>\n\n<Accordion title=\"IDX Extension Parameters (extension=idx)\">\n- **sector**: Comma-separated sector slugs (kebab-case). Get values from the [Subsectors](./helper-list/subsectors) endpoint.\n- **sub_sector**: Comma-separated subsector slugs (kebab-case). E.g. `banks`, `insurance`, `retailing`. Get valid values from the [Subsectors](./helper-list/subsectors) endpoint.\n- **tags**: Comma-separated tag slugs. Get values from the [News Tags](./helper-list/tags) endpoint.\n- **tickers**: Comma-separated IDX ticker symbols. E.g. `BBCA,BBRI,BMRI`.\n</Accordion>\n\n<Accordion title=\"Mining Extension Parameters (extension=mining)\">\n- **keyword**: Full-text search on article titles (case-insensitive).\n- **commodity_type**: Filter by commodity. E.g. `Coal`, `Nickel`, `Gold`.\n</Accordion>",
+                "description": "Returns paginated news articles from either the IDX (Indonesian Stock Exchange) or mining news sources. Use the `extension` parameter to choose the data source — each extension has its own set of valid filter parameters.\n\n<Warning>Mixing IDX and mining parameters will return a 400 error. E.g. passing `sector` with `extension=mining` is invalid.</Warning>\n\n<Accordion title=\"IDX Extension Parameters (extension=idx)\">\n- **sector**: Comma-separated sector slugs (kebab-case). Get values from the [Subsectors](./helper-list/subsectors) endpoint.\n- **sub_sector**: Comma-separated subsector slugs (kebab-case). E.g. `banks`, `insurance`, `retailing`. Get valid values from the [Subsectors](./helper-list/subsectors) endpoint.\n- **tags**: Comma-separated tag slugs. Get values from the [News Tags](./helper-list/tags) endpoint.\n- **symbols**: Comma-separated IDX symbols. E.g. `BBCA,BBRI,BMRI`.\n- **keyword**: Case-insensitive substring match on article title.\n</Accordion>\n\n<Accordion title=\"Mining Extension Parameters (extension=mining)\">\n- **keyword**: Case-insensitive substring match on article title.\n- **commodity_type**: Filter by commodity. E.g. `Coal`, `Nickel`, `Gold`.\n</Accordion>",
                 "summary": "News Articles",
                 "parameters": [
                     {
@@ -5023,14 +5023,6 @@
                     },
                     {
                         "in": "query",
-                        "name": "tickers",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "**IDX only.** Comma-separated ticker symbols. E.g. `BBCA,BBRI`."
-                    },
-                    {
-                        "in": "query",
                         "name": "extension",
                         "schema": {
                             "type": "string",
@@ -5048,7 +5040,15 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "**Mining only.** Full-text search on article titles."
+                        "description": "Case-insensitive substring match on article title. Works for both IDX and mining."
+                    },
+                    {
+                        "in": "query",
+                        "name": "symbols",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "**IDX only.** Comma-separated IDX symbols. E.g. `BBCA,BBRI`."
                     }
                 ],
                 "tags": [
@@ -5078,6 +5078,7 @@
                                                     "title": "1 Inti Dot Com buy Shares of PT NFC Indonesia Tbk",
                                                     "body": "...",
                                                     "source": "https://...",
+                                                    "thumbnail": "https://cdn.example.com/news/nfcx-thumb.jpg",
                                                     "timestamp": "2026-03-06T10:46:27",
                                                     "sector": "technology",
                                                     "sub_sector": [
@@ -5086,7 +5087,7 @@
                                                     "tags": [
                                                         "Insider Trading"
                                                     ],
-                                                    "tickers": [
+                                                    "symbols": [
                                                         "NFCX.JK"
                                                     ],
                                                     "dimension": null
@@ -5432,16 +5433,16 @@
         "/v2/sgx/company/report/": {
             "get": {
                 "operationId": "sgx_company_report_retrieve",
-                "description": "<Note>SGX ticker: 3 characters (letters or digits), optionally followed by `.si` (case-insensitive). E.g. `D05`, `U11`, `Z74`.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d/1m/1y/3y/ytd), all-time price highs/lows\n- **valuation**: PE, PS, PCF, PB ratios\n- **financials**: Historical revenue and earnings by year, EPS, margins, ratios\n- **dividend**: Dividend yield, growth rate, payout ratio, historical dividends\n</Accordion>",
-                "summary": "Full company report for an SGX-listed ticker",
+                "description": "<Note>SGX symbol: 3 characters (letters or digits), optionally followed by `.si` (case-insensitive). E.g. `D05`, `U11`, `Z74`.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d/1m/1y/3y/ytd), all-time price highs/lows\n- **valuation**: PE, PS, PCF, PB ratios\n- **financials**: Historical revenue and earnings by year, EPS, margins, ratios\n- **dividend**: Dividend yield, growth rate, payout ratio, historical dividends\n</Accordion>",
+                "summary": "Full company report for an SGX-listed symbol",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "ticker",
+                        "name": "symbol",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "SGX ticker symbol. E.g. `D05`, `U11`, `Z74`.",
+                        "description": "SGX symbol symbol. E.g. `D05`, `U11`, `Z74`.",
                         "required": true
                     },
                     {
@@ -5533,16 +5534,16 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidTicker": {
+                                    "InvalidSymbol": {
                                         "value": {
-                                            "error": "Please provide a valid stock ticker."
+                                            "error": "Please provide a valid stock symbol."
                                         },
-                                        "summary": "Invalid ticker"
+                                        "summary": "Invalid symbol"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid ticker or section."
+                        "description": "Invalid symbol or section."
                     },
                     "429": {
                         "content": {
@@ -5567,19 +5568,19 @@
                 "x-mdx-path": "v2/singapore/sgx-report"
             }
         },
-        "/v2/sgx/company/report/{ticker}/": {
+        "/v2/sgx/company/report/{symbol}/": {
             "get": {
                 "operationId": "sgx_company_report_retrieve_2",
-                "description": "<Note>SGX ticker: 3 characters (letters or digits), optionally followed by `.si` (case-insensitive). E.g. `D05`, `U11`, `Z74`.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d/1m/1y/3y/ytd), all-time price highs/lows\n- **valuation**: PE, PS, PCF, PB ratios\n- **financials**: Historical revenue and earnings by year, EPS, margins, ratios\n- **dividend**: Dividend yield, growth rate, payout ratio, historical dividends\n</Accordion>",
-                "summary": "Full company report for an SGX-listed ticker",
+                "description": "<Note>SGX symbol: 3 characters (letters or digits), optionally followed by `.si` (case-insensitive). E.g. `D05`, `U11`, `Z74`.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d/1m/1y/3y/ytd), all-time price highs/lows\n- **valuation**: PE, PS, PCF, PB ratios\n- **financials**: Historical revenue and earnings by year, EPS, margins, ratios\n- **dividend**: Dividend yield, growth rate, payout ratio, historical dividends\n</Accordion>",
+                "summary": "Full company report for an SGX-listed symbol",
                 "parameters": [
                     {
                         "in": "path",
-                        "name": "ticker",
+                        "name": "symbol",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "SGX ticker symbol. E.g. `D05`, `U11`, `Z74`.",
+                        "description": "SGX symbol symbol. E.g. `D05`, `U11`, `Z74`.",
                         "required": true
                     },
                     {
@@ -5671,16 +5672,16 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidTicker": {
+                                    "InvalidSymbol": {
                                         "value": {
-                                            "error": "Please provide a valid stock ticker."
+                                            "error": "Please provide a valid stock symbol."
                                         },
-                                        "summary": "Invalid ticker"
+                                        "summary": "Invalid symbol"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid ticker or section."
+                        "description": "Invalid symbol or section."
                     },
                     "429": {
                         "content": {
@@ -6628,7 +6629,7 @@
                     "symbol": {
                         "type": "string",
                         "nullable": true,
-                        "description": "IDX ticker symbol. E.g. `BBCA`."
+                        "description": "IDX symbol symbol. E.g. `BBCA`."
                     },
                     "transaction_type": {
                         "type": "string",
@@ -6861,7 +6862,7 @@
                     "symbol": {
                         "type": "string",
                         "nullable": true,
-                        "description": "IDX ticker symbol."
+                        "description": "IDX symbol symbol."
                     },
                     "company_type": {
                         "type": "string",
@@ -6983,7 +6984,7 @@
                     "symbol": {
                         "type": "string",
                         "nullable": true,
-                        "description": "IDX ticker symbol, if listed."
+                        "description": "IDX symbol symbol, if listed."
                     },
                     "company_type": {
                         "type": "string",
@@ -7849,12 +7850,17 @@
                         },
                         "description": "Tag slugs (IDX only)."
                     },
-                    "tickers": {
+                    "symbols": {
                         "type": "array",
                         "items": {
                             "type": "string"
                         },
-                        "description": "Related ticker symbols (IDX only)."
+                        "description": "Related IDX symbols (IDX only)."
+                    },
+                    "thumbnail": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Thumbnail image URL (IDX only)."
                     },
                     "dimension": {
                         "type": "string",
@@ -7938,7 +7944,7 @@
                     "symbol": {
                         "type": "string",
                         "nullable": true,
-                        "description": "IDX ticker."
+                        "description": "IDX symbol."
                     },
                     "percentage_ownership": {
                         "type": "number",
@@ -7967,7 +7973,7 @@
                     "symbol": {
                         "type": "string",
                         "nullable": true,
-                        "description": "IDX ticker."
+                        "description": "IDX symbol."
                     },
                     "percentage_ownership": {
                         "type": "number",
