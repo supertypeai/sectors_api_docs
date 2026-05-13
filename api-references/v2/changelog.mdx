@@ -3,6 +3,11 @@ title: v2 Changelog
 sidebarTitle: Changelog
 ---
 
+## 2026-05-12
+
+- **v1 fully discontinued.** All `/v1/*` endpoints now return HTTP 410 Gone with `Deprecation`, `Sunset`, and `Link: rel="successor-version"` headers pointing to v2. See the [Migration Guide](/get-started/v2/migration-guide).
+- API v2 is now the official and only supported version. v2 ships with a feature-enriched company screener powered by natural-language queries (NLQ) for IDX. SGX NLQ support is rolling out next.
+
 ## 2026-03-06
 
 - **Migration Guide Released**: Added comprehensive [migration guide](/get-started/v2/migration-guide) with step-by-step instructions for upgrading from v1 to v2

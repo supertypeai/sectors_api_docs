@@ -6,7 +6,7 @@ icon: "arrow-right-arrow-left"
 ---
 
 <Warning>
-**v1 Deprecation:** Sectors Financial API v1 will be deprecated and discontinued at the end of March 2026. Please migrate to v2 as soon as possible.
+**v1 Discontinued:** Sectors Financial API v1 was discontinued on **2026-05-11**. All `/v1/*` endpoints now return HTTP 410 Gone. Migrate to v2 immediately if you have not already.
 </Warning>
 
 ## Overview
@@ -275,7 +275,7 @@ fetch(`${url}?${paramsNL}`, { headers })
     Test all endpoints in a development environment to ensure responses match expectations.
   </Step>
   <Step title="Deploy">
-    Roll out the migration to production before the v1 deprecation deadline (end of March 2026).
+    v1 was discontinued on **2026-05-11**. Any remaining v1 calls will return HTTP 410 Gone — migrate immediately.
   </Step>
 </Steps>
 
