@@ -73,14 +73,14 @@
   ],
   "navigation": [
     {
-      "group": "",
+      "group": "Getting Started",
       "version": "v1",
       "pages": [
         "get-started/overview"
       ]
     },
     {
-      "group": "",
+      "group": "Getting Started",
       "version": "v2",
       "pages": [
         "get-started/v2/overview",
