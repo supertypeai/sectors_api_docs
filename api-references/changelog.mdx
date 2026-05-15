@@ -7,20 +7,16 @@ sidebarTitle: Changelog
 
 Sectors Financial API v1 has been discontinued. All `/v1/*` endpoints now return HTTP 410 Gone. Please migrate to [v2](/get-started/v2/overview) using the [Migration Guide](/get-started/v2/migration-guide).
 
----
+## 2026-01-09
 
 - Added new available index `idxvesta28` to the companies by index endpoint
-
   - [https://api.sectors.app/v1/index/idxvesta28/](../api-references/helper-list/companies-index)
 
 - Modified [KLSE company report endpoint](../api-references/malaysia/klse-company-report) response
-
   - Removed `five_year_eps_growth`, `five_year_sales_growth`, `five_year_capital_spending_growth`, `asset_turnover`, `inventory_turnover_ttm`, `receivable_turnover` from the `financials` response section
 
 - Modified [IDX company quarterly financials endpoint](../api-references/report/company-quarterly-financials) response
-
   - Renamed the following parameters:
-  
     - `net_operating_cash_flow` to `operating_cash_flow`
 
     - `total_current_liabilities` to `current_liabilities`
@@ -40,22 +36,19 @@ Sectors Financial API v1 has been discontinued. All `/v1/*` endpoints now return
 ## 2025-12-16
 
 - Modified [IDX company report endpoint](../api-references/report/company) response
-
   - Added `historical_eps` parameter to the `financials` response section
   - Added `tags`, `indices`, `affiliates` to the `overview` response section
   - Optimized the structure of `all_time_price` in the the `overview` response section and `historical_dividends` in the `dividend` response section for better querying efficiency
   - Removed `annual_yield` from the `dividend` response section in support of the new and more complete `historical_dividends`
 
 - Optimized the structure of the following payloads in the [IDX subsector report endpoint](../api-references/report/subsector)
-
   - `weighted_avg_growth_data` and `growth_forecasts` parameters in the `growth` response section
   - `historical_valuation` in the `valuation` response section
   - `top_change_companies` and `top_companies` in the `companies` response section
-  
+
   These optimizations include changing the structure from an array of JSONB into JSONB, for a better querying efficiency
 
 - Optimized the structure of the following payloads in the [SGX company report endpoint](../api-references/singapore/sgx-company-report) for better querying efficiency
-
   - `all_time_price` in the `overview` response section
   - `historical_financials` in the `financials` response section
   - `historical_dividends` in the `dividend` response section
@@ -63,29 +56,23 @@ Sectors Financial API v1 has been discontinued. All `/v1/*` endpoints now return
 ## 2025-09-25
 
 - Modified `financials` response section of the [SGX company report endpoint](../api-references/singapore/sgx-company-report)
-
-  -  Combined `historical_earnings` and `historical_revenue` parameters to `historical_financials` parameter
+  - Combined `historical_earnings` and `historical_revenue` parameters to `historical_financials` parameter
 
 ## 2025-07-14
 
 - Added new endpoint to get a list of IDX company filings, with optional filtering conditions, pagination, or top‑N retrieval
-
   - [https://api.sectors.app/v1/filings/](../api-references/news/filings)
 
 - Added new endpoint to get a list of IDX news articles, with optional filtering conditions, pagination, or top‑N retrieval
-
   - [https://api.sectors.app/v1/news/](../api-references/news/news)
 
 - Added new endpoint to get all available tags of news articles and company fillings
-
   - [https://api.sectors.app/v1/tags/](../api-references/helper-list/tags)
 
 - Added new `sub_industry` and `include_none` query parameters to top companies ranked endpoint
-
   - [https://api.sectors.app/v1/companies/top/?sub_industry=\{sub_industry}&include_none=false](../api-references/ranking/top-tickers)
 
 - Added new `sort_by` and `desc` query parameters to companies endpoint
-
   - [https://api.sectors.app/v1/companies/?sort_by=symbol&desc=false](../api-references/helper-list/companies-list)
 
 ## 2025-05-21
@@ -93,13 +80,11 @@ Sectors Financial API v1 has been discontinued. All `/v1/*` endpoints now return
 - Added new `financials_sector_metrics` parameter to the [company quarterly financials endpoint](../api-references/report/company-quarterly-financials) response
 
 - Modified the `financials` section of the [IDX company report endpoint](../api-references/report/company) response
-
   - Added `outstanding_shares`, `prepaird_assets`, `retained_earnings`, and `inventories` (only for non-bank companies) to the `historical_financials` parameter
 
 ## 2025-04-24
 
 - Modified [SGX company report endpoint](../api-references/singapore/sgx-company-report) response
-
   - Added `all_time_price` parameter to the `overview` response section
   - Removed `pe_ttm`, `ps_ttm`, and `pcf_ttm` parameters from the `valuation` response section
   - Added `ps` parameter to the `valuation` response section
@@ -110,26 +95,20 @@ Sectors Financial API v1 has been discontinued. All `/v1/*` endpoints now return
 ## 2025-04-08
 
 - Added new `filters` and `logic` query parameters to top companies ranked endpoint
-
   - [https://api.sectors.app/v1/companies/top/?filters=\{filters}&logic=and](../api-references/ranking/top-tickers)
 
 - Modified and added new parameters to the [company quarterly financials endpoint](../api-references/report/company-quarterly-financials) response
 
 - Added new `n_quarters` query parameter to company quarterly financials endpoint
-
   - [https://api.sectors.app/v1/financials/quarterly/\{ticker}/?n_quarters=\{n_quarters}](../api-references/report/company-quarterly-financials)
 
 - Modified [SGX company report endpoint](../api-references/singapore/sgx-company-report) response
-
   - Added new parameters to the `overview` response section
   - Modified data format of the `historical_earnings` and `historical_valuation` parameters under the `financials` response section
-
-
 
 ## 2025-02-12
 
 - Modified [IDX company report endpoint](../api-references/report/company) response
-
   - Added `all_time_price` parameter to the `overview` response section
   - Moved `price_cash_flow`, `enterprise_to_revenue`, `enterprise_to_ebitda`, and `peg_ratio` parameters to be parts of the `historical_valuation` parameter under the `valuation` response section
   - Modified and added some parameters to the `financials`, `dividend`, `ownership`, and `peers` response sections
@@ -137,17 +116,14 @@ Sectors Financial API v1 has been discontinued. All `/v1/*` endpoints now return
 ## 2025-01-10
 
 - Added new endpoint to get available quarterly financial dates of a given ticker
-
   - [https://api.sectors.app/v1/company/get_quarterly_financial_dates/\{ticker}/](../api-references/helper-list/company-quarterly-dates)
 
 - Added new `approx` query parameter to company quarterly financials endpoint
-
   - [https://api.sectors.app/v1/financials/quarterly/\{ticker}/?approx=true](../api-references/report/company-quarterly-financials)
 
 ## 2025-01-03
 
 - Added new endpoints to get list of companies in SGX and KLSE Index from a sector
-
   - [https://api.sectors.app/v1/sgx/companies/?sector=\{sector}](../api-references/singapore/sgx-companies-by-sector)
   - [https://api.sectors.app/v1/klse/companies/?sector=\{sector}](../api-references/malaysia/klse-companies-by-sector)
 
@@ -157,13 +133,11 @@ Sectors Financial API v1 has been discontinued. All `/v1/*` endpoints now return
 ## 2024-11-04
 
 - Added new endpoints to get data of Singapore stocks (SGX)
-
   - [https://api.sectors.app/v1/sgx/sectors/](../api-references/singapore/sgx-sector)
   - [https://api.sectors.app/v1/sgx/company/report/\{ticker}/](../api-references/singapore/sgx-company-report)
   - [https://api.sectors.app/v1/sgx/companies/top/](../api-references/singapore/sgx-top-companies)
 
 - Added new endpoints to get data of Malaysia stocks (KLSE)
-
   - [https://api.sectors.app/v1/klse/sectors/](../api-references/malaysia/klse-sector)
   - [https://api.sectors.app/v1/klse/company/report/\{ticker}/](../api-references/malaysia/klse-company-report)
   - [https://api.sectors.app/v1/klse/companies/top/](../api-references/malaysia/klse-top-companies)
@@ -171,38 +145,32 @@ Sectors Financial API v1 has been discontinued. All `/v1/*` endpoints now return
 ## 2024-10-20
 
 - Added `idxvesta28` (IDX-Infovesta Multi-Factor 28) as a new index in index-related endpoints
-
   - [https://api.sectors.app/v1/index/idxvesta28/](../api-references/helper-list/companies-index)
   - [https://api.sectors.app/v1/index-daily/idxvesta28/](../api-references/transaction/index-daily-transaction)
 
 ## 2024-10-02
 
 - Added `economic30` (IDX Cyclical Economy 30) as a new index in index-related endpoints
-
   - [https://api.sectors.app/v1/index/economic30/](../api-references/helper-list/companies-index)
   - [https://api.sectors.app/v1/index-daily/economic30/](../api-references/transaction/index-daily-transaction)
 
 ## 2024-09-25
 
 - Added `pb`, `pe`, & `ps` classifications in top companies endpoint
-
   - [https://api.sectors.app/v1/companies/top/?classifications=pb,pe,ps](../api-references/ranking/top-tickers)
 
 - Added new `min_mcap_billion` query parameter to top companies endpoint
-
   - [https://api.sectors.app/v1/companies/top/?min_mcap_billion=5000](../api-references/ranking/top-tickers)
 
 ## 2024-08-23
 
 - Added new `min_mcap_billion` query parameter to top company movers and top companies by growth metrics endpoints
-
   - [https://api.sectors.app/v1/companies/top-changes/?min_mcap_billion=5000](../api-references/ranking/top-changes)
   - [https://api.sectors.app/v1/companies/top-growth/?min_mcap_billion=5000](../api-references/ranking/top-growth)
 
 ## 2024-08-13
 
 - Added `market_cap` classification in top companies endpoint
-
   - [https://api.sectors.app/v1/companies/top/?classifications=market_cap](../api-references/ranking/top-tickers)
 
 - Added new endpoint to get top company movers
@@ -210,47 +178,38 @@ Sectors Financial API v1 has been discontinued. All `/v1/*` endpoints now return
   -[https://api.sectors.app/v1/companies/top-changes/](../api-references/ranking/top-changes)
 
 - Added new endpoint to get the top companies by growth metrics
-
   - [https://api.sectors.app/v1/companies/top-growth/](../api-references/ranking/top-growth)
 
 - Added new query parameters to support finding the following data by subsector
-
   - [https://api.sectors.app/v1/companies/top/?sub_sector=\{sub_sector}](../api-references/ranking/top-tickers)
   - [https://api.sectors.app/v1/most-traded/?sub_sector=\{sub_sector}](../api-references/ranking/most-traded)
 
 ## 2024-07-31
 
 - Added new query parameters to support finding companies by industries
-
   - [https://api.sectors.app/v1/companies/?sub_industry=\{sub_industry}](../api-references/helper-list/companies-list)
 
 - Added new endpoint to support finding companies by index
-
   - [https://api.sectors.app/v1/index/\{index}/](../api-references/helper-list/companies-index)
 
 - Added new endpoint to support finding companies with revenue and cost segments
-
   - [https://api.sectors.app/v1/companies/list_companies_with_segments/](../api-references/helper-list/companies-segment-list)
 
 - Added `company_name` to the return value of most API endpoints
-
   - [https://api.sectors.app/v1/companies/](../api-references/helper-list/companies-list)
   - [https://api.sectors.app/v1/companies/top/](../api-references/ranking/top-tickers)
   - [https://api.sectors.app/v1/most-traded/](../api-references/ranking/most-traded)
   - These endpoints now return `company_name` in addition to `symbol`
 
 - Change `sector/report` to `subsector/report`
-
   - [https://api.sectors.app/v1/subsector/report/\{sub_sector}/](../api-references/report/subsector)
 
 ## 2024-07-11
 
 - Added new endpoint to get daily transaction of an index
-
   - [https://api.sectors.app/v1/index-daily/\{index_code}/](../api-references/transaction/index-daily-transaction)
 
 - Removed `analyst_rating` properties on company report endpoint.
 
 - Added `analyst_rating_breakdown` and `technical_rating_reakdown` properties on company report endpoint inside `future` section
-
   - [https://api.sectors.app/v1/company/report/\{ticker}/?sections=future](../api-references/report/company)
