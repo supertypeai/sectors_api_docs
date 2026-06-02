@@ -48,34 +48,9 @@ Before beginning, make sure you have:
 
 ## Quick Start Setup
 
-### Claude Desktop
-Open your Claude Desktop config file:
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-
-Add the following to your `mcpServers` object:
-
-```json
-{
-  "mcpServers": {
-    "sectors": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "https://sectors-mcp.supertype.ai/sse",
-        "--header",
-        "Authorization:${AUTH_TOKEN}"
-      ],
-      "env": {
-        "AUTH_TOKEN": "Bearer YOUR_API_KEY_HERE"
-      }
-    }
-  }
-}
-```
-
-Replace `YOUR_API_KEY_HERE` with your Sectors Financial API key, then restart Claude Desktop. The Sectors tools will appear in the tools panel.
+<Note>
+  **Using Claude (web or desktop)?** Skip this section — Claude supports a one-click OAuth custom connector that doesn't require an API key in a config file. See [Connect Sectors to Claude with OAuth](/recipes/sectors-for-ai-agents/02-sectors-in-claude).
+</Note>
 
 ### Claude Code
 Run the following command in your terminal:
@@ -348,27 +323,6 @@ Restart your client completely after adding the config — most clients only loa
 
 **VS Code keeps prompting me for the API key on every session.**
 This is expected behavior. The VS Code config uses `${input:sectors-api-key}` which prompts you once per session and stores it securely in memory. It won't persist across restarts by design.
-
-**I'm on Windows and the server fails to connect in Claude Desktop.**
-Claude Desktop on Windows runs MCP servers via stdio, which requires wrapping `npx` calls with `cmd /c`. Update your config to:
-
-```json
-{
-  "mcpServers": {
-    "sectors": {
-      "command": "cmd",
-      "args": [
-        "/c", "npx", "-y", "mcp-remote",
-        "https://sectors-mcp.supertype.ai/sse",
-        "--header", "Authorization:${AUTH_TOKEN}"
-      ],
-      "env": {
-        "AUTH_TOKEN": "Bearer YOUR_API_KEY_HERE"
-      }
-    }
-  }
-}
-```
 
 ---
 

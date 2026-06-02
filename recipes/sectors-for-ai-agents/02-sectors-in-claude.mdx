@@ -1,0 +1,126 @@
+---
+title: "Connect Sectors to Claude with OAuth"
+sidebarTitle: "3. Sectors in Claude"
+---
+
+## Overview
+
+Sectors is available as a **custom connector** inside Claude — connect once with OAuth and Claude can pull live IDX, SGX, and KLSE data into any conversation. No API key to paste into a config file, no JSON to edit, and access is revocable from your Sectors dashboard at any time.
+
+This guide covers the OAuth flow on **claude.ai (web)** and the **Claude Desktop** app. If you're setting up Claude Code, Cursor, VS Code, or any other SSE-based client, see [Use Sectors MCP Server for Financial Analysis](/recipes/sectors-for-ai-agents/00-sectors-mcp-guide).
+
+| Setup style | Best for | Auth | Endpoint |
+|---|---|---|---|
+| **OAuth custom connector** (this guide) | claude.ai, Claude Desktop | Browser sign-in | `https://sectors-mcp.supertype.ai/mcp` |
+| API key + SSE | Claude Code, Cursor, VS Code, JetBrains | `Bearer YOUR_API_KEY` header | `https://sectors-mcp.supertype.ai/sse` |
+
+## Prerequisites
+
+1. **A Sectors account on an Insider plan.**
+<Card title="Sign up for Insider" horizontal icon="key" href="https://sectors.app">
+  Required to authorize the connector and make API requests.
+</Card>
+
+2. **Claude on web or desktop** — sign in at [claude.ai](https://claude.ai) or install the [Claude Desktop app](https://claude.ai/download). The Connectors UI shown below is available on both surfaces.
+
+## Setup on claude.ai (Web)
+
+<Steps>
+  <Step title="Open Customize">
+    In the Claude sidebar, click **Customize**.
+
+    <Frame>
+      <img className="block" src="/images/sectors-mcp/claude-1.png" alt="Claude sidebar with Customize highlighted" />
+    </Frame>
+  </Step>
+
+  <Step title="Open Connectors">
+    In the Customize panel, click **Connectors**.
+
+    <Frame>
+      <img className="block" src="/images/sectors-mcp/claude-2.png" alt="Customize panel with Connectors highlighted" />
+    </Frame>
+  </Step>
+
+  <Step title="Add a custom connector">
+    Click the **+** button at the top of the Connectors list and choose **Add custom connector**.
+
+    <Frame>
+      <img className="block" src="/images/sectors-mcp/claude-3.png" alt="Add custom connector menu" />
+    </Frame>
+  </Step>
+
+  <Step title="Enter the Sectors connector details">
+    In the dialog, set:
+
+    - **Name**: `Sectors`
+    - **URL**: `https://sectors-mcp.supertype.ai/mcp`
+
+    Leave the advanced settings at their defaults and click **Add**.
+
+    <Frame>
+      <img className="block" src="/images/sectors-mcp/claude-4.png" alt="Add custom connector dialog with Sectors name and MCP URL" />
+    </Frame>
+  </Step>
+
+  <Step title="Authorize access">
+    Claude opens the Sectors authorization page in a new window. Review the requested permission (**Read access to Sectors API**) and click **Allow Access**.
+
+    <Frame>
+      <img className="block" src="/images/sectors-mcp/claude-5.png" alt="Sectors OAuth authorize access screen" />
+    </Frame>
+
+    Sign in to your Sectors account if you aren't already. Your existing subscription limits and credits apply to all requests made through the connector.
+  </Step>
+
+  <Step title="Confirm the connection">
+    Back in Connectors, **Sectors Mcp** now appears under **Web** with all 40 tools listed. From here you can toggle tool permissions individually (Always allow / Ask / Never) using the icons on the right of each tool row.
+
+    <Frame>
+      <img className="block" src="/images/sectors-mcp/claude-6.png" alt="Sectors MCP connected with 40 tools listed" />
+    </Frame>
+  </Step>
+</Steps>
+
+## Setup on Claude Desktop
+
+Claude Desktop uses the same Connectors UI as the web app. Open the Desktop app, click your profile → **Customize** → **Connectors**, then follow steps 3–6 above. The connector you add is synced to your Claude account, so a connector added on the web will also appear in Desktop and vice versa.
+
+<Note>
+  Make sure you're on a recent version of Claude Desktop. If **Connectors** doesn't appear under **Customize**, update the app from [claude.ai/download](https://claude.ai/download) and restart it.
+</Note>
+
+## Verify It Works
+
+Open a new chat and try:
+
+> Give me an overview of Bank Central Asia (BBCA) using the Sectors connector.
+
+Claude will request permission to call `fetch-company-report` (unless you've already set it to **Always allow**), then return the company's sector, market cap, last close price, and index memberships.
+
+If the tool call succeeds, you're done. For more example prompts and the full tools reference, see the [main Sectors MCP guide](/recipes/sectors-for-ai-agents/00-sectors-mcp-guide#usage-examples).
+
+## Managing Access
+
+- **Tool permissions** — In **Customize → Connectors → Sectors Mcp**, expand the tools list and set each tool to **Always allow**, **Ask**, or **Never**. This is per-tool and per-user.
+- **Disconnect** — Click **Disconnect** at the top of the connector panel to remove it from Claude.
+- **Revoke from Sectors** — You can also revoke the OAuth grant from your Sectors dashboard. After revoking, Claude tool calls will start failing with a 401 until you reconnect.
+
+## Troubleshooting
+
+**The connector doesn't show up after I add it.**
+Refresh the Connectors page, or close and reopen Claude. If you added it on Desktop and don't see it on the web (or vice versa), give it a few seconds — sync isn't always instant.
+
+**Authorization loops back to the login screen.**
+This usually means you're signed into the wrong Sectors account, or your session has expired. Open [sectors.app](https://sectors.app) in the same browser, confirm you're signed in, then retry the connector authorization.
+
+**Tools return `401 Unauthorized` after authorizing.**
+The OAuth grant may have been revoked from your Sectors dashboard, or your Insider subscription has lapsed. Reconnect the connector — Claude will redirect you to authorize again.
+
+**A tool returns an empty array.**
+Same causes as the SSE flow: wrong subsector slug, ticker not found, or a date range with no trading days. See the [data & coverage FAQ](/recipes/sectors-for-ai-agents/00-sectors-mcp-guide#data-coverage) in the main guide.
+
+## Next Steps
+
+- [Full tools reference and usage examples](/recipes/sectors-for-ai-agents/00-sectors-mcp-guide#tools-reference) — all 40 tools, what they return, key parameters.
+- [Sectors Agent Skills](/recipes/sectors-for-ai-agents/01-agent-skills-guide) — alternative integration that ships as a Claude Skill instead of an MCP connector.
