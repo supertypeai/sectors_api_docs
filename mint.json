@@ -346,6 +346,12 @@
       ]
     },
     {
+      "group": "How to Benchmark IDX Banking Stocks Using Python and the Sectors API",
+      "pages": [
+        "recipes/benchmarking-idx-banking-stocks-sectors-api/benchmarking-idx-banking-stocks-sectors-api"
+      ]
+    },
+    {
       "group": "Financial Analytics w/ Streamlit",
       "pages": [
         {
