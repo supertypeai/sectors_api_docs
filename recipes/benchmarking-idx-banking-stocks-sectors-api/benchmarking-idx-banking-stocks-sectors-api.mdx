@@ -1,0 +1,438 @@
+---
+title: "How to Benchmark IDX Banking Stocks Using Python and the Sectors API "
+sidebarTitle: "IDX Banking Benchmark"
+description: "By: [Alya Dwinanda](https://github.com/flytosevensky) · June 5, 2026"
+---
+
+## Summary
+
+Banking stocks make up the largest weight in the IDX Composite and are the most actively covered sector on the Indonesia Stock Exchange. Yet most analysts evaluate them in isolation — looking at BBCA without asking whether BMRI offers more value per unit of ROE, or whether BNGA's efficiency profile is improving or deteriorating.
+
+This tutorial builds a repeatable, automated benchmarking workflow that pulls live quarterly financial data for seven major IDX banks using the **Sectors API v2**, computes sector-relative metrics from first principles, and produces both a structured comparison table and three publication-ready charts — all in Google Colab or any Python environment.
+
+**Who this is for:** Financial analysts, equity researchers, and investment professionals who cover Indonesian banking stocks and want to move beyond manual data-gathering.
+
+**What you'll produce:** A 9-cell Python notebook that fetches live bank fundamentals, builds a multi-metric comparison table, and renders bar charts, a bubble chart, and a heatmap.
+
+<Note>
+  **API version note:** This tutorial uses the **Sectors Financial API v2** exclusively. API v1 was discontinued on 2026-05-11 and all `/v1/*` endpoints now return HTTP 410 Gone.
+</Note>
+
+## Why This Matters
+
+The IDX banking sector spans 48 listed institutions ranging from state-owned giants like BMRI and BBRI to digital-native banks like ARTO and BBSI. Picking the right bank requires understanding where each sits relative to peers on four axes that matter most in banking:
+
+- **Return quality** — ROE (return on equity) and ROA (return on assets)
+- **Lending spread** — NIM (net interest margin)
+- **Operational efficiency** — CIR (cost-to-income ratio)
+
+A structured benchmarking workflow delivers three things that ad-hoc analysis does not: objectivity (consistent data vintage across all banks), speed (under 30 seconds vs. 30–60 minutes manually), and repeatability (run every quarter with no extra effort).
+
+## Prerequisites
+
+| Requirement | Details |
+| --- | --- |
+| Python version | 3.9 or higher |
+| Sectors API key | Insider plan required. Get yours at [sectors.app/api](https://sectors.app/api) |
+| Python packages | `requests`, `pandas`, `matplotlib`, `numpy` |
+| Environment | Google Colab, Jupyter, or any Python environment |
+| Finance knowledge | Familiarity with ROE, ROA, NIM, and cost-to-income as banking metrics |
+
+## Step-by-Step Guide
+
+### Cell 1 — Install & Import
+
+```python
+!pip install requests pandas matplotlib numpy -q
+
+import requests
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
+import numpy as np
+from time import sleep
+```
+
+### Cell 2 — Configuration
+
+Set your API key and define the seven banks to benchmark. This universe covers the Big Four state banks (BBCA, BBRI, BMRI, BBNI), the largest Sharia-compliant bank (BRIS), and two mid-cap private banks (BNGA, MEGA).
+
+```python
+API_KEY = "your_sectors_api_key_here"  # from sectors.app/api
+headers = {"Authorization": API_KEY}
+
+BANKS = [
+    {"symbol": "BBCA", "name": "Bank Central Asia"},
+    {"symbol": "BBRI", "name": "Bank Rakyat Indonesia"},
+    {"symbol": "BMRI", "name": "Bank Mandiri"},
+    {"symbol": "BBNI", "name": "Bank Negara Indonesia"},
+    {"symbol": "BRIS", "name": "Bank Syariah Indonesia"},
+    {"symbol": "BNGA", "name": "Bank CIMB Niaga"},
+    {"symbol": "MEGA", "name": "Bank Mega"},
+]
+```
+
+### Cell 3 — Core Functions
+
+Two functions: one to fetch quarterly data from the Sectors API v2, one to compute TTM metrics from the raw response.
+
+```python
+def get_quarterly(symbol, n=4):
+    """
+    Fetch the last n quarters of financial data for a single IDX bank.
+    Uses the Sectors API v2 quarterly financials endpoint.
+    Returns a list of quarterly dicts, most recent first.
+    """
+    url = f"https://api.sectors.app/v2/financials/quarterly/{symbol}/"
+    r = requests.get(url, headers=headers, params={"n_quarters": n})
+    r.raise_for_status()
+    return r.json()
+
+
+def compute_metrics(quarters, company_name):
+    """
+    Compute trailing twelve-month (TTM) and balance sheet metrics.
+
+    TTM metrics = sum of last 4 quarters (income statement items).
+    Balance sheet metrics = latest quarter only (point-in-time).
+
+    Banking-specific metrics computed:
+      - ROE  = TTM net income / latest equity
+      - ROA  = TTM net income / latest total assets
+      - NIM  = TTM net interest income / latest total assets (approximation)
+      - CIR  = TTM operating expense / TTM revenue (lower is better)
+    """
+    latest = quarters[0]  # most recent quarter first
+
+    def safe_sum(key):
+        return sum(q.get(key) or 0 for q in quarters)
+
+    def sector_sum(key):
+        return sum((q.get("financials_sector_metrics") or {}).get(key) or 0 for q in quarters)
+
+    ttm_revenue  = safe_sum("revenue")
+    ttm_earnings = safe_sum("earnings")
+    ttm_nii      = sector_sum("net_interest_income")
+    ttm_opex     = safe_sum("operating_expense")
+    assets       = latest.get("total_assets") or 0
+    equity       = latest.get("total_equity") or 0
+
+    return {
+        "Ticker":           latest["symbol"].replace(".JK", ""),
+        "Company":          company_name,
+        "As of":            latest["date"],
+        "TTM Revenue (T)":  round(ttm_revenue  / 1e12, 1),
+        "TTM Net Inc (T)":  round(ttm_earnings / 1e12, 1),
+        "TTM NII (T)":      round(ttm_nii      / 1e12, 1),
+        "Total Assets (T)": round(assets        / 1e12, 1),
+        "Total Equity (T)": round(equity        / 1e12, 1),
+        "ROE %":  round(ttm_earnings / equity * 100, 1) if equity else None,
+        "ROA %":  round(ttm_earnings / assets * 100, 1) if assets else None,
+        "NIM %":  round(ttm_nii      / assets * 100, 1) if assets else None,
+        "CIR %":  round(ttm_opex     / ttm_revenue * 100, 1) if ttm_revenue else None,
+    }
+```
+
+**Why compute from quarterly data rather than use a pre-computed endpoint?** The quarterly endpoint is the most reliable source in the Sectors API v2. Computing TTM metrics yourself from four quarters ensures consistency across all banks — you know exactly which periods are included, and you can audit any figure back to its source quarter.
+
+### Cell 4 — Fetch Data
+
+```python
+rows = []
+
+for bank in BANKS:
+    print(f"Fetching {bank['symbol']}...", end=" ")
+    try:
+        quarters = get_quarterly(bank["symbol"], n=4)
+        rows.append(compute_metrics(quarters, bank["name"]))
+        print("✓")
+    except Exception as e:
+        print(f"✗ {type(e).__name__}: {e}")
+    sleep(0.3)  # Respect API rate limits
+
+print(f"\nDone — {len(rows)}/{len(BANKS)} banks fetched successfully")
+```
+
+Expected output:
+
+```text
+Fetching BBCA... ✓
+Fetching BBRI... ✓
+Fetching BMRI... ✓
+Fetching BBNI... ✓
+Fetching BRIS... ✓
+Fetching BNGA... ✓
+Fetching MEGA... ✓
+
+Done — 7/7 banks fetched successfully
+```
+
+### Cell 5 — Build & Display Table
+
+```python
+cols = [
+    "Ticker", "Company", "As of",
+    "TTM Revenue (T)", "TTM Net Inc (T)", "TTM NII (T)",
+    "Total Assets (T)", "Total Equity (T)",
+    "ROE %", "ROA %", "NIM %", "CIR %"
+]
+
+df = (
+    pd.DataFrame(rows)[cols]
+    .sort_values("Total Assets (T)", ascending=False)
+    .reset_index(drop=True)
+)
+
+df  # Renders as an interactive table in Colab/Jupyter
+```
+
+**Live Benchmark Results (Q1 2026, data as of 2026-03-31):**
+
+| Ticker | Company | TTM Revenue (T) | TTM Net Inc (T) | Total Assets (T) | Total Equity (T) | ROE % | ROA % | NIM % | CIR % |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| BMRI | Bank Mandiri | 153.9 | 67.6 | 2,432.6 | 313.9 | 21.5 | 2.8 | 5.5 | 39.8 |
+| BBRI | Bank Rakyat Indonesia | 208.3 | 59.5 | 2,249.8 | 345.1 | 17.2 | 2.6 | 7.1 | 47.3 |
+| BBCA | Bank Central Asia | 114.2 | 58.1 | 1,640.8 | 259.4 | 22.4 | 3.5 | 5.1 | 31.7 |
+| BBNI | Bank Negara Indonesia | 62.9 | 20.4 | 1,426.8 | 165.9 | 12.3 | 1.4 | 2.9 | 47.6 |
+| BRIS | Bank Syariah Indonesia | 27.0 | 7.9 | 460.1 | 50.8 | 15.5 | 1.7 | 4.7 | 53.2 |
+| BNGA | Bank CIMB Niaga | 17.5 | 6.9 | 368.2 | 59.1 | 11.7 | 1.9 | 4.8 | 52.8 |
+| MEGA | Bank Mega | 6.7 | 3.5 | 135.0 | 24.3 | 14.3 | 2.6 | 5.7 | 48.9 |
+
+<Info>
+  All monetary values in IDR Trillion (T). Data source: Sectors API v2, quarterly financials as of 2026-03-31.
+</Info>
+
+## Visualization
+
+### Cell 6 — Chart Setup
+
+```python
+plt.rcParams["figure.dpi"] = 130
+plt.rcParams["font.family"] = "sans-serif"
+
+COLORS = ["#1F4E79", "#2E75B6", "#4BACC6", "#70AD47", "#ED7D31", "#FFC000", "#C00000"]
+```
+
+### Cell 7 — Four Bar Charts: ROE, ROA, NIM, CIR
+
+```python
+fig, axes = plt.subplots(2, 2, figsize=(14, 9))
+fig.suptitle(
+    "IDX Banking Sector — Fundamental Benchmark",
+    fontsize=15, fontweight="bold", y=1.01
+)
+
+metrics = [
+    ("ROE %", "Return on Equity (TTM)",       "Higher = better", "#1F4E79"),
+    ("ROA %", "Return on Assets (TTM)",        "Higher = better", "#2E75B6"),
+    ("NIM %", "Net Interest Margin (approx.)", "Higher = better", "#4BACC6"),
+    ("CIR %", "Cost-to-Income Ratio",          "Lower = better",  "#ED7D31"),
+]
+
+for ax, (col, title, note, color) in zip(axes.flat, metrics):
+    # Sort: best performers on top
+    sorted_df = df.sort_values(col, ascending=(col == "CIR %"))
+    bars = ax.barh(sorted_df["Ticker"], sorted_df[col], color=color, edgecolor="white")
+
+    # Value labels
+    for bar, val in zip(bars, sorted_df[col]):
+        ax.text(
+            bar.get_width() + 0.1,
+            bar.get_y() + bar.get_height() / 2,
+            f"{val:.1f}%", va="center", fontsize=9
+        )
+
+    ax.set_title(f"{title}\n({note})", fontsize=10, fontweight="bold")
+    ax.xaxis.set_major_formatter(mtick.PercentFormatter())
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.set_xlim(0, sorted_df[col].max() * 1.25)
+
+plt.tight_layout()
+plt.savefig("bank_bar_charts.png", bbox_inches="tight")
+plt.show()
+```
+
+<Frame>
+  ![IDX Banking Sector Fundamental Benchmark - Bar Charts](/images/bank_bar_charts.png)
+</Frame>
+
+### Cell 8 — Bubble Chart: ROE vs ROA (Bubble Size = Total Assets)
+
+```python
+fig, ax = plt.subplots(figsize=(10, 6))
+
+bubble_sizes = (df["Total Assets (T)"] / df["Total Assets (T)"].max()) * 3000
+
+ax.scatter(
+    df["ROA %"], df["ROE %"],
+    s=bubble_sizes,
+    c=COLORS[:len(df)],
+    alpha=0.75,
+    edgecolors="white",
+    linewidths=1.5
+)
+
+# Label each bubble
+for _, row in df.iterrows():
+    ax.annotate(
+        row["Ticker"],
+        (row["ROA %"], row["ROE %"]),
+        textcoords="offset points",
+        xytext=(8, 4),
+        fontsize=9,
+        fontweight="bold"
+    )
+
+# Sector average reference lines
+ax.axvline(df["ROA %"].mean(), color="gray", linestyle="--", linewidth=0.8, alpha=0.6)
+ax.axhline(df["ROE %"].mean(), color="gray", linestyle="--", linewidth=0.8, alpha=0.6)
+ax.text(df["ROA %"].mean() + 0.02, ax.get_ylim()[0] + 0.3, "Avg ROA", color="gray", fontsize=8)
+ax.text(ax.get_xlim()[0] + 0.02, df["ROE %"].mean() + 0.3, "Avg ROE", color="gray", fontsize=8)
+
+# Bubble size legend
+for label, val in [("Rp 500T", 500), ("Rp 1,500T", 1500), ("Rp 2,500T", 2500)]:
+    scaled = (val / df["Total Assets (T)"].max()) * 3000
+    ax.scatter([], [], s=scaled, c="gray", alpha=0.5, label=label)
+ax.legend(title="Total Assets", frameon=False, fontsize=8)
+
+ax.set_xlabel("ROA % (Asset Efficiency)", fontsize=11)
+ax.set_ylabel("ROE % (Return Quality)", fontsize=11)
+ax.set_title(
+    "ROE vs ROA — Bubble Size = Total Assets\n"
+    "Top-right quadrant = high profitability on both dimensions",
+    fontsize=12, fontweight="bold"
+)
+ax.spines[["top", "right"]].set_visible(False)
+
+plt.tight_layout()
+plt.savefig("bank_bubble_chart.png", bbox_inches="tight")
+plt.show()
+```
+
+<Frame>
+  ![Bank Bubble Chart](/images/bank_bubble_chart.png)
+</Frame>
+
+### Cell 9 — Heatmap: Normalized Benchmark Scores
+
+```python
+heatmap_cols = ["ROE %", "ROA %", "NIM %", "CIR %"]
+heatmap_df = df.set_index("Ticker")[heatmap_cols].copy()
+
+# Normalize 0–1 per column. For CIR, invert so lower = greener.
+normalized = heatmap_df.copy()
+for col in heatmap_cols:
+    col_min, col_max = heatmap_df[col].min(), heatmap_df[col].max()
+    norm = (heatmap_df[col] - col_min) / (col_max - col_min)
+    normalized[col] = 1 - norm if col == "CIR %" else norm
+
+fig, ax = plt.subplots(figsize=(8, 5))
+im = ax.imshow(normalized.values, cmap="RdYlGn", aspect="auto", vmin=0, vmax=1)
+
+ax.set_xticks(range(len(heatmap_cols)))
+ax.set_xticklabels(heatmap_cols, fontsize=10)
+ax.set_yticks(range(len(heatmap_df)))
+ax.set_yticklabels(heatmap_df.index, fontsize=10)
+
+# Annotate each cell with its real value
+for i, ticker in enumerate(heatmap_df.index):
+    for j, col in enumerate(heatmap_cols):
+        val = heatmap_df.loc[ticker, col]
+        text_color = "black" if 0.25 < normalized.loc[ticker, col] < 0.85 else "white"
+        ax.text(j, i, f"{val:.1f}%", ha="center", va="center",
+                fontsize=9, fontweight="bold", color=text_color)
+
+ax.set_title(
+    "Benchmark Heatmap — Green = Better Performance\n"
+    "(CIR score is inverted: lower cost ratio = greener cell)",
+    fontsize=11, fontweight="bold"
+)
+plt.colorbar(im, ax=ax, label="Relative Score (0 = worst, 1 = best)")
+plt.tight_layout()
+plt.savefig("bank_heatmap.png", bbox_inches="tight")
+plt.show()
+```
+
+<Frame>
+  ![Bank Heatmap](/images/bank_heatmap.png)
+</Frame>
+
+## Expected Results
+
+After running all 9 cells you will have:
+
+1. **A benchmark DataFrame** with 7 banks × 12 metrics, sorted by total assets
+2. **Four bar charts** ranking banks by ROE, ROA, NIM, and CIR individually
+3. **A bubble chart** plotting ROE vs ROA with bubble size proportional to total assets — the top-right quadrant identifies banks that are both highly profitable and asset-efficient
+4. **A heatmap** providing an at-a-glance cross-metric ranking where green = better performance relative to sector peers
+
+All three chart files are also saved as PNG (`bank_bar_charts.png`, `bank_bubble_chart.png`, `bank_heatmap.png`) for direct use in reports or presentations.
+
+## Key Analytical Observations (Q1 2026)
+
+**BBCA leads on efficiency and return quality.** With the sector's highest ROE (22.4%) and lowest CIR (31.7%), BBCA generates the most net income per unit of cost. Its ROA of 3.5% is also the highest, meaning it extracts more profit per rupiah of assets than any peer.
+
+**BMRI is the closest challenger.** ROE of 21.5% at the sector's largest asset base (IDR 2,432T) is a strong result. Its CIR of 39.8% is the second-best in the group, indicating disciplined cost management despite scale.
+
+**BBRI leads on NIM (7.1%)** — a reflection of its micro-lending focus where spreads are structurally wider. Higher NIM comes with higher credit risk exposure, so it should be read alongside provisioning trends.
+
+**BBNI underperforms across all four metrics.** The lowest ROE (12.3%), lowest ROA (1.4%), lowest NIM (2.9%), and second-highest CIR (47.6%) place BBNI in the bottom quadrant on every axis. The market discount in BBNI's valuation reflects this.
+
+**BNGA and BRIS are mid-table.** Both show double-digit ROE with above-average CIR, suggesting room for operational improvement. BNGA's larger asset base (IDR 368T vs MEGA's IDR 135T) gives it more scale leverage to close the efficiency gap over time.
+
+## Common Mistakes
+
+**Forgetting to handle `None` in quarterly data.** Some quarters may have `null` values for certain metrics (especially for smaller banks with delayed filings). The `safe_sum` helper in Cell 3 uses `or 0` to handle this — always include that guard.
+
+**Using the wrong API version.** The Sectors API v1 was discontinued on 2026-05-11. All `/v1/*` requests now return HTTP 410 Gone. Always use `https://api.sectors.app/v2/...`.
+
+**NIM is an approximation here.** True NIM = net interest income / average earning assets. Since the quarterly endpoint does not return average earning assets directly, we divide by total assets as a proxy. The resulting figure is directionally correct for comparison but will be slightly lower than the official NIM disclosed in bank financial statements.
+
+**Treating CIR without context.** A high CIR can reflect investment in growth (higher opex for new branches, tech, headcount) rather than pure inefficiency. Always check year-over-year CIR trends before concluding a bank is operationally weak.
+
+**Not adding rate limit delays.** The `sleep(0.3)` in Cell 4 is not optional if you expand the universe beyond 10 banks. Omitting it on the free/Insider tier will result in 429 Too Many Requests errors.
+
+## Extensions
+
+**Add quarterly trend charts.** Fetch 8 quarters instead of 4 (`n=8`) and plot each metric as a time series per bank. Useful for identifying whether a bank's ROE is improving, stable, or deteriorating.
+
+```python
+# Extend to 8 quarters for trend analysis
+quarters_8 = get_quarterly("BBCA", n=8)
+trend = pd.DataFrame([{
+    "Date": q["date"],
+    "Net Income (T)": round(q.get("earnings", 0) / 1e12, 2),
+    "NII (T)": round((q.get("financials_sector_metrics") or {}).get("net_interest_income", 0) / 1e12, 2),
+} for q in quarters_8]).sort_values("Date")
+trend.plot(x="Date", figsize=(10, 4), title="BBCA — Quarterly Trend")
+```
+
+**Build a composite ranking score.** Percentile-rank each bank across ROE, ROA, NIM, and CIR, then average the ranks into a composite score for a single-number summary.
+
+```python
+def composite_score(df):
+    df = df.copy()
+    df["ROE_rank"] = df["ROE %"].rank(ascending=True)
+    df["ROA_rank"] = df["ROA %"].rank(ascending=True)
+    df["NIM_rank"] = df["NIM %"].rank(ascending=True)
+    df["CIR_rank"] = df["CIR %"].rank(ascending=False)  # lower CIR = better
+    n = len(df)
+    df["Score"] = ((df["ROE_rank"] + df["ROA_rank"] + df["NIM_rank"] + df["CIR_rank"]) / (4 * n) * 100).round(1)
+    return df.sort_values("Score", ascending=False)[["Ticker", "Company", "ROE %", "ROA %", "NIM %", "CIR %", "Score"]]
+
+print(composite_score(df).to_string(index=False))
+```
+
+**Automate quarterly refresh.** Schedule this notebook to run the day after each bank's earnings release. Archive each output CSV with a datestamp to build a historical benchmarking database over time.
+
+**Extend to regional development banks.** Swap in BJBR (Bank Jabar Banten) and BJTM (Bank Jatim) to benchmark the regional BPD segment — useful for analysts covering government-linked entities or regional economic exposure.
+
+**Integrate with the Sectors MCP server.** If you use an AI assistant with Sectors MCP support, the same data is accessible conversationally without writing any code. The Python workflow here is the programmatic equivalent of that capability.
+
+## References
+
+- [Sectors API v2 Documentation](https://docs.sectors.app) — official reference for all v2 endpoints
+- [Sectors App](https://sectors.app) — web interface for exploring IDX financials without code
+- [OJK Banking Statistics](https://www.ojk.go.id) — Indonesia Financial Services Authority quarterly data for system-wide NPL and CAR benchmarks
+- Damodaran, A. (2024). _Investment Valuation: Tools and Techniques for Determining the Value of Any Asset_ — standard reference for bank valuation frameworks
+- [IDX Fact Book](https://www.idx.co.id) — Indonesia Stock Exchange annual reference for listed company data
