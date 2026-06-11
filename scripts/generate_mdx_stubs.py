@@ -133,6 +133,48 @@ def process_file(
     return action
 
 
+def find_orphans(mintlify_root: str, expected_files: set[str]) -> list[str]:
+    """
+    Return MDX files under <mintlify_root>/v2/ that aren't in expected_files.
+    Only the v2 tree is scanned — v1 stubs are hand-maintained.
+    """
+    v2_root = os.path.join(mintlify_root, "v2")
+    if not os.path.isdir(v2_root):
+        return []
+
+    orphans = []
+    for dirpath, _dirnames, filenames in os.walk(v2_root):
+        for fname in filenames:
+            if not fname.endswith(".mdx"):
+                continue
+            full = os.path.normpath(os.path.join(dirpath, fname))
+            # Mintlify auto-renders changelog.mdx outside the schema flow.
+            if os.path.basename(full) == "changelog.mdx":
+                continue
+            if full not in expected_files:
+                orphans.append(full)
+    return sorted(orphans)
+
+
+def handle_orphans(orphans: list[str], prune: bool, dry_run: bool) -> int:
+    """Warn about orphans; delete them if --prune is set. Returns count."""
+    if not orphans:
+        return 0
+
+    prefix = "[dry-run] " if dry_run else ""
+    for orphan in orphans:
+        if prune:
+            print(f"{prefix}PRUNED   {orphan}")
+            if not dry_run:
+                os.remove(orphan)
+        else:
+            print(
+                f"WARNING: orphan MDX (no matching x-mdx-path): {orphan}",
+                file=sys.stderr,
+            )
+    return len(orphans)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -152,6 +194,13 @@ def main() -> None:
         action="store_true",
         help="Print planned changes without writing files",
     )
+    parser.add_argument(
+        "--prune",
+        action="store_true",
+        help="Delete MDX files under v2/ that no longer correspond to an "
+        "x-mdx-path in the schema. Without this flag, orphans are only "
+        "warned about (not deleted).",
+    )
     args = parser.parse_args()
 
     if not os.path.exists(args.schema):
@@ -167,9 +216,11 @@ def main() -> None:
         sys.exit(1)
 
     counts = {"created": 0, "updated": 0, "ok": 0}
+    expected_files: set[str] = set()
     for op in ops:
         mdx_rel = op["x_mdx_path"] + ".mdx"
         mdx_file = os.path.join(args.mintlify_root, mdx_rel)
+        expected_files.add(os.path.normpath(mdx_file))
         openapi_val = f"{op['method']} {op['path']}"
         action = process_file(mdx_file, op["summary"], openapi_val, args.dry_run)
 
@@ -183,13 +234,17 @@ def main() -> None:
             counts["updated"] += 1
             print(f"{prefix}UPDATED  {mdx_rel}  ({action})")
 
+    orphans = find_orphans(args.mintlify_root, expected_files)
+    prune_count = handle_orphans(orphans, prune=args.prune, dry_run=args.dry_run)
+
     total = len(ops)
     print(
         f"\n{'[dry-run] ' if args.dry_run else ''}"
         f"{total} endpoints processed: "
         f"{counts['created']} created, "
         f"{counts['updated']} updated, "
-        f"{counts['ok']} already in sync."
+        f"{counts['ok']} already in sync, "
+        f"{prune_count} {'pruned' if args.prune else 'orphaned (use --prune to delete)'}."
     )
 
 

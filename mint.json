@@ -180,137 +180,202 @@
       "version": "v2",
       "pages": [
         {
-          "group": "Indonesia",
+          "group": "Indonesia (IDX)",
           "icon": "building-columns",
           "pages": [
             {
               "group": "Company Screener",
               "icon": "bolt",
               "pages": [
-                "api-references/v2/indonesia/companies",
-                "api-references/v2/indonesia/free-float"
+                "api-references/v2/indonesia/screener/companies",
+                "api-references/v2/indonesia/screener/free-float"
               ]
             },
             {
-              "group": "Helper List",
+              "group": "Helper Lists",
               "icon": "list-check",
               "pages": [
-                "api-references/v2/indonesia/helper-list/subsectors",
+                "api-references/v2/indonesia/helper-list/companies-segments-list",
+                "api-references/v2/indonesia/helper-list/company-quarterly-dates",
                 "api-references/v2/indonesia/helper-list/industries",
                 "api-references/v2/indonesia/helper-list/subindustries",
-                "api-references/v2/indonesia/helper-list/tags",
-                "api-references/v2/indonesia/helper-list/companies-segments-list",
-                "api-references/v2/indonesia/helper-list/company-quarterly-dates"
-              ]
-            },
-            {
-              "group": "Since IPO Performance",
-              "icon": "chart-line",
-              "pages": [
-                "api-references/v2/indonesia/ipo/listing-performance"
-              ]
-            },
-            {
-              "group": "Company News",
-              "icon": "newspaper",
-              "pages": [
-                "api-references/v2/indonesia/news/news",
-                "api-references/v2/indonesia/news/filings"
+                "api-references/v2/indonesia/helper-list/subsectors",
+                "api-references/v2/indonesia/helper-list/tags"
               ]
             },
             {
               "group": "Detailed Reports",
               "icon": "file-contract",
               "pages": [
-                "api-references/v2/indonesia/report/company-report",
+                "api-references/v2/indonesia/company/corporate-actions",
                 "api-references/v2/indonesia/report/company-segments",
+                "api-references/v2/indonesia/report/company-report",
+                "api-references/v2/indonesia/company/shareholders-composition",
                 "api-references/v2/indonesia/report/quarterly-financials",
                 "api-references/v2/indonesia/report/sector-report"
               ]
             },
             {
-              "group": "Company Ranking by Dimensions",
-              "icon": "ranking-star",
+              "group": "Transaction Data",
+              "icon": "money-bill-transfer",
               "pages": [
-                "api-references/v2/indonesia/ranking/most-traded",
-                "api-references/v2/indonesia/ranking/top-changes"
+                "api-references/v2/indonesia/transaction/daily",
+                "api-references/v2/indonesia/transaction/idx-total",
+                "api-references/v2/indonesia/transaction/index-daily"
               ]
             },
             {
-              "group": "Historical Market Cap & Transaction Data",
-              "icon": "money-bill-transfer",
+              "group": "Rankings",
+              "icon": "ranking-star",
               "pages": [
-                "api-references/v2/indonesia/transaction/idx-total",
-                "api-references/v2/indonesia/transaction/daily",
-                "api-references/v2/indonesia/transaction/index-daily"
+                "api-references/v2/indonesia/ranking/top-changes",
+                "api-references/v2/indonesia/ranking/most-traded"
+              ]
+            },
+            {
+              "group": "IPO & Performance",
+              "icon": "chart-line",
+              "pages": [
+                "api-references/v2/indonesia/ipo/listing-performance"
+              ]
+            },
+            {
+              "group": "News & Filings",
+              "icon": "newspaper",
+              "pages": [
+                "api-references/v2/indonesia/news/filings",
+                "api-references/v2/indonesia/news/news",
+                "api-references/v2/indonesia/news/suspensions"
+              ]
+            },
+            {
+              "group": "Brokers",
+              "icon": "user-tie",
+              "pages": [
+                "api-references/v2/indonesia/brokers/broker-activity-by-code",
+                "api-references/v2/indonesia/brokers/broker-activity-top",
+                "api-references/v2/indonesia/brokers/broker-summary-by-symbol",
+                "api-references/v2/indonesia/brokers/broker-summary-top",
+                "api-references/v2/indonesia/brokers/broker-registry",
+                "api-references/v2/indonesia/brokers/top",
+                "api-references/v2/indonesia/brokers/foreign-flow-by-symbol"
               ]
             }
           ]
         },
         {
-          "group": "Singapore",
+          "group": "Singapore (SGX)",
           "icon": "building",
           "pages": [
-            "api-references/v2/singapore/sgx-sectors",
-            "api-references/v2/singapore/sgx-companies",
-            "api-references/v2/singapore/sgx-report",
-            "api-references/v2/singapore/sgx-top-companies"
+            {
+              "group": "Company Screener",
+              "icon": "bolt",
+              "pages": [
+                "api-references/v2/singapore/screener/sgx-companies"
+              ]
+            },
+            {
+              "group": "Helper Lists",
+              "icon": "list-check",
+              "pages": [
+                "api-references/v2/singapore/helper-list/sgx-sectors",
+                "api-references/v2/singapore/helper-list/sgx-tags"
+              ]
+            },
+            {
+              "group": "Detailed Reports",
+              "icon": "file-contract",
+              "pages": [
+                "api-references/v2/singapore/report/company-report"
+              ]
+            },
+            {
+              "group": "Transaction Data",
+              "icon": "money-bill-transfer",
+              "pages": [
+                "api-references/v2/singapore/transaction/share-buybacks",
+                "api-references/v2/singapore/transaction/daily",
+                "api-references/v2/singapore/transaction/short-sell"
+              ]
+            },
+            {
+              "group": "Rankings",
+              "icon": "ranking-star",
+              "pages": [
+                "api-references/v2/singapore/ranking/top-companies"
+              ]
+            },
+            {
+              "group": "News & Filings",
+              "icon": "newspaper",
+              "pages": [
+                "api-references/v2/singapore/news/sgx-filings",
+                "api-references/v2/singapore/news/sgx-news"
+              ]
+            }
           ]
         },
         {
-          "group": "Malaysia",
+          "group": "Malaysia (KLSE)",
           "icon": "landmark",
           "pages": [
-            "api-references/v2/malaysia/klse-sectors",
-            "api-references/v2/malaysia/klse-companies",
-            "api-references/v2/malaysia/klse-report",
-            "api-references/v2/malaysia/klse-top-companies"
+            {
+              "group": "KLSE",
+              "icon": "landmark",
+              "pages": [
+                "api-references/v2/malaysia/klse-companies",
+                "api-references/v2/malaysia/klse-top-companies",
+                "api-references/v2/malaysia/klse-report",
+                "api-references/v2/malaysia/klse-sectors"
+              ]
+            }
           ]
         },
         {
-          "group": "Mining Companies (Extension)",
+          "group": "Mining (Extension)",
           "icon": "gem",
           "pages": [
             {
               "group": "Companies",
+              "icon": "industry",
               "pages": [
                 "api-references/v2/mining/companies/mining-companies",
                 "api-references/v2/mining/companies/mining-companies-detail",
-                "api-references/v2/mining/companies/mining-companies-performance",
                 "api-references/v2/mining/companies/mining-companies-financials",
-                "api-references/v2/mining/companies/mining-companies-ownership"
-              ]
-            },
-            {
-              "group": "Sites & Production",
-              "pages": [
-                "api-references/v2/mining/sites-production/mining-sites",
-                "api-references/v2/mining/sites-production/commodity-production",
-                "api-references/v2/mining/sites-production/commodity-resources-reserves"
+                "api-references/v2/mining/companies/mining-companies-ownership",
+                "api-references/v2/mining/companies/mining-companies-performance"
               ]
             },
             {
               "group": "Commodities & Trade",
+              "icon": "truck",
               "pages": [
                 "api-references/v2/mining/commodities-trade/commodities",
                 "api-references/v2/mining/commodities-trade/commodity-price",
                 "api-references/v2/mining/commodities-trade/export-destination",
                 "api-references/v2/mining/commodities-trade/global-commodity",
-                "api-references/v2/mining/commodities-trade/mining-contracts"
+                "api-references/v2/mining/commodities-trade/sales-destination"
               ]
             },
             {
-              "group": "Licenses & Auctions",
+              "group": "Production & Sites",
+              "icon": "hammer",
               "pages": [
-                "api-references/v2/mining/licenses-auctions/mining-licenses",
+                "api-references/v2/mining/sites-production/commodity-resources-reserves",
+                "api-references/v2/mining/sites-production/commodity-resources-reserves-detail",
+                "api-references/v2/mining/sites-production/mining-sites",
+                "api-references/v2/mining/sites-production/mining-site-detail",
+                "api-references/v2/mining/sites-production/commodity-production"
+              ]
+            },
+            {
+              "group": "Contracts & Licenses",
+              "icon": "file-signature",
+              "pages": [
+                "api-references/v2/mining/licenses-auctions/mining-contracts",
                 "api-references/v2/mining/licenses-auctions/mining-license-auctions",
-                "api-references/v2/mining/licenses-auctions/mining-license-auctions-detail"
-              ]
-            },
-            {
-              "group": "Sales",
-              "pages": [
-                "api-references/v2/mining/sales/sales-destination"
+                "api-references/v2/mining/licenses-auctions/mining-license-auctions-detail",
+                "api-references/v2/mining/licenses-auctions/mining-licenses"
               ]
             }
           ]
@@ -318,7 +383,6 @@
         "api-references/v2/changelog"
       ]
     },
-
     {
       "group": "Quick Start in Python",
       "pages": [
