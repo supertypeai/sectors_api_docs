@@ -94,14 +94,6 @@
                 "tags": [
                     "Brokers"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -197,14 +189,6 @@
                 "tags": [
                     "Brokers"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -299,14 +283,6 @@
                 ],
                 "tags": [
                     "Brokers"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -431,14 +407,6 @@
                 "tags": [
                     "Brokers"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -526,14 +494,6 @@
                 ],
                 "tags": [
                     "Brokers"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -637,14 +597,6 @@
                 ],
                 "tags": [
                     "Brokers"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -769,14 +721,6 @@
                 "tags": [
                     "Company Screener"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -897,14 +841,6 @@
                 "tags": [
                     "Helper Lists"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -1013,14 +949,6 @@
                 ],
                 "tags": [
                     "Rankings"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -1137,14 +1065,6 @@
                 "tags": [
                     "Detailed Reports"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -1246,14 +1166,6 @@
                 "tags": [
                     "Detailed Reports"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -1341,14 +1253,6 @@
                 ],
                 "tags": [
                     "Helper Lists"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -1474,14 +1378,6 @@
                 "tags": [
                     "Detailed Reports"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -1596,14 +1492,6 @@
                 ],
                 "tags": [
                     "Detailed Reports"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -1720,14 +1608,6 @@
                 "tags": [
                     "Detailed Reports"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -1814,14 +1694,6 @@
                 ],
                 "tags": [
                     "Transaction Data"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -1998,14 +1870,6 @@
                 "tags": [
                     "News & Filings"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -2154,14 +2018,6 @@
                 "tags": [
                     "Detailed Reports"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -2270,14 +2126,6 @@
                 "tags": [
                     "Brokers"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -2372,14 +2220,6 @@
                 "tags": [
                     "Company Screener"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -2456,14 +2296,6 @@
                 ],
                 "tags": [
                     "Transaction Data"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -2574,14 +2406,6 @@
                 "tags": [
                     "Transaction Data"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -2666,14 +2490,6 @@
                 "tags": [
                     "Helper Lists"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -2740,14 +2556,6 @@
                 ],
                 "tags": [
                     "KLSE"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -2867,14 +2675,6 @@
                 ],
                 "tags": [
                     "KLSE"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -2997,14 +2797,6 @@
                 ],
                 "tags": [
                     "KLSE"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -3142,14 +2934,6 @@
                 "tags": [
                     "KLSE"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -3267,14 +3051,6 @@
                 "tags": [
                     "KLSE"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -3350,14 +3126,6 @@
                 "tags": [
                     "IPO & Performance"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -3430,14 +3198,6 @@
                 "summary": "List Commodities",
                 "tags": [
                     "Commodities & Trade"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -3526,14 +3286,6 @@
                 ],
                 "tags": [
                     "Commodities & Trade"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -3682,14 +3434,6 @@
                 "tags": [
                     "Companies"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -3771,14 +3515,6 @@
                 ],
                 "tags": [
                     "Companies"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -3882,14 +3618,6 @@
                 "tags": [
                     "Companies"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -3987,14 +3715,6 @@
                 ],
                 "tags": [
                     "Companies"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -4107,14 +3827,6 @@
                 "tags": [
                     "Companies"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -4219,14 +3931,6 @@
                 "tags": [
                     "Contracts & Licenses"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -4311,14 +4015,6 @@
                 ],
                 "tags": [
                     "Commodities & Trade"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -4445,14 +4141,6 @@
                 ],
                 "tags": [
                     "Commodities & Trade"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -4637,14 +4325,6 @@
                 "tags": [
                     "Contracts & Licenses"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -4750,14 +4430,6 @@
                 ],
                 "tags": [
                     "Contracts & Licenses"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -4952,14 +4624,6 @@
                 "tags": [
                     "Contracts & Licenses"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -5062,14 +4726,6 @@
                 "tags": [
                     "Production & Sites"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -5163,14 +4819,6 @@
                 ],
                 "tags": [
                     "Production & Sites"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -5269,14 +4917,6 @@
                 ],
                 "tags": [
                     "Commodities & Trade"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -5459,14 +5099,6 @@
                 "tags": [
                     "Production & Sites"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -5571,14 +5203,6 @@
                 "tags": [
                     "Production & Sites"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -5680,14 +5304,6 @@
                 ],
                 "tags": [
                     "Production & Sites"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -5831,14 +5447,6 @@
                 ],
                 "tags": [
                     "Rankings"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -6014,14 +5622,6 @@
                 "tags": [
                     "News & Filings"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -6195,14 +5795,6 @@
                 "tags": [
                     "SGX - Transaction Data"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -6307,14 +5899,6 @@
                 ],
                 "tags": [
                     "SGX - Company Screener"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -6456,14 +6040,6 @@
                 "tags": [
                     "SGX - Rankings"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -6585,14 +6161,6 @@
                 ],
                 "tags": [
                     "SGX - Detailed Reports"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -6723,14 +6291,6 @@
                 ],
                 "tags": [
                     "SGX - Detailed Reports"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -6869,14 +6429,6 @@
                 ],
                 "tags": [
                     "SGX - Transaction Data"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -7027,14 +6579,6 @@
                 "tags": [
                     "SGX - News & Filings"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -7145,14 +6689,6 @@
                 "tags": [
                     "SGX - News & Filings"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -7194,14 +6730,6 @@
                 "summary": "List all SGX sectors",
                 "tags": [
                     "SGX - Helper Lists"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -7310,14 +6838,6 @@
                 "tags": [
                     "SGX - Transaction Data"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -7359,14 +6879,6 @@
                 "summary": "SGX News Tags",
                 "tags": [
                     "SGX - Helper Lists"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -7423,14 +6935,6 @@
                 "summary": "Subindustries",
                 "tags": [
                     "Helper Lists"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -7506,14 +7010,6 @@
                 ],
                 "tags": [
                     "Detailed Reports"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -7620,14 +7116,6 @@
                 "tags": [
                     "Detailed Reports"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -7713,14 +7201,6 @@
                 "summary": "Subsectors",
                 "tags": [
                     "Helper Lists"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -7822,14 +7302,6 @@
                 "tags": [
                     "News & Filings"
                 ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
-                ],
                 "responses": {
                     "200": {
                         "content": {
@@ -7895,14 +7367,6 @@
                 "summary": "News Tags",
                 "tags": [
                     "Helper Lists"
-                ],
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    },
-                    {
-                        "OAuthBearerAuth": []
-                    }
                 ],
                 "responses": {
                     "200": {
@@ -11929,7 +11393,7 @@
                 "type": "apiKey",
                 "in": "header",
                 "name": "Authorization",
-                "description": "API key passed directly in the Authorization header (without Bearer prefix)."
+                "description": "Global API Key Authorization"
             },
             "OAuthBearerAuth": {
                 "type": "http",
@@ -11938,6 +11402,12 @@
             }
         }
     },
+    "servers": [
+        {
+            "url": "https://api.sectors.app",
+            "description": "Production Server"
+        }
+    ],
     "tags": [
         {
             "name": "Company Screener",
@@ -12033,6 +11503,11 @@
             "name": "Contracts & Licenses",
             "description": "Mining contracts, licenses, and auction data",
             "x-sidebar-icon": "file-signature"
+        }
+    ],
+    "security": [
+        {
+            "ApiKeyAuth": []
         }
     ]
 }
