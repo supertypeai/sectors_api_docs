@@ -73,6 +73,12 @@
   ],
   "navigation": [
     {
+      "group": "Home",
+      "pages": [
+        "index"
+      ]
+    },
+    {
       "group": "Getting Started",
       "version": "v1",
       "pages": [
