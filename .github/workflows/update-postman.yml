@@ -1,0 +1,72 @@
+name: Manual Generate Postman Collection
+
+on:
+  workflow_dispatch:
+    inputs:
+      schema_url:
+        description: 'URL of the schema.json'
+        required: true
+        default: 'https://raw.githubusercontent.com/supertypeai/sectors_api/staging/schema.json'
+
+jobs:
+  generate-collection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      # Note: We still install it globally so `npx openapi-to-postmanv2` resolves instantly
+      - name: Install openapi-to-postmanv2
+        run: npm install -g openapi-to-postmanv2
+
+      - name: Fetch remote schema.json
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_REPO_PAT }}
+        run: |
+          curl -fsSL \
+            -H "Authorization: token $GH_TOKEN" \
+            "${{ github.event.inputs.schema_url }}" \
+            -o schema.json
+
+      # UPDATED TARGET PATH
+      - name: Run Postman Conversion Script
+        run: python scripts/generate_postman.py --input schema.json --output recipes/postman-collection/json/Sectors_API.postman_collection.json
+
+      - name: Commit and push changes
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_REPO_PAT }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/supertypeai/sectors_api_docs.git
+          
+          # Create or switch to the schema update branch
+          git checkout -B new-schema
+          
+          # UPDATED ADD PATH TO MATCH THE NEW DIRECTORY
+          git add recipes/postman-collection/json/Sectors_API.postman_collection.json
+          
+          # Exit early if nothing changed
+          git diff --cached --quiet && echo "No changes detected in collection" && exit 0
+          
+          git commit -m "chore: manual update postman collection asset"
+          git push origin new-schema --force
+
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.DOCS_REPO_PAT }}
+        run: |
+          gh pr create \
+            --repo supertypeai/sectors_api_docs \
+            --head new-schema \
+            --base main \
+            --title "chore: updated postman collection asset" \
+            --body "This PR updates the static Postman collection JSON generated from the schema URL: ${{ github.event.inputs.schema_url }}" \
+            2>/dev/null || echo "PR already exists"

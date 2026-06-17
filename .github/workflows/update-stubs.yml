@@ -1,4 +1,4 @@
-name: Update MDX stubs from schema
+name: Sync Schema, MDX stubs, and Postman Collection
 
 on:
   workflow_dispatch:
@@ -13,13 +13,19 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+
+      # Ubuntu-latest has Node.js pre-installed, so we can run npm directly
+      - name: Install openapi-to-postmanv2
+        run: npm install -g openapi-to-postmanv2
 
       - name: Fetch schema.json
         env:
@@ -30,24 +36,26 @@ jobs:
             "${{ github.event.inputs.schema_url || github.event.client_payload.schema_url }}" \
             -o schema.json
             
+      - name: Run Postman Conversion Script
+        run: python scripts/generate_postman.py --input schema.json --output recipes/postman-collection/json/Sectors_API.postman_collection.json
+
       - name: Run stub generator
         run: python scripts/generate_mdx_stubs.py --schema schema.json --mintlify-root api-references --prune
 
       - name: Update mint.json v2 navigation
         run: python scripts/update_mint_nav.py --schema schema.json --mint mint.json
 
-      - name: Commit and push
+      - name: Commit and push changes
         env:
           GH_TOKEN: ${{ secrets.DOCS_REPO_PAT }}
         run: |
-          git config user.name  "github-actions[bot]"
+          git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/supertypeai/sectors_api_docs.git
-          git checkout -B new-schema
-          git add schema.json
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/supertypeai/sectors_api_docs.git          
+          git checkout -B new-schema          
           git add -A
-          git diff --cached --quiet && echo "No changes" && exit 0
-          git commit -m "chore: sync schema + MDX stubs (${{ github.event.client_payload.ref || 'manual' }})"
+          git diff --cached --quiet && echo "No changes detected" && exit 0
+          git commit -m "chore: sync schema, MDX stubs, and postman collection (${{ github.event.client_payload.ref || 'manual' }})"
           git push origin new-schema --force
 
       - name: Open PR if not exists
@@ -58,6 +66,6 @@ jobs:
             --repo supertypeai/sectors_api_docs \
             --head new-schema \
             --base main \
-            --title "chore: sync schema + MDX stubs (${{ github.event.client_payload.ref || 'manual' }})" \
-            --body "Auto-generated from sectors_api push to ${{ github.event.client_payload.ref || 'manual' }}." \
+            --title "chore: sync schema, MDX stubs, and postman collection (${{ github.event.client_payload.ref || 'manual' }})" \
+            --body "Auto-generated from sectors_api push to ${{ github.event.client_payload.ref || 'manual' }}. Updates schema, MDX stubs, mint.json navigation, and static Postman collection JSON." \
             2>/dev/null || echo "PR already exists"

@@ -319,16 +319,10 @@
           "group": "Malaysia (KLSE)",
           "icon": "landmark",
           "pages": [
-            {
-              "group": "KLSE",
-              "icon": "landmark",
-              "pages": [
-                "api-references/v2/malaysia/klse-companies",
-                "api-references/v2/malaysia/klse-top-companies",
-                "api-references/v2/malaysia/klse-report",
-                "api-references/v2/malaysia/klse-sectors"
-              ]
-            }
+            "api-references/v2/malaysia/klse-companies",
+            "api-references/v2/malaysia/klse-top-companies",
+            "api-references/v2/malaysia/klse-report",
+            "api-references/v2/malaysia/klse-sectors"
           ]
         },
         {

@@ -38,14 +38,14 @@ If you're new to Postman, check out their official [documentation](https://learn
 To start using our API, follow these steps to import the **Sectors Financial API Postman Collection**:
 
 1. **Download the Postman Collection**:
-   - Click here [Latest Postman Collection (v1.3 - 2026-03)](https://github.com/supertypeai/sectors_api_docs/blob/main/recipes/postman-collection/json/Supertype_API_03-2026_v1.3.postman_collection.json) to download the latest all-in-one version.
+   - Click here [Latest Postman Collection](https://github.com/supertypeai/sectors_api_docs/blob/main/recipes/postman-collection/json/Sectors_API.postman_collection.json) to download the latest all-in-one version.
 
 2. **Open Postman**:
    - Launch the Postman application on your computer.
 
 3. **Import the Collection**:
    - Click on the **Import** button in the top-left corner of the Postman interface.
-   - Select the downloaded `Supertype_API_03-2026_v1.3.postman_collection.json` file and click **Open**.
+   - Select the downloaded `Sectors_API.postman_collection.json` file and click **Open**.
    - The collection will now appear in your Postman workspace under the **Collections** tab.
 
 ---
@@ -56,34 +56,44 @@ Our API provides several endpoints to fetch different types of financial data. H
 
 ## Collection Structure
 
-The collection is organized into two main folders for **v1** and **v2**, with logical sub-groupings for easy discovery.
+The collection is named **Sectors API** and contains a **v2** folder. Under the **v2** folder, endpoints are grouped by resource type:
 
-### Folder Structure:
-
-#### v1 (Legacy & Core)
-
-- **Metadata & Enumerations**: Standard helper lists like subsectors, industries, and tags.
-- **Detailed Reports**: Company reports, segments, and historical financials.
-- **Market Movers & Rankings**: Top companies, price changes, and growth stats.
-- **Regional Markets**: Dedicated folders for **SGX** (Singapore) and **KLSE** (Malaysia) data.
-
-#### v2 (Modern & Mining Extension)
-
-- **Unified Screener**: The powerful SQL-style and Natural Language search interface.
-- **Mining Intelligence Service**:
-  - **Companies & Operators**: Discovery and deep-dives into mining firms.
-  - **Mining Sites & Assets**: Ground-level data on specific mine sites and production.
-  - **National Stats & Commodities**: Aggregated statistics and mineral price history.
-  - **Legal & Regulatory**: License tracking and auction results.
-- **Migrated v1 Endpoints (v2 namespace)**: V1-equivalent endpoints reachable via the `/v2/` base path for consistency.
+- **v2**
+  - [**broker-activity**](../../api-references/v2/indonesia/brokers/broker-activity-by-code): Endpoints for tracking individual broker activity and top accumulations/distributions.
+  - [**broker-summary**](../../api-references/v2/indonesia/brokers/broker-summary-by-symbol): Endpoints for broker summaries per stock symbol.
+  - [**brokers**](../../api-references/v2/indonesia/brokers/broker-registry): General broker registry and daily rankings.
+  - [**companies**](../../api-references/v2/indonesia/screener/companies): Structured screener, list companies with segments, and top changes.
+  - [**company**](../../api-references/v2/indonesia/report/company-report): Individual company details including corporate actions, segments, quarterly dates, shareholder composition, and company reports.
+  - [**daily**](../../api-references/v2/indonesia/transaction/daily): Daily pricing and trading data.
+  - [**filings**](../../api-references/v2/indonesia/news/filings): Public company financial filings.
+  - [**financials**](../../api-references/v2/indonesia/report/quarterly-financials): Historical and quarterly financial statements.
+  - [**foreign-flow**](../../api-references/v2/indonesia/brokers/foreign-flow-by-symbol): Foreign investor transaction flows.
+  - [**free-float**](../../api-references/v2/indonesia/screener/free-float): Free float data.
+  - [**idx-total**](../../api-references/v2/indonesia/transaction/idx-total): Aggregated Indonesia stock exchange stats.
+  - [**index-daily**](../../api-references/v2/indonesia/transaction/index-daily): Index performance daily data.
+  - [**industries**](../../api-references/v2/indonesia/helper-list/industries): List of IDX industries.
+  - [**klse**](../../api-references/v2/malaysia/klse-companies): Malaysia market (KLSE) companies, reports, and sectors.
+  - [**listing-performance**](../../api-references/v2/indonesia/ipo/listing-performance): Performance of IPOs/listings.
+  - [**mining**](../../api-references/v2/mining/companies/mining-companies): Mining intelligence service (commodities, company performance, ownership, contracts, exports, licenses, mine sites, total production).
+  - [**most-traded**](../../api-references/v2/indonesia/ranking/most-traded): Most traded stocks statistics.
+  - [**news**](../../api-references/v2/indonesia/news/news): Financial and market news.
+  - [**sgx**](../../api-references/v2/singapore/screener/sgx-companies): Singapore market (SGX) buybacks, companies, reports, daily performance, filings, news, and sectors.
+  - [**subindustries**](../../api-references/v2/indonesia/helper-list/subindustries): List of IDX sub-industries.
+  - [**subsector**](../../api-references/v2/indonesia/report/sector-report): Report by subsector.
+  - [**subsectors**](../../api-references/v2/indonesia/helper-list/subsectors): List of IDX subsectors.
+  - [**suspensions**](../../api-references/v2/indonesia/news/suspensions): Trading suspensions.
+  - [**tags**](../../api-references/v2/indonesia/helper-list/tags): Analytics tags and indicators.
 
 Each request is pre-configured with the necessary parameters and variables.
 
-## Using Variables
+---
 
-The collection is designed to be plug-and-play. Only one variable is required to be set at the collection level:
+## Usage & Authorization
 
-1. **Collection Variables**:
-   - `{{apikey}}`: Your unique API key.
+To authenticate your requests, you need to apply the API key authorization at the collection level (the parent folder):
 
-All other parameters (like `ticker`, `slug`, `index_code`, `year`, etc.) are hardcoded with working examples in each request for immediate testing. You can easily override these examples in the **Params** tab of each request in Postman.
+1. **Get your API key**: Go to [sectors.app/api](https://sectors.app/api) to generate/copy your API key.
+2. **Open the main folder**: In Postman, open/click the main collection folder (**Sectors API**).
+3. **Go to the Authorization tab**: Select the **Authorization** tab.
+4. **Configure the variable**: Hover over the `{{apiKey}}` placeholder in the authorization value field, click to set it as a collection variable, and paste the API key you retrieved from sectors.app.
+5. **Alternative**: You can also switch to the **Variables** tab of the **Sectors API** folder, set the value of the `apiKey` variable directly, and save.
