@@ -125,6 +125,14 @@ def build_v2_pages(schema: dict) -> list:
                 continue
 
             subgroup_label = _subgroup_label(tag, section_label)
+
+            # If the resulting label matches the tag, and the tag is just an
+            # abbreviation found in the parent section (e.g. "KLSE" in "Malaysia (KLSE)")
+            # we flatten the pages directly into the section instead of creating a subgroup.
+            if subgroup_label == tag and tag in section_label:
+                section_pages.extend(mdx_refs)
+                continue
+
             subgroup_icon = (tag_meta.get(tag, {}) or {}).get("x-sidebar-icon")
 
             sg: "OrderedDict[str, object]" = OrderedDict()
@@ -177,10 +185,7 @@ def update_mint(mint: dict, new_pages: list) -> bool:
     """Replace the v2 API References pages in-place. Returns True if changed."""
     nav = mint.get("navigation", [])
     for entry in nav:
-        if (
-            entry.get("group") == V2_API_GROUP
-            and entry.get("version") == V2_VERSION
-        ):
+        if entry.get("group") == V2_API_GROUP and entry.get("version") == V2_VERSION:
             if entry.get("pages") == new_pages:
                 return False
             entry["pages"] = new_pages
