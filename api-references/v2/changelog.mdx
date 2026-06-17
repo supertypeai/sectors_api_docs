@@ -4,41 +4,38 @@ sidebarTitle: Changelog
 ---
 ## 2026-06-12
 
-### Breaking Changes / Deprecations
-- **Company Report field removals**:
-  - `historical_financials_quarterly` is no longer returned in the [Company Report](./indonesia/report/company-report) endpoint, and will only be obtainable from the [Companies Screener](./indonesia/screener/companies) endpoint.
-  - `technical_rating_breakdown` is no longer returned in the [Company Report](./indonesia/report/company-report) endpoint.
+- **IDX Company Report field removals**:
+  - `historical_financials_quarterly` is no longer returned in the [Company Report](./indonesia/report/company-report) endpoint, and will only be obtainable from the [Companies Screener](./indonesia/screener/companies) endpoint
+  - `technical_rating_breakdown` is no longer returned in the [Company Report](./indonesia/report/company-report) endpoint
 
-### New: SGX Company Screener with feature parity to IDX
-- Introduces [`/v2/sgx/companies/`](./singapore/screener/sgx-companies) — the same SQL-like (`?where=`, `?order_by=`) and natural-language (`?q=`) query interface as the IDX screener, scoped to 617 SGX-listed companies.
-  - **Natural-language queries** with automatic USD -> SGD conversion (`?q=top 5 SGX banks by market cap`).
-  - **~85 SGX fields** exposed across 6 categories. Big-cap and bank-specific fields are explicitly labeled (`Big caps only` / `Banks only`) in the field reference.
-  - **Yearly bracket notation** supported (`revenue[2023]`, `total_dividend[2024]`, `total_yield[2023]`). Quarterly notation returns `400 QUARTERLY_NOT_SUPPORTED` — SGX has annual data only.
-  - **Breaking change**: the previous `/v2/sgx/companies/?sector=...` endpoint returning a flat `[{symbol, company_name}]` array is **removed**. The new screener returns the paginated `{results, pagination}` envelope. Existing callers must update.
+- **Introduces [SGX Company Screener endpoint](./singapore/screener/sgx-companies)**: The screener supports the same SQL-like (`?where=`, `?order_by=`) and natural-language (`?q=`) query interface as the IDX screener, scoped to 617 SGX-listed companies
+  - Natural-language queries with automatic USD -> SGD conversion (`?q=top 5 SGX banks by market cap`)
+  - ~85 SGX fields exposed across 6 categories. Big-cap and bank-specific fields are explicitly labeled (`Big caps only` / `Banks only`) in the field reference
+  - Yearly bracket notation supported (`revenue[2023]`, `total_dividend[2024]`, `total_yield[2023]`). Quarterly notation returns `400 QUARTERLY_NOT_SUPPORTED` — SGX has annual data only
+  - **Breaking change**: the previous `https://api.sectors.app/v2/sgx/companies/?sector=...` endpoint returning a flat `[{symbol, company_name}]` array is **removed**. The new screener returns the paginated `{results, pagination}` envelope. Existing callers must be updated
 
-### New IDX endpoints
-- [`/v2/suspensions/`](./indonesia/news/suspensions) — Current and historical stock suspensions on IDX.
-- [`/v2/company/corporate-actions/{symbol}/`](./indonesia/company/corporate-actions) — Dividends, stock splits, rights issues, and other corporate actions per company.
-- [`/v2/company/shareholders-composition/{symbol}/`](./indonesia/company/shareholders-composition) — Top shareholder composition and recent ownership changes.
-- **Broker family** (7 endpoints) — Per-broker daily trade summaries, top buyers/sellers by symbol, top accumulations/distributions by broker, foreign vs domestic flow, and a curated broker registry with retail/mixed/institutional cohort classification.
-  - [`/v2/brokers/`](./indonesia/brokers/broker-registry) — Curated broker registry.
-  - [`/v2/brokers/top/`](./indonesia/brokers/top) — Top brokers by volume.
-  - [`/v2/broker-summary/{symbol}/`](./indonesia/brokers/broker-summary-by-symbol) and [`/top/`](./indonesia/brokers/broker-summary-top) — Per-symbol broker activity.
-  - [`/v2/broker-activity/{broker_code}/`](./indonesia/brokers/broker-activity-by-code) and [`/top/`](./indonesia/brokers/broker-activity-top) — Per-broker top accumulations/distributions.
-  - [`/v2/foreign-flow/{symbol}/`](./indonesia/brokers/foreign-flow-by-symbol) — Foreign vs domestic ownership flow.
+- **Introduces New IDX endpoints**:
+  - [`https://api.sectors.app/v2/suspensions/`](./indonesia/news/suspensions): Current and historical stock suspensions on IDX
+  - [`https://api.sectors.app/v2/company/corporate-actions/{symbol}/`](./indonesia/company/corporate-actions): Dividends, stock splits, rights issues, and other corporate actions per company
+  - [`https://api.sectors.app/v2/company/shareholders-composition/{symbol}/`](./indonesia/company/shareholders-composition): Top shareholder composition and recent ownership changes
+  - **Broker-related endpoints**: Per-broker daily trade summaries, top buyers/sellers by symbol, top accumulations/distributions by broker, foreign vs domestic flow, and a curated broker registry with retail/mixed/institutional cohort classification
+    - [`https://api.sectors.app/v2/brokers/`](./indonesia/brokers/broker-registry): Curated broker registry
+    - [`https://api.sectors.app/v2/brokers/top/`](./indonesia/brokers/top): Top brokers by volume
+    - [`https://api.sectors.app/v2/broker-summary/{symbol}/`](./indonesia/brokers/broker-summary-by-symbol) and [`https://api.sectors.app/v2/broker-summary/{symbol}/top/`](./indonesia/brokers/broker-summary-top): Per-symbol broker activity
+    - [`https://api.sectors.app/v2/broker-activity/{broker_code}/`](./indonesia/brokers/broker-activity-by-code) and [`https://api.sectors.app/v2/broker-activity/{broker_code}/top/`](./indonesia/brokers/broker-activity-top): Per-broker top accumulations/distributions
+    - [`https://api.sectors.app/v2/foreign-flow/{symbol}/`](./indonesia/brokers/foreign-flow-by-symbol): Foreign vs domestic ownership flow
 
-### New SGX endpoints
-- [`/v2/sgx/news/`](./singapore/news/sgx-news) — SGX news articles, filterable by company/tag.
-- [`/v2/sgx/filings/`](./singapore/news/sgx-filings) — SGX insider filings.
-- [`/v2/sgx/buybacks/`](./singapore/transaction/share-buybacks) — SGX share buyback activity.
-- [`/v2/sgx/short-sell/`](./singapore/transaction/short-sell) — SGX short-sell activity.
-- [`/v2/sgx/daily/{symbol}/`](./singapore/transaction/daily) — Daily price and volume history.
-- [`/v2/sgx/tags/`](./singapore/helper-list/sgx-tags) — Reference list of SGX news/company tags.
+- **Introduces New SGX endpoints**:
+  - [`https://api.sectors.app/v2/sgx/news/`](./singapore/news/sgx-news): SGX news articles, filterable by company/tag
+  - [`https://api.sectors.app/v2/sgx/filings/`](./singapore/news/sgx-filings): SGX insider filings
+  - [`https://api.sectors.app/v2/sgx/buybacks/`](./singapore/transaction/share-buybacks): SGX share buyback activity
+  - [`https://api.sectors.app/v2/sgx/short-sell/`](./singapore/transaction/short-sell): SGX short-sell activity
+  - [`https://api.sectors.app/v2/sgx/daily/{symbol}/`](./singapore/transaction/daily): Daily price and volume history
+  - [`https://api.sectors.app/v2/sgx/tags/`](./singapore/helper-list/sgx-tags): Reference list of SGX news/company tags
 
-### Platform-wide improvements
-- **Credit-cost transparency**: Every v2 endpoint now declares its API-credit cost (1 / 2 / 3 credits) in its description. Natural-language `?q=` queries cost 3 credits where supported.
-- **USD to IDR currency handling**: Natural-language queries on the IDX screener now auto-convert dollar amounts to IDR using a live FX feed (cached 24h, falls back gracefully if the feed is unreachable). Also includes USD to SGD for SGX v2.
-- **Field rename — `idx_ticker`->  `symbol`**: For consistency across IDX/SGX/KLSE, the `idx_ticker` field is renamed to `symbol` throughout v2 IDX request params and response bodies.
+- **Credit-cost transparency**: Every v2 endpoint now declares its API-credit cost (1 / 2 / 3 credits) in its description. Natural-language `?q=` queries cost 3 credits where supported
+- **USD to IDR currency handling**: Natural-language queries on the IDX screener now auto-convert dollar amounts to IDR using a live FX feed (cached 24h, falls back gracefully if the feed is unreachable). Also includes USD to SGD for SGX v2
+- **Field rename — `idx_ticker`->  `symbol`**: For consistency across IDX/SGX/KLSE, the `idx_ticker` field is renamed to `symbol` throughout v2 IDX request params and response bodies
 
 ## 2026-05-12
 
@@ -78,7 +75,7 @@ sidebarTitle: Changelog
   - Updated `CommodityPriceView` to support `start_year` and `end_year` parameters with a 3-year maximum range
   - Standardized `GlobalCommodityDataView` to return a list of results and restricted query parameters to `country`, `commodity_type`, and `limit`
 - **Free Float Analysis**: Added specialized endpoint to retrieve public float percentage for companies, with support for sector-based filtering
-  - [GET /v2/free-float/](./free-float)
+  - [https://api.sectors.app/v2/free-float/](./indonesia/screener/free-float)
 - **Postman Collection Update**: Released version 1.3 of the comprehensive Postman collection, including all new mining and analytics endpoints
 
 ## 2026-01-09
