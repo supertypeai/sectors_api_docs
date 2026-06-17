@@ -4,6 +4,11 @@ sidebarTitle: Changelog
 ---
 ## 2026-06-12
 
+### Breaking Changes / Deprecations
+- **Company Report field removals**:
+  - `historical_financials_quarterly` is no longer returned in the [Company Report](./indonesia/report/company-report) endpoint, and will only be obtainable from the [Companies Screener](./indonesia/screener/companies) endpoint.
+  - `technical_rating_breakdown` is no longer returned in the [Company Report](./indonesia/report/company-report) endpoint.
+
 ### New: SGX Company Screener with feature parity to IDX
 - Introduces [`/v2/sgx/companies/`](./singapore/screener/sgx-companies) — the same SQL-like (`?where=`, `?order_by=`) and natural-language (`?q=`) query interface as the IDX screener, scoped to 617 SGX-listed companies.
   - **Natural-language queries** with automatic USD -> SGD conversion (`?q=top 5 SGX banks by market cap`).
