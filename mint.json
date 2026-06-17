@@ -485,6 +485,96 @@
     "instagram": "https://www.instagram.com/sectorsapp/",
     "linkedin": "https://www.linkedin.com/showcase/sectorsapp/"
   },
+  "redirects": [
+    {
+      "source": "/v1/sgx/companies/top",
+      "destination": "/api-references/singapore/sgx-top-companies"
+    },
+    {
+      "source": "/v1/klse/companies/top",
+      "destination": "/api-references/malaysia/klse-top-companies"
+    },
+    {
+      "source": "/helper-list/subsectors",
+      "destination": "/api-references/helper-list/subsectors"
+    },
+    {
+      "source": "/v2/klse/sectors",
+      "destination": "/api-references/v2/malaysia/klse-sectors"
+    },
+    {
+      "source": "/v2/mining/commodities",
+      "destination": "/api-references/v2/mining/commodities-trade/commodities"
+    },
+    {
+      "source": "/recipes/generative-ai-python/01-agent-skills-guide",
+      "destination": "/recipes/sectors-for-ai-agents/01-agent-skills-guide"
+    },
+    {
+      "source": "/api-references/v2/mining-companies",
+      "destination": "/api-references/v2/mining/companies/mining-companies"
+    },
+    {
+      "source": "/v2/industries",
+      "destination": "/api-references/v2/indonesia/helper-list/industries"
+    },
+    {
+      "source": "/singapore/sgx-sectors",
+      "destination": "/api-references/singapore/sgx-sector"
+    },
+    {
+      "source": "/v1/companies/top",
+      "destination": "/api-references/ranking/top-tickers"
+    },
+    {
+      "source": "/v2/sgx/companies",
+      "destination": "/api-references/v2/singapore/screener/sgx-companies"
+    },
+    {
+      "source": "/api-references/ranking/subindustries",
+      "destination": "/api-references/helper-list/subindustries"
+    },
+    {
+      "source": "/api-references/ranking/subsectors",
+      "destination": "/api-references/helper-list/subsectors"
+    },
+    {
+      "source": "/recipes/sectors-mcp/00-sectors-mcp-guide",
+      "destination": "/recipes/sectors-for-ai-agents/00-sectors-mcp-guide"
+    },
+    {
+      "source": "/recipes/generative-ai-python/05-memory-ai",
+      "destination": "/recipes/generative-ai-python/06-memory-ai"
+    },
+    {
+      "source": "/api-references/v2/mining-licenses",
+      "destination": "/api-references/v2/mining/licenses-auctions/mining-licenses"
+    },
+    {
+      "source": "/api-references/v2/companies",
+      "destination": "/api-references/v2/indonesia/screener/companies"
+    },
+    {
+      "source": "/recipes/generative-ai-python/03-structured-output",
+      "destination": "/recipes/generative-ai-python/04-structured-output"
+    },
+    {
+      "source": "/api-references/v2/mining-news",
+      "destination": "/api-references/v2/indonesia/news/news"
+    },
+    {
+      "source": "/recipes/generative-ai-python/04-conversational",
+      "destination": "/recipes/generative-ai-python/05-conversational"
+    },
+    {
+      "source": "/api-references/v2/mineral-companies-detail",
+      "destination": "/api-references/v2/mining/companies/mining-companies-detail"
+    },
+    {
+      "source": "/api-references/v2/mineral-companies-performance",
+      "destination": "/api-references/v2/mining/companies/mining-companies-performance"
+    }
+  ],
   "api": {
     "baseUrl": "https://api.sectors.app"
   },
