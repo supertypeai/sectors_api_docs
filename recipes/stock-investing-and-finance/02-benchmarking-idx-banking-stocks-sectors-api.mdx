@@ -1,6 +1,6 @@
 ---
 title: "How to Benchmark IDX Banking Stocks Using Python and the Sectors API "
-sidebarTitle: "IDX Banking Benchmark"
+sidebarTitle: "2. IDX Banking Benchmark"
 description: "By: [Alya Dwinanda](https://github.com/flytosevensky) · June 5, 2026"
 ---
 
@@ -12,7 +12,7 @@ This tutorial builds a repeatable, automated benchmarking workflow that pulls li
 
 **Who this is for:** Financial analysts, equity researchers, and investment professionals who cover Indonesian banking stocks and want to move beyond manual data-gathering.
 
-**What you'll produce:** A 9-cell Python notebook that fetches live bank fundamentals, builds a multi-metric comparison table, and renders bar charts, a bubble chart, and a heatmap.
+**What you'll produce:** A Python notebook that fetches live bank fundamentals, builds a multi-metric comparison table, and renders bar charts, a bubble chart, and a heatmap.
 
 <Note>
   **API version note:** This tutorial uses the **Sectors Financial API v2** exclusively. API v1 was discontinued on 2026-05-11 and all `/v1/*` endpoints now return HTTP 410 Gone.
@@ -40,7 +40,7 @@ A structured benchmarking workflow delivers three things that ad-hoc analysis do
 
 ## Step-by-Step Guide
 
-### Cell 1 — Install & Import
+### Install & Import
 
 ```python
 !pip install requests pandas matplotlib numpy -q
@@ -53,7 +53,7 @@ import numpy as np
 from time import sleep
 ```
 
-### Cell 2 — Configuration
+### Configuration
 
 Set your API key and define the seven banks to benchmark. This universe covers the Big Four state banks (BBCA, BBRI, BMRI, BBNI), the largest Sharia-compliant bank (BRIS), and two mid-cap private banks (BNGA, MEGA).
 
@@ -72,7 +72,7 @@ BANKS = [
 ]
 ```
 
-### Cell 3 — Core Functions
+### Core Functions
 
 Two functions: one to fetch quarterly data from the Sectors API v2, one to compute TTM metrics from the raw response.
 
@@ -135,7 +135,7 @@ def compute_metrics(quarters, company_name):
 
 **Why compute from quarterly data rather than use a pre-computed endpoint?** The quarterly endpoint is the most reliable source in the Sectors API v2. Computing TTM metrics yourself from four quarters ensures consistency across all banks — you know exactly which periods are included, and you can audit any figure back to its source quarter.
 
-### Cell 4 — Fetch Data
+### Fetch Data
 
 ```python
 rows = []
@@ -167,7 +167,7 @@ Fetching MEGA... ✓
 Done — 7/7 banks fetched successfully
 ```
 
-### Cell 5 — Build & Display Table
+### Build & Display Table
 
 ```python
 cols = [
@@ -204,7 +204,7 @@ df  # Renders as an interactive table in Colab/Jupyter
 
 ## Visualization
 
-### Cell 6 — Chart Setup
+### Chart Setup
 
 ```python
 plt.rcParams["figure.dpi"] = 130
@@ -213,7 +213,7 @@ plt.rcParams["font.family"] = "sans-serif"
 COLORS = ["#1F4E79", "#2E75B6", "#4BACC6", "#70AD47", "#ED7D31", "#FFC000", "#C00000"]
 ```
 
-### Cell 7 — Four Bar Charts: ROE, ROA, NIM, CIR
+### Four Bar Charts: ROE, ROA, NIM, CIR
 
 ```python
 fig, axes = plt.subplots(2, 2, figsize=(14, 9))
@@ -253,10 +253,10 @@ plt.show()
 ```
 
 <Frame>
-  ![IDX Banking Sector Fundamental Benchmark - Bar Charts](/images/bank_bar_charts.png)
+  ![IDX Banking Sector Fundamental Benchmark - Bar Charts](/recipes/stock-investing-and-finance/images/bank_bar_charts.png)
 </Frame>
 
-### Cell 8 — Bubble Chart: ROE vs ROA (Bubble Size = Total Assets)
+### Bubble Chart: ROE vs ROA (Bubble Size = Total Assets)
 
 ```python
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -310,10 +310,10 @@ plt.show()
 ```
 
 <Frame>
-  ![Bank Bubble Chart](/images/bank_bubble_chart.png)
+  ![Bank Bubble Chart](/recipes/stock-investing-and-finance/images/bank_bubble_chart.png)
 </Frame>
 
-### Cell 9 — Heatmap: Normalized Benchmark Scores
+### Heatmap: Normalized Benchmark Scores
 
 ```python
 heatmap_cols = ["ROE %", "ROA %", "NIM %", "CIR %"]
@@ -354,12 +354,12 @@ plt.show()
 ```
 
 <Frame>
-  ![Bank Heatmap](/images/bank_heatmap.png)
+  ![Bank Heatmap](/recipes/stock-investing-and-finance/images/bank_heatmap.png)
 </Frame>
 
 ## Expected Results
 
-After running all 9 cells you will have:
+After running all the codes you will have:
 
 1. **A benchmark DataFrame** with 7 banks × 12 metrics, sorted by total assets
 2. **Four bar charts** ranking banks by ROE, ROA, NIM, and CIR individually
@@ -382,7 +382,7 @@ All three chart files are also saved as PNG (`bank_bar_charts.png`, `bank_bubble
 
 ## Common Mistakes
 
-**Forgetting to handle `None` in quarterly data.** Some quarters may have `null` values for certain metrics (especially for smaller banks with delayed filings). The `safe_sum` helper in Cell 3 uses `or 0` to handle this — always include that guard.
+**Forgetting to handle `None` in quarterly data.** Some quarters may have `null` values for certain metrics (especially for smaller banks with delayed filings). The `safe_sum` helper uses `or 0` to handle this — always include that guard.
 
 **Using the wrong API version.** The Sectors API v1 was discontinued on 2026-05-11. All `/v1/*` requests now return HTTP 410 Gone. Always use `https://api.sectors.app/v2/...`.
 
@@ -390,7 +390,7 @@ All three chart files are also saved as PNG (`bank_bar_charts.png`, `bank_bubble
 
 **Treating CIR without context.** A high CIR can reflect investment in growth (higher opex for new branches, tech, headcount) rather than pure inefficiency. Always check year-over-year CIR trends before concluding a bank is operationally weak.
 
-**Not adding rate limit delays.** The `sleep(0.3)` in Cell 4 is not optional if you expand the universe beyond 10 banks. Omitting it on the free/Insider tier will result in 429 Too Many Requests errors.
+**Not adding rate limit delays.** The `sleep(0.3)` in the Fetch Data section is not optional if you expand the universe beyond 10 banks. Omitting it on the free/Insider tier will result in 429 Too Many Requests errors.
 
 ## Extensions
 
