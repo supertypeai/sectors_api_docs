@@ -333,7 +333,8 @@
     {
       "group": "Stock Investing and Finance",
       "pages": [
-        "recipes/stock-investing-and-finance/01 - Portfolio-Optimization"
+        "recipes/stock-investing-and-finance/01-portfolio-optimization",
+        "recipes/stock-investing-and-finance/02-benchmarking-idx-banking-stocks-sectors-api"
       ]
     },
     {
@@ -342,13 +343,8 @@
         "recipes/sectors-for-ai-agents/00-sectors-mcp-guide",
         "recipes/sectors-for-ai-agents/01-agent-skills-guide",
         "recipes/sectors-for-ai-agents/02-sectors-in-claude",
-        "recipes/sectors-for-ai-agents/03-sectors-in-chatgpt"
-      ]
-    },
-    {
-      "group": "How to Benchmark IDX Banking Stocks Using Python and the Sectors API",
-      "pages": [
-        "recipes/benchmarking-idx-banking-stocks-sectors-api/benchmarking-idx-banking-stocks-sectors-api"
+        "recipes/sectors-for-ai-agents/03-sectors-in-chatgpt",
+        "recipes/sectors-for-ai-agents/04-human-agent"
       ]
     },
     {
