@@ -285,6 +285,7 @@
               "icon": "list-check",
               "pages": [
                 "api-references/v2/singapore/helper-list/sgx-sectors",
+                "api-references/v2/singapore/helper-list/sgx-subsectors",
                 "api-references/v2/singapore/helper-list/sgx-tags"
               ]
             },
