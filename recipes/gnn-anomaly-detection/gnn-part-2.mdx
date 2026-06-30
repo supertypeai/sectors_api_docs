@@ -1,0 +1,492 @@
+---
+title: "Part 2: Training, Scoring, and Clustering"
+sidebarTitle: "2. Training, Scoring, and Clustering"
+description: "By: [Alya Dwinanda](https://www.github.com/flytosevensky) · June 30, 2026"
+---
+
+This is Part 2 of a three-part recipe. Part 1 covered data fetching, feature engineering, graph construction, and model definition. In this part, we train the GVAE, compute anomaly scores from reconstruction error, cluster the results, and produce a nine-panel visualization.
+
+**Series overview:**
+
+- **Part 1:** Setup, data fetching, feature engineering, graph construction, model definition
+- **Part 2 (this article):** Training, anomaly scoring, clustering, visualization
+- **Part 3:** Data quality audit, broker flow confirmation, foreign flow analysis, combined risk scoring
+
+## Cell 6: Training Loop
+
+The training loop is straightforward. Each epoch runs a full forward pass, computes the combined loss, backpropagates, clips gradients, and steps the optimizer and scheduler. Progress is printed every 20 epochs.
+
+```python
+def train_epoch(model, data, optimizer):
+    model.train()
+    optimizer.zero_grad()
+    x_recon, mu, logstd, z = model(data.x, data.edge_index)
+    total_loss, recon_loss  = model.loss(
+        data.x, x_recon, mu, logstd, data.edge_index
+    )
+    total_loss.backward()
+    # Clip gradients to prevent instability
+    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+    optimizer.step()
+    return total_loss.item(), recon_loss.item()
+
+
+print(f"Starting training for {EPOCHS} epochs...")
+loss_history = []
+
+for epoch in range(1, EPOCHS + 1):
+    total_loss, recon_loss = train_epoch(model, graph_data, optimizer)
+    scheduler.step()
+    loss_history.append({
+        "epoch": epoch,
+        "total": total_loss,
+        "recon": recon_loss
+    })
+
+    if epoch % 20 == 0 or epoch == 1:
+        print(f"  Epoch {epoch:4d}/{EPOCHS} | "
+              f"Total: {total_loss:.4f} | "
+              f"Recon: {recon_loss:.4f} | "
+              f"LR: {scheduler.get_last_lr()[0]:.5f}")
+
+loss_df = pd.DataFrame(loss_history)
+print(f"\nTraining complete. Final total loss: {loss_df['total'].iloc[-1]:.4f}")
+```
+
+Expected results:
+
+```text
+Starting training for 200 epochs...
+  Epoch    1/200 | Total: 6.0272 | Recon: 1.0983 | LR: 0.00500
+  Epoch   20/200 | Total: 0.9167 | Recon: 0.5542 | LR: 0.00488
+  Epoch   40/200 | Total: 0.9994 | Recon: 0.4307 | LR: 0.00452
+  Epoch   60/200 | Total: 0.8946 | Recon: 0.4142 | LR: 0.00397
+  Epoch   80/200 | Total: 0.7425 | Recon: 0.3539 | LR: 0.00327
+  Epoch  100/200 | Total: 0.6771 | Recon: 0.3080 | LR: 0.00250
+  Epoch  120/200 | Total: 0.6116 | Recon: 0.3777 | LR: 0.00173
+  Epoch  140/200 | Total: 0.5869 | Recon: 0.3301 | LR: 0.00103
+  Epoch  160/200 | Total: 0.5777 | Recon: 0.3018 | LR: 0.00048
+  Epoch  180/200 | Total: 0.5516 | Recon: 0.3288 | LR: 0.00012
+  Epoch  200/200 | Total: 0.5897 | Recon: 0.3510 | LR: 0.00000
+
+Training complete. Final total loss: 0.5897
+```
+
+A healthy training run looks like this: total loss starts around 3.0 and drops rapidly in the first 25 epochs, then continues to decrease more slowly and stabilizes below 0.7 by epoch 150. Reconstruction loss tracks below total loss because it does not include the KL and link terms.
+
+If the loss oscillates without converging, reduce `LEARNING_RATE` from 0.005 to 0.001. If it collapses to near zero within 10 epochs (posterior collapse), increase the KL weight from 0.5 to 1.0 in the loss function.
+
+<Info>
+  Gradient clipping at 1.0 is important here. GCN layers can produce large gradient norms when node degrees vary significantly, which is common in a correlation graph where hub stocks like BMRI are connected to many others while smaller stocks may have only a few edges.
+</Info>
+
+## Cell 7: Anomaly Scoring
+
+After training, the model is switched to evaluation mode. The full graph is passed through once to get reconstructed features and latent embeddings. Per-node reconstruction error is computed as the mean squared error across all 11 features.
+
+```python
+model.eval()
+with torch.no_grad():
+    x_recon, mu, logstd, z = model(graph_data.x, graph_data.edge_index)
+
+# Reconstruction error per node, per feature dimension
+recon_error    = F.mse_loss(x_recon, graph_data.x, reduction="none")
+
+# Average across feature dimensions to get a scalar score per node
+anomaly_scores = recon_error.mean(dim=1).cpu().numpy()   # shape: (n_stocks,)
+embeddings     = z.cpu().numpy()                          # shape: (n_stocks, 32)
+
+# Threshold at the 90th percentile
+threshold  = np.percentile(anomaly_scores, ANOMALY_PERCENTILE)
+is_anomaly = anomaly_scores > threshold
+
+# Build result DataFrame
+result_df = pd.DataFrame({
+    "ticker":        active_tickers,
+    "anomaly_score": anomaly_scores,
+    "is_anomaly":    is_anomaly,
+}, index=range(len(active_tickers)))
+
+# Attach original features for later analysis
+result_df = result_df.join(feat_df.reset_index(drop=True))
+
+anomaly_tickers = result_df[result_df["is_anomaly"]]["ticker"].tolist()
+normal_tickers  = result_df[~result_df["is_anomaly"]]["ticker"].tolist()
+
+print(f"Anomaly score range: {anomaly_scores.min():.4f} to {anomaly_scores.max():.4f}")
+print(f"Threshold (p{ANOMALY_PERCENTILE}): {threshold:.4f}")
+print(f"\nAnomalies detected ({len(anomaly_tickers)}): {anomaly_tickers}")
+```
+
+```text
+Anomaly score range: 0.0176 to 0.9454
+Threshold (p90): 0.5319
+
+Anomalies detected (3): ['BBCA', 'PGAS', 'SMGR']
+```
+
+<Info>
+  The 90th percentile threshold means roughly the top 3 stocks in a universe of 30 will be flagged. Adjust `ANOMALY_PERCENTILE` to change the sensitivity. Lower values (e.g. 85) flag more stocks; higher values (e.g. 95) flag fewer but only the most extreme cases.
+</Info>
+
+## Cell 8: Clustering in Embedding Space
+
+Clustering is done in two passes with different goals.
+
+**KMeans on all stocks** maps the overall market structure into four groups. Stocks in the same KMeans cluster share similar graph-contextual representations regardless of whether they are anomalous or not.
+
+**DBSCAN on anomalous stocks only** asks a more specific question: among the stocks that are already flagged as anomalous, do any of them share a common pattern, or did each become anomalous for independent reasons?
+
+```python
+# Reduce embedding dimensions for visualization and clustering
+pca           = PCA(n_components=2, random_state=42)
+embeddings_2d = pca.fit_transform(embeddings)
+print(f"PCA variance explained: {pca.explained_variance_ratio_.sum():.2%}")
+
+# KMeans: structure of the full market
+kmeans         = KMeans(n_clusters=N_CLUSTERS, random_state=42, n_init=10)
+cluster_labels = kmeans.fit_predict(embeddings)
+
+# DBSCAN: structure of anomalies only
+anomaly_mask = is_anomaly
+if anomaly_mask.sum() >= 3:
+    dbscan                = DBSCAN(eps=0.8, min_samples=2, metric="euclidean")
+    anomaly_embeddings    = embeddings[anomaly_mask]
+    anomaly_cluster_labels = dbscan.fit_predict(anomaly_embeddings)
+    n_anomaly_clusters    = len(set(anomaly_cluster_labels)) - (
+        1 if -1 in anomaly_cluster_labels else 0
+    )
+    print(f"DBSCAN: {anomaly_mask.sum()} anomalies -> {n_anomaly_clusters} clusters")
+else:
+    anomaly_cluster_labels = np.zeros(anomaly_mask.sum(), dtype=int)
+    n_anomaly_clusters     = 1
+
+# Attach cluster labels to results
+result_df["kmeans_cluster"] = cluster_labels
+result_df.loc[result_df["is_anomaly"], "anomaly_cluster"] = (
+    anomaly_cluster_labels.astype(int)
+)
+
+# Silhouette score for KMeans quality
+if len(set(cluster_labels)) > 1:
+    sil_score = silhouette_score(embeddings, cluster_labels)
+    print(f"KMeans silhouette score: {sil_score:.4f}")
+
+# Summary of anomalies per DBSCAN cluster
+anom_df = result_df[result_df["is_anomaly"]][[
+    "ticker", "anomaly_score", "anomaly_cluster",
+    "n_extreme_days", "n_volume_spikes", "volatility", "skewness"
+]].copy()
+anom_df = anom_df.sort_values(
+    ["anomaly_cluster", "anomaly_score"], ascending=[True, False]
+)
+print("\nAnomalies by DBSCAN cluster:")
+print(anom_df.to_string(index=False))
+```
+
+Expected results:
+
+```text
+PCA variance explained: 38.82%
+DBSCAN: 3 anomalies -> 0 clusters
+KMeans silhouette score: 0.2018
+
+Anomalies by DBSCAN cluster:
+ticker  anomaly_score  anomaly_cluster  n_extreme_days  n_volume_spikes  volatility  skewness
+  PGAS       0.945383             -1.0             3.0              0.0    0.028255 -1.279496
+  BBCA       0.561426             -1.0             1.0              2.0    0.030549  0.516965
+  SMGR       0.551280             -1.0             1.0              2.0    0.030296  0.353080
+```
+
+When DBSCAN assigns all anomalies to cluster -1 (the noise cluster), that is not a failure. It means the anomalies are isolated from each other in embedding space and should be investigated separately. When anomalies cluster together, it suggests a shared mechanism worth investigating.
+
+## Cell 9: Nine-Panel Visualization
+
+The visualization is built as a 3x3 grid of subplots. Each panel shows a different view of the results.
+
+```python
+fig = plt.figure(figsize=(20, 18))
+fig.suptitle(
+    "GNN Anomaly Detection — IDX Stocks\nSectors Recipe",
+    fontsize=16, fontweight="bold", y=0.98
+)
+
+anomaly_color = "#e74c3c"
+normal_color  = "#3498db"
+
+# Panel 1: Training loss curve
+ax1 = fig.add_subplot(3, 3, 1)
+ax1.plot(loss_df["epoch"], loss_df["total"],
+         label="Total Loss", color="#e74c3c", lw=2)
+ax1.plot(loss_df["epoch"], loss_df["recon"],
+         label="Recon Loss", color="#3498db", lw=2, ls="--")
+ax1.set_xlabel("Epoch")
+ax1.set_ylabel("Loss")
+ax1.set_title("Training Loss Curve")
+ax1.legend()
+ax1.grid(alpha=0.3)
+
+# Panel 2: Anomaly score distribution
+ax2 = fig.add_subplot(3, 3, 2)
+ax2.hist(anomaly_scores[~is_anomaly], bins=20, alpha=0.7,
+         color=normal_color, label="Normal", edgecolor="white")
+ax2.hist(anomaly_scores[is_anomaly],  bins=10, alpha=0.8,
+         color=anomaly_color, label="Anomaly", edgecolor="white")
+ax2.axvline(threshold, color="black", ls="--", lw=2,
+            label=f"Threshold (p{ANOMALY_PERCENTILE})")
+ax2.set_xlabel("Anomaly Score (Reconstruction Error)")
+ax2.set_ylabel("Number of Stocks")
+ax2.set_title("Anomaly Score Distribution")
+ax2.legend()
+ax2.grid(alpha=0.3)
+
+# Panel 3: PCA embedding space
+ax3 = fig.add_subplot(3, 3, 3)
+ax3.scatter(embeddings_2d[~is_anomaly, 0], embeddings_2d[~is_anomaly, 1],
+            c=normal_color, alpha=0.6, s=60, label="Normal", zorder=2)
+ax3.scatter(embeddings_2d[is_anomaly, 0], embeddings_2d[is_anomaly, 1],
+            c=anomaly_color, alpha=0.9, s=120, marker="*",
+            label="Anomaly", zorder=3)
+for i, ticker in enumerate(active_tickers):
+    if is_anomaly[i]:
+        ax3.annotate(ticker,
+                     (embeddings_2d[i, 0], embeddings_2d[i, 1]),
+                     fontsize=7, ha="left", color="#c0392b",
+                     xytext=(3, 3), textcoords="offset points")
+ax3.set_title("GNN Embedding Space (PCA 2D)")
+ax3.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]:.1%})")
+ax3.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]:.1%})")
+ax3.legend()
+ax3.grid(alpha=0.3)
+
+# Panel 4: KMeans clustering
+ax4 = fig.add_subplot(3, 3, 4)
+for c in range(N_CLUSTERS):
+    mask = cluster_labels == c
+    ax4.scatter(embeddings_2d[mask, 0], embeddings_2d[mask, 1],
+                alpha=0.7, s=70, label=f"Cluster {c}")
+for i, ticker in enumerate(active_tickers):
+    ax4.annotate(ticker,
+                 (embeddings_2d[i, 0], embeddings_2d[i, 1]),
+                 fontsize=6, alpha=0.6,
+                 xytext=(2, 2), textcoords="offset points")
+ax4.set_title(f"KMeans Clustering (k={N_CLUSTERS})")
+ax4.set_xlabel("PC1")
+ax4.set_ylabel("PC2")
+ax4.legend(fontsize=8)
+ax4.grid(alpha=0.3)
+
+# Panel 5: Top 15 anomaly scores bar chart
+ax5 = fig.add_subplot(3, 3, 5)
+top_n      = result_df.nlargest(15, "anomaly_score")
+colors_bar = [anomaly_color if a else normal_color for a in top_n["is_anomaly"]]
+ax5.barh(top_n["ticker"], top_n["anomaly_score"],
+         color=colors_bar, edgecolor="white")
+ax5.axvline(threshold, color="black", ls="--", lw=1.5, label="Threshold")
+ax5.set_xlabel("Anomaly Score")
+ax5.set_title("Top 15 Anomaly Scores")
+ax5.legend()
+ax5.invert_yaxis()
+ax5.grid(alpha=0.3, axis="x")
+
+# Panel 6: Return correlation heatmap (first 15 stocks)
+ax6 = fig.add_subplot(3, 3, 6)
+subset     = active_tickers[:15] if len(active_tickers) >= 15 else active_tickers
+corr_sub   = corr_matrix.loc[subset, subset]
+mask_upper = np.triu(np.ones_like(corr_sub, dtype=bool))
+sns.heatmap(corr_sub, mask=mask_upper, ax=ax6, cmap="RdYlGn",
+            center=0, annot=False, linewidths=0.3,
+            vmin=-1, vmax=1, cbar_kws={"shrink": 0.8})
+ax6.set_title("Return Correlation Matrix")
+ax6.tick_params(axis="x", rotation=90, labelsize=7)
+ax6.tick_params(axis="y", rotation=0, labelsize=7)
+
+# Panel 7: Feature profile of anomalous stocks
+ax7 = fig.add_subplot(3, 3, 7)
+if len(anom_df) > 0:
+    features_to_plot = ["n_extreme_days", "n_volume_spikes", "volatility"]
+    anom_plot        = anom_df.set_index("ticker")[features_to_plot]
+    anom_plot_norm   = (anom_plot - anom_plot.min()) / (
+        anom_plot.max() - anom_plot.min() + 1e-8
+    )
+    anom_plot_norm.plot(kind="bar", ax=ax7,
+                        colormap="Set2", edgecolor="white", width=0.75)
+    ax7.set_title("Anomaly Feature Profile")
+    ax7.set_xlabel("")
+    ax7.set_ylabel("Normalized Value")
+    ax7.legend(fontsize=8)
+    ax7.tick_params(axis="x", rotation=45, labelsize=7)
+    ax7.grid(alpha=0.3, axis="y")
+
+# Panel 8: Correlation graph network (top 20 nodes)
+ax8            = fig.add_subplot(3, 3, 8)
+subgraph_nodes = list(range(min(20, len(active_tickers))))
+sub_G          = nx_graph.subgraph(subgraph_nodes)
+pos            = nx.spring_layout(sub_G, seed=42, k=1.5)
+node_colors    = [anomaly_color if is_anomaly[n] else normal_color
+                  for n in sub_G.nodes()]
+node_sizes     = [300 + anomaly_scores[n] * 2000 for n in sub_G.nodes()]
+
+nx.draw_networkx_nodes(sub_G, pos, ax=ax8,
+                       node_color=node_colors,
+                       node_size=node_sizes, alpha=0.85)
+nx.draw_networkx_edges(sub_G, pos, ax=ax8,
+                       alpha=0.2, width=0.8, edge_color="gray")
+labels = {n: active_tickers[n] for n in sub_G.nodes()}
+nx.draw_networkx_labels(sub_G, pos, labels, ax=ax8, font_size=6)
+ax8.set_title("Correlation Graph (Top 20 Nodes)\n"
+              "Red=Anomaly  Blue=Normal | Size proportional to score")
+ax8.axis("off")
+
+# Panel 9: DBSCAN anomaly clusters
+ax9 = fig.add_subplot(3, 3, 9)
+if is_anomaly.sum() >= 3:
+    anom_2d           = embeddings_2d[is_anomaly]
+    anom_tickers_list = [t for t, a in zip(active_tickers, is_anomaly) if a]
+    unique_clusters   = sorted(set(anomaly_cluster_labels))
+    cluster_colors    = plt.cm.Set1(np.linspace(0, 0.8, max(len(unique_clusters), 1)))
+
+    for ci, c in enumerate(unique_clusters):
+        mask_c = anomaly_cluster_labels == c
+        label  = f"Cluster {c}" if c >= 0 else "Outlier"
+        color  = cluster_colors[ci] if c >= 0 else "black"
+        ax9.scatter(anom_2d[mask_c, 0], anom_2d[mask_c, 1],
+                    c=[color], s=150, alpha=0.85,
+                    marker="*" if c >= 0 else "x",
+                    label=label, zorder=3)
+        for j, (x, y) in enumerate(anom_2d[mask_c]):
+            ticker_idx = [k for k, m in enumerate(mask_c) if m][j]
+            ax9.annotate(anom_tickers_list[ticker_idx],
+                         (x, y), fontsize=8, fontweight="bold",
+                         color="#8e44ad",
+                         xytext=(4, 4), textcoords="offset points")
+
+    ax9.set_title(f"DBSCAN Anomaly Clusters ({n_anomaly_clusters} found)")
+    ax9.set_xlabel("PC1")
+    ax9.set_ylabel("PC2")
+    ax9.legend(fontsize=8)
+    ax9.grid(alpha=0.3)
+else:
+    ax9.text(0.5, 0.5, "Not enough anomalies\nfor DBSCAN\n(need >= 3)",
+             ha="center", va="center", transform=ax9.transAxes, fontsize=12)
+    ax9.set_title("DBSCAN Anomaly Clusters")
+
+plt.tight_layout()
+plt.savefig("sectors_gnn_anomaly_results.png",
+            dpi=150, bbox_inches="tight", facecolor="white")
+plt.show()
+print("Visualization saved.")
+```
+
+Expected results:
+
+<Frame>
+  ![Sectors GNN Anomaly Results](/recipes/gnn-anomaly-detection/images/sectors_gnn_anomaly_results.png)
+</Frame>
+
+## Cell 10: Summary and Export
+
+```python
+print("=" * 70)
+print("  GNN ANOMALY DETECTION — RESULTS SUMMARY")
+print("=" * 70)
+
+print(f"\nDataset:")
+print(f"  {len(active_tickers)} IDX stocks analyzed")
+print(f"  Period: {START_DATE} to {END_DATE}")
+print(f"  {len(price_df)} trading days")
+print(f"  {feat_df.shape[1]} node features per stock")
+
+print(f"\nGraph:")
+print(f"  {nx_graph.number_of_nodes()} nodes | {nx_graph.number_of_edges()} edges")
+print(f"  Correlation threshold: {CORRELATION_THRESHOLD}")
+
+print(f"\nGVAE Model:")
+print(f"  Architecture: {in_dim}d -> {HIDDEN_DIM}d -> {LATENT_DIM}d latent")
+print(f"  Final total loss: {loss_df['total'].iloc[-1]:.4f}")
+
+print(f"\nAnomalies Detected: {is_anomaly.sum()} / {len(active_tickers)}")
+print(f"  Threshold (p{ANOMALY_PERCENTILE}): {threshold:.4f}")
+
+for _, row in anom_df.iterrows():
+    cluster_label = (f"Cluster {int(row['anomaly_cluster'])}"
+                     if pd.notna(row.get("anomaly_cluster")) else "isolated")
+    print(f"\n  {row['ticker']:8s} | Score: {row['anomaly_score']:.4f} | {cluster_label}")
+    print(f"  Volatility: {row['volatility']:.4f} | "
+          f"Extreme days: {int(row['n_extreme_days'])} | "
+          f"Volume spikes: {int(row['n_volume_spikes'])}")
+
+print(f"\nDBSCAN anomaly clusters: {n_anomaly_clusters}")
+print("=" * 70)
+
+# Export results
+result_df.to_csv("sectors_gnn_anomaly_scores.csv", index=False)
+print("\nExported: sectors_gnn_anomaly_scores.csv")
+```
+
+Expected results:
+
+```text
+======================================================================
+  GNN ANOMALY DETECTION — RESULTS SUMMARY
+======================================================================
+
+Dataset:
+  30 IDX stocks analyzed
+  Period: 2025-12-31 to 2026-06-29
+  56 trading days
+  11 node features per stock
+
+Graph:
+  30 nodes | 8 edges
+  Correlation threshold: 0.6
+
+GVAE Model:
+  Architecture: 11d -> 64d -> 32d latent
+  Final total loss: 0.5897
+
+Anomalies Detected: 3 / 30
+  Threshold (p90): 0.5319
+
+  PGAS     | Score: 0.9454 | Cluster -1
+  Volatility: 0.0283 | Extreme days: 3 | Volume spikes: 0
+
+  BBCA     | Score: 0.5614 | Cluster -1
+  Volatility: 0.0305 | Extreme days: 1 | Volume spikes: 2
+
+  SMGR     | Score: 0.5513 | Cluster -1
+  Volatility: 0.0303 | Extreme days: 1 | Volume spikes: 2
+
+DBSCAN anomaly clusters: 0
+======================================================================
+
+Exported: sectors_gnn_anomaly_scores.csv
+```
+
+## Reading the Results
+
+### Training Loss Curve (Panel 1)
+
+A loss that drops sharply in the first 25 epochs then plateaus indicates the model has learned the main structure of the data. Continued slow decline after that is fine. A flat curve from epoch 1 indicates the learning rate is too low.
+
+### Anomaly Score Distribution (Panel 2)
+
+The distribution should be right-skewed: most stocks cluster near zero with a long tail of higher scores. The vertical threshold line separates normal from anomalous. If the threshold sits in a gap between two distinct clusters in the distribution, that is a good sign. If it cuts through a dense cluster, consider adjusting `ANOMALY_PERCENTILE`.
+
+### PCA Embedding Space (Panel 3)
+
+Stocks that cluster tightly in this space share similar graph-contextual representations. Anomalies that appear isolated from the main cluster are stocks whose behavior the GNN found hardest to explain given their graph neighbors. Anomalies that appear close to each other despite being flagged independently may share a root cause.
+
+### Correlation Graph (Panel 8)
+
+Node size is proportional to anomaly score. A large node in the center of the graph (a hub with many edges) that is also anomalous is the most interesting case: the GNN had a lot of neighbor information to work with, yet still could not reconstruct the stock's behavior. BMRI appeared this way in the sample run.
+
+### DBSCAN Clusters (Panel 9)
+
+Points labeled as "Outlier" (cluster -1) are anomalies that are isolated from all other anomalies in embedding space. This means they became anomalous for different reasons. In the sample run, all three anomalies were labeled as outliers, suggesting three independent anomaly mechanisms rather than a single shared cause.
+
+## What We Have After Part 2
+
+The pipeline has now produced a ranked list of stocks by anomaly score, with embedding-based cluster assignments. The next step is to validate these scores against independent market signals.
+
+Continue to [Part 3](/recipes/gnn-anomaly-detection/gnn-part-3.mdx) to run a data quality audit, fetch broker flow and foreign flow data from the Sectors API v2, and compute a combined risk score that integrates all three signals.
