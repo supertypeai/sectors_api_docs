@@ -1,0 +1,553 @@
+---
+title: "Part 1: Setup, Data, and Model"
+sidebarTitle: "1. Setup, Data, and Model"
+description: "By: [Alya Dwinanda](https://www.github.com/flytosevensky) · June 30, 2026"
+---
+
+This is Part 1 of a three-part recipe. In this part, we fetch IDX stock data from the Sectors API, engineer node features for each stock, construct a return correlation graph, and define the Graph Variational Autoencoder (GVAE) that will be trained in Part 2.
+
+**Series overview:**
+
+- **Part 1 (this article):** Setup, data fetching, feature engineering, graph construction, model definition
+- **Part 2:** Training, anomaly scoring, clustering, and visualization
+- **Part 3:** Data quality audit, broker flow confirmation, foreign flow analysis, combined risk scoring
+
+## Why Graph Neural Networks for Stock Anomaly Detection
+
+Traditional anomaly detection methods treat each stock as an independent time series. Isolation forests, z-score thresholds, and autoencoder-based detectors all evaluate a stock by its own historical behavior. They are useful, but they miss a fundamental property of equity markets: stocks are correlated, and the most informative anomalies are often stocks that behave unusually _relative to their correlated peers_.
+
+A Graph Neural Network changes the frame of reference. Instead of asking "is this stock unusual compared to its own history?", it asks "is this stock unusual compared to what its graph neighbors would predict?". A banking stock that suddenly diverges from all other banking stocks is anomalous in the graph sense even if its standalone statistics look unremarkable.
+
+The architecture used in this recipe is a Graph Variational Autoencoder. The encoder compresses each node's features into a latent distribution using two GCN layers. The decoder reconstructs the original features from a sample drawn from that distribution. A node with high reconstruction error is one the model could not explain given its graph context. That reconstruction error becomes the anomaly score.
+
+## Prerequisites
+
+```bash
+pip install torch torch-geometric pandas numpy scikit-learn requests
+pip install matplotlib seaborn networkx
+```
+
+You will also need a Sectors API key. Set it as an environment variable before starting.
+
+```bash
+export SECTORS_API_KEY="your_api_key_here"
+```
+
+## Cell 1: Imports and Configuration
+
+All hyperparameters are defined at the top of Cell 1 so they can be adjusted in one place without hunting through the notebook.
+
+```python
+import os
+import requests
+import warnings
+import numpy as np
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime, timedelta
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import DBSCAN, KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch_geometric.data import Data
+from torch_geometric.nn import GCNConv, GAE, VGAE
+from torch_geometric.utils import from_networkx, negative_sampling
+
+warnings.filterwarnings("ignore")
+
+# API configuration
+SECTORS_API_KEY = os.environ.get("SECTORS_API_KEY", "YOUR_API_KEY_HERE")
+BASE_URL        = "https://api.sectors.app/v2"
+HEADERS         = {"Authorization": SECTORS_API_KEY}
+
+# Analysis window
+START_DATE = (datetime.now() - timedelta(days=180)).strftime("%Y-%m-%d")
+END_DATE   = datetime.now().strftime("%Y-%m-%d")
+
+# GNN hyperparameters
+HIDDEN_DIM            = 64    # GCN hidden layer dimension
+LATENT_DIM            = 32    # latent embedding dimension
+EPOCHS                = 200
+LEARNING_RATE         = 0.005
+CORRELATION_THRESHOLD = 0.6   # minimum return correlation to create an edge
+ANOMALY_PERCENTILE    = 90    # top 10% reconstruction error flagged as anomaly
+N_CLUSTERS            = 4     # KMeans cluster count
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Device: {DEVICE}")
+print(f"Analysis period: {START_DATE} to {END_DATE}")
+```
+
+<Info>
+  `CORRELATION_THRESHOLD = 0.6` works well for LQ45 constituents because they share meaningful sector exposure. Lowering it below 0.5 makes the graph too dense and reduces the GNN's ability to detect local anomalies. Raising it above 0.75 makes the graph too sparse and some nodes become isolated.
+</Info>
+
+## Cell 2: Fetching Stock Data
+
+We fetch two things: the list of top IDX companies, and daily price and volume data for each one. Both functions handle API errors gracefully, returning empty structures rather than raising exceptions, so a single failed ticker does not interrupt the loop.
+
+```python
+def fetch_top_companies(n: int = 50) -> list[dict]:
+    """Fetch top N IDX stocks by market cap from the IDX30 and LQ45 indices."""
+    url    = f"{BASE_URL}/companies/top/"
+    params = {"classifications": "idx30,lq45", "n_stock": n}
+    resp   = requests.get(url, headers=HEADERS, params=params)
+    if resp.status_code != 200:
+        raise ValueError(f"API error {resp.status_code}: {resp.text}")
+    return resp.json()
+
+
+def fetch_daily_data(ticker: str, start: str, end: str) -> pd.DataFrame:
+    """Fetch daily close price and volume for one ticker."""
+    url    = f"{BASE_URL}/daily/{ticker}/"
+    params = {"start": start, "end": end}
+    resp   = requests.get(url, headers=HEADERS, params=params)
+    if resp.status_code != 200:
+        return pd.DataFrame()
+    data = resp.json()
+    if not data:
+        return pd.DataFrame()
+    df           = pd.DataFrame(data)
+    df["date"]   = pd.to_datetime(df["date"])
+    df["ticker"] = ticker
+    return df.set_index("date").sort_index()
+
+
+# Fetch ticker list
+print("Fetching ticker list...")
+try:
+    companies = fetch_top_companies(n=40)
+    tickers   = [c["symbol"] for c in companies]
+    print(f"Found {len(tickers)} tickers: {', '.join(tickers[:10])}...")
+except Exception as e:
+    print(f"API unavailable, using fallback list: {e}")
+    tickers = [
+        "BBCA", "BBRI", "BMRI", "TLKM", "ASII", "UNVR", "ICBP", "KLBF",
+        "INDF", "PGAS", "EXCL", "GGRM", "HMSP", "JSMR", "ADRO",
+        "INCO", "PTBA", "ANTM", "MEDC", "AALI", "SMGR", "CPIN", "MYOR",
+        "UNTR", "WIKA", "WSKT", "PTPP", "AKRA", "LSIP", "BSDE"
+    ]
+
+# Fetch daily data for all tickers
+print(f"\nFetching daily data for {len(tickers)} tickers...")
+all_dfs = []
+failed  = []
+
+for i, ticker in enumerate(tickers):
+    try:
+        df = fetch_daily_data(ticker, START_DATE, END_DATE)
+        if not df.empty and "close" in df.columns:
+            all_dfs.append(df[["close", "volume", "ticker"]])
+            print(f"  [{i+1:2d}/{len(tickers)}] {ticker}: {len(df)} days")
+        else:
+            failed.append(ticker)
+    except Exception as e:
+        failed.append(ticker)
+        print(f"  [{i+1:2d}/{len(tickers)}] {ticker}: FAILED ({e})")
+
+if failed:
+    print(f"\nFailed tickers: {failed}")
+
+# Pivot to wide format: index=date, columns=ticker
+if all_dfs:
+    raw_df    = pd.concat(all_dfs)
+    price_df  = raw_df.pivot_table(index=raw_df.index, columns="ticker", values="close")
+    volume_df = raw_df.pivot_table(index=raw_df.index, columns="ticker", values="volume")
+else:
+    # Mock data fallback for development without API access
+    print("\nUsing mock data for demonstration...")
+    np.random.seed(42)
+    dates     = pd.bdate_range(START_DATE, END_DATE)
+    tickers   = tickers[:20]
+    price_df  = pd.DataFrame(
+        np.cumprod(1 + np.random.randn(len(dates), len(tickers)) * 0.015, axis=0) * 1000,
+        index=dates, columns=tickers
+    )
+    volume_df = pd.DataFrame(
+        np.abs(np.random.randn(len(dates), len(tickers))) * 1e7,
+        index=dates, columns=tickers
+    )
+
+# Drop tickers with more than 20% missing data
+price_df       = price_df.dropna(axis=1, thresh=int(len(price_df) * 0.8))
+volume_df      = volume_df[price_df.columns]
+active_tickers = price_df.columns.tolist()
+
+print(f"\nDataset ready: {len(active_tickers)} stocks x {len(price_df)} trading days")
+```
+
+<Warning>
+  The mock data fallback uses random walks and is only meant for testing the pipeline structure. Anomaly scores on mock data are not meaningful. Always use real API data for actual analysis.
+</Warning>
+
+## Cell 3: Node Feature Engineering
+
+Each stock is represented as a node with an 11-dimensional feature vector. These features are designed to capture everything a human analyst would check when screening for unusual stock behavior: return distribution shape, volume behavior, momentum, and volatility regime.
+
+```python
+def compute_features(price_df: pd.DataFrame,
+                     volume_df: pd.DataFrame,
+                     window: int = 20) -> pd.DataFrame:
+    """
+    Compute an 11-dimensional feature vector for each stock.
+    Each stock becomes one row in the output DataFrame.
+    """
+    returns  = price_df.pct_change().dropna()
+    features = {}
+
+    for ticker in price_df.columns:
+        ret   = returns[ticker].dropna()
+        vol   = volume_df[ticker].dropna()
+        price = price_df[ticker].dropna()
+
+        # Return distribution shape
+        mean_ret = ret.mean()
+        std_ret  = ret.std()
+        skewness = ret.skew()
+        kurtosis = ret.kurtosis()
+
+        # Extreme return days
+        z_scores  = (ret - ret.mean()) / (ret.std() + 1e-8)
+        max_z     = z_scores.abs().max()
+        n_extreme = (z_scores.abs() > 2.5).sum()
+
+        # Volume anomaly features
+        vol_z      = (vol - vol.mean()) / (vol.std() + 1e-8)
+        max_vol_z  = vol_z.abs().max()
+        n_vol_spike = (vol_z.abs() > 2.5).sum()
+
+        # Trend and momentum
+        sma_20       = price.rolling(window).mean().iloc[-1]
+        price_vs_sma = (price.iloc[-1] / sma_20 - 1) if sma_20 > 0 else 0
+
+        # Volatility regime
+        recent_vol = ret.tail(window).std()
+        hist_vol   = ret.std()
+        vol_ratio  = recent_vol / (hist_vol + 1e-8)
+
+        # Risk-adjusted return
+        sharpe = mean_ret / (std_ret + 1e-8) * np.sqrt(252)
+
+        features[ticker] = {
+            "mean_return":       mean_ret,
+            "volatility":        std_ret,
+            "skewness":          skewness,
+            "kurtosis":          kurtosis,
+            "max_return_zscore": max_z,
+            "n_extreme_days":    n_extreme,
+            "max_volume_zscore": max_vol_z,
+            "n_volume_spikes":   n_vol_spike,
+            "price_vs_sma20":    price_vs_sma,
+            "vol_regime_ratio":  vol_ratio,
+            "sharpe_ratio":      sharpe,
+        }
+
+    feat_df = pd.DataFrame(features).T
+    feat_df = feat_df.fillna(feat_df.median())
+    return feat_df
+
+
+print("Computing node features...")
+feat_df = compute_features(price_df, volume_df)
+
+# Standardize before passing to the GNN
+scaler      = StandardScaler()
+feat_scaled = scaler.fit_transform(feat_df)
+feat_tensor = torch.tensor(feat_scaled, dtype=torch.float)
+
+print(f"Feature matrix shape: {feat_df.shape}")
+print(feat_df.describe().round(4))
+```
+
+Expected results:
+
+```text
+Computing node features...
+Feature matrix shape: (30, 11)
+       mean_return  volatility  skewness  kurtosis  max_return_zscore  \
+count      30.0000     30.0000   30.0000   30.0000            30.0000   
+mean       -0.0027      0.0283    0.2407    1.8645             3.0066   
+std         0.0029      0.0107    0.6761    1.9864             1.0002   
+min        -0.0091      0.0000   -1.2795   -0.1983             0.0000   
+25%        -0.0042      0.0255   -0.0215    0.4167             2.7382   
+50%        -0.0025      0.0280    0.2040    1.2429             3.1289   
+75%        -0.0007      0.0314    0.5083    2.2505             3.5557   
+max         0.0034      0.0602    1.9757    6.9154             4.5267   
+
+       n_extreme_days  max_volume_zscore  n_volume_spikes  price_vs_sma20  \
+count         30.0000            30.0000          30.0000         30.0000   
+mean           1.3000             3.8815           1.5667         -0.0133   
+std            0.8769             1.5705           0.8584          0.0519   
+min            0.0000             0.0000           0.0000         -0.1038   
+25%            1.0000             3.0699           1.0000         -0.0541   
+50%            1.0000             3.7906           2.0000         -0.0031   
+75%            2.0000             5.0160           2.0000          0.0284   
+max            3.0000             6.9826           3.0000          0.0792   
+
+       vol_regime_ratio  sharpe_ratio  
+count           30.0000       30.0000  
+mean             1.1092       -1.4147  
+std              0.3648        1.4893  
+min              0.0000       -4.6779  
+25%              0.9953       -2.3269  
+50%              1.1872       -1.3480  
+75%              1.3331       -0.3486  
+max              1.5427        1.7016  
+```
+
+The feature table explains each dimension:
+
+| Feature | What it captures |
+| --- | --- |
+| `mean_return` | Directional bias over the period |
+| `volatility` | Average daily price variability |
+| `skewness` | Asymmetry of the return distribution |
+| `kurtosis` | Tail heaviness (high = fat tails, more extreme moves) |
+| `max_return_zscore` | Single most extreme return day |
+| `n_extreme_days` | Count of days with z-score above 2.5 |
+| `max_volume_zscore` | Single most extreme volume day |
+| `n_volume_spikes` | Count of abnormal volume days |
+| `price_vs_sma20` | How far current price sits from the 20-day moving average |
+| `vol_regime_ratio` | Recent volatility divided by historical volatility |
+| `sharpe_ratio` | Annualized return per unit of risk |
+
+<Info>
+  `vol_regime_ratio` is particularly useful as an anomaly feature. A ratio above 1.4 means recent volatility has expanded significantly relative to the stock's own historical baseline. This can indicate an emerging event before it becomes obvious in price alone. PGAS, SMGR, and BMRI all had ratios above 1.25 in the sample run.
+</Info>
+
+## Cell 4: Building the Correlation Graph
+
+The graph is built from pairwise Pearson correlations of daily returns. Two stocks are connected by an edge if their return correlation exceeds `CORRELATION_THRESHOLD`. The graph is undirected. Edges carry the correlation value as a weight.
+
+```python
+def build_correlation_graph(price_df: pd.DataFrame,
+                            threshold: float = 0.6) -> tuple:
+    """
+    Build an undirected weighted graph from return correlations.
+
+    Nodes : one per stock
+    Edges : pairs with |correlation| >= threshold
+    Weights: correlation value
+
+    If no edges exist at the given threshold, recursively retries
+    with threshold * 0.8 until at least one edge is created.
+    """
+    returns     = price_df.pct_change().dropna()
+    corr_matrix = returns.corr()
+    tickers     = corr_matrix.columns.tolist()
+
+    G           = nx.Graph()
+    G.add_nodes_from(range(len(tickers)))
+    edge_index  = []
+    edge_weight = []
+
+    for i in range(len(tickers)):
+        for j in range(i + 1, len(tickers)):
+            corr = corr_matrix.iloc[i, j]
+            if abs(corr) >= threshold:
+                G.add_edge(i, j, weight=corr)
+                # Both directions for undirected PyG convention
+                edge_index.append([i, j])
+                edge_index.append([j, i])
+                edge_weight.extend([corr, corr])
+
+    if not edge_index:
+        # Graph is empty at this threshold; lower it and retry
+        return build_correlation_graph(price_df, threshold * 0.8)
+
+    edge_index_t  = torch.tensor(edge_index,  dtype=torch.long).t().contiguous()
+    edge_weight_t = torch.tensor(edge_weight, dtype=torch.float)
+
+    print(f"Graph: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges "
+          f"(threshold={threshold:.2f})")
+    print(f"Density: {nx.density(G):.4f} | "
+          f"Avg degree: {np.mean([d for _, d in G.degree()]):.2f}")
+
+    return edge_index_t, edge_weight_t, corr_matrix, G
+
+
+print("Building correlation graph...")
+edge_index, edge_weight, corr_matrix, nx_graph = build_correlation_graph(
+    price_df, threshold=CORRELATION_THRESHOLD
+)
+
+# Wrap in a PyTorch Geometric Data object
+graph_data = Data(
+    x          = feat_tensor,
+    edge_index = edge_index,
+    edge_attr  = edge_weight,
+    num_nodes  = len(active_tickers)
+).to(DEVICE)
+
+print(f"\nPyG graph data: {graph_data}")
+```
+
+```text
+Building correlation graph...
+Graph: 30 nodes, 8 edges (threshold=0.60)
+Density: 0.0184 | Avg degree: 0.53
+
+PyG graph data: Data(x=[30, 11], edge_index=[2, 16], edge_attr=[16], num_nodes=30)
+```
+
+The recursive fallback matters in practice. When running on a smaller universe or a period with unusual market conditions, it is possible for the default threshold to produce a disconnected or near-empty graph. The fallback ensures training always has a meaningful graph structure to work with.
+
+## Cell 5: Defining the GVAE Model
+
+The model has three classes: `GNNEncoder`, `GNNDecoder`, and `AnomalyGNN` which composes them.
+
+### Encoder
+
+The encoder takes node features and the graph structure as input. Two GCN layers with batch normalization and ELU activations produce a hidden representation. Two additional GCN layers produce the mean (`mu`) and log-standard-deviation (`logstd`) of the latent distribution for each node.
+
+```python
+class GNNEncoder(nn.Module):
+    """
+    Two-layer GCN encoder producing a variational latent distribution.
+    Output: (mu, logstd) each of shape (num_nodes, latent_dim)
+    """
+    def __init__(self, in_dim: int, hidden_dim: int, latent_dim: int):
+        super().__init__()
+        self.conv1       = GCNConv(in_dim,     hidden_dim)
+        self.conv2       = GCNConv(hidden_dim, hidden_dim)
+        self.conv_mu     = GCNConv(hidden_dim, latent_dim)
+        self.conv_logstd = GCNConv(hidden_dim, latent_dim)
+        self.bn1         = nn.BatchNorm1d(hidden_dim)
+        self.bn2         = nn.BatchNorm1d(hidden_dim)
+
+    def forward(self, x, edge_index):
+        h = F.elu(self.bn1(self.conv1(x, edge_index)))
+        h = F.dropout(h, p=0.2, training=self.training)
+        h = F.elu(self.bn2(self.conv2(h, edge_index)))
+        return self.conv_mu(h, edge_index), self.conv_logstd(h, edge_index)
+```
+
+### Decoder
+
+The decoder is a plain MLP. It takes a latent sample `z` for each node and reconstructs the original 11-dimensional feature vector. The reconstruction error between the original features and this reconstruction is what becomes the anomaly score.
+
+```python
+class GNNDecoder(nn.Module):
+    """
+    MLP decoder reconstructing node features from latent embeddings.
+    High reconstruction error on a node signals anomalous behavior.
+    """
+    def __init__(self, latent_dim: int, hidden_dim: int, out_dim: int):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(latent_dim, hidden_dim),
+            nn.ELU(),
+            nn.BatchNorm1d(hidden_dim),
+            nn.Dropout(0.2),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ELU(),
+            nn.Linear(hidden_dim, out_dim),
+        )
+
+    def forward(self, z):
+        return self.net(z)
+```
+
+### Full GVAE
+
+`AnomalyGNN` wires the encoder and decoder together. The `reparameterize` method implements the reparameterization trick: during training, a random sample is drawn from the latent distribution using `z = mu + eps * exp(logstd)`. At inference, the mean `mu` is used directly.
+
+```python
+class AnomalyGNN(nn.Module):
+    """
+    Graph Variational Autoencoder for node-level anomaly detection.
+
+    Training objective: minimize reconstruction loss + KL divergence
+                        + link prediction loss.
+    Anomaly score     : per-node mean squared reconstruction error.
+    """
+    def __init__(self, in_dim, hidden_dim, latent_dim):
+        super().__init__()
+        self.encoder = GNNEncoder(in_dim, hidden_dim, latent_dim)
+        self.decoder = GNNDecoder(latent_dim, hidden_dim, in_dim)
+
+    def reparameterize(self, mu, logstd):
+        if self.training:
+            std = logstd.exp()
+            eps = torch.randn_like(std)
+            return mu + eps * std
+        return mu   # deterministic at inference time
+
+    def forward(self, x, edge_index):
+        mu, logstd = self.encoder(x, edge_index)
+        z          = self.reparameterize(mu, logstd)
+        x_recon    = self.decoder(z)
+        return x_recon, mu, logstd, z
+
+    def loss(self, x, x_recon, mu, logstd, edge_index):
+        # Term 1: reconstruction accuracy
+        recon_loss = F.mse_loss(x_recon, x, reduction="mean")
+
+        # Term 2: KL divergence from standard normal prior
+        kl_loss = -0.5 * torch.mean(
+            1 + 2 * logstd - mu.pow(2) - (2 * logstd).exp()
+        )
+
+        # Term 3: link prediction (should edges exist between these nodes?)
+        neg_edge    = negative_sampling(edge_index, num_nodes=x.size(0))
+        pos_score   = (mu[edge_index[0]] * mu[edge_index[1]]).sum(dim=1)
+        neg_score   = (mu[neg_edge[0]]   * mu[neg_edge[1]]).sum(dim=1)
+        link_labels = torch.cat([
+            torch.ones(pos_score.size(0)),
+            torch.zeros(neg_score.size(0))
+        ]).to(DEVICE)
+        link_scores = torch.cat([pos_score, neg_score])
+        link_loss   = F.binary_cross_entropy_with_logits(link_scores, link_labels)
+
+        total_loss = recon_loss + 0.5 * kl_loss + 0.3 * link_loss
+        return total_loss, recon_loss
+```
+
+The three loss terms serve different purposes. Reconstruction loss teaches the model to accurately reproduce node features. KL divergence regularizes the latent space to prevent posterior collapse. Link prediction loss anchors the embeddings to the graph structure: similar nodes in the graph should be similar in embedding space.
+
+### Instantiate Model and Optimizer
+
+```python
+in_dim    = feat_tensor.shape[1]   # 11 features
+model     = AnomalyGNN(in_dim, HIDDEN_DIM, LATENT_DIM).to(DEVICE)
+optimizer = torch.optim.Adam(model.parameters(),
+                             lr=LEARNING_RATE, weight_decay=1e-5)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS)
+
+n_params = sum(p.numel() for p in model.parameters())
+print(f"Model ready | Parameters: {n_params:,}")
+print(f"Architecture: {in_dim}d input -> {HIDDEN_DIM}d hidden -> {LATENT_DIM}d latent")
+```
+
+```text
+Model ready | Parameters: 16,459
+Architecture: 11d input -> 64d hidden -> 32d latent
+```
+
+<Info>
+  Weight decay of `1e-5` is mild L2 regularization. It is not strictly necessary for a model this size but helps prevent overfitting when the number of nodes (stocks) is small relative to the number of parameters.
+</Info>
+
+## What We Have So Far
+
+At the end of Part 1, the following objects exist in memory and will be used in Part 2:
+
+| Variable | Contents |
+| --- | --- |
+| `price_df` | Wide DataFrame of daily close prices |
+| `volume_df` | Wide DataFrame of daily volume |
+| `feat_df` | 11-feature matrix, one row per stock |
+| `feat_tensor` | Standardized features as a PyTorch tensor |
+| `graph_data` | PyTorch Geometric `Data` object with node features and edges |
+| `nx_graph` | NetworkX graph for visualization |
+| `corr_matrix` | Full return correlation matrix |
+| `model` | `AnomalyGNN` instance, not yet trained |
+| `optimizer` | Adam optimizer |
+| `scheduler` | Cosine annealing LR scheduler |
+
+Continue to [Part 2](/recipes/gnn-anomaly-detection/gnn-part-2.mdx) to train the model, compute anomaly scores, and visualize the results.
