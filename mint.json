@@ -395,13 +395,6 @@
       ]
     },
     {
-      "group": "Stock Investing and Finance",
-      "pages": [
-        "recipes/stock-investing-and-finance/01-portfolio-optimization",
-        "recipes/stock-investing-and-finance/02-benchmarking-idx-banking-stocks-sectors-api"
-      ]
-    },
-    {
       "group": "Sectors for AI Agents",
       "pages": [
         "recipes/sectors-for-ai-agents/00-sectors-mcp-guide",
@@ -409,18 +402,6 @@
         "recipes/sectors-for-ai-agents/02-sectors-in-claude",
         "recipes/sectors-for-ai-agents/03-sectors-in-chatgpt",
         "recipes/sectors-for-ai-agents/04-human-agent"
-      ]
-    },
-    {
-      "group": "Financial Analytics w/ Streamlit",
-      "pages": [
-        {
-          "group": "Building an Interactive WebApp",
-          "pages": [
-            "recipes/build-python-app/sectorscan/01-sectorscan-part1",
-            "recipes/build-python-app/sectorscan/02-sectorscan-part2"
-          ]
-        }
       ]
     },
     {
@@ -445,13 +426,10 @@
       ]
     },
     {
-      "group": "Animated Plots in R",
+      "group": "Stock Investing and Finance",
       "pages": [
-        "recipes/animated-plots-in-r/00-telling-stories-w-ggplot",
-        "recipes/animated-plots-in-r/01-top-stock-volume-animation-plot",
-        "recipes/animated-plots-in-r/02-top-market-cap-animation-plot",
-        "recipes/animated-plots-in-r/03-financial-comparison-animation-plot",
-        "recipes/animated-plots-in-r/04-dividend-growth-investing"
+        "recipes/stock-investing-and-finance/01-portfolio-optimization",
+        "recipes/stock-investing-and-finance/02-benchmarking-idx-banking-stocks-sectors-api"
       ]
     },
     {
@@ -468,6 +446,36 @@
             "recipes/non-programmatical-tools/04-n8n/02-n8n-natural-language-screener"
           ]
         }
+      ]
+    },
+    {
+      "group": "Graph Neural Networks (GNN) for Stock Anomaly Detection",
+      "pages": [
+        "recipes/gnn-anomaly-detection/01-gnn-part-1",
+        "recipes/gnn-anomaly-detection/02-gnn-part-2",
+        "recipes/gnn-anomaly-detection/03-gnn-part-3"
+      ]
+    },
+    {
+      "group": "Financial Analytics w/ Streamlit",
+      "pages": [
+        {
+          "group": "Building an Interactive WebApp",
+          "pages": [
+            "recipes/build-python-app/sectorscan/01-sectorscan-part1",
+            "recipes/build-python-app/sectorscan/02-sectorscan-part2"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Animated Plots in R",
+      "pages": [
+        "recipes/animated-plots-in-r/00-telling-stories-w-ggplot",
+        "recipes/animated-plots-in-r/01-top-stock-volume-animation-plot",
+        "recipes/animated-plots-in-r/02-top-market-cap-animation-plot",
+        "recipes/animated-plots-in-r/03-financial-comparison-animation-plot",
+        "recipes/animated-plots-in-r/04-dividend-growth-investing"
       ]
     },
     {
