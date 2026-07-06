@@ -532,327 +532,444 @@ confirm_df["foreign_signal"] = min_max_norm_safe(-confirm_df["foreign_net_total"
 The weight scheme adapts to available data rather than assigning zeros to missing signals.
 
 ```python
-# ── CELL 14 (FINAL) — CONFIRMATION DASHBOARD ─────────────────────────────────
-# Pastikan Cell 12 (Final) sudah dijalankan terlebih dahulu.
-# Variabel yang dibutuhkan dari Cell 12 Final: broker_result_all_df, confirm_df
-# Variabel yang dibutuhkan dari Cell 13     : foreign_data, fetch_foreign_flow_v2
-
 print("=" * 65)
-print("  🎯 CELL 14 (FINAL): CONFIRMATION DASHBOARD")
+print(" CONFIRMATION DASHBOARD")
 print("=" * 65)
 
 
 def format_idr(value) -> str:
-    """Format nilai IDR: Tr / B / M."""
+    """Format IDR values: Tr / B / M."""
     try:
-        if pd.isna(value): return "N/A"
+        if pd.isna(value):
+            return "N/A"
     except Exception:
         pass
-    sign    = "+" if value >= 0 else "-"
+
+    sign = "+" if value >= 0 else "-"
     abs_val = abs(value)
-    if abs_val >= 1e12:  return f"Rp {sign}{abs_val/1e12:.2f}Tr"
-    elif abs_val >= 1e9: return f"Rp {sign}{abs_val/1e9:.1f}B"
-    elif abs_val >= 1e6: return f"Rp {sign}{abs_val/1e6:.0f}M"
-    else:                return f"Rp {sign}{abs_val/1e6:.2f}M"
+
+    if abs_val >= 1e12:
+        return f"Rp {sign}{abs_val/1e12:.2f}Tr"
+    elif abs_val >= 1e9:
+        return f"Rp {sign}{abs_val/1e9:.1f}B"
+    elif abs_val >= 1e6:
+        return f"Rp {sign}{abs_val/1e6:.0f}M"
+    else:
+        return f"Rp {sign}{abs_val/1e6:.2f}M"
 
 
-# ── 14a. Pastikan confirm_df sudah punya broker dari Cell 12 Final ────────────
-# Cell 12 Final sudah rebuild confirm_df dengan broker_result_all_df (28 saham).
-# Kita hanya perlu menambahkan foreign flow untuk saham yang belum ada.
+# Ensure confirm_df already contains broker data from Cell 12.
+# Only append foreign flow for tickers that are still missing.
 
-assert "confirm_df" in dir(), "❌ Jalankan Cell 12 Final dulu!"
-assert "broker_net_total" in confirm_df.columns, "❌ confirm_df tidak punya broker data — jalankan Cell 12 Final dulu!"
+assert "confirm_df" in dir(), "❌ Please run Cell 12 Final first!"
+assert "broker_net_total" in confirm_df.columns, \
+    "❌ confirm_df does not contain broker data — please run Cell 12 Final first!"
 
 n_broker_ok = confirm_df["broker_net_total"].notna().sum()
-print(f"\n✅ confirm_df dari Cell 12 Final: {len(confirm_df)} saham, "
-      f"{n_broker_ok} punya broker data")
-print(f"   Cek broker sample:\n"
-      f"{confirm_df[['ticker','broker_net_total']].head(6).to_string(index=False)}")
+
+print(
+    f"\n✅ confirm_df loaded from Cell 12 Final: {len(confirm_df)} tickers, "
+    f"{n_broker_ok} with broker data"
+)
+print(
+    f"   Broker sample:\n"
+    f"{confirm_df[['ticker','broker_net_total']].head(6).to_string(index=False)}"
+)
 
 
-# ── 14b. Fetch & merge foreign flow untuk semua saham ────────────────────────
-print(f"\n📥 Fetch foreign flow untuk semua {len(active_tickers_clean)} saham...")
+# Fetch & merge foreign flow for all tickers
+print(f"\n📥 Fetching foreign flow for all {len(active_tickers_clean)} tickers...")
 
-# Kumpulkan dari foreign_data yang sudah ada (Cell 13)
 foreign_data_all = {}
+
 if "foreign_data" in dir():
     foreign_data_all = dict(foreign_data)
 
-# Fetch yang belum ada
-missing_ff = [t for t in active_tickers_clean if t not in foreign_data_all]
-print(f"   Sudah ada: {len(foreign_data_all)} | Perlu fetch: {len(missing_ff)}")
+missing_ff = [
+    t for t in active_tickers_clean
+    if t not in foreign_data_all
+]
+
+print(f"   Already available: {len(foreign_data_all)} | Need to fetch: {len(missing_ff)}")
 
 for ticker in missing_ff:
     try:
         df_ff = fetch_foreign_flow_v2(ticker, START_DATE, END_DATE)
+
         if not df_ff.empty:
             foreign_data_all[ticker] = df_ff
             net = df_ff["foreign_net_buy"].sum()
             print(f"   ✅ {ticker}: {format_idr(net)}")
         else:
-            print(f"   ⚠️  {ticker}: kosong")
+            print(f"   ⚠️ {ticker}: empty")
+
     except Exception as e:
         print(f"   ❌ {ticker}: {e}")
 
-# Buat foreign_result_all_df
+
+# Create foreign_result_all_df
 foreign_stats_all = []
+
 for ticker in active_tickers_clean:
+
     if ticker not in foreign_data_all:
         continue
-    ff   = foreign_data_all[ticker]["foreign_net_buy"]
+
+    ff = foreign_data_all[ticker]["foreign_net_buy"]
     half = len(ff) // 2
+
     foreign_stats_all.append({
-        "ticker":             ticker,
-        "foreign_net_total":  ff.sum(),
-        "foreign_avg_daily":  ff.mean(),
-        "foreign_trend":      "up" if ff.iloc[half:].mean() > ff.iloc[:half].mean() else "down",
+        "ticker": ticker,
+        "foreign_net_total": ff.sum(),
+        "foreign_avg_daily": ff.mean(),
+        "foreign_trend":
+            "up"
+            if ff.iloc[half:].mean() > ff.iloc[:half].mean()
+            else "down",
     })
 
 foreign_result_all_df = pd.DataFrame(foreign_stats_all)
-print(f"\n✅ Foreign flow: {len(foreign_result_all_df)} / {len(active_tickers_clean)} saham")
 
-# Merge foreign ke confirm_df (drop dulu kalau sudah ada dari run sebelumnya)
-ff_cols = ["foreign_net_total", "foreign_avg_daily", "foreign_trend",
-           "foreign_signal"]
-confirm_df.drop(columns=[c for c in ff_cols if c in confirm_df.columns],
-                inplace=True)
+print(
+    f"\n✅ Foreign flow: "
+    f"{len(foreign_result_all_df)} / {len(active_tickers_clean)} tickers"
+)
+
+
+# Merge foreign flow into confirm_df
+ff_cols = [
+    "foreign_net_total",
+    "foreign_avg_daily",
+    "foreign_trend",
+    "foreign_signal",
+]
+
+confirm_df.drop(
+    columns=[c for c in ff_cols if c in confirm_df.columns],
+    inplace=True,
+)
 
 confirm_df = confirm_df.merge(
-    foreign_result_all_df[["ticker", "foreign_net_total",
-                            "foreign_avg_daily", "foreign_trend"]],
-    on="ticker", how="left"
+    foreign_result_all_df[
+        [
+            "ticker",
+            "foreign_net_total",
+            "foreign_avg_daily",
+            "foreign_trend",
+        ]
+    ],
+    on="ticker",
+    how="left",
 )
-print(f"   Foreign merged: {confirm_df['foreign_net_total'].notna().sum()} saham")
+
+print(
+    f"   Foreign data merged: "
+    f"{confirm_df['foreign_net_total'].notna().sum()} tickers"
+)
 
 
-# ── 14c. Hitung sinyal & combined risk score ──────────────────────────────────
+# Calculate signal scores and combined risk score
 def min_max_norm_safe(series: pd.Series) -> pd.Series:
+
     valid = series.dropna()
+
     if len(valid) < 2 or valid.max() == valid.min():
         return pd.Series(0.5, index=series.index)
+
     return (series - valid.min()) / (valid.max() - valid.min())
 
-# Drop sinyal lama sebelum hitung ulang
-signal_cols = ["gnn_signal", "broker_signal", "foreign_signal",
-               "combined_risk_score", "risk_tier", "data_sources"]
-confirm_df.drop(columns=[c for c in signal_cols if c in confirm_df.columns],
-                inplace=True)
 
-confirm_df["gnn_signal"]     = min_max_norm_safe(confirm_df["anomaly_score"])
-confirm_df["broker_signal"]  = min_max_norm_safe(-confirm_df["broker_net_total"])
+# Remove old signals before recalculation
+signal_cols = [
+    "gnn_signal",
+    "broker_signal",
+    "foreign_signal",
+    "combined_risk_score",
+    "risk_tier",
+    "data_sources",
+]
+
+confirm_df.drop(
+    columns=[c for c in signal_cols if c in confirm_df.columns],
+    inplace=True,
+)
+
+confirm_df["gnn_signal"] = min_max_norm_safe(confirm_df["anomaly_score"])
+confirm_df["broker_signal"] = min_max_norm_safe(-confirm_df["broker_net_total"])
 confirm_df["foreign_signal"] = min_max_norm_safe(-confirm_df["foreign_net_total"])
 
+
 def compute_combined(row):
-    g  = row["gnn_signal"]
-    b  = row.get("broker_signal",  np.nan)
-    f  = row.get("foreign_signal", np.nan)
+
+    g = row["gnn_signal"]
+    b = row.get("broker_signal", np.nan)
+    f = row.get("foreign_signal", np.nan)
+
     hb = pd.notna(b)
     hf = pd.notna(f)
-    if hb and hf:  return g * 0.50 + b * 0.25 + f * 0.25
-    elif hb:       return g * 0.60 + b * 0.40
-    elif hf:       return g * 0.60 + f * 0.40
-    else:          return g
 
-def risk_tier(s):
-    if pd.isna(s):   return "❓ NO DATA"
-    if s >= 0.65:    return "🔴 HIGH RISK"
-    elif s >= 0.40:  return "🟡 MEDIUM RISK"
-    elif s >= 0.20:  return "🟠 WATCH"
-    else:            return "🟢 NORMAL"
+    if hb and hf:
+        return g * 0.50 + b * 0.25 + f * 0.25
+    elif hb:
+        return g * 0.60 + b * 0.40
+    elif hf:
+        return g * 0.60 + f * 0.40
+    else:
+        return g
 
-confirm_df["combined_risk_score"] = confirm_df.apply(compute_combined, axis=1)
-confirm_df["risk_tier"]           = confirm_df["combined_risk_score"].apply(risk_tier)
-confirm_df["data_sources"]        = confirm_df.apply(
-    lambda r: " + ".join(filter(None, [
-        "GNN",
-        "Broker"  if pd.notna(r.get("broker_signal"))  else "",
-        "Foreign" if pd.notna(r.get("foreign_signal")) else "",
-    ])), axis=1
+
+def risk_tier(score):
+
+    if pd.isna(score):
+        return "❓ NO DATA"
+    elif score >= 0.65:
+        return "🔴 HIGH RISK"
+    elif score >= 0.40:
+        return "🟡 MEDIUM RISK"
+    elif score >= 0.20:
+        return "🟠 WATCH"
+    else:
+        return "🟢 NORMAL"
+
+
+confirm_df["combined_risk_score"] = confirm_df.apply(
+    compute_combined,
+    axis=1,
 )
-confirm_df = confirm_df.sort_values("combined_risk_score", ascending=False)
+
+confirm_df["risk_tier"] = confirm_df["combined_risk_score"].apply(risk_tier)
+
+confirm_df["data_sources"] = confirm_df.apply(
+    lambda r: " + ".join(
+        filter(
+            None,
+            [
+                "GNN",
+                "Broker" if pd.notna(r.get("broker_signal")) else "",
+                "Foreign" if pd.notna(r.get("foreign_signal")) else "",
+            ],
+        )
+    ),
+    axis=1,
+)
+
+confirm_df = confirm_df.sort_values(
+    "combined_risk_score",
+    ascending=False,
+)
 
 
-# ── 14d. Print tabel final ────────────────────────────────────────────────────
-print(f"\n{'Ticker':<7} {'GNN':>7} {'Broker':>16} {'Foreign':>16} "
-      f"{'Combined':>9}  Risk")
+# Print final table
+print(
+    f"\n{'Ticker':<7} {'GNN':>7} {'Broker':>16} "
+    f"{'Foreign':>16} {'Combined':>9} Risk"
+)
+
 print("─" * 80)
 
 for _, row in confirm_df.iterrows():
+
     b = format_idr(row.get("broker_net_total"))
     f = format_idr(row.get("foreign_net_total"))
+
     flag = "🔴" if row["is_anomaly"] else "  "
-    print(f"{flag}{row['ticker']:<5} {row['anomaly_score']:>7.4f} "
-          f"{b:>16} {f:>16} "
-          f"{row['combined_risk_score']:>9.4f}  {row['risk_tier']}")
+
+    print(
+        f"{flag}{row['ticker']:<5} "
+        f"{row['anomaly_score']:>7.4f} "
+        f"{b:>16} "
+        f"{f:>16} "
+        f"{row['combined_risk_score']:>9.4f} "
+        f"{row['risk_tier']}"
+    )
 
 
-# ── 14e. Visualisasi dashboard ────────────────────────────────────────────────
+# Dashboard visualization
+
 tier_colors = {
-    "HIGH RISK":   "#ef4444",
+    "HIGH RISK": "#ef4444",
     "MEDIUM RISK": "#f59e0b",
-    "WATCH":       "#f97316",
-    "NORMAL":      "#3b82f6",
-    "NO DATA":     "#64748b",
+    "WATCH": "#f97316",
+    "NORMAL": "#3b82f6",
+    "NO DATA": "#64748b",
 }
+
+
 def bar_color(t):
     for k, v in tier_colors.items():
-        if k in t: return v
+        if k in t:
+            return v
     return "#64748b"
+
 
 fig = plt.figure(figsize=(20, 13))
 fig.patch.set_facecolor("#0f1117")
 
-# Plot 1: Combined risk bar (semua saham)
+
+# Plot 1: Combined Risk Score
 ax1 = fig.add_subplot(2, 3, (1, 2))
-ax1.barh(confirm_df["ticker"], confirm_df["combined_risk_score"],
-         color=[bar_color(t) for t in confirm_df["risk_tier"]],
-         edgecolor="none", height=0.7)
-for thresh, color, lbl in [(0.65, "#ef4444", "High (0.65)"),
-                            (0.40, "#f59e0b", "Medium (0.40)"),
-                            (0.20, "#f97316", "Watch (0.20)")]:
-    ax1.axvline(thresh, color=color, ls="--", lw=1.2, alpha=0.7, label=lbl)
-ax1.set_title("Combined Risk Score — Semua Saham\n(GNN 50% + Broker 25% + Foreign 25%)",
-              color="white", fontsize=11)
+
+ax1.barh(
+    confirm_df["ticker"],
+    confirm_df["combined_risk_score"],
+    color=[bar_color(t) for t in confirm_df["risk_tier"]],
+    edgecolor="none",
+    height=0.7,
+)
+
+for thresh, color, label in [
+    (0.65, "#ef4444", "High (0.65)"),
+    (0.40, "#f59e0b", "Medium (0.40)"),
+    (0.20, "#f97316", "Watch (0.20)"),
+]:
+    ax1.axvline(
+        thresh,
+        color=color,
+        ls="--",
+        lw=1.2,
+        alpha=0.7,
+        label=label,
+    )
+
+ax1.set_title(
+    "Combined Risk Score — All Tickers\n"
+    "(GNN 50% + Broker 25% + Foreign 25%)",
+    color="white",
+    fontsize=11,
+)
+
 ax1.set_xlabel("Score", color="white")
 ax1.invert_yaxis()
 ax1.set_facecolor("#1e2330")
 ax1.tick_params(colors="white", labelsize=8)
 ax1.legend(fontsize=8, facecolor="#2d3748", labelcolor="white")
 ax1.grid(alpha=0.15, axis="x")
-ax1.spines[["top","right","left","bottom"]].set_visible(False)
+ax1.spines[["top", "right", "left", "bottom"]].set_visible(False)
 
-# Plot 2: Heatmap 3 sinyal
-ax2 = fig.add_subplot(2, 3, 3)
+
+# Plot 2: Signal Heatmap
+
 heat_data = confirm_df.set_index("ticker")[
-    ["gnn_signal", "broker_signal", "foreign_signal"]].copy()
+    ["gnn_signal", "broker_signal", "foreign_signal"]
+].copy()
+
 heat_data.columns = ["GNN", "Broker", "Foreign"]
-im = ax2.imshow(heat_data.fillna(-0.05).values,
-                cmap="RdYlGn_r", aspect="auto", vmin=0, vmax=1)
-ax2.set_xticks(range(3))
-ax2.set_xticklabels(["GNN", "Broker", "Foreign"], color="white", fontsize=9)
-ax2.set_yticks(range(len(heat_data)))
-ax2.set_yticklabels(heat_data.index, color="white", fontsize=7)
-ax2.set_title("Signal Heatmap\n(merah=risiko tinggi, abu=no data)",
-              color="white", fontsize=10)
-ax2.set_facecolor("#1e2330")
-plt.colorbar(im, ax=ax2, fraction=0.04, pad=0.04)
-for i in range(len(heat_data)):
-    for j in range(3):
-        val = heat_data.values[i, j]
-        txt = "N/A" if pd.isna(val) else f"{val:.2f}"
-        clr = "#64748b" if pd.isna(val) else ("white" if val > 0.5 else "black")
-        ax2.text(j, i, txt, ha="center", va="center", fontsize=6, color=clr)
 
-# Plot 3: Scatter GNN vs Foreign
-ax3 = fig.add_subplot(2, 3, 4)
-has_ff = confirm_df[confirm_df["foreign_net_total"].notna()]
-no_ff  = confirm_df[confirm_df["foreign_net_total"].isna()]
-ax3.scatter(has_ff["anomaly_score"], has_ff["foreign_net_total"] / 1e9,
-            c=[bar_color(t) for t in has_ff["risk_tier"]],
-            s=80, alpha=0.85, zorder=3)
-ax3.scatter(no_ff["anomaly_score"], [0]*len(no_ff),
-            c="#64748b", s=40, alpha=0.5, marker="x", zorder=2)
-for _, row in has_ff[has_ff["is_anomaly"] |
-                     (has_ff["combined_risk_score"] > 0.35)].iterrows():
-    ax3.annotate(row["ticker"],
-                 (row["anomaly_score"], row["foreign_net_total"] / 1e9),
-                 fontsize=8, color="white",
-                 xytext=(4, 4), textcoords="offset points")
-ax3.axhline(0, color="white", ls="--", lw=0.8, alpha=0.5)
-ax3.set_xlabel("GNN Anomaly Score", color="white")
-ax3.set_ylabel("Net Foreign Flow (Rp Miliar)", color="white")
-ax3.set_title("GNN Score vs Foreign Flow", color="white", fontsize=10)
-ax3.set_facecolor("#1e2330")
-ax3.tick_params(colors="white")
-ax3.grid(alpha=0.15)
+ax2.set_title(
+    "Signal Heatmap\n"
+    "(red = high risk, gray = no data)",
+    color="white",
+    fontsize=10,
+)
 
-# Plot 4: Broker dominance bar (semua saham)
-ax4 = fig.add_subplot(2, 3, 5)
-bp = confirm_df.dropna(subset=["broker_net_total"]).sort_values("broker_net_total")
-ax4.barh(bp["ticker"], bp["broker_net_total"] / 1e9,
-         color=["#22c55e" if v > 0 else "#ef4444"
-                for v in bp["broker_net_total"]],
-         edgecolor="none", height=0.7)
-max_abs = bp["broker_net_total"].abs().max() / 1e9 * 0.01
-for i, (_, row) in enumerate(bp.iterrows()):
-    val = row["broker_net_total"]
-    ax4.text(val/1e9 + (max_abs if val >= 0 else -max_abs), i,
-             format_idr(val), va="center",
-             ha="left" if val >= 0 else "right",
-             fontsize=7, color="white")
-ax4.axvline(0, color="white", lw=1, ls="--", alpha=0.5)
-ax4.set_title("Broker Dominance Score\n(hijau=akumulasi, merah=distribusi)",
-              color="white", fontsize=10)
-ax4.set_xlabel("Net IDR (Rp Miliar)", color="white")
-ax4.set_facecolor("#1e2330")
-ax4.tick_params(colors="white", labelsize=8)
-ax4.grid(alpha=0.15, axis="x")
-ax4.spines[["top","right","left","bottom"]].set_visible(False)
+# Plot 3 title
+ax3.set_title(
+    "GNN Score vs Foreign Flow",
+    color="white",
+    fontsize=10,
+)
 
-# Plot 5: Ringkasan teks
-ax5 = fig.add_subplot(2, 3, 6)
-ax5.set_facecolor("#1e2330")
-ax5.axis("off")
+ax3.set_ylabel(
+    "Net Foreign Flow (Rp Billion)",
+    color="white",
+)
 
-high_risk   = confirm_df[confirm_df["risk_tier"].str.contains("HIGH")]
-medium_risk = confirm_df[confirm_df["risk_tier"].str.contains("MEDIUM")]
-watch_list  = confirm_df[confirm_df["risk_tier"].str.contains("WATCH")]
+# Plot 4 title
+ax4.set_title(
+    "Broker Dominance Score\n"
+    "(green = accumulation, red = distribution)",
+    color="white",
+    fontsize=10,
+)
 
-summary  = "📋  RINGKASAN AKHIR\n" + "─" * 30 + "\n\n"
-summary += f"Total saham : {len(confirm_df)}\n"
-summary += f"Broker data : {confirm_df['broker_signal'].notna().sum()} saham\n"
-summary += f"Foreign data: {confirm_df['foreign_signal'].notna().sum()} saham\n\n"
-summary += "🔴  HIGH RISK\n"
+ax4.set_xlabel(
+    "Net IDR (Rp Billion)",
+    color="white",
+)
+
+# Plot 5 Summary
+
+summary = "📋 FINAL SUMMARY\n"
+summary += "─" * 30 + "\n\n"
+
+summary += f"Total tickers : {len(confirm_df)}\n"
+summary += f"Broker data  : {confirm_df['broker_signal'].notna().sum()} tickers\n"
+summary += f"Foreign data : {confirm_df['foreign_signal'].notna().sum()} tickers\n\n"
+
+summary += "🔴 HIGH RISK\n"
+
 for _, r in high_risk.iterrows():
     summary += f"   • {r['ticker']} ({r['combined_risk_score']:.3f})\n"
-summary += "\n🟡  MEDIUM RISK\n"
+
+summary += "\n🟡 MEDIUM RISK\n"
+
 for _, r in medium_risk.iterrows():
     summary += f"   • {r['ticker']} ({r['combined_risk_score']:.3f})\n"
-summary += "\n🟠  WATCH\n"
+
+summary += "\n🟠 WATCH\n"
+
 for _, r in watch_list.head(5).iterrows():
     summary += f"   • {r['ticker']} ({r['combined_risk_score']:.3f})\n"
+
 if len(watch_list) > 5:
-    summary += f"   ... +{len(watch_list)-5} lainnya\n"
+    summary += f"   ... +{len(watch_list)-5} more\n"
+
 if "zero_data_tickers" in dir() and zero_data_tickers:
-    summary += "\n⚠️  Data dikeluarkan\n"
+    summary += "\n⚠️ Excluded Data\n"
+
     for t in zero_data_tickers:
         summary += f"   • {t}\n"
 
-ax5.text(0.03, 0.97, summary, transform=ax5.transAxes,
-         fontsize=8, verticalalignment="top", color="white",
-         fontfamily="monospace",
-         bbox=dict(boxstyle="round", facecolor="#2d3748", alpha=0.9))
+plt.suptitle(
+    "🎯 Confirmation Dashboard — GNN + Broker + Foreign Flow",
+    fontsize=13,
+    fontweight="bold",
+    color="white",
+    y=1.01,
+)
 
-plt.suptitle("🎯 Confirmation Dashboard — GNN + Broker + Foreign Flow",
-             fontsize=13, fontweight="bold", color="white", y=1.01)
 plt.tight_layout()
-plt.savefig("sectors_confirmation_dashboard_final.png",
-            dpi=150, bbox_inches="tight", facecolor="#0f1117")
+
+plt.savefig(
+    "sectors_confirmation_dashboard_final.png",
+    dpi=150,
+    bbox_inches="tight",
+    facecolor="#0f1117",
+)
+
 plt.show()
 
-confirm_df.to_csv("sectors_confirmation_final.csv", index=False)
+confirm_df.to_csv(
+    "sectors_confirmation_final.csv",
+    index=False,
+)
 
-print("\n✅ Cell 14 (Final) selesai!")
-print("💾 Output:")
+print("\n✅ Cell 14 (Final) completed!")
+
+print("💾 Output files:")
 print("   → sectors_confirmation_dashboard_final.png")
 print("   → sectors_confirmation_final.csv")
-print(f"\n🏆 Top 5 Combined Risk Score:")
+
+print("\n🏆 Top 5 Combined Risk Scores:")
+
 for _, r in confirm_df.head(5).iterrows():
-    print(f"   {r['risk_tier']}  {r['ticker']}  "
-          f"Combined={r['combined_risk_score']:.3f} | "
-          f"Broker={format_idr(r.get('broker_net_total'))} | "
-          f"Foreign={format_idr(r.get('foreign_net_total'))}")
+    print(
+        f"   {r['risk_tier']} {r['ticker']} | "
+        f"Combined={r['combined_risk_score']:.3f} | "
+        f"Broker={format_idr(r.get('broker_net_total'))} | "
+        f"Foreign={format_idr(r.get('foreign_net_total'))}"
+    )
 ```
 
 Expected output:
 
 ```text
 =================================================================
-  🎯 CELL 14 (FINAL): CONFIRMATION DASHBOARD
+ CONFIRMATION DASHBOARD
 =================================================================
 
-✅ confirm_df dari Cell 12 Final: 28 saham, 28 punya broker data
-   Cek broker sample:
+✅ confirm_df loaded from Cell 12 Final: 28 tickers, 28 with broker data
+   Broker sample:
 ticker  broker_net_total
   BBCA    -2499062367500
   BMRI    -4049049318000
@@ -861,13 +978,13 @@ ticker  broker_net_total
   INCO       45047203500
   BBRI    -1860374065000
 
-📥 Fetch foreign flow untuk semua 28 saham...
-   Sudah ada: 28 | Perlu fetch: 0
+📥 Fetching foreign flow for all 28 tickers...
+   Already available: 28 | Need to fetch: 0
 
-✅ Foreign flow: 28 / 28 saham
-   Foreign merged: 28 saham
+✅ Foreign flow: 28 / 28 tickers
+   Foreign data merged: 28 tickers
 
-Ticker      GNN           Broker          Foreign  Combined  Risk
+Ticker      GNN           Broker          Foreign  Combined      Risk
 ────────────────────────────────────────────────────────────────────────────────
 🔴BBCA   0.5614       Rp -2.50Tr      Rp -22.81Tr    0.7045  🔴 HIGH RISK
   BMRI   0.5297       Rp -4.05Tr       Rp -7.23Tr    0.6089  🟡 MEDIUM RISK
@@ -898,17 +1015,18 @@ Ticker      GNN           Broker          Foreign  Combined  Risk
   UNTR   0.0983       Rp +469.6B       Rp +947.7B    0.0372  🟢 NORMAL
   ADRO   0.0491       Rp +467.2B       Rp +505.3B    0.0151  🟢 NORMAL
 
-✅ Cell 14 (Final) selesai!
-💾 Output:
+✅ Cell 14 (Final) completed!
+
+💾 Output files:
    → sectors_confirmation_dashboard_final.png
    → sectors_confirmation_final.csv
 
-🏆 Top 5 Combined Risk Score:
-   🔴 HIGH RISK  BBCA  Combined=0.704 | Broker=Rp -2.50Tr | Foreign=Rp -22.81Tr
-   🟡 MEDIUM RISK  BMRI  Combined=0.609 | Broker=Rp -4.05Tr | Foreign=Rp -7.23Tr
-   🟡 MEDIUM RISK  PGAS  Combined=0.538 | Broker=Rp -24.1B | Foreign=Rp -33.2B
-   🟠 WATCH  SMGR  Combined=0.323 | Broker=Rp -17.0B | Foreign=Rp -128.7B
-   🟠 WATCH  INCO  Combined=0.296 | Broker=Rp +45.0B | Foreign=Rp +293.4B
+🏆 Top 5 Combined Risk Scores:
+   🔴 HIGH RISK BBCA | Combined=0.704 | Broker=Rp -2.50Tr | Foreign=Rp -22.81Tr
+   🟡 MEDIUM RISK BMRI | Combined=0.609 | Broker=Rp -4.05Tr | Foreign=Rp -7.23Tr
+   🟡 MEDIUM RISK PGAS | Combined=0.538 | Broker=Rp -24.1B | Foreign=Rp -33.2B
+   🟠 WATCH SMGR | Combined=0.323 | Broker=Rp -17.0B | Foreign=Rp -128.7B
+   🟠 WATCH INCO | Combined=0.296 | Broker=Rp +45.0B | Foreign=Rp +293.4B
 ```
 
 <Frame>
@@ -997,10 +1115,3 @@ Across the three parts of this recipe, we built a complete pipeline for detectin
 **Part 3** validated GNN signals with independent market data: broker dominance scores from `/v2/broker-summary/{symbol}/top/` and daily foreign flow from `/v2/foreign-flow/{symbol}/`. A combined adaptive risk score integrated all three signals.
 
 The key insight across all three parts: no single signal is sufficient. A high GNN score with no broker or foreign flow confirmation may reflect a real but internally-driven event. A high GNN score with broker distribution and foreign outflow is a convergence of evidence that warrants serious investigation.
-
-## API Endpoints Used
-
-- [Companies Top](https://docs.sectors.app/api-references/v2/indonesia/screener/companies) (`/v2/companies/top/`)
-- [Daily Transaction Data](https://docs.sectors.app/api-references/v2/indonesia/transaction/daily) (`/v2/daily/{symbol}/`)
-- [Top Buyers and Sellers Per Symbol](https://docs.sectors.app/api-references/v2/indonesia/brokers/broker-summary-top) (`/v2/broker-summary/{symbol}/top/`)
-- [Daily Net Foreign Inflow](https://docs.sectors.app/api-references/v2/indonesia/brokers/foreign-flow-by-symbol) (`/v2/foreign-flow/{symbol}/`)
