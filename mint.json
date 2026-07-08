@@ -57,13 +57,13 @@
       "name": "Recipes",
       "version": "v2",
       "icon": "lightbulb",
-      "url": "recipes"
+      "url": "/recipes/quick-start-in-python/00-your-first-request"
     },
     {
       "name": "Generative AI Series",
       "version": "v2",
       "icon": "microchip-ai",
-      "url": "recipes/generative-ai-python"
+      "url": "/recipes/generative-ai-python/01-background"
     },
     {
       "name": "Community",
@@ -489,6 +489,14 @@
     "linkedin": "https://www.linkedin.com/showcase/sectorsapp/"
   },
   "redirects": [
+    {
+      "source": "/recipes",
+      "destination": "/recipes/quick-start-in-python/00-your-first-request"
+    },
+    {
+      "source": "/recipes/generative-ai-python",
+      "destination": "/recipes/generative-ai-python/01-background"
+    },
     {
       "source": "/v1/sgx/companies/top",
       "destination": "/api-references/singapore/sgx-top-companies"
