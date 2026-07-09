@@ -1,34 +1,52 @@
 #!/usr/bin/env python3
 """
-update_mint_nav.py
+update_docs_nav.py
 
-Rebuild the v2 API References block in mint.json from schema.json.
+Rebuild the v2 "API References" group inside docs.json from schema.json.
 
-Each operation in the schema carries:
-  - `tags`: [<tag>]          — which subgroup it belongs to
-  - `x-mdx-path`             — the MDX file Mintlify renders
+Mintlify's `docs.json` structure (superseded `mint.json` in mid-2026):
+
+    navigation.versions[]                    # one entry per docs version
+        .anchors[]                           # top-nav pills (Documentation, Recipes, ...)
+            .groups[]                        # sidebar groups per anchor
+                .pages[]                     # pages or nested groups
+
+We target exactly one path:
+
+    version == "v2"
+      -> anchor "Documentation"
+        -> group "API References"
+          -> pages[]     <-- rewritten from schema
+
+Every operation in schema.json carries:
+  - `tags`: [<tag>]     — which subgroup it belongs to
+  - `x-mdx-path`        — the MDX file Mintlify renders
 
 Top-level structure comes from `info.x-tagGroups`:
-  [
-    { "name": "Indonesia (IDX)", "x-sidebar-icon": "building-columns",
-      "tags": ["Company Screener", "Detailed Reports", ...] },
-    ...
-  ]
+    [
+      { "name": "Indonesia (IDX)", "x-sidebar-icon": "building-columns",
+        "tags": ["Company Screener", "Detailed Reports", ...] },
+      ...
+    ]
 
-Each tag in `tags[]` may also declare an `x-sidebar-icon`.
+Each tag in the top-level `tags[]` array may also carry an `x-sidebar-icon`.
 
 What we touch
 -------------
-Only the navigation entry with `group == "API References"` and
-`version == "v2"`. Everything else in mint.json — recipes, v1 nav,
-anchors, top-level keys — is left byte-identical.
+Only the v2 "API References" group's `pages` array. Everything else in
+docs.json — Recipes anchor, v1 nav, top-level keys, theme, integrations,
+footer — is left byte-identical.
 
 Group label conventions
 -----------------------
-- Tag-group name "Singapore (SGX)" → sidebar section label "Singapore (SGX)"
+- Tag-group name "Singapore (SGX)" -> sidebar section label "Singapore (SGX)"
   (used verbatim from the schema).
-- Tag name "SGX - Company Screener" → subgroup label "Company Screener"
-  (the "SGX - " prefix is stripped since the parent section already says SGX).
+- Tag name "SGX - Company Screener" under "Singapore (SGX)" -> subgroup
+  label "Company Screener" (the "SGX - " prefix is stripped because the
+  parent section already names the exchange).
+- When a tag equals the exchange abbreviation already in the parent label
+  (e.g. tag "KLSE" under "Malaysia (KLSE)"), we flatten the pages directly
+  into the section instead of creating a redundant one-level subgroup.
 
 Behavior
 --------
@@ -38,15 +56,17 @@ Behavior
 - Section, subgroup, and page ordering follow the schema's declared order:
   `x-tagGroups` order for sections, tag order within each group for
   subgroups, and first-seen order in `paths` for pages within a subgroup.
+- Appends `api-references/v2/changelog` at the end (unchanged from prior
+  convention).
 
 Usage
 -----
-    python scripts/update_mint_nav.py \\
+    python scripts/update_docs_nav.py \\
         --schema schema.json \\
-        --mint mint.json
+        --docs docs.json
 
     # Dry-run:
-    python scripts/update_mint_nav.py --dry-run
+    python scripts/update_docs_nav.py --dry-run
 """
 
 import argparse
@@ -55,17 +75,18 @@ import sys
 from collections import OrderedDict
 
 
-V2_API_GROUP = "API References"
 V2_VERSION = "v2"
+DOC_ANCHOR = "Documentation"
+API_GROUP = "API References"
 
 
 def collect_tag_to_pages(schema: dict) -> "OrderedDict[str, list[str]]":
     """
-    Walk paths in declaration order; build OrderedDict mapping tag -> [mdx_path, ...].
+    Walk paths in declaration order; build OrderedDict mapping tag -> [mdx_ref, ...].
     Operations without `x-mdx-path` or without a tag are skipped (with a warning).
     """
     tag_pages: "OrderedDict[str, list[str]]" = OrderedDict()
-    seen = set()
+    seen: set = set()
 
     for path, path_item in schema.get("paths", {}).items():
         for method, op in path_item.items():
@@ -85,8 +106,6 @@ def collect_tag_to_pages(schema: dict) -> "OrderedDict[str, list[str]]":
             tag = tags[0]
             mdx_ref = f"api-references/{mdx_path}"
 
-            # Same MDX path may appear under multiple methods (e.g. report
-            # has GET and GET-with-symbol). Only list it once.
             key = (tag, mdx_ref)
             if key in seen:
                 continue
@@ -98,14 +117,14 @@ def collect_tag_to_pages(schema: dict) -> "OrderedDict[str, list[str]]":
 
 
 def build_v2_pages(schema: dict) -> list:
-    """Build the `pages` array for the v2 API References navigation entry."""
+    """Build the `pages` array for the v2 API References group."""
     tag_pages = collect_tag_to_pages(schema)
 
     tag_meta = {t["name"]: t for t in schema.get("tags", [])}
     x_tag_groups = schema.get("info", {}).get("x-tagGroups", [])
 
     pages: list = []
-    consumed_tags: set[str] = set()
+    consumed_tags: set = set()
 
     for group in x_tag_groups:
         section_label = group["name"]
@@ -125,6 +144,13 @@ def build_v2_pages(schema: dict) -> list:
                 continue
 
             subgroup_label = _subgroup_label(tag, section_label)
+
+            # If the tag is just the exchange abbreviation (e.g. "KLSE") already
+            # named in the parent section, flatten pages directly under the section.
+            if subgroup_label == tag and tag in section_label:
+                section_pages.extend(mdx_refs)
+                continue
+
             subgroup_icon = (tag_meta.get(tag, {}) or {}).get("x-sidebar-icon")
 
             sg: "OrderedDict[str, object]" = OrderedDict()
@@ -163,7 +189,7 @@ def build_v2_pages(schema: dict) -> list:
 
 def _subgroup_label(tag: str, section_label: str) -> str:
     """
-    Strip "<EXCHANGE> - " prefix if the section label already names the exchange.
+    Strip "<EXCHANGE> - " prefix when the section label already names the exchange.
     "SGX - Company Screener" under "Singapore (SGX)" -> "Company Screener".
     """
     if " - " in tag:
@@ -173,22 +199,35 @@ def _subgroup_label(tag: str, section_label: str) -> str:
     return tag
 
 
-def update_mint(mint: dict, new_pages: list) -> bool:
-    """Replace the v2 API References pages in-place. Returns True if changed."""
-    nav = mint.get("navigation", [])
-    for entry in nav:
-        if (
-            entry.get("group") == V2_API_GROUP
-            and entry.get("version") == V2_VERSION
-        ):
-            if entry.get("pages") == new_pages:
-                return False
-            entry["pages"] = new_pages
-            return True
+def update_docs(docs: dict, new_pages: list) -> bool:
+    """
+    Replace the v2 -> Documentation -> API References -> pages array in-place.
+    Returns True if changed. Raises RuntimeError if the target path is missing.
+    """
+    navigation = docs.get("navigation", {})
+    versions = navigation.get("versions", [])
+
+    for version_entry in versions:
+        if version_entry.get("version") != V2_VERSION:
+            continue
+
+        for anchor in version_entry.get("anchors", []):
+            if anchor.get("anchor") != DOC_ANCHOR:
+                continue
+
+            for grp in anchor.get("groups", []):
+                if grp.get("group") != API_GROUP:
+                    continue
+
+                if grp.get("pages") == new_pages:
+                    return False
+                grp["pages"] = new_pages
+                return True
 
     raise RuntimeError(
-        f"Could not find navigation entry with group='{V2_API_GROUP}' and "
-        f"version='{V2_VERSION}' in mint.json"
+        f"Could not find navigation path: "
+        f"versions[version='{V2_VERSION}'].anchors[anchor='{DOC_ANCHOR}']"
+        f".groups[group='{API_GROUP}'] in docs.json"
     )
 
 
@@ -197,39 +236,39 @@ def main() -> None:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument("--schema", default="schema.json")
-    parser.add_argument("--mint", default="mint.json")
+    parser.add_argument("--docs", default="docs.json")
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Print the diff to stdout without writing.",
+        help="Print planned changes without writing.",
     )
     args = parser.parse_args()
 
     with open(args.schema, encoding="utf-8") as f:
         schema = json.load(f)
-    with open(args.mint, encoding="utf-8") as f:
-        mint = json.load(f, object_pairs_hook=OrderedDict)
+    with open(args.docs, encoding="utf-8") as f:
+        docs = json.load(f, object_pairs_hook=OrderedDict)
 
     new_pages = build_v2_pages(schema)
-    changed = update_mint(mint, new_pages)
+    changed = update_docs(docs, new_pages)
 
     if not changed:
-        print("mint.json v2 navigation already in sync; no changes.")
+        print(f"{args.docs} v2 API References already in sync; no changes.")
         return
 
-    serialized = json.dumps(mint, indent=2, ensure_ascii=False) + "\n"
+    serialized = json.dumps(docs, indent=2, ensure_ascii=False) + "\n"
 
     if args.dry_run:
-        print("[dry-run] would update v2 API References block in mint.json")
+        print(f"[dry-run] would update v2 API References group in {args.docs}")
         print(
-            "[dry-run] new v2 pages:\n"
+            "[dry-run] new v2 API References pages:\n"
             + json.dumps(new_pages, indent=2, ensure_ascii=False)
         )
         return
 
-    with open(args.mint, "w", encoding="utf-8") as f:
+    with open(args.docs, "w", encoding="utf-8") as f:
         f.write(serialized)
-    print(f"Updated {args.mint}: rebuilt v2 API References block.")
+    print(f"Updated {args.docs}: rebuilt v2 API References group.")
 
 
 if __name__ == "__main__":

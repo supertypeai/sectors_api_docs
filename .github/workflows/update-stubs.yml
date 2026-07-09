@@ -33,8 +33,8 @@ jobs:
       - name: Run stub generator
         run: python scripts/generate_mdx_stubs.py --schema schema.json --mintlify-root api-references --prune
 
-      - name: Update mint.json v2 navigation
-        run: python scripts/update_mint_nav.py --schema schema.json --mint mint.json
+      - name: Update docs.json v2 navigation
+        run: python scripts/update_docs_nav.py --schema schema.json --docs docs.json
 
       - name: Commit and push
         env:
