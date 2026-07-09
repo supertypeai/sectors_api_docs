@@ -57,13 +57,13 @@
       "name": "Recipes",
       "version": "v2",
       "icon": "lightbulb",
-      "url": "/recipes/quick-start-in-python/00-your-first-request"
+      "url": "recipes"
     },
     {
       "name": "Generative AI Series",
       "version": "v2",
       "icon": "microchip-ai",
-      "url": "/recipes/generative-ai-python/01-background"
+      "url": "recipes/generative-ai-python"
     },
     {
       "name": "Community",
@@ -72,6 +72,12 @@
     }
   ],
   "navigation": [
+    {
+      "group": "Recipes",
+      "pages": [
+        "recipes/index"
+      ]
+    },
     {
       "group": "Home",
       "pages": [
@@ -408,6 +414,7 @@
     {
       "group": "Generative AI in Python",
       "pages": [
+        "recipes/generative-ai-python/index",
         {
           "group": "Retrieval Augmented Generation",
           "pages": [
@@ -497,14 +504,6 @@
     "linkedin": "https://www.linkedin.com/showcase/sectorsapp/"
   },
   "redirects": [
-    {
-      "source": "/recipes",
-      "destination": "/recipes/quick-start-in-python/00-your-first-request"
-    },
-    {
-      "source": "/recipes/generative-ai-python",
-      "destination": "/recipes/generative-ai-python/01-background"
-    },
     {
       "source": "/helper-list/subindustries",
       "destination": "/api-references/v2/indonesia/helper-list/subindustries"
