@@ -490,6 +490,66 @@
   },
   "redirects": [
     {
+      "source": "/helper-list/subindustries",
+      "destination": "/api-references/v2/indonesia/helper-list/subindustries"
+    },
+    {
+      "source": "/helper-list/industries",
+      "destination": "/api-references/v2/indonesia/helper-list/industries"
+    },
+    {
+      "source": "/mining-companies",
+      "destination": "/api-references/v2/mining/companies/mining-companies"
+    },
+    {
+      "source": "/recipes/sectors-for-ai-agents/SKILL.md",
+      "destination": "/recipes/sectors-for-ai-agents/01-agent-skills-guide"
+    },
+    {
+      "source": "/api-references/v2/indonesia/companies",
+      "destination": "/api-references/v2/indonesia/screener/companies"
+    },
+    {
+      "source": "/v1/sgx/companies/top/",
+      "destination": "/api-references/singapore/sgx-top-companies"
+    },
+    {
+      "source": "/v1/klse/companies/top/",
+      "destination": "/api-references/malaysia/klse-top-companies"
+    },
+    {
+      "source": "/v1/companies/top/",
+      "destination": "/api-references/ranking/top-tickers"
+    },
+    {
+      "source": "/v2/industries/",
+      "destination": "/api-references/v2/indonesia/helper-list/industries"
+    },
+    {
+      "source": "/v2/klse/sectors/",
+      "destination": "/api-references/v2/malaysia/klse-sectors"
+    },
+    {
+      "source": "/v2/mining/commodities/",
+      "destination": "/api-references/v2/mining/commodities-trade/commodities"
+    },
+    {
+      "source": "/v2/sgx/companies/",
+      "destination": "/api-references/v2/singapore/screener/sgx-companies"
+    },
+    {
+      "source": "/v2/free-float",
+      "destination": "/api-references/v2/indonesia/screener/free-float"
+    },
+    {
+      "source": "/company/report",
+      "destination": "/api-references/report/company"
+    },
+    {
+      "source": "/v1/subsector/report/:slug*",
+      "destination": "/api-references/report/subsector"
+    },
+    {
       "source": "/v1/sgx/companies/top",
       "destination": "/api-references/singapore/sgx-top-companies"
     },

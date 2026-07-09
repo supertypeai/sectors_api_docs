@@ -4,7 +4,7 @@ sidebarTitle: "2. AI-Powered Stock Analyst"
 description: "By: [Andreas Christianto](https://www.github.com/AndreChristianto) · March 16, 2026"
 ---
 
-The [Sectors API v2](https://docs.sectors.app/api-references/v2/indonesia/companies) introduces a natural language query feature for the company screener endpoint. A single query like "top 5 banks by market cap" returns a ranked list of matching companies — but a list of tickers and names alone tells you little about *why* each company is worth looking at.
+The [Sectors API v2](https://docs.sectors.app/api-references/v2/indonesia/screener/companies) introduces a natural language query feature for the company screener endpoint. A single query like "top 5 banks by market cap" returns a ranked list of matching companies — but a list of tickers and names alone tells you little about *why* each company is worth looking at.
 
 The naive solution is to take those results and manually call additional endpoints for each company — one for valuation metrics, one for revenue breakdown — then stitch all the data together before feeding it to an AI. For five companies and two enrichment endpoints, that's ten sequential API calls, manual data merging, and custom scripting. It's the kind of task that's tedious to write, fragile to maintain, and impossible to hand off to a non-developer.
 
