@@ -1,0 +1,1117 @@
+---
+title: "Part 3: Confirmation with Broker and Foreign Flow"
+sidebarTitle: "3. Confirmation with Broker and Foreign Flow"
+description: "By: [Alya Dwinanda](https://www.github.com/flytosevensky) · June 30, 2026"
+---
+
+This is Part 3 of a three-part recipe. Parts 1 and 2 built and trained the GVAE and produced anomaly scores. In this part, we validate those scores against two independent market signals from the Sectors API: broker flow and foreign flow. We then combine all three signals into a single adaptive risk score for each stock.
+
+**Series overview:**
+
+- **Part 1:** Setup, data fetching, feature engineering, graph construction, model definition
+- **Part 2:** Training, anomaly scoring, clustering, visualization
+- **Part 3 (this article):** Data quality audit, broker flow, foreign flow, combined risk scoring
+
+## Why Confirmation Matters
+
+A GNN reconstruction error is a statistical signal. It tells you that a stock's behavior was inconsistent with what the graph structure would predict. It does not tell you whether that inconsistency reflects a real market event or is a modeling artifact.
+
+Broker flow and foreign flow are independent market signals grounded in actual transaction data. If a stock has a high GNN anomaly score _and_ its top broker is net distributing _and_ foreign investors are net selling, the convergence of three independent signals is much stronger evidence than any one signal alone.
+
+## Cell 11: Data Quality Audit
+
+Before fetching confirmation signals, audit the result DataFrame for data quality issues. The two most common problems are zero-feature nodes (stocks with no trading data in the analysis period) and identical anomaly scores (which indicate duplicated or corrupted rows).
+
+```python
+print("=" * 65)
+print("  CELL 11: DATA QUALITY AUDIT")
+print("=" * 65)
+
+numeric_feat_cols = [
+    "mean_return", "volatility", "skewness", "kurtosis",
+    "max_return_zscore", "n_extreme_days", "max_volume_zscore",
+    "n_volume_spikes", "price_vs_sma20", "vol_regime_ratio", "sharpe_ratio"
+]
+
+# Detect stocks where every feature is exactly zero
+zero_mask         = (result_df[numeric_feat_cols] == 0).all(axis=1)
+zero_data_tickers = result_df[zero_mask]["ticker"].tolist()
+
+print(f"\nStocks with all-zero features (suspended or no data):")
+if zero_data_tickers:
+    for t in zero_data_tickers:
+        row = result_df[result_df["ticker"] == t].iloc[0]
+        print(f"  {t} | anomaly_score: {row['anomaly_score']:.6f} | "
+              f"kmeans_cluster: {int(row['kmeans_cluster'])}")
+    print(f"\n  Likely cause: stock suspended on IDX during {START_DATE} to {END_DATE}")
+else:
+    print("  None found.")
+
+# Detect duplicated anomaly scores
+score_counts = result_df["anomaly_score"].value_counts()
+duplicated   = score_counts[score_counts > 1]
+if not duplicated.empty:
+    print(f"\nDuplicated anomaly scores detected:")
+    for score, count in duplicated.items():
+        affected = result_df[result_df["anomaly_score"] == score]["ticker"].tolist()
+        print(f"  Score {score:.6f} appears in: {affected}")
+
+# Remove zero-data stocks from downstream analysis
+result_df_clean    = result_df[~zero_mask].copy().reset_index(drop=True)
+active_tickers_clean = result_df_clean["ticker"].tolist()
+anomaly_tickers_clean = result_df_clean[
+    result_df_clean["is_anomaly"]]["ticker"].tolist()
+
+# Borderline stocks: score above 75th percentile but not flagged as anomaly
+p75_clean   = result_df_clean["anomaly_score"].quantile(0.75)
+borderline  = result_df_clean[
+    (result_df_clean["anomaly_score"] > p75_clean) &
+    (~result_df_clean["is_anomaly"])
+].sort_values("anomaly_score", ascending=False)
+
+print(f"\nClean dataset: {len(result_df_clean)} stocks "
+      f"(removed: {zero_data_tickers})")
+print(f"Anomalies: {anomaly_tickers_clean}")
+print(f"\nBorderline (above p75={p75_clean:.4f}, not anomaly):")
+print(borderline[["ticker", "anomaly_score", "volatility",
+                   "kurtosis", "n_extreme_days"]].to_string(index=False))
+
+# Stocks to include in broker and foreign flow analysis
+TARGET_TICKERS_BROKER = anomaly_tickers_clean + borderline["ticker"].tolist()
+print(f"\nBroker analysis targets: {TARGET_TICKERS_BROKER}")
+```
+
+Expected results:
+
+```text
+=================================================================
+  CELL 11: DATA QUALITY AUDIT
+=================================================================
+
+Stocks with all-zero features (suspended or no data):
+  WIKA | anomaly_score: 0.017637 | kmeans_cluster: 3
+  WSKT | anomaly_score: 0.017637 | kmeans_cluster: 3
+
+  Likely cause: stock suspended on IDX during 2025-12-31 to 2026-06-29
+
+Duplicated anomaly scores detected:
+  Score 0.017637 appears in: ['WIKA', 'WSKT']
+
+Clean dataset: 28 stocks (removed: ['WIKA', 'WSKT'])
+Anomalies: ['BBCA', 'PGAS', 'SMGR']
+
+Borderline (above p75=0.2082, not anomaly):
+ticker  anomaly_score  volatility  kurtosis  n_extreme_days
+  BMRI       0.529723    0.027713  4.121694             3.0
+  INCO       0.516578    0.060206  1.340078             1.0
+  INDF       0.364597    0.018867  1.100802             2.0
+  ANTM       0.214800    0.044306  1.790394             2.0
+
+Broker analysis targets: ['BBCA', 'PGAS', 'SMGR', 'BMRI', 'INCO', 'INDF', 'ANTM']
+```
+
+<Warning>
+  WIKA and WSKT both returned all-zero feature vectors in the sample run. Their anomaly scores were identical at 0.022838 because the model processed them as identical nodes. Suspended stocks are not anomalies in the meaningful sense and should be removed before interpretation. A suspended stock that stays in the graph can distort clustering by pulling other nodes toward its zero embedding.
+</Warning>
+
+## Cell 12: Broker Flow Analysis
+
+Broker flow data is fetched from the Sectors API v2 endpoint `/v2/broker-summary/{symbol}/top/`. This endpoint returns the top net buyers and top net sellers for a given stock over the analysis period, aggregated across all trading days.
+
+### A Note on the Zero-Sum Trap
+
+The most common mistake when working with this endpoint is to compute a net total by summing all buyer net values and adding them to all seller net values:
+
+```python
+# WRONG: always produces a result near zero
+total = sum(b["net_idr"] for b in buyers) + sum(s["net_idr"] for s in sellers)
+```
+
+Equity markets are zero-sum. For every buyer there is a seller. The top 10 buyers and top 10 sellers in any stock will roughly cancel each other out when summed. The result is always close to zero regardless of the actual market dynamics.
+
+The correct approach is a **dominance score**: compare the single largest accumulator against the single largest distributor.
+
+```python
+# CORRECT: dominance score
+top_buy_net   = buyers[0].get("net_idr", 0)   # positive: net bought
+top_sell_net  = sellers[0].get("net_idr", 0)  # negative: net sold (API returns negative)
+net_dominance = top_buy_net + top_sell_net     # positive = accumulation dominant
+```
+
+A positive dominance score means the biggest buyer in the market is accumulating more than the biggest seller is distributing. A negative score means distribution is outpacing accumulation.
+
+### Utility Functions
+
+```python
+def format_idr(value) -> str:
+    """Format IDR values adaptively: Tr / B / M to avoid rounding small values to zero."""
+    try:
+        if pd.isna(value):
+            return "N/A"
+    except Exception:
+        pass
+    sign    = "+" if value >= 0 else "-"
+    abs_val = abs(value)
+    if abs_val >= 1e12:  return f"Rp {sign}{abs_val/1e12:.2f}Tr"
+    elif abs_val >= 1e9: return f"Rp {sign}{abs_val/1e9:.1f}B"
+    elif abs_val >= 1e6: return f"Rp {sign}{abs_val/1e6:.0f}M"
+    else:                return f"Rp {sign}{abs_val/1e6:.2f}M"
+
+
+def fetch_broker_top(ticker: str, start: str, end: str,
+                     n_brokers: int = 10) -> dict:
+    """
+    Fetch top buyers and sellers for one stock.
+
+    Endpoint: GET /v2/broker-summary/{symbol}/top/
+    No date range limit (unlike /broker-summary/ which caps at 14 days).
+    Costs 2 API credits per call.
+    """
+    url    = f"https://api.sectors.app/v2/broker-summary/{ticker}/top/"
+    params = {"start": start, "end": end, "n_brokers": n_brokers}
+    resp   = requests.get(url, headers=HEADERS, params=params)
+    return resp.json() if resp.status_code == 200 else {}
+```
+
+### Fetch Broker Data for All Stocks
+
+```python
+print(f"Fetching broker data for {len(active_tickers_clean)} stocks...")
+print(f"Endpoint: /v2/broker-summary/{{symbol}}/top/")
+print(f"Period: {START_DATE} to {END_DATE}\n")
+
+broker_top_all  = {}
+broker_agg_rows = []
+
+for ticker in active_tickers_clean:
+    try:
+        data    = fetch_broker_top(ticker, START_DATE, END_DATE, n_brokers=10)
+        buyers  = data.get("top_buyers",  [])
+        sellers = data.get("top_sellers", [])
+
+        if not data or (not buyers and not sellers):
+            print(f"  {ticker}: no data")
+            continue
+
+        # Dominance score: top accumulator vs top distributor
+        top_buy_net   = buyers[0].get("net_idr", 0)  if buyers  else 0
+        top_sell_net  = sellers[0].get("net_idr", 0) if sellers else 0
+        net_dominance = top_buy_net + top_sell_net
+
+        top_acc  = buyers[0]["broker_code"]  if buyers  else "n/a"
+        top_dist = sellers[0]["broker_code"] if sellers else "n/a"
+
+        broker_top_all[ticker] = data
+        broker_agg_rows.append({
+            "ticker":           ticker,
+            "broker_net_total": net_dominance,
+            "broker_buy_net":   top_buy_net,
+            "broker_sell_net":  top_sell_net,
+            "top_accumulator":  top_acc,
+            "top_distributor":  top_dist,
+            "n_buyers":         len(buyers),
+            "n_sellers":        len(sellers),
+        })
+
+        flag = "RED" if ticker in anomaly_tickers_clean else "   "
+        print(f"  [{flag}] {ticker:<6} | "
+              f"Dominance: {format_idr(net_dominance):>14} | "
+              f"Top acc {top_acc}: {format_idr(top_buy_net):>12} | "
+              f"Top dist {top_dist}: {format_idr(top_sell_net):>12}")
+
+    except Exception as e:
+        print(f"  {ticker}: ERROR {e}")
+
+broker_result_all_df = pd.DataFrame(broker_agg_rows)
+print(f"\nBroker data fetched: {len(broker_result_all_df)} / "
+      f"{len(active_tickers_clean)} stocks")
+```
+
+Expected results:
+
+```text
+Fetching broker data for 28 stocks...
+Endpoint: /v2/broker-summary/{symbol}/top/
+Period: 2025-12-31 to 2026-06-29
+
+  [   ] AALI   | Dominance:       Rp -5.5B | Top acc ZP:    Rp +62.2B | Top dist KZ:    Rp -67.7B
+  [   ] ADRO   | Dominance:     Rp +467.2B | Top acc DX:   Rp +1.22Tr | Top dist YU:   Rp -755.5B
+  [   ] AKRA   | Dominance:       Rp +6.6B | Top acc ZP:    Rp +88.6B | Top dist AK:    Rp -82.0B
+  [   ] ANTM   | Dominance:       Rp +7.3B | Top acc CC:   Rp +660.9B | Top dist KZ:   Rp -653.6B
+  [   ] ASII   | Dominance:     Rp -106.6B | Top acc AK:   Rp +846.1B | Top dist ZP:   Rp -952.7B
+  [RED] BBCA   | Dominance:     Rp -2.50Tr | Top acc YU:   Rp +1.68Tr | Top dist ZP:   Rp -4.18Tr
+  [   ] BBRI   | Dominance:     Rp -1.86Tr | Top acc XL:   Rp +1.91Tr | Top dist ZP:   Rp -3.77Tr
+  [   ] BMRI   | Dominance:     Rp -4.05Tr | Top acc XL:   Rp +1.40Tr | Top dist ZP:   Rp -5.45Tr
+  [   ] BSDE   | Dominance:      Rp -27.2B | Top acc YO:    Rp +31.7B | Top dist KZ:    Rp -59.0B
+  [   ] CPIN   | Dominance:      Rp +42.9B | Top acc YU:   Rp +141.6B | Top dist RX:    Rp -98.7B
+  [   ] EXCL   | Dominance:      Rp -12.4B | Top acc TP:    Rp +62.7B | Top dist ZP:    Rp -75.1B
+  [   ] GGRM   | Dominance:      Rp +16.1B | Top acc ZP:    Rp +72.3B | Top dist YP:    Rp -56.2B
+  [   ] HMSP   | Dominance:       Rp -3.7B | Top acc SQ:    Rp +15.8B | Top dist BK:    Rp -19.5B
+  [   ] ICBP   | Dominance:      Rp -84.9B | Top acc ZP:    Rp +82.9B | Top dist AK:   Rp -167.9B
+  [   ] INCO   | Dominance:      Rp +45.0B | Top acc CC:   Rp +242.5B | Top dist BB:   Rp -197.4B
+  [   ] INDF   | Dominance:      Rp +38.2B | Top acc ZP:   Rp +290.2B | Top dist AK:   Rp -252.0B
+  [   ] JSMR   | Dominance:      Rp -47.3B | Top acc PD:    Rp +55.0B | Top dist BB:   Rp -102.2B
+  [   ] KLBF   | Dominance:      Rp -66.5B | Top acc PD:    Rp +87.8B | Top dist DX:   Rp -154.3B
+  [   ] LSIP   | Dominance:      Rp +23.1B | Top acc SQ:    Rp +52.0B | Top dist BB:    Rp -29.0B
+  [   ] MEDC   | Dominance:      Rp +33.3B | Top acc BK:   Rp +148.9B | Top dist AK:   Rp -115.6B
+  [   ] MYOR   | Dominance:      Rp +10.5B | Top acc PD:    Rp +72.2B | Top dist YU:    Rp -61.7B
+  [RED] PGAS   | Dominance:      Rp -24.1B | Top acc CC:    Rp +97.1B | Top dist ZP:   Rp -121.2B
+  [   ] PTBA   | Dominance:      Rp +30.5B | Top acc BK:    Rp +69.0B | Top dist YP:    Rp -38.6B
+  [   ] PTPP   | Dominance:       Rp +2.7B | Top acc CP:     Rp +4.9B | Top dist GR:     Rp -2.2B
+  [RED] SMGR   | Dominance:      Rp -17.0B | Top acc YP:    Rp +49.6B | Top dist CC:    Rp -66.6B
+  [   ] TLKM   | Dominance:     Rp +395.9B | Top acc CC:   Rp +1.34Tr | Top dist ZP:   Rp -947.9B
+  [   ] UNTR   | Dominance:     Rp +469.6B | Top acc AK:   Rp +917.3B | Top dist ZP:   Rp -447.7B
+  [   ] UNVR   | Dominance:      Rp +41.1B | Top acc PD:   Rp +143.5B | Top dist BK:   Rp -102.4B
+
+Broker data fetched: 28 / 28 stocks
+```
+
+<Info>
+  The `/v2/broker-summary/{symbol}/top/` endpoint is preferred over `/v2/broker-summary/{symbol}/` for this use case because it has no date range limit and returns already-aggregated net values. The per-day endpoint caps at 14 days per request, requiring chunking for a 180-day window.
+</Info>
+
+### Patching broker data into confirm\_df
+
+After fetching, use `.map()` instead of `.merge()` to assign broker values to the results DataFrame. This avoids column name conflicts when running cells iteratively.
+
+```python
+# Build confirm_df from result_df_clean
+confirm_df = result_df_clean[[
+    "ticker", "anomaly_score", "is_anomaly",
+    "volatility", "kurtosis", "skewness",
+    "n_extreme_days", "sharpe_ratio", "kmeans_cluster"
+]].copy()
+
+# Map broker values directly to avoid merge conflicts
+broker_map = broker_result_all_df.set_index("ticker")
+confirm_df["broker_net_total"] = confirm_df["ticker"].map(broker_map["broker_net_total"])
+confirm_df["broker_buy_net"]   = confirm_df["ticker"].map(broker_map["broker_buy_net"])
+confirm_df["broker_sell_net"]  = confirm_df["ticker"].map(broker_map["broker_sell_net"])
+confirm_df["top_accumulator"]  = confirm_df["ticker"].map(broker_map["top_accumulator"])
+confirm_df["top_distributor"]  = confirm_df["ticker"].map(broker_map["top_distributor"])
+
+print(f"Broker data mapped: "
+      f"{confirm_df['broker_net_total'].notna().sum()} stocks")
+```
+
+Expected results:
+
+```text
+Broker data mapped: 28 stocks
+```
+
+## Cell 13: Foreign Flow Analysis
+
+Foreign flow data is fetched from `/v2/foreign-flow/{symbol}/`. This endpoint returns daily net foreign inflow in IDR for one stock over a date range of up to 90 days.
+
+The sign convention is straightforward: positive `net_foreign_inflow` means foreign brokers were net buyers on that day; negative means net sellers. Because the IDX is a closed market, domestic flow is always the exact negative of foreign flow:
+
+```text
+domestic_net = -net_foreign_inflow
+```
+
+This means a single endpoint gives you both foreign and domestic sentiment.
+
+```python
+def date_chunks(start_str: str, end_str: str, chunk_days: int = 90):
+    """Split a date range into chunks of at most chunk_days days."""
+    start  = datetime.strptime(start_str, "%Y-%m-%d")
+    end    = datetime.strptime(end_str,   "%Y-%m-%d")
+    chunks = []
+    cur    = start
+    while cur < end:
+        chunk_end = min(cur + timedelta(days=chunk_days - 1), end)
+        chunks.append((cur.strftime("%Y-%m-%d"), chunk_end.strftime("%Y-%m-%d")))
+        cur = chunk_end + timedelta(days=1)
+    return chunks
+
+
+def fetch_foreign_flow_v2(ticker: str, start: str, end: str) -> pd.DataFrame:
+    """
+    Fetch daily net foreign inflow for one stock.
+
+    Endpoint: GET /v2/foreign-flow/{symbol}/
+    Max range: 90 days per request. Chunked automatically for longer periods.
+    Response field: net_foreign_inflow (positive = foreign net buyers)
+    Costs 1 API credit per call.
+    """
+    chunks   = date_chunks(start, end, chunk_days=90)
+    all_rows = []
+
+    for chunk_start, chunk_end in chunks:
+        url    = f"https://api.sectors.app/v2/foreign-flow/{ticker}/"
+        params = {"start": chunk_start, "end": chunk_end}
+        resp   = requests.get(url, headers=HEADERS, params=params)
+
+        if resp.status_code != 200:
+            continue
+
+        for point in resp.json().get("data", []):
+            all_rows.append({
+                "date":            point.get("date", ""),
+                # Rename to foreign_net_buy for consistency with downstream code
+                "foreign_net_buy": point.get("net_foreign_inflow", 0),
+                "ticker":          ticker,
+            })
+
+    if not all_rows:
+        return pd.DataFrame()
+
+    df           = pd.DataFrame(all_rows)
+    df["date"]   = pd.to_datetime(df["date"])
+    return df.set_index("date").sort_index()
+
+
+# Fetch foreign flow for all stocks
+print(f"Fetching foreign flow for {len(active_tickers_clean)} stocks...")
+
+foreign_data = {}
+for ticker in active_tickers_clean:
+    try:
+        df_ff = fetch_foreign_flow_v2(ticker, START_DATE, END_DATE)
+        if not df_ff.empty:
+            foreign_data[ticker] = df_ff
+            net = df_ff["foreign_net_buy"].sum()
+            print(f"  {ticker}: {format_idr(net)} net over period "
+                  f"({'inflow' if net > 0 else 'outflow'})")
+        else:
+            print(f"  {ticker}: no data")
+    except Exception as e:
+        print(f"  {ticker}: ERROR {e}")
+
+# Aggregate foreign flow statistics
+foreign_stats = []
+for ticker in active_tickers_clean:
+    if ticker not in foreign_data:
+        continue
+    ff   = foreign_data[ticker]["foreign_net_buy"]
+    half = len(ff) // 2
+    foreign_stats.append({
+        "ticker":             ticker,
+        "foreign_net_total":  ff.sum(),
+        "foreign_avg_daily":  ff.mean(),
+        "foreign_max_inflow": ff.max(),
+        "foreign_max_outflow": ff.min(),
+        "foreign_trend":      "improving" if ff.iloc[half:].mean() > ff.iloc[:half].mean()
+                              else "worsening",
+    })
+
+foreign_result_all_df = pd.DataFrame(foreign_stats)
+print(f"\nForeign flow available: "
+      f"{len(foreign_result_all_df)} / {len(active_tickers_clean)} stocks")
+```
+
+Expected results:
+
+```text
+Fetching foreign flow for 28 stocks...
+  AALI: Rp +684M net over period (inflow)
+  ADRO: Rp +505.3B net over period (inflow)
+  AKRA: Rp -64.4B net over period (outflow)
+  ANTM: Rp -2.65Tr net over period (outflow)
+  ASII: Rp -282.3B net over period (outflow)
+  BBCA: Rp -22.81Tr net over period (outflow)
+  BBRI: Rp -7.52Tr net over period (outflow)
+  BMRI: Rp -7.23Tr net over period (outflow)
+  BSDE: Rp -141.9B net over period (outflow)
+  CPIN: Rp +112.6B net over period (inflow)
+  EXCL: Rp -104.7B net over period (outflow)
+  GGRM: Rp +198.1B net over period (inflow)
+  HMSP: Rp -46.8B net over period (outflow)
+  ICBP: Rp -438.3B net over period (outflow)
+  INCO: Rp +293.4B net over period (inflow)
+  INDF: Rp -749.0B net over period (outflow)
+  JSMR: Rp +17.8B net over period (inflow)
+  KLBF: Rp -467.6B net over period (outflow)
+  LSIP: Rp -131.7B net over period (outflow)
+  MEDC: Rp +467.9B net over period (inflow)
+  MYOR: Rp -273.9B net over period (outflow)
+  PGAS: Rp -33.2B net over period (outflow)
+  PTBA: Rp +576.6B net over period (inflow)
+  PTPP: Rp -6.4B net over period (outflow)
+  SMGR: Rp -128.7B net over period (outflow)
+  TLKM: Rp -2.13Tr net over period (outflow)
+  UNTR: Rp +947.7B net over period (inflow)
+  UNVR: Rp -179.8B net over period (outflow)
+
+Foreign flow available: 28 / 28 stocks
+```
+
+### Visualizing Daily and Cumulative Foreign Flow
+
+```python
+n_targets = len(TARGET_TICKERS_BROKER)
+fig, axes = plt.subplots(2, n_targets, figsize=(6 * n_targets, 9))
+if n_targets == 1:
+    axes = axes.reshape(2, 1)
+
+for col, ticker in enumerate(TARGET_TICKERS_BROKER):
+    if ticker not in foreign_data:
+        continue
+
+    ff         = foreign_data[ticker]["foreign_net_buy"]
+    cum        = ff.cumsum()
+    is_anom    = ticker in anomaly_tickers_clean
+    line_color = "#ef4444" if is_anom else "#f59e0b"
+
+    # Top row: daily bar chart
+    ax1        = axes[0][col]
+    bar_colors = ["#22c55e" if v > 0 else "#ef4444" for v in ff]
+    ax1.bar(ff.index, ff / 1e9, color=bar_colors, alpha=0.7, width=0.8)
+    ax1.axhline(0, color="white", lw=0.8, ls="--", alpha=0.5)
+    ax1.set_title(f"{'[ANOMALY]' if is_anom else '[WATCH]'} {ticker}\n"
+                  f"Daily Foreign Flow",
+                  color="white", fontsize=10)
+    ax1.set_ylabel("Rp Billion", color="white")
+    ax1.tick_params(colors="gray", labelsize=7)
+    ax1.set_facecolor("#1e2330")
+    ax1.grid(alpha=0.15)
+
+    # Bottom row: cumulative line chart
+    ax2 = axes[1][col]
+    ax2.plot(cum.index, cum / 1e9, color=line_color, lw=2.5)
+    ax2.fill_between(cum.index, cum / 1e9, 0,
+                     where=(cum >= 0), alpha=0.2, color="#22c55e")
+    ax2.fill_between(cum.index, cum / 1e9, 0,
+                     where=(cum < 0),  alpha=0.2, color="#ef4444")
+    ax2.axhline(0, color="white", lw=0.8, ls="--", alpha=0.5)
+    ax2.set_title("Cumulative Foreign Flow", color="white", fontsize=10)
+    ax2.set_ylabel("Rp Billion (cumulative)", color="white")
+    ax2.tick_params(colors="gray", labelsize=7)
+    ax2.set_facecolor("#1e2330")
+    ax2.grid(alpha=0.15)
+
+fig.patch.set_facecolor("#0f1117")
+plt.suptitle("Foreign Flow — Anomaly and Borderline Stocks",
+             fontsize=13, fontweight="bold", color="white", y=1.01)
+plt.tight_layout()
+plt.savefig("sectors_foreign_flow.png",
+            dpi=150, bbox_inches="tight", facecolor="#0f1117")
+plt.show()
+```
+
+<Frame>
+  ![Sectors Foreign Flow](/recipes/gnn-anomaly-detection/images/sectors_foreign_flow.png)
+</Frame>
+
+## Cell 14: Combined Risk Score
+
+The final step merges GNN scores, broker dominance, and foreign flow into a single risk score per stock. Each signal is normalized to a 0 to 1 scale and combined with adaptive weights that depend on which signals are available for each stock.
+
+### Normalization
+
+```python
+def min_max_norm_safe(series: pd.Series) -> pd.Series:
+    """
+    Min-max normalize a series to [0, 1].
+    NaN values are excluded from range computation but preserved in output.
+    """
+    valid = series.dropna()
+    if len(valid) < 2 or valid.max() == valid.min():
+        return pd.Series(0.5, index=series.index)
+    return (series - valid.min()) / (valid.max() - valid.min())
+```
+
+### Mapping Foreign Flow into confirm\_df
+
+```python
+ff_map = foreign_result_all_df.set_index("ticker")
+confirm_df["foreign_net_total"] = confirm_df["ticker"].map(ff_map["foreign_net_total"])
+confirm_df["foreign_avg_daily"] = confirm_df["ticker"].map(ff_map["foreign_avg_daily"])
+confirm_df["foreign_trend"]     = confirm_df["ticker"].map(ff_map["foreign_trend"])
+
+# Compute signals
+# Note: signals are inverted for broker and foreign because outflow = higher risk
+confirm_df["gnn_signal"]     = min_max_norm_safe(confirm_df["anomaly_score"])
+confirm_df["broker_signal"]  = min_max_norm_safe(-confirm_df["broker_net_total"])
+confirm_df["foreign_signal"] = min_max_norm_safe(-confirm_df["foreign_net_total"])
+```
+
+### Adaptive Weighting
+
+The weight scheme adapts to available data rather than assigning zeros to missing signals.
+
+```python
+print("=" * 65)
+print(" CONFIRMATION DASHBOARD")
+print("=" * 65)
+
+
+def format_idr(value) -> str:
+    """Format IDR values: Tr / B / M."""
+    try:
+        if pd.isna(value):
+            return "N/A"
+    except Exception:
+        pass
+
+    sign = "+" if value >= 0 else "-"
+    abs_val = abs(value)
+
+    if abs_val >= 1e12:
+        return f"Rp {sign}{abs_val/1e12:.2f}Tr"
+    elif abs_val >= 1e9:
+        return f"Rp {sign}{abs_val/1e9:.1f}B"
+    elif abs_val >= 1e6:
+        return f"Rp {sign}{abs_val/1e6:.0f}M"
+    else:
+        return f"Rp {sign}{abs_val/1e6:.2f}M"
+
+
+# Ensure confirm_df already contains broker data from Cell 12.
+# Only append foreign flow for tickers that are still missing.
+
+assert "confirm_df" in dir(), "❌ Please run Cell 12 Final first!"
+assert "broker_net_total" in confirm_df.columns, \
+    "❌ confirm_df does not contain broker data — please run Cell 12 Final first!"
+
+n_broker_ok = confirm_df["broker_net_total"].notna().sum()
+
+print(
+    f"\n✅ confirm_df loaded from Cell 12 Final: {len(confirm_df)} tickers, "
+    f"{n_broker_ok} with broker data"
+)
+print(
+    f"   Broker sample:\n"
+    f"{confirm_df[['ticker','broker_net_total']].head(6).to_string(index=False)}"
+)
+
+
+# Fetch & merge foreign flow for all tickers
+print(f"\n📥 Fetching foreign flow for all {len(active_tickers_clean)} tickers...")
+
+foreign_data_all = {}
+
+if "foreign_data" in dir():
+    foreign_data_all = dict(foreign_data)
+
+missing_ff = [
+    t for t in active_tickers_clean
+    if t not in foreign_data_all
+]
+
+print(f"   Already available: {len(foreign_data_all)} | Need to fetch: {len(missing_ff)}")
+
+for ticker in missing_ff:
+    try:
+        df_ff = fetch_foreign_flow_v2(ticker, START_DATE, END_DATE)
+
+        if not df_ff.empty:
+            foreign_data_all[ticker] = df_ff
+            net = df_ff["foreign_net_buy"].sum()
+            print(f"   ✅ {ticker}: {format_idr(net)}")
+        else:
+            print(f"   ⚠️ {ticker}: empty")
+
+    except Exception as e:
+        print(f"   ❌ {ticker}: {e}")
+
+
+# Create foreign_result_all_df
+foreign_stats_all = []
+
+for ticker in active_tickers_clean:
+
+    if ticker not in foreign_data_all:
+        continue
+
+    ff = foreign_data_all[ticker]["foreign_net_buy"]
+    half = len(ff) // 2
+
+    foreign_stats_all.append({
+        "ticker": ticker,
+        "foreign_net_total": ff.sum(),
+        "foreign_avg_daily": ff.mean(),
+        "foreign_trend":
+            "up"
+            if ff.iloc[half:].mean() > ff.iloc[:half].mean()
+            else "down",
+    })
+
+foreign_result_all_df = pd.DataFrame(foreign_stats_all)
+
+print(
+    f"\n✅ Foreign flow: "
+    f"{len(foreign_result_all_df)} / {len(active_tickers_clean)} tickers"
+)
+
+
+# Merge foreign flow into confirm_df
+ff_cols = [
+    "foreign_net_total",
+    "foreign_avg_daily",
+    "foreign_trend",
+    "foreign_signal",
+]
+
+confirm_df.drop(
+    columns=[c for c in ff_cols if c in confirm_df.columns],
+    inplace=True,
+)
+
+confirm_df = confirm_df.merge(
+    foreign_result_all_df[
+        [
+            "ticker",
+            "foreign_net_total",
+            "foreign_avg_daily",
+            "foreign_trend",
+        ]
+    ],
+    on="ticker",
+    how="left",
+)
+
+print(
+    f"   Foreign data merged: "
+    f"{confirm_df['foreign_net_total'].notna().sum()} tickers"
+)
+
+
+# Calculate signal scores and combined risk score
+def min_max_norm_safe(series: pd.Series) -> pd.Series:
+
+    valid = series.dropna()
+
+    if len(valid) < 2 or valid.max() == valid.min():
+        return pd.Series(0.5, index=series.index)
+
+    return (series - valid.min()) / (valid.max() - valid.min())
+
+
+# Remove old signals before recalculation
+signal_cols = [
+    "gnn_signal",
+    "broker_signal",
+    "foreign_signal",
+    "combined_risk_score",
+    "risk_tier",
+    "data_sources",
+]
+
+confirm_df.drop(
+    columns=[c for c in signal_cols if c in confirm_df.columns],
+    inplace=True,
+)
+
+confirm_df["gnn_signal"] = min_max_norm_safe(confirm_df["anomaly_score"])
+confirm_df["broker_signal"] = min_max_norm_safe(-confirm_df["broker_net_total"])
+confirm_df["foreign_signal"] = min_max_norm_safe(-confirm_df["foreign_net_total"])
+
+
+def compute_combined(row):
+
+    g = row["gnn_signal"]
+    b = row.get("broker_signal", np.nan)
+    f = row.get("foreign_signal", np.nan)
+
+    hb = pd.notna(b)
+    hf = pd.notna(f)
+
+    if hb and hf:
+        return g * 0.50 + b * 0.25 + f * 0.25
+    elif hb:
+        return g * 0.60 + b * 0.40
+    elif hf:
+        return g * 0.60 + f * 0.40
+    else:
+        return g
+
+
+def risk_tier(score):
+
+    if pd.isna(score):
+        return "❓ NO DATA"
+    elif score >= 0.65:
+        return "🔴 HIGH RISK"
+    elif score >= 0.40:
+        return "🟡 MEDIUM RISK"
+    elif score >= 0.20:
+        return "🟠 WATCH"
+    else:
+        return "🟢 NORMAL"
+
+
+confirm_df["combined_risk_score"] = confirm_df.apply(
+    compute_combined,
+    axis=1,
+)
+
+confirm_df["risk_tier"] = confirm_df["combined_risk_score"].apply(risk_tier)
+
+confirm_df["data_sources"] = confirm_df.apply(
+    lambda r: " + ".join(
+        filter(
+            None,
+            [
+                "GNN",
+                "Broker" if pd.notna(r.get("broker_signal")) else "",
+                "Foreign" if pd.notna(r.get("foreign_signal")) else "",
+            ],
+        )
+    ),
+    axis=1,
+)
+
+confirm_df = confirm_df.sort_values(
+    "combined_risk_score",
+    ascending=False,
+)
+
+
+# Print final table
+print(
+    f"\n{'Ticker':<7} {'GNN':>7} {'Broker':>16} "
+    f"{'Foreign':>16} {'Combined':>9} Risk"
+)
+
+print("─" * 80)
+
+for _, row in confirm_df.iterrows():
+
+    b = format_idr(row.get("broker_net_total"))
+    f = format_idr(row.get("foreign_net_total"))
+
+    flag = "🔴" if row["is_anomaly"] else "  "
+
+    print(
+        f"{flag}{row['ticker']:<5} "
+        f"{row['anomaly_score']:>7.4f} "
+        f"{b:>16} "
+        f"{f:>16} "
+        f"{row['combined_risk_score']:>9.4f} "
+        f"{row['risk_tier']}"
+    )
+
+
+# Dashboard visualization
+
+tier_colors = {
+    "HIGH RISK": "#ef4444",
+    "MEDIUM RISK": "#f59e0b",
+    "WATCH": "#f97316",
+    "NORMAL": "#3b82f6",
+    "NO DATA": "#64748b",
+}
+
+
+def bar_color(t):
+    for k, v in tier_colors.items():
+        if k in t:
+            return v
+    return "#64748b"
+
+
+fig = plt.figure(figsize=(20, 13))
+fig.patch.set_facecolor("#0f1117")
+
+
+# Plot 1: Combined Risk Score
+ax1 = fig.add_subplot(2, 3, (1, 2))
+
+ax1.barh(
+    confirm_df["ticker"],
+    confirm_df["combined_risk_score"],
+    color=[bar_color(t) for t in confirm_df["risk_tier"]],
+    edgecolor="none",
+    height=0.7,
+)
+
+for thresh, color, label in [
+    (0.65, "#ef4444", "High (0.65)"),
+    (0.40, "#f59e0b", "Medium (0.40)"),
+    (0.20, "#f97316", "Watch (0.20)"),
+]:
+    ax1.axvline(
+        thresh,
+        color=color,
+        ls="--",
+        lw=1.2,
+        alpha=0.7,
+        label=label,
+    )
+
+ax1.set_title(
+    "Combined Risk Score — All Tickers\n"
+    "(GNN 50% + Broker 25% + Foreign 25%)",
+    color="white",
+    fontsize=11,
+)
+
+ax1.set_xlabel("Score", color="white")
+ax1.invert_yaxis()
+ax1.set_facecolor("#1e2330")
+ax1.tick_params(colors="white", labelsize=8)
+ax1.legend(fontsize=8, facecolor="#2d3748", labelcolor="white")
+ax1.grid(alpha=0.15, axis="x")
+ax1.spines[["top", "right", "left", "bottom"]].set_visible(False)
+
+
+# Plot 2: Signal Heatmap
+
+heat_data = confirm_df.set_index("ticker")[
+    ["gnn_signal", "broker_signal", "foreign_signal"]
+].copy()
+
+heat_data.columns = ["GNN", "Broker", "Foreign"]
+
+ax2.set_title(
+    "Signal Heatmap\n"
+    "(red = high risk, gray = no data)",
+    color="white",
+    fontsize=10,
+)
+
+# Plot 3 title
+ax3.set_title(
+    "GNN Score vs Foreign Flow",
+    color="white",
+    fontsize=10,
+)
+
+ax3.set_ylabel(
+    "Net Foreign Flow (Rp Billion)",
+    color="white",
+)
+
+# Plot 4 title
+ax4.set_title(
+    "Broker Dominance Score\n"
+    "(green = accumulation, red = distribution)",
+    color="white",
+    fontsize=10,
+)
+
+ax4.set_xlabel(
+    "Net IDR (Rp Billion)",
+    color="white",
+)
+
+# Plot 5 Summary
+
+summary = "📋 FINAL SUMMARY\n"
+summary += "─" * 30 + "\n\n"
+
+summary += f"Total tickers : {len(confirm_df)}\n"
+summary += f"Broker data  : {confirm_df['broker_signal'].notna().sum()} tickers\n"
+summary += f"Foreign data : {confirm_df['foreign_signal'].notna().sum()} tickers\n\n"
+
+summary += "🔴 HIGH RISK\n"
+
+for _, r in high_risk.iterrows():
+    summary += f"   • {r['ticker']} ({r['combined_risk_score']:.3f})\n"
+
+summary += "\n🟡 MEDIUM RISK\n"
+
+for _, r in medium_risk.iterrows():
+    summary += f"   • {r['ticker']} ({r['combined_risk_score']:.3f})\n"
+
+summary += "\n🟠 WATCH\n"
+
+for _, r in watch_list.head(5).iterrows():
+    summary += f"   • {r['ticker']} ({r['combined_risk_score']:.3f})\n"
+
+if len(watch_list) > 5:
+    summary += f"   ... +{len(watch_list)-5} more\n"
+
+if "zero_data_tickers" in dir() and zero_data_tickers:
+    summary += "\n⚠️ Excluded Data\n"
+
+    for t in zero_data_tickers:
+        summary += f"   • {t}\n"
+
+plt.suptitle(
+    "🎯 Confirmation Dashboard — GNN + Broker + Foreign Flow",
+    fontsize=13,
+    fontweight="bold",
+    color="white",
+    y=1.01,
+)
+
+plt.tight_layout()
+
+plt.savefig(
+    "sectors_confirmation_dashboard_final.png",
+    dpi=150,
+    bbox_inches="tight",
+    facecolor="#0f1117",
+)
+
+plt.show()
+
+confirm_df.to_csv(
+    "sectors_confirmation_final.csv",
+    index=False,
+)
+
+print("\n✅ Cell 14 (Final) completed!")
+
+print("💾 Output files:")
+print("   → sectors_confirmation_dashboard_final.png")
+print("   → sectors_confirmation_final.csv")
+
+print("\n🏆 Top 5 Combined Risk Scores:")
+
+for _, r in confirm_df.head(5).iterrows():
+    print(
+        f"   {r['risk_tier']} {r['ticker']} | "
+        f"Combined={r['combined_risk_score']:.3f} | "
+        f"Broker={format_idr(r.get('broker_net_total'))} | "
+        f"Foreign={format_idr(r.get('foreign_net_total'))}"
+    )
+```
+
+Expected output:
+
+```text
+=================================================================
+ CONFIRMATION DASHBOARD
+=================================================================
+
+✅ confirm_df loaded from Cell 12 Final: 28 tickers, 28 with broker data
+   Broker sample:
+ticker  broker_net_total
+  BBCA    -2499062367500
+  BMRI    -4049049318000
+  PGAS      -24078916500
+  SMGR      -17020603500
+  INCO       45047203500
+  BBRI    -1860374065000
+
+📥 Fetching foreign flow for all 28 tickers...
+   Already available: 28 | Need to fetch: 0
+
+✅ Foreign flow: 28 / 28 tickers
+   Foreign data merged: 28 tickers
+
+Ticker      GNN           Broker          Foreign  Combined      Risk
+────────────────────────────────────────────────────────────────────────────────
+🔴BBCA   0.5614       Rp -2.50Tr      Rp -22.81Tr    0.7045  🔴 HIGH RISK
+  BMRI   0.5297       Rp -4.05Tr       Rp -7.23Tr    0.6089  🟡 MEDIUM RISK
+🔴PGAS   0.9454        Rp -24.1B        Rp -33.2B    0.5376  🟡 MEDIUM RISK
+🔴SMGR   0.5513        Rp -17.0B       Rp -128.7B    0.3229  🟠 WATCH
+  INCO   0.5166        Rp +45.0B       Rp +293.4B    0.2961  🟠 WATCH
+  BBRI   0.1729       Rp -1.86Tr       Rp -7.52Tr    0.2960  🟠 WATCH
+  INDF   0.3646        Rp +38.2B       Rp -749.0B    0.2244  🟠 WATCH
+  ANTM   0.2148         Rp +7.3B       Rp -2.65Tr    0.1643  🟢 NORMAL
+  ICBP   0.2059        Rp -84.9B       Rp -438.3B    0.1413  🟢 NORMAL
+  PTBA   0.1769        Rp +30.5B       Rp +576.6B    0.1083  🟢 NORMAL
+  PTPP   0.1007         Rp +2.7B         Rp -6.4B    0.0744  🟢 NORMAL
+  BSDE   0.0925        Rp -27.2B       Rp -141.9B    0.0730  🟢 NORMAL
+  JSMR   0.0918        Rp -47.3B        Rp +17.8B    0.0720  🟢 NORMAL
+  KLBF   0.0740        Rp -66.5B       Rp -467.6B    0.0685  🟢 NORMAL
+  MEDC   0.1014        Rp +33.3B       Rp +467.9B    0.0681  🟢 NORMAL
+  UNVR   0.0851        Rp +41.1B       Rp -179.8B    0.0655  🟢 NORMAL
+  CPIN   0.0852        Rp +42.9B       Rp +112.6B    0.0624  🟢 NORMAL
+  ASII   0.0624       Rp -106.6B       Rp -282.3B    0.0624  🟢 NORMAL
+  LSIP   0.0777        Rp +23.1B       Rp -131.7B    0.0620  🟢 NORMAL
+  EXCL   0.0739        Rp -12.4B       Rp -104.7B    0.0616  🟢 NORMAL
+  GGRM   0.0806        Rp +16.1B       Rp +198.1B    0.0605  🟢 NORMAL
+  TLKM   0.0710       Rp +395.9B       Rp -2.13Tr    0.0587  🟢 NORMAL
+  AKRA   0.0584         Rp +6.6B        Rp -64.4B    0.0517  🟢 NORMAL
+  AALI   0.0558         Rp -5.5B         Rp +684M    0.0502  🟢 NORMAL
+  HMSP   0.0516         Rp -3.7B        Rp -46.8B    0.0483  🟢 NORMAL
+  MYOR   0.0302        Rp +10.5B       Rp -273.9B    0.0383  🟢 NORMAL
+  UNTR   0.0983       Rp +469.6B       Rp +947.7B    0.0372  🟢 NORMAL
+  ADRO   0.0491       Rp +467.2B       Rp +505.3B    0.0151  🟢 NORMAL
+
+✅ Cell 14 (Final) completed!
+
+💾 Output files:
+   → sectors_confirmation_dashboard_final.png
+   → sectors_confirmation_final.csv
+
+🏆 Top 5 Combined Risk Scores:
+   🔴 HIGH RISK BBCA | Combined=0.704 | Broker=Rp -2.50Tr | Foreign=Rp -22.81Tr
+   🟡 MEDIUM RISK BMRI | Combined=0.609 | Broker=Rp -4.05Tr | Foreign=Rp -7.23Tr
+   🟡 MEDIUM RISK PGAS | Combined=0.538 | Broker=Rp -24.1B | Foreign=Rp -33.2B
+   🟠 WATCH SMGR | Combined=0.323 | Broker=Rp -17.0B | Foreign=Rp -128.7B
+   🟠 WATCH INCO | Combined=0.296 | Broker=Rp +45.0B | Foreign=Rp +293.4B
+```
+
+<Frame>
+  ![Sectors Anomaly Result](/recipes/gnn-anomaly-detection/images/sectors_confirmation_dashboard_final.png)
+</Frame>
+
+## Interpreting the Combined Results
+
+### The Four Risk Tiers
+
+| Tier | Combined Score | Interpretation |
+| --- | --- | --- |
+| HIGH RISK | \>= 0.65 | GNN flags it, broker distributing, foreign selling. Investigate immediately. |
+| MEDIUM RISK | 0.40 to 0.65 | At least two signals elevated. Monitor closely. |
+| WATCH | 0.20 to 0.40 | One signal elevated or multiple signals slightly elevated. Add to watchlist. |
+| NORMAL | \< 0.20 | All three signals within expected ranges. |
+
+### The GNN Score vs Foreign Flow Scatter Plot
+
+The scatter plot is the most compact representation of the full pipeline. Each stock is a point. The x-axis is its GNN anomaly score. The y-axis is net foreign flow over the period.
+
+<Frame>
+  ![GNN VS Foreign Flow](/recipes/gnn-anomaly-detection/images/gnn-vs-foreign-flow.png)
+</Frame>
+
+The lower-right quadrant (high GNN score, negative foreign flow) is the highest-risk zone. Stocks here are behaving anomalously relative to their graph peers and foreign institutions are reducing exposure.
+
+In the sample run, BMRI and BBCA both appeared in or near this quadrant. BBCA had net foreign outflow exceeding Rp 22 trillion over the period despite not being flagged as a GNN anomaly. Its combined risk score was elevated enough to place it in MEDIUM RISK.
+
+### PGAS: An Interesting Case
+
+PGAS had the highest GNN score (0.938) but a near-zero net foreign flow (Rp -33.2B). This low foreign outflow combined with its extremely high anomaly score pushed it to MEDIUM RISK rather than HIGH RISK. The implication: PGAS is behaving very unusually relative to its graph peers, but foreign institutions are not reacting strongly. This is consistent with the feature profile: PGAS showed price-without-volume anomaly (zero volume spikes), which may reflect corporate-event-driven price moves that foreign desks were not actively trading.
+
+## Complete Results: Sample Run
+
+The following table shows the combined scores from a sample run on 28 IDX stocks over a 180-day window ending June 2026.
+
+| Ticker | GNN Score | Broker | Foreign | Combined | Risk |
+| --- | --- | --- | --- | --- | --- |
+| BBCA | 0.5139 | Rp -2.5Tr | Rp -22.8Tr | 0.640 | MEDIUM RISK |
+| PGAS | 0.9376 | Rp -24B | Rp -33B | 0.635 | MEDIUM RISK |
+| BMRI | 0.5740 | Rp -4.0Tr | Rp -7.2Tr | 0.510 | MEDIUM RISK |
+| SMGR | 0.5785 | Rp -17B | Rp -128B | 0.437 | MEDIUM RISK |
+| INCO | 0.4898 | Rp \+45B | Rp \+293B | 0.384 | WATCH |
+| INDF | 0.3898 | Rp \+38B | Rp -749B | 0.339 | WATCH |
+
+Note that BBCA, despite not meeting the 90th percentile threshold for a GNN anomaly flag, ranked first in combined risk score. Its net foreign outflow of Rp 22 trillion was the largest in the universe, which drove its combined score above the MEDIUM RISK line.
+
+<Warning>
+  Combined scores should be interpreted directionally, not as precise probabilities. The weights (50/25/25) are a reasonable default but can be adjusted based on your investment thesis. If you weight broker flow more heavily in your framework, shift the weights to 40/40/20.
+</Warning>
+
+## Common Errors and Fixes
+
+### Broker values showing as zero
+
+The zero-sum trap described earlier. Sum of all buyer net values plus sum of all seller net values will cancel. Use dominance score (top buyer vs top distributor) instead.
+
+### NaN in combined\_risk\_score
+
+Usually caused by running `.merge()` on a DataFrame that already has the column from a previous run. pandas does not overwrite existing columns on merge; it creates `column_x` and `column_y` variants. Use `.map()` instead:
+
+```python
+# Correct approach: always use .map() not .merge() for signal injection
+confirm_df["broker_net_total"] = confirm_df["ticker"].map(
+    broker_result_all_df.set_index("ticker")["broker_net_total"]
+)
+```
+
+### HTTP 400 on broker endpoint
+
+Check that `START_DATE` and `END_DATE` are within the API's supported range. The `/v2/broker-summary/{symbol}/top/` endpoint has no documented date limit, but very long periods (over 365 days) may return errors or empty results depending on your API plan.
+
+### Identical anomaly scores for two tickers
+
+This always indicates zero-feature nodes (both tickers had no data so both were processed as identical zero vectors). Remove them with the Cell 11 audit before running broker and foreign flow.
+
+## Summary
+
+Across the three parts of this recipe, we built a complete pipeline for detecting and validating stock anomalies on the IDX:
+
+**Part 1** established the data and model foundation: fetching 180 days of price and volume data via the Sectors API, engineering 11 node features per stock, building a return correlation graph, and defining the Graph Variational Autoencoder.
+
+**Part 2** trained the model, scored each stock by its reconstruction error, clustered anomalies in embedding space, and visualized the results across nine panels.
+
+**Part 3** validated GNN signals with independent market data: broker dominance scores from `/v2/broker-summary/{symbol}/top/` and daily foreign flow from `/v2/foreign-flow/{symbol}/`. A combined adaptive risk score integrated all three signals.
+
+The key insight across all three parts: no single signal is sufficient. A high GNN score with no broker or foreign flow confirmation may reflect a real but internally-driven event. A high GNN score with broker distribution and foreign outflow is a convergence of evidence that warrants serious investigation.
