@@ -6872,6 +6872,62 @@
                 "x-mdx-path": "v2/singapore/transaction/short-sell"
             }
         },
+        "/v2/sgx/subsectors/": {
+            "get": {
+                "operationId": "sgx_subsectors_list",
+                "description": "Returns all available SGX sector/subsector pairs as kebab-case slugs. Use these values as inputs to `sector` and `sub_sector` parameters.\n\n**Used by:** [SGX Companies](../singapore/sgx-companies)\n\n<Info>Costs 1 API credit.</Info>",
+                "summary": "SGX Subsectors",
+                "tags": [
+                    "SGX - Helper Lists"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SgxSubsectorItem"
+                                    }
+                                },
+                                "examples": {
+                                    "SGXSubsectorsList": {
+                                        "value": [
+                                            {
+                                                "sector": "infrastructures",
+                                                "subsector": "telecommunication"
+                                            }
+                                        ],
+                                        "summary": "SGX Subsectors list"
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Array of sector/subsector pairs."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/singapore/helper-list/sgx-subsectors"
+            }
+        },
         "/v2/sgx/tags/": {
             "get": {
                 "operationId": "sgx_tags_retrieve",
@@ -10971,6 +11027,23 @@
                     "previous_offset",
                     "showing",
                     "total_count"
+                ]
+            },
+            "SgxSubsectorItem": {
+                "type": "object",
+                "properties": {
+                    "sector": {
+                        "type": "string",
+                        "description": "Sector slug (kebab-case)."
+                    },
+                    "subsector": {
+                        "type": "string",
+                        "description": "Subsector slug (kebab-case)."
+                    }
+                },
+                "required": [
+                    "sector",
+                    "subsector"
                 ]
             },
             "SgxTagListResponse": {
