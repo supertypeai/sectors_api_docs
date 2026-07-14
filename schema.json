@@ -95,7 +95,8 @@
                             "Example": {
                                 "value": "2025-05-01"
                             }
-                        }
+                        },
+                        "x-max-days": 14
                     },
                     {
                         "in": "query",
@@ -241,7 +242,8 @@
                             "Example": {
                                 "value": "2025-05-01"
                             }
-                        }
+                        },
+                        "x-max-days": 90
                     },
                     {
                         "in": "query",
@@ -412,7 +414,8 @@
                             "Example": {
                                 "value": "2025-05-01"
                             }
-                        }
+                        },
+                        "x-max-days": 14
                     },
                     {
                         "in": "query",
@@ -558,7 +561,8 @@
                             "Example": {
                                 "value": "2025-05-01"
                             }
-                        }
+                        },
+                        "x-max-days": 90
                     },
                     {
                         "in": "query",
@@ -4466,7 +4470,8 @@
                             "Example": {
                                 "value": "2025-05-01"
                             }
-                        }
+                        },
+                        "x-max-days": 90
                     },
                     {
                         "in": "query",
@@ -5066,7 +5071,8 @@
                             "Example": {
                                 "value": "2025-05-01"
                             }
-                        }
+                        },
+                        "x-max-days": 90
                     },
                     {
                         "in": "query",
@@ -5303,7 +5309,8 @@
                             "Example": {
                                 "value": "2021-01-01"
                             }
-                        }
+                        },
+                        "x-max-days": 90
                     },
                     {
                         "in": "query",
@@ -5432,7 +5439,8 @@
                             "Example": {
                                 "value": "2025-05-01"
                             }
-                        }
+                        },
+                        "x-max-days": 90
                     },
                     {
                         "in": "query",
@@ -6719,7 +6727,7 @@
                                 "Trader"
                             ]
                         },
-                        "description": "Filter by company type. E.g. `Holding`, `Subsidiary`.",
+                        "description": "Filter by company type.",
                         "examples": {
                             "Example": {
                                 "value": "Holding"
@@ -7878,7 +7886,11 @@
                         "in": "query",
                         "name": "area_type",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "enum": [
+                                "WIUP",
+                                "WIUPK"
+                            ]
                         },
                         "description": "Filter by area type (e.g., `WIUPK`). Case-insensitive.",
                         "examples": {
@@ -8178,10 +8190,8 @@
                             "enum": [
                                 "Aceh",
                                 "Bali",
-                                "Bangka Belitung",
                                 "Banten",
                                 "Bengkulu",
-                                "Di Yogyakarta",
                                 "Gorontalo",
                                 "Jambi",
                                 "Jawa Barat",
@@ -8213,7 +8223,8 @@
                                 "Sulawesi Utara",
                                 "Sumatera Barat",
                                 "Sumatera Selatan",
-                                "Sumatera Utara"
+                                "Sumatera Utara",
+                                "Yogyakarta"
                             ]
                         },
                         "description": "Filter by province. Exact match.",
@@ -8336,7 +8347,15 @@
                         "in": "query",
                         "name": "license_type",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "enum": [
+                                "IPR",
+                                "IUP",
+                                "IUPK",
+                                "KK",
+                                "PKP2B",
+                                "SIPB"
+                            ]
                         },
                         "description": "Filter by license type (e.g., `IUP`, `IUPK`). Case-insensitive.",
                         "examples": {
@@ -8349,7 +8368,11 @@
                         "in": "query",
                         "name": "activity",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "enum": [
+                                "Eksplorasi",
+                                "Operasi Produksi"
+                            ]
                         },
                         "description": "Filter by activity stage (e.g., `Eksplorasi`, `Operasi Produksi`). Case-insensitive.",
                         "examples": {
@@ -8624,10 +8647,7 @@
                                 "Sulawesi Utara",
                                 "Sumatera Barat",
                                 "Sumatera Selatan",
-                                "Sumatera Utara",
-                                "Sumatra Barat",
-                                "Sumatra Selatan",
-                                "Sumatra Utara"
+                                "Sumatera Utara"
                             ]
                         },
                         "description": "Exact province name (e.g., `Kalimantan Timur`). Case-insensitive.",
@@ -8909,7 +8929,31 @@
                         "in": "query",
                         "name": "province",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "enum": [
+                                "Aceh",
+                                "Banten",
+                                "Gorontalo",
+                                "Jambi",
+                                "Jawa Timur",
+                                "Kalimantan Selatan",
+                                "Kalimantan Tengah",
+                                "Kalimantan Timur",
+                                "Kalimantan Utara",
+                                "Maluku",
+                                "Maluku Utara",
+                                "Nusa Tenggara Barat",
+                                "Papua",
+                                "Papua Barat",
+                                "Sulawesi Barat",
+                                "Sulawesi Selatan",
+                                "Sulawesi Tengah",
+                                "Sulawesi Tenggara",
+                                "Sulawesi Utara",
+                                "Sumatera Barat",
+                                "Sumatera Selatan",
+                                "Sumatera Utara"
+                            ]
                         },
                         "description": "Filter by exact province name (e.g., `Kalimantan Timur`).",
                         "examples": {
@@ -9405,7 +9449,8 @@
                             "Example": {
                                 "value": "2025-05-01"
                             }
-                        }
+                        },
+                        "x-max-days": 90
                     },
                     {
                         "in": "query",
@@ -9601,7 +9646,18 @@
                         "in": "query",
                         "name": "commodity_type",
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "enum": [
+                                "Bauxite",
+                                "Coal",
+                                "Copper",
+                                "Gold",
+                                "Iron",
+                                "Nickel",
+                                "Non-Metallic Mineral",
+                                "Sand, Stone, Gravel",
+                                "Tin"
+                            ]
                         },
                         "description": "**Mining only.** Filter by commodity type. E.g. `Coal`, `Nickel`.",
                         "examples": {
@@ -10945,7 +11001,8 @@
                             "Example": {
                                 "value": "2025-05-01"
                             }
-                        }
+                        },
+                        "x-max-days": 90
                     },
                     {
                         "in": "query",
@@ -14498,7 +14555,7 @@
                     },
                     "company_type": {
                         "type": "string",
-                        "description": "Company type (e.g. Holding, Subsidiary)."
+                        "description": "Company type (e.g. Holding, Mine Owner)."
                     },
                     "operation_province": {
                         "type": "string",
@@ -14650,7 +14707,7 @@
                     },
                     "company_type": {
                         "type": "string",
-                        "description": "E.g. Holding, Subsidiary, Mine Owner."
+                        "description": "E.g. Holding, Mine Owner."
                     },
                     "key_operation": {
                         "type": "string",
