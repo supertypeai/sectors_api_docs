@@ -1,0 +1,536 @@
+---
+title: "Commodity-to-Equity: How Sensitive Are IDX Mining Stocks to Commodity Prices?"
+sidebarTitle: "1. Commodity-to-Equity Sensitivity"
+description: "By: [Alya Dwinanda](https://github.com/flytosevensky) · July 17, 2026"
+---
+
+## Summary
+
+Mining stocks on IDX (think coal names like ADRO, PTBA, and ITMG, or nickel names like ANTM, INCO, and NCKL) do not move mainly because of the same things that move a bank or a consumer goods company. Their earnings are driven, in large part, by something that happens far outside the company: the world price of the commodity they dig up and sell.
+
+This recipe uses the **Sectors API v2 Mining API**, a data source that (as of this writing) has not yet been covered by any other Sectors recipe, and links it directly to IDX equity data. You will:
+
+1. Discover which commodities Sectors has price history for, and pull that history
+2. Map a set of commodities to the IDX-listed mining companies most exposed to them
+3. Pull each company's quarterly revenue and earnings, and each commodity's price history
+4. Line the two series up by quarter and compute a simple **"commodity beta"**, a rough sensitivity score for how much a company's earnings tend to move when the underlying commodity price moves
+5. Confirm the story using mining-specific fundamentals (production volume, revenue breakdown by commodity) instead of relying on the stock price alone
+6. Add national-level context (total production, export destinations) so you understand the supply side too
+
+**Who this is for:** Analysts and content creators covering IDX mining and energy names, who want to go beyond "coal prices are up, so ADRO should be up" and actually check the relationship with real data.
+
+**What you'll produce:** A Python notebook that ranks IDX mining stocks by commodity sensitivity, a chart overlaying commodity price against company earnings, and a small reusable toolkit for pulling and chunking Mining API data.
+
+<Warning>
+  This recipe is for education and content purposes only. It is not financial advice. Commodity prices, exchange rates, hedging policies, and company-specific costs all affect real-world results, and a statistical relationship in the past does not guarantee it will hold in the future. Always do your own research before making an investment decision.
+</Warning>
+
+## Why This Matters
+
+The Sectors Mining API covers company-level operating data (licenses, sites, production, financials) and market-level commodity data (prices, national production, export destinations) that simply does not exist in a typical equity data feed. Most public discussion of "commodity plays" on IDX stays qualitative: an article says nickel prices fell, so nickel miners should have had a bad quarter, without ever actually checking the size of the effect or which company was hit hardest.
+
+Two real, publicly reported examples show why this matters. In one recent year, ANTM's quarterly net profit reportedly dropped very sharply year-on-year, and public reporting tied that mainly to a steep fall in nickel ore sales revenue that quarter. In a separate year, ITMG's annual net profit reportedly fell by close to half, and public reporting tied that mainly to a lower average selling price for coal, even though sales volume actually increased. Both stories are consistent with the same underlying idea: for a mining company, the price of the commodity it sells can matter more to profit than how much it actually produces.
+
+Rather than repeating headlines like these, this recipe shows you how to pull the live Sectors data yourself and check the relationship directly, for whichever commodities and companies you care about right now.
+
+<Note>
+  Cross-table Mining API coverage (production, exports, reserves, sites) is currently limited to **Coal**, **Gold**, **Nickel**, and **Copper**, with partial data for Silver, Cobalt, and Bauxite. Commodity _price_ history has broader coverage. Always call the commodities list endpoint first to check what is actually available before you build a workflow around a specific commodity.
+</Note>
+
+## Prerequisites
+
+| Requirement | Details |
+| --- | --- |
+| Python version | 3.9 or higher |
+| Sectors API key | Get yours at [sectors.app/api](https://sectors.app/api) |
+| Python packages | `requests`, `pandas`, `numpy`, `matplotlib` |
+| Environment | Google Colab, Jupyter, or any Python environment |
+| Background knowledge | Basic idea of revenue, net profit, and simple correlation |
+
+## Step-by-Step Guide
+
+### Install & Import
+
+```python
+!pip install requests pandas numpy matplotlib -q
+
+import requests
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+```
+
+### Configuration
+
+```python
+API_KEY = "your_sectors_api_key_here"  # get this from sectors.app/api
+BASE_URL = "https://api.sectors.app/v2"
+headers = {"Authorization": API_KEY}
+
+# Which commodity maps to which IDX-listed mining companies.
+# We will confirm these tickers against the Mining API in Step 2,
+# rather than trusting this list blindly.
+COMMODITY_EQUITY_MAP = {
+    "Coal": ["ADRO", "PTBA", "ITMG", "AADI"],
+    "Nickel": ["ANTM", "INCO", "NCKL", "MBMA"],
+    "Gold": ["ANTM", "MDKA", "BRMS"],
+}
+```
+
+### Step 1: Discover Available Commodities
+
+Always start with the [List Commodities](https://docs.sectors.app/api-references/v2/mining/commodities-trade/commodities) endpoint. It tells you exactly which commodities have price data, and how far back that data goes, so you never build a query around a commodity name that isn't actually covered.
+
+```python
+def list_commodities():
+    url = f"{BASE_URL}/mining/commodities/"
+    r = requests.get(url, headers=headers)
+    r.raise_for_status()
+    return pd.DataFrame(r.json())
+
+
+commodities = list_commodities()
+print(commodities.to_string(index=False))
+```
+
+Expected result:
+
+```text
+                  name  data_points earliest_date latest_date
+                  Gold             703    1968-01-01  2026-07-01
+                Silver      	    703    1968-01-01  2026-07-01
+                  Coal             194    2011-01-01  2026-02-15
+              Aluminum           113    2017-10-01  2026-02-15
+              Chromium           113    2017-10-01  2026-02-15
+                Cobalt            113    2017-10-01  2026-02-15
+                Copper            113    2017-10-01  2026-02-15
+  Gold as a co-product         113    2017-10-01  2026-02-15
+                  Iron             113    2017-10-01  2026-02-15
+                  Lead             113    2017-10-01  2026-02-15
+             Manganese           113    2017-10-01  2026-02-15
+                Nickel            113    2017-10-01  2026-02-15
+Silver as a co-product        113    2017-10-01  2026-02-15
+              Titanium           113    2017-10-01  2026-02-15
+                  Zinc             113    2017-10-01  2026-02-15
+          Coal (HBA 1)            48    2023-03-01  2026-02-15
+          Coal (HBA 2)            48    2023-03-01  2026-02-15
+          Coal (HBA 3)            43    2023-08-01  2026-02-15
+```
+
+### Step 2: Confirm the IDX Ticker Behind Each Mining Company
+
+Mining company records in Sectors are indexed by `slug` (for example `pt-adaro-andalan-indonesia-tbk`), not by IDX ticker. Some slugs correspond directly to a listed company (the detail endpoint returns a `symbol` field), while others are private subsidiaries whose listed _parent_ is one level up in the ownership tree. This helper checks both places instead of assuming.
+
+```python
+def find_mining_companies(keyword):
+    """Search the Mining API by company name, symbol, or key operation keyword."""
+    url = f"{BASE_URL}/mining/companies/"
+    r = requests.get(url, headers=headers, params={"keyword": keyword, "limit": 10})
+    r.raise_for_status()
+    return r.json()["results"]
+
+
+def resolve_slug_and_symbol(keyword):
+    """
+    Search for a mining company by keyword, then confirm the IDX ticker it
+    (or its listed parent) trades under. Returns (slug, symbol) or (None, None)
+    if nothing usable was found.
+    """
+    candidates = find_mining_companies(keyword)
+    if not candidates:
+        return None, None
+
+    slug = candidates[0]["slug"]
+
+    detail = requests.get(f"{BASE_URL}/mining/companies/{slug}/", headers=headers).json()
+    if detail.get("symbol"):
+        return slug, detail["symbol"]
+
+    # Not listed itself, check the ownership tree for a listed parent
+    ownership = requests.get(f"{BASE_URL}/mining/companies/ownership/{slug}/", headers=headers).json()
+    for parent in ownership.get("parents", []):
+        if parent.get("symbol"):
+            return slug, parent["symbol"]
+
+    return slug, None
+
+
+# Example: confirm the slug and ticker for one company before trusting the whole map
+slug, symbol = resolve_slug_and_symbol("adaro")
+print(f"slug={slug}, resolved symbol={symbol}")
+```
+
+Expected result:
+
+```text
+slug=pt-adaro-andalan-indonesia-tbk, resolved symbol=AADI.JK
+```
+
+<Note>
+  Run `resolve_slug_and_symbol` for every name in `COMMODITY_EQUITY_MAP` before moving on, and correct the map by hand if a keyword search returns an unexpected company. Mining group corporate structures change (spin-offs, holding company reorganizations), so do not assume a slug found today will always map to the same ticker.
+</Note>
+
+### Step 3: Pull Commodity Price History (Chunked)
+
+The [Commodity Price History](https://docs.sectors.app/api-references/v2/mining/commodities-trade/commodity-price) endpoint caps every request at a **3-year window**. To build a longer history for a proper sensitivity study, chunk the request, the same pattern used for the daily transaction endpoint elsewhere in these recipes.
+
+```python
+def get_commodity_price_history(commodity_name, start_year, end_year):
+    """
+    /v2/mining/commodities/{commodity_name}/price/ caps each request at 3 years.
+    This walks a longer range in 3-year chunks and concatenates the results.
+    """
+    frames = []
+    cursor = start_year
+    url = f"{BASE_URL}/mining/commodities/{commodity_name}/price/"
+
+    while cursor <= end_year:
+        chunk_end = min(cursor + 2, end_year)
+        r = requests.get(url, headers=headers, params={"start_year": cursor, "end_year": chunk_end})
+        if r.status_code == 200:
+            frames.append(pd.DataFrame(r.json()))
+        time.sleep(0.2)
+        cursor = chunk_end + 1
+
+    if not frames:
+        return pd.DataFrame()
+    prices = pd.concat(frames, ignore_index=True).drop_duplicates(subset="date")
+    prices["date"] = pd.to_datetime(prices["date"])
+    return prices.sort_values("date")
+
+
+coal_price = get_commodity_price_history("coal", start_year=2019, end_year=2026)
+coal_price.tail()
+```
+
+Expected result:
+
+|  | Name | Date | price\_usd\_per\_ton |
+| --- | --- | --- | --- |
+| 93 | Coal | 2025-12-15 | 100.81 |
+| 94 | Coal | 2026-01-01 | 103.30 |
+| 95 | Coal | 2026-01-15 | 104.03 |
+| 96 | Coal | 2026-02-01 | 106.11 |
+| 97 | Coal | 2026-02-15 | 102.87 |
+
+### Step 4: Pull Equity-Side Quarterly Financials
+
+```python
+def get_quarterly_financials(symbol, n_quarters=24):
+    """
+    Pull up to n_quarters of quarterly revenue and earnings for one IDX symbol.
+    Note this endpoint costs 1 API credit per quarter returned, so start small
+    (n_quarters=8 to 12) while you are still testing your code.
+    """
+    url = f"{BASE_URL}/financials/quarterly/{symbol}/"
+    r = requests.get(url, headers=headers, params={"n_quarters": n_quarters})
+    if r.status_code != 200:
+        return pd.DataFrame()
+    quarterly = pd.DataFrame(r.json())
+    quarterly["date"] = pd.to_datetime(quarterly["date"])
+    return quarterly.sort_values("date")
+
+
+itmg_quarterly = get_quarterly_financials("ITMG", n_quarters=24)
+itmg_quarterly[["date", "revenue", "earnings"]].tail()
+```
+
+Expected result:
+
+|  | Date | Revenue | Earnings |
+| --- | --- | --- | --- |
+| 4 | 2025-03-31 | 8007864486960 | 1078196230020 |
+| 3 | 2025-06-30 | 7090978749000 | 422163992310 |
+| 2 | 2025-09-30 | 7486777064000 | 659262485440 |
+| 1 | 2025-12-31 | 8567243245860 | 1010112306840 |
+| 0 | 2026-03-31 | 8457843700620 | 929351932440 |
+
+### Step 5: Align Commodity Price to Company Earnings, by Quarter
+
+Commodity prices in Sectors are monthly (or bi-weekly for the most recent coal entries); company financials are quarterly. Resample the commodity series to a quarterly average, then merge on the calendar quarter.
+
+```python
+def to_quarterly_average(price_df, value_col):
+    df = price_df.copy()
+    df["year_quarter"] = pd.PeriodIndex(df["date"], freq="Q")
+    return df.groupby("year_quarter")[value_col].mean().reset_index()
+
+
+def build_sensitivity_table(company_df, commodity_df, commodity_value_col="price_usd_per_ton"):
+    """
+    Merge a company's quarterly financials with a commodity's quarterly average
+    price, then compute year-over-year change for both series so the units
+    are comparable (percent growth vs. percent growth, not rupiah vs. dollars).
+    """
+    company = company_df.copy()
+    company["year_quarter"] = pd.PeriodIndex(company["date"], freq="Q")
+
+    commodity_q = to_quarterly_average(commodity_df, commodity_value_col)
+
+    merged = company.merge(commodity_q, on="year_quarter", how="inner").sort_values("year_quarter")
+    merged["commodity_price_yoy"] = merged[commodity_value_col].pct_change(4)
+    merged["earnings_yoy"] = merged["earnings"].pct_change(4)
+    merged["revenue_yoy"] = merged["revenue"].pct_change(4)
+    return merged
+
+
+itmg_sensitivity = build_sensitivity_table(itmg_quarterly, coal_price)
+itmg_sensitivity[["year_quarter", "commodity_price_yoy", "revenue_yoy", "earnings_yoy"]].dropna()
+```
+
+Expected result:
+
+| Index | Year Quarter | Commodity Price YoY | Revenue YoY | Earnings YoY |
+| :-- | :-- | :-- | :-- | :-- |
+| 4 | 2021Q2 | 0.5386967641498945 | 0.7043714054717685 | 5.269293492447478 |
+| 5 | 2021Q3 | 1.6090705634544493 | 1.5228945256302442 | 12.026833990012307 |
+| 6 | 2021Q4 | 2.224513104111564 | 1.8978611340817038 | -74.20573475430947 |
+| 7 | 2022Q1 | 1.2191455058444172 | 1.218165006998837 | 3.9933068476756945 |
+| 8 | 2022Q2 | 2.208491418247516 | 1.0401885084194489 | 2.3536260509714007 |
+| 9 | 2022Q3 | 1.4215001135302874 | 0.9641813590581887 | 1.992803974857952 |
+| 10 | 2022Q4 | 0.7162537516544569 | 0.47799851257779813 | 0.6388900582108445 |
+| 11 | 2023Q1 | 0.5717165846304739 | 0.11760558525969111 | -0.10626670042198627 |
+| ... | ... | ... | ... | ... |
+
+### Step 6: Compute a Simple "Commodity Beta" for Each Company
+
+A commodity beta above 1 means the company's earnings tend to swing by _more_ than the commodity price does. A number close to 0 means earnings barely react to the commodity at all, which could mean strong hedging, a diversified revenue base, or simply a weak real-world link.
+
+```python
+def compute_commodity_beta(sensitivity_df, x_col="commodity_price_yoy", y_col="earnings_yoy"):
+    """
+    Fit a simple straight line (y = slope * x + intercept) between commodity
+    price growth and earnings growth. The slope is the "commodity beta".
+    Returns None if there are not enough clean data points to fit a line.
+    """
+    clean = sensitivity_df.dropna(subset=[x_col, y_col])
+    if len(clean) < 4:
+        return None
+    slope, intercept = np.polyfit(clean[x_col], clean[y_col], 1)
+    correlation = clean[x_col].corr(clean[y_col])
+    return {"beta": round(slope, 2), "correlation": round(correlation, 2), "n_quarters": len(clean)}
+
+
+result = compute_commodity_beta(itmg_sensitivity)
+print(f"ITMG commodity beta vs. coal price: {result}")
+```
+
+Now loop this across your whole map to build a ranking table.
+
+```python
+def build_beta_ranking(commodity_equity_map, start_year=2019, end_year=2026):
+    rows = []
+    price_cache = {}
+
+    for commodity, symbols in commodity_equity_map.items():
+        commodity_key = commodity.lower()
+        if commodity_key not in price_cache:
+            price_cache[commodity_key] = get_commodity_price_history(commodity_key, start_year, end_year)
+        commodity_df = price_cache[commodity_key]
+        if commodity_df.empty:
+            continue
+
+        for symbol in symbols:
+            quarterly = get_quarterly_financials(symbol, n_quarters=24)
+            time.sleep(0.2)
+            if quarterly.empty:
+                continue
+            sensitivity = build_sensitivity_table(quarterly, commodity_df)
+            beta_result = compute_commodity_beta(sensitivity)
+            if beta_result is None:
+                continue
+            rows.append({"symbol": symbol, "commodity": commodity, **beta_result})
+
+    return pd.DataFrame(rows).sort_values("beta", ascending=False)
+
+
+beta_ranking = build_beta_ranking(COMMODITY_EQUITY_MAP)
+beta_ranking
+```
+
+Expected result:
+
+|  | Symbol | Commodity | Beta | Correlation | N Quarters |
+| --- | --- | --- | --- | --- | --- |
+| 3 | AADI | Coal | 4.24 | 0.59 | 4 |
+| 0 | ADRO | Coal | 2.67 | 0.56 | 20 |
+| 6 | NCKL | Nickel | 1.92 | 0.89 | 9 |
+| 5 | INCO | Nickel | 1.52 | 0.38 | 17 |
+| 1 | PTBA | Coal | 1.49 | 0.74 | 20 |
+| 8 | ANTM | Gold | 1.32 | 0.11 | 20 |
+| 4 | ANTM | Nickel | -1.71 | -0.21 | 20 |
+| 2 | ITMG | Coal | -6.93 | -0.37 | 20 |
+| 9 | MDKA | Gold | -7.50 | -0.34 | 20 |
+| 10 | BRMS | Gold | -9.70 | -0.22 | 20 |
+| 7 | MBMA | Nickel | -26.45 | -0.44 | 7 |
+
+### Step 7: Confirm With Mining-Side Fundamentals
+
+A stock-based commodity beta can be noisy. Confirm the story using the company's actual operating data: production volume and, where available, its revenue breakdown by segment.
+
+```python
+def get_mining_financials(slug, year=None):
+    """
+    Annual financials (in USD millions) from the Mining API, for the
+    company's mining operations specifically, not the IDX-listed group
+    as a whole if they differ.
+    """
+    url = f"{BASE_URL}/mining/companies/financials/{slug}/"
+    params = {"year": year} if year else {}
+    r = requests.get(url, headers=headers, params=params)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+
+def get_mining_performance(slug, commodity_type=None, year=None):
+    """Production volume, sales volume, and reserves for a mining company."""
+    url = f"{BASE_URL}/mining/companies/performance/{slug}/"
+    params = {}
+    if commodity_type:
+        params["commodity_type"] = commodity_type
+    if year:
+        params["year"] = year
+    r = requests.get(url, headers=headers, params=params)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+
+def get_revenue_segments(symbol, financial_year=None):
+    """
+    Revenue broken down by source (for example, 'Coal (Export)' vs. 'Logistics').
+    Useful to check how much of a company's revenue is truly commodity-driven,
+    versus, say, trading or services income that would dilute the sensitivity.
+    """
+    url = f"{BASE_URL}/company/get-segments/{symbol}/"
+    params = {"financial_year": financial_year} if financial_year else {}
+    r = requests.get(url, headers=headers, params=params)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+
+adaro_slug, _ = resolve_slug_and_symbol("adaro andalan")
+financials = get_mining_financials(adaro_slug)
+performance = get_mining_performance(adaro_slug, commodity_type="Coal")
+segments = get_revenue_segments("AADI")
+
+print("Mining-side financials:", financials)
+print("Production/sales performance:", performance)
+print("Equity-side revenue segments:", segments)
+```
+
+### Step 8: Add National-Level Context
+
+Company-level results sit inside a bigger national picture. The [Total Commodity Production](https://docs.sectors.app/api-references/v2/mining/sites-production/commodity-production) and [Top Export Destinations](https://docs.sectors.app/api-references/v2/mining/commodities-trade/export-destination) endpoints give you that context without needing a single extra web search.
+
+```python
+def get_total_production(commodity_type):
+    url = f"{BASE_URL}/mining/total-production/"
+    r = requests.get(url, headers=headers, params={"commodity_type": commodity_type})
+    if r.status_code != 200:
+        return pd.DataFrame()
+    return pd.DataFrame(r.json())
+
+
+def get_export_destinations(commodity_type, year, limit=10):
+    url = f"{BASE_URL}/mining/exports/"
+    r = requests.get(url, headers=headers, params={
+        "commodity_type": commodity_type, "year": year, "limit": limit,
+    })
+    if r.status_code != 200:
+        return pd.DataFrame()
+    return pd.DataFrame(r.json())
+
+
+coal_production = get_total_production("Coal")
+coal_export_destinations = get_export_destinations("Coal", year=2024)
+
+print(coal_production.to_string(index=False))
+print(coal_export_destinations.to_string(index=False))
+```
+
+Expected result:
+
+```text
+```
+
+### Step 9: Visualize Commodity Price vs. Company Earnings
+
+```python
+fig, ax1 = plt.subplots(figsize=(10, 5))
+
+ax1.plot(itmg_sensitivity["year_quarter"].astype(str), itmg_sensitivity["earnings"] / 1e12,
+         color="tab:blue", marker="o", label="ITMG quarterly earnings (IDR trillion)")
+ax1.set_ylabel("ITMG quarterly earnings (IDR trillion)", color="tab:blue")
+ax1.tick_params(axis="x", rotation=45)
+
+ax2 = ax1.twinx()
+ax2.plot(itmg_sensitivity["year_quarter"].astype(str), itmg_sensitivity["price_usd_per_ton"],
+         color="tab:orange", marker="s", label="Coal price (USD/ton)")
+ax2.set_ylabel("Coal price (USD/ton)", color="tab:orange")
+
+fig.suptitle("ITMG quarterly earnings vs. coal price")
+fig.tight_layout()
+plt.savefig("itmg_vs_coal_price.png", dpi=150)
+plt.show()
+
+# Ranking chart across all companies in your map
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.barh(beta_ranking["symbol"], beta_ranking["beta"], color="tab:green")
+ax.axvline(0, color="black", linewidth=0.8)
+ax.set_xlabel("Commodity beta (earnings YoY sensitivity)")
+ax.set_title("IDX mining stocks ranked by commodity sensitivity")
+plt.tight_layout()
+plt.savefig("commodity_beta_ranking.png", dpi=150)
+plt.show()
+```
+
+<Frame>
+  ![Commodity Beta Ranking](/recipes/stock-investing-and-finance/images/commodity_beta_ranking.png)
+</Frame>
+
+<Frame>
+  ![ITMG VS Coal Price](/recipes/stock-investing-and-finance/images/itmg_vs_coal_price.png)
+</Frame>
+
+## How to Interpret Your Results
+
+- **A high commodity beta with a high correlation** is the strongest case for "this stock's earnings really do move with the commodity." Treat a high beta with a _low_ correlation more carefully, since it may be driven by one or two noisy quarters rather than a real pattern.
+- **Compare the stock-level beta against the revenue segment breakdown from Step 7.** If a company's beta looks low but its segment data shows over 80% of revenue coming directly from the commodity, look for another explanation, such as hedging contracts, currency effects, or a cost structure that also moves with the commodity (so profit is more stable than revenue).
+- **Use the national production and export data from Step 8 as a sanity check**, not a substitute for company data. A commodity's national production falling does not automatically mean every producer's output fell by the same amount; check the individual company's own performance data before assuming.
+- **Small `n_quarters` samples produce noisy betas.** Twenty-four quarters (six years) is a reasonable starting point; fewer than twelve quarters should be treated as a rough first look, not a final answer.
+
+## Common Mistakes
+
+**Assuming a mining company's slug is also its IDX ticker.** Many mining entities in the Mining API are private subsidiaries. Always resolve the slug to a symbol with `resolve_slug_and_symbol`, and check the ownership tree if the `symbol` field on the company detail comes back empty.
+
+**Requesting more than 3 years of commodity price history in one call.** The API returns a 400 error above that range. Always chunk with `get_commodity_price_history`.
+
+**Mixing IDR and USD without converting.** Equity financials from `/v2/financials/quarterly/` are in IDR; Mining API financials from `/v2/mining/companies/financials/{slug}/` are in USD millions. Comparing year-over-year percentage changes (as this recipe does) sidesteps the currency issue, but if you ever compare absolute values side by side, convert them to the same currency first.
+
+**Forgetting the credit cost of quarterly financials.** This endpoint costs 1 API credit per quarter returned, so pulling `n_quarters=24` for ten companies is 240 credits in one notebook run. Start with a smaller `n_quarters` while developing your code, and only scale up once the logic is confirmed.
+
+**Treating correlation as causation.** A strong statistical relationship between a commodity price and a company's earnings does not rule out a third factor (for example, a broader commodities supercycle affecting the whole market, or a shared currency effect) driving both at once.
+
+## Extensions
+
+**Extend to Copper and Silver.** The Mining API's cross-table coverage includes Copper alongside Coal, Gold, and Nickel. Add copper-exposed names and re-run the same pipeline.
+
+**Add a currency overlay.** Pull USD/IDR exchange rate data from a separate source and add it as a third series in Step 9's chart, since a weaker rupiah can offset (or amplify) a falling USD-denominated commodity price for an exporter.
+
+**Turn the beta ranking into a screener.** Combine `beta_ranking` with the [Companies Screener](https://docs.sectors.app/api-references/v2/indonesia/screener/companies)'s `where` clause (for example, filtering on `pe < pe_peer_avg`) to find mining stocks that look statistically cheap relative to peers _and_ have a confirmed link to a commodity you have a view on.
+
+**Build a live dashboard.** Wire the functions in this recipe into a Streamlit app, following the same pattern as the [SectorScan recipe](/recipes/build-python-app/sectorscan/01-sectorscan-part1), so the beta ranking refreshes automatically whenever new quarterly financials or commodity prices land.
+
+**Widen the ownership check.** Use the [Mining Company Ownership](https://docs.sectors.app/api-references/v2/mining/companies/mining-companies-ownership) endpoint recursively (parents of parents) for group structures with more than one holding layer, common among the larger Indonesian mining conglomerates.
+
+## References
+
+- [Sectors API v2 Documentation](https://docs.sectors.app) — official reference for all v2 endpoints, including the full Mining API
+- [Sectors App](https://sectors.app) — web interface for exploring IDX financials without code
+- [ESDM (Kementerian Energi dan Sumber Daya Mineral)](https://www.esdm.go.id) — Indonesia's Ministry of Energy and Mineral Resources, one of the two production/export data sources the Mining API draws on
+- [BPS (Badan Pusat Statistik)](https://www.bps.go.id) — Indonesia's national statistics agency, the other production/export data source
+- [IDX Fact Book](https://www.idx.co.id) — Indonesia Stock Exchange annual reference for listed company data
