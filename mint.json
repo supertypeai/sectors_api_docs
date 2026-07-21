@@ -651,6 +651,30 @@
     {
       "source": "/api-references/v2/mineral-companies-performance",
       "destination": "/api-references/v2/mining/companies/mining-companies-performance"
+    },
+    {
+      "source": "/api-references/v2/mining/commodities-trade/mining-contracts",
+      "destination": "/api-references/v2/mining/licenses-auctions/mining-contracts"
+    },
+    {
+      "source": "/api-references/v2/singapore/sgx-report",
+      "destination": "/api-references/v2/singapore/report/company-report"
+    },
+    {
+      "source": "/v2/mining/sales-destination/:slug*",
+      "destination": "/api-references/v2/mining/commodities-trade/sales-destination"
+    },
+    {
+      "source": "/v2/mining/companies/",
+      "destination": "/api-references/v2/mining/companies/mining-companies"
+    },
+    {
+      "source": "/recipes/generative-ai-python/02-tool-use.mdx",
+      "destination": "/recipes/generative-ai-python/02-tool-use"
+    },
+    {
+      "source": "/v1/subsector/report/{sub_sector}/",
+      "destination": "/api-references/report/subsector"
     }
   ],
   "api": {
