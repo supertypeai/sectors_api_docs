@@ -231,6 +231,7 @@
               "group": "Transaction Data",
               "icon": "money-bill-transfer",
               "pages": [
+                "api-references/v2/indonesia/transaction/close",
                 "api-references/v2/indonesia/transaction/daily",
                 "api-references/v2/indonesia/transaction/idx-total",
                 "api-references/v2/indonesia/transaction/index-daily"
