@@ -208,6 +208,7 @@
               "icon": "list-check",
               "pages": [
                 "api-references/v2/indonesia/helper-list/companies-segments-list",
+                "api-references/v2/indonesia/helper-list/latest-quarterly-dates",
                 "api-references/v2/indonesia/helper-list/company-quarterly-dates",
                 "api-references/v2/indonesia/helper-list/industries",
                 "api-references/v2/indonesia/helper-list/subindustries",

@@ -48,7 +48,7 @@
                 ]
             }
         ],
-        "description": "Financial data API for IDX, SGX, and KLSE listed companies, including mining sector data."
+        "description": "Financial data API for IDX, SGX, and KLSE listed companies, including mining sector data.\n\n## Billing & Credits\n\nCredits/quota are consumed as a function of the HTTP response status, so the same status always bills the same way:\n\n| Response | Consumes credits? |\n|---|---|\n| **2xx** (success) | Yes — the endpoint's stated cost (most cost 1; multi-section reports, multi-classification rankings, and some feeds cost more, as noted on each endpoint). |\n| **404** (addressed resource not found) | Yes — 1 credit. Your request was well-formed and we ran the lookup, but the specific resource you addressed doesn't exist (e.g. an unknown `symbol`/`slug`). You are billed for the lookup, not the result. |\n| **400** (bad request) | No — free. Malformed input (missing/invalid parameters, unknown sections, bad date formats, invalid slugs) is rejected before any lookup runs. |\n| **401 / 403** (auth) | No — free. |\n| **429** (rate limit / quota exhausted) | No — free. |\n| **5xx** (server error) | No — free. A failure on our side is never billed. |\n\n### Empty results\n\n**List and filter endpoints return `200` with an empty result when nothing matches** — an empty collection is a valid answer, not an error. For example, a screener/ranking whose filters match no companies returns `200` with empty arrays (and a `message` explaining why), and a date-range feed with no rows in the window returns `200` with an empty list. These still consume credits (the query ran). A `404` is reserved for when the **specific resource you addressed** (a `symbol`, `slug`, `index_code`, etc.) does not exist at all.\n\n**One exception:** the Company Screener endpoints charge **1 credit on a `400`** *only* when using the natural-language `?q=` parameter and the failure occurs after the query has been sent to the language model (e.g. an untranslatable query). This recovers the model cost already incurred. A `400` from a structured (`where` / `order_by`) query, or any validation failure before the model runs, is free. A successful `?q=` screen costs 3 credits; a successful structured screen costs 1."
     },
     "paths": {
         "/v2/broker-activity/{broker_code}/": {
@@ -1123,17 +1123,11 @@
                                             "error": "Date cannot be in the future."
                                         },
                                         "summary": "Future date"
-                                    },
-                                    "NoData": {
-                                        "value": {
-                                            "error": "No data available for the requested date."
-                                        },
-                                        "summary": "No data"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid date, future date, or no data available."
+                        "description": "Invalid date or future date."
                     },
                     "429": {
                         "content": {
@@ -2787,6 +2781,167 @@
                 "x-playground-summary": "Companies that have revenue/cost segment data, with their available years."
             }
         },
+        "/v2/companies/quarterly-financial-dates/": {
+            "get": {
+                "operationId": "companies_quarterly_financial_dates_retrieve",
+                "description": "Returns the **latest** available quarterly report date (and its quarter label) for **every** IDX company in one paginated feed — instead of calling the per-symbol [Quarterly Financial Dates](./company-quarterly-dates) helper once per ticker.\n\nBuilt for **freshness polling**: store the dates you've seen, then re-poll with `?since=` to fetch only the companies that have since reported a new quarter, keeping repeat polls cheap.\n\n**Related:** [Quarterly Financials](../report/quarterly-financials) for the actual figures on a given `report_date`.\n\n<Note>One row per company (~950), sorted by symbol. Companies with no quarterly data are omitted.</Note>\n\n<Info>Costs 1 API credit per page. The full universe is ~32 pages at the maximum `limit` of 30 (~32 credits per full sweep). Use `since` to poll incrementally for far fewer credits.</Info>",
+                "summary": "Latest Quarterly Financial Dates (Universe)",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "year",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1900,
+                            "maximum": 2026
+                        },
+                        "description": "Restrict to report dates within this calendar year, then return each company's latest quarter within it (e.g. `2024`).",
+                        "examples": {
+                            "Example": {
+                                "value": 2024
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "minimum": 1,
+                            "maximum": 30
+                        },
+                        "description": "Maximum number of companies to return per page. Max: 30.",
+                        "examples": {
+                            "Example": {
+                                "value": 30
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0,
+                            "minimum": 0
+                        },
+                        "description": "Number of companies to skip for pagination.",
+                        "examples": {
+                            "Example": {
+                                "value": 0
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "since",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Return only companies whose latest quarter-end date is on or after this date (`YYYY-MM-DD`). Use it to poll for newly-reported quarters. A future date returns an empty result set.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025-09-30"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "Helper Lists"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LatestQuarterlyDates"
+                                },
+                                "examples": {
+                                    "LatestQuarterlyDates": {
+                                        "value": {
+                                            "results": [
+                                                {
+                                                    "symbol": "AADI.JK",
+                                                    "date": "2026-03-31",
+                                                    "quarter": "q1"
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "total_count": 959,
+                                                "showing": 1,
+                                                "limit": 30,
+                                                "offset": 0,
+                                                "has_next": true,
+                                                "has_previous": false,
+                                                "next_offset": 30,
+                                                "previous_offset": null
+                                            }
+                                        },
+                                        "summary": "Latest quarterly dates",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/companies/quarterly-financial-dates/",
+                                            "url": "https://api.sectors.app/v2/companies/quarterly-financial-dates/?limit=30",
+                                            "query": {
+                                                "limit": 30
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Paginated latest quarterly report date per company."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "InvalidSince": {
+                                        "value": {
+                                            "error": "Use a valid date format of YYYY-MM-DD."
+                                        },
+                                        "summary": "Invalid since"
+                                    },
+                                    "InvalidYear": {
+                                        "value": {
+                                            "error": "Please provide a valid year (e.g. 2023)."
+                                        },
+                                        "summary": "Invalid year"
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid `since` date or `year`."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "code": 429,
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/indonesia/helper-list/latest-quarterly-dates",
+                "x-playground-summary": "Latest available quarterly report date for every IDX company, in one paginated feed."
+            }
+        },
         "/v2/companies/top-changes/": {
             "get": {
                 "operationId": "companies_top_changes_retrieve",
@@ -3255,16 +3410,34 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "NotFound": {
+                                    "InvalidYear": {
                                         "value": {
-                                            "error": "Invalid stock symbol and/or data for the specified financial year does not exist."
+                                            "error": "Please provide a valid financial year."
                                         },
-                                        "summary": "Not found"
+                                        "summary": "Invalid year"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid symbol or year."
+                        "description": "Invalid request (bad financial year)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Invalid stock symbol and/or data for the specified financial year does not exist."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "No revenue-breakdown data for this symbol / financial year."
                     },
                     "429": {
                         "content": {
@@ -3368,14 +3541,32 @@
                                 "examples": {
                                     "InvalidSymbol": {
                                         "value": {
-                                            "error": "Invalid stock symbol or data does not exist."
+                                            "error": "Please provide a valid stock symbol."
                                         },
                                         "summary": "Invalid symbol"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid symbol."
+                        "description": "Invalid request (missing symbol)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Invalid stock symbol or data does not exist."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Symbol not found — well-formed but has no quarterly data."
                     },
                     "429": {
                         "content": {
@@ -3902,7 +4093,25 @@
                                 }
                             }
                         },
-                        "description": "Invalid symbol."
+                        "description": "Invalid request (missing symbol or unknown section)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Given stock symbol does not exist."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Symbol not found — well-formed but absent from IDX data."
                     },
                     "429": {
                         "content": {
@@ -4429,7 +4638,25 @@
                                 }
                             }
                         },
-                        "description": "Invalid symbol."
+                        "description": "Invalid request (missing symbol or unknown section)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Given stock symbol does not exist."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Symbol not found — well-formed but absent from IDX data."
                     },
                     "429": {
                         "content": {
@@ -4691,12 +4918,6 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidSymbol": {
-                                        "value": {
-                                            "error": "Given stock symbol does not exist in the requested date."
-                                        },
-                                        "summary": "Invalid symbol"
-                                    },
                                     "InvalidFormat": {
                                         "value": {
                                             "error": "Use a valid date format of YYYY-MM-DD."
@@ -4706,7 +4927,25 @@
                                 }
                             }
                         },
-                        "description": "Invalid symbol or date."
+                        "description": "Invalid request (bad date format)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Given stock symbol 'ZZZZ' does not exist."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Symbol not found — the ticker does not exist in the daily dataset. (A valid ticker with no rows in the requested window returns 200 with an empty list.)"
                     },
                     "429": {
                         "content": {
@@ -5159,15 +5398,34 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "Invalid": {
+                                    "InvalidReportDate": {
                                         "value": {
-                                            "error": "Invalid stock symbol and/or data for the specified report date does not exist."
+                                            "error": "Use a valid report_date format of YYYY-MM-DD."
+                                        },
+                                        "summary": "Invalid report_date"
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid request (bad report_date format/value)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Invalid stock symbol and/or data for the specified report_date does not exist."
                                         }
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid symbol or report date."
+                        "description": "No quarterly data for this symbol / report_date."
                     },
                     "429": {
                         "content": {
@@ -6183,16 +6441,34 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidSymbol": {
+                                    "InvalidSection": {
                                         "value": {
-                                            "error": "Please provide a valid stock symbol."
+                                            "error": "Invalid sections provided: foo."
                                         },
-                                        "summary": "Invalid symbol"
+                                        "summary": "Invalid section"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid symbol."
+                        "description": "Invalid request (bad params or unknown section)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Given KLSE symbol does not exist."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Symbol not found — well-formed but absent from KLSE data."
                     },
                     "429": {
                         "content": {
@@ -6376,16 +6652,34 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidSymbol": {
+                                    "InvalidSection": {
                                         "value": {
-                                            "error": "Please provide a valid stock symbol."
+                                            "error": "Invalid sections provided: foo."
                                         },
-                                        "summary": "Invalid symbol"
+                                        "summary": "Invalid section"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid symbol."
+                        "description": "Invalid request (bad params or unknown section)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Given KLSE symbol does not exist."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Symbol not found — well-formed but absent from KLSE data."
                     },
                     "429": {
                         "content": {
@@ -6547,16 +6841,34 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "NotFound": {
+                                    "InvalidSymbol": {
                                         "value": {
-                                            "error": "Given stock symbol does not exist for this data."
+                                            "error": "Please provide a valid stock symbol."
                                         },
-                                        "summary": "Not found"
+                                        "summary": "Invalid symbol"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid or unavailable symbol."
+                        "description": "Invalid request (missing symbol)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Given stock symbol does not exist for this data."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Symbol not found — well-formed but has no IPO-performance data."
                     },
                     "429": {
                         "content": {
@@ -6744,13 +7056,13 @@
                                 "examples": {
                                     "BadRequest": {
                                         "value": {
-                                            "error": "Invalid year parameters or date range exceeds 3 years."
+                                            "error": "Invalid commodity 'Golda'. Valid values: Coal, Copper, Gold."
                                         }
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid year parameters or date range exceeds 3 years."
+                        "description": "Invalid commodity, invalid year parameters, or date range exceeds 3 years."
                     },
                     "404": {
                         "content": {
@@ -6762,13 +7074,13 @@
                                 "examples": {
                                     "NotFound": {
                                         "value": {
-                                            "error": "Commodity not found or no data in specified range."
+                                            "error": "No price data for this commodity in the specified range."
                                         }
                                     }
                                 }
                             }
                         },
-                        "description": "Commodity not found or no data in specified range."
+                        "description": "No price data for this commodity in the specified range."
                     },
                     "429": {
                         "content": {
@@ -7737,31 +8049,13 @@
                                 "examples": {
                                     "BadRequest": {
                                         "value": {
-                                            "error": "`year` and `commodity_type` are required."
+                                            "error": "Invalid commodity 'Golda'. Valid values: Coal, Copper, Gold."
                                         }
                                     }
                                 }
                             }
                         },
-                        "description": "`year` and `commodity_type` are required."
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "additionalProperties": {}
-                                },
-                                "examples": {
-                                    "NotFound": {
-                                        "value": {
-                                            "error": "No export data found for given filters."
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        "description": "No export data found for given filters."
+                        "description": "Missing/invalid parameters."
                     },
                     "429": {
                         "content": {
@@ -9522,13 +9816,13 @@
                                 "examples": {
                                     "BadRequest": {
                                         "value": {
-                                            "error": "`commodity_type` parameter is required."
+                                            "error": "Invalid commodity 'Golda'. Valid values: Coal, Copper, Gold, Nickel."
                                         }
                                     }
                                 }
                             }
                         },
-                        "description": "`commodity_type` parameter is required."
+                        "description": "Missing or invalid `commodity_type`."
                     },
                     "404": {
                         "content": {
@@ -10830,16 +11124,34 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidSymbol": {
+                                    "InvalidSection": {
                                         "value": {
-                                            "error": "Please provide a valid stock symbol."
+                                            "error": "Invalid sections provided: foo."
                                         },
-                                        "summary": "Invalid symbol"
+                                        "summary": "Invalid section"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid symbol or section."
+                        "description": "Invalid request (bad params or unknown section)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Given SGX symbol does not exist."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Symbol not found — well-formed but absent from SGX data."
                     },
                     "429": {
                         "content": {
@@ -11088,16 +11400,34 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidSymbol": {
+                                    "InvalidSection": {
                                         "value": {
-                                            "error": "Please provide a valid stock symbol."
+                                            "error": "Invalid sections provided: foo."
                                         },
-                                        "summary": "Invalid symbol"
+                                        "summary": "Invalid section"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid symbol or section."
+                        "description": "Invalid request (bad params or unknown section)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Given SGX symbol does not exist."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Symbol not found — well-formed but absent from SGX data."
                     },
                     "429": {
                         "content": {
@@ -11223,13 +11553,13 @@
                                 "examples": {
                                     "NotFound": {
                                         "value": {
-                                            "error": "No daily data found for symbol 'XYZ'."
+                                            "error": "Given SGX symbol 'XYZ' does not exist."
                                         }
                                     }
                                 }
                             }
                         },
-                        "description": "No data found for symbol."
+                        "description": "Symbol not found — the ticker does not exist in the daily dataset. (A valid ticker with no rows in the requested window returns 200 with an empty list.)"
                     },
                     "429": {
                         "content": {
@@ -12437,16 +12767,34 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidSubSector": {
+                                    "InvalidSection": {
                                         "value": {
-                                            "error": "Invalid sub_sector provided."
+                                            "error": "Invalid sections provided: foo."
                                         },
-                                        "summary": "Invalid sub_sector"
+                                        "summary": "Invalid section"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid subsector slug."
+                        "description": "Invalid request (missing slug or unknown section)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Requested sub_sector does not exist."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "No report data for the requested sub_sector."
                     },
                     "429": {
                         "content": {
@@ -12793,16 +13141,34 @@
                                     "additionalProperties": {}
                                 },
                                 "examples": {
-                                    "InvalidSubSector": {
+                                    "InvalidSection": {
                                         "value": {
-                                            "error": "Invalid sub_sector provided."
+                                            "error": "Invalid sections provided: foo."
                                         },
-                                        "summary": "Invalid sub_sector"
+                                        "summary": "Invalid section"
                                     }
                                 }
                             }
                         },
-                        "description": "Invalid subsector slug."
+                        "description": "Invalid request (missing slug or unknown section)."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "Requested sub_sector does not exist."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "No report data for the requested sub_sector."
                     },
                     "429": {
                         "content": {
@@ -14778,6 +15144,96 @@
                     "message",
                     "natural_query",
                     "translated_params"
+                ]
+            },
+            "LatestQuarterlyDates": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LatestQuarterlyDatesItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/LatestQuarterlyDatesPagination"
+                    }
+                },
+                "required": [
+                    "pagination",
+                    "results"
+                ]
+            },
+            "LatestQuarterlyDatesItem": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "Ticker symbol (e.g. BBCA.JK)."
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Latest available quarterly report date."
+                    },
+                    "quarter": {
+                        "type": "string",
+                        "description": "Financial quarter label for that date (`q1`..`q4`)."
+                    }
+                },
+                "required": [
+                    "date",
+                    "quarter",
+                    "symbol"
+                ]
+            },
+            "LatestQuarterlyDatesPagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
                 ]
             },
             "MiningCompanyDetail": {
