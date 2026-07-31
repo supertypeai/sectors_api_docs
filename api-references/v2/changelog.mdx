@@ -24,6 +24,15 @@ sidebarTitle: Changelog
 
   **More helpful error messages.** Date-range errors now tell you exactly what's wrong. Previously, problems like a future end date could return a generic "Use a valid date format" message even when your format was fine. Now you'll see the precise reason, e.g. "End date cannot be in the future" or "Start date cannot be after end date."
 
+  **Structured error codes.** Every middleware error response now includes a machine-readable `code` field alongside the human-readable `detail` message:
+  - `subscription_does_not_allow` — your plan doesn't cover this endpoint
+  - `subscription_not_active` — INSIDER subscription not yet provisioned
+  - `monthly_limit_exceeded` — monthly request quota exhausted
+  - `insufficient_credits` — credit balance too low
+  - `service_unavailable` — database temporarily unreachable (see below)
+
+  **503 on database failures.** If the database is unreachable (connection dropped, idle-in-transaction termination, pgbouncer reaping), the API now returns `503` with `code: service_unavailable` instead of a 500 or a misleading auth error. Clients should retry.
+
   **Company Screener billing note:** For the [Company Screener](./indonesia/screener/companies), a 400 only consumes credits (1 credit) when you use the natural-language `?q=` parameter and the failure happens after your query was sent to the language model (e.g. an untranslatable query) — because that work was already done. Structured (`where`/`order_by`) queries and any pre-model validation errors are free. A successful `?q=` search costs 3 credits; a successful structured search costs 1.
 
 - **Broker activity date-range clamp**: The [Broker Summary by Symbol](./indonesia/brokers/broker-summary-by-symbol) and [Broker Activity by Code](./indonesia/brokers/broker-activity-by-code) endpoints now accept a maximum date range of **14 days** (previously 30). Requests exceeding 14 days return a 400 error.
@@ -35,9 +44,12 @@ sidebarTitle: Changelog
     - `Real Estate` → `Properties & Real Estate`
     - `Logistics` / `Transportation` → `Transportation & Logistics`
 
+- **New IDX endpoints**:
+  - [`https://api.sectors.app/v2/companies/quarterly-financial-dates/`](./indonesia/helper-list/latest-quarterly-dates): Returns the latest available quarterly report date for every IDX company in one paginated feed — designed for freshness polling. Supports `?since=` to narrow to newly-reported companies
+  - [`https://api.sectors.app/v2/close/`](./indonesia/transaction/close): Returns daily close prices for every IDX ticker on a single date, paginated via `limit`/`offset`. Defaults to the latest available trading day when no `date` is provided
+
 - **Updated IDX endpoints**:
   - [`https://api.sectors.app/v2/company/get_quarterly_financial_dates/{symbol}/`](./indonesia/helper-list/company-quarterly-dates): Returns available quarterly report dates grouped by year with quarter labels (Q1–Q4). Use these dates as input to the [Company Quarterly Financials](./indonesia/report/quarterly-financials) endpoint
-  - [`https://api.sectors.app/v2/close/`](./indonesia/transaction/close): Returns daily close prices for every IDX ticker on a single date, paginated via `limit`/`offset`. Defaults to the latest available trading day when no `date` is provided
 
 ## 2026-06-12
 
