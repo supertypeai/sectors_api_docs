@@ -2,6 +2,43 @@
 title: v2 Changelog
 sidebarTitle: Changelog
 ---
+## 2026-07-31
+
+- **Clearer errors, fairer billing, and consistent empty results**: Refined how the API responds to errors, empty results, and how credits are charged — behavior is now predictable and consistent across every endpoint.
+
+  **Credits are only charged for real work.** Billing follows one simple rule:
+  - Success (2xx): charged at the endpoint's stated cost
+  - Not found (404) — a valid request for a specific symbol/slug that doesn't exist: 1 credit (we ran the lookup)
+  - Bad request (400) — malformed parameter, invalid date format, unknown section: free
+  - Auth errors (401/403): free
+  - Rate limited (429): free
+  - Server errors (5xx): free
+
+  Previously, some invalid requests could consume a credit. Now, if your request is rejected before we run a lookup, it costs nothing. You're only billed when we actually do the work.
+
+  **Empty results are no longer errors.** When a list, filter, ranking, or date-range query matches nothing, you now get a normal 200 response with an empty result (an empty list, or empty groups plus a short message explaining why) — instead of an error. An empty result is a valid answer, not a failure.
+
+  A 404 is now reserved for when the specific thing you asked for (a symbol, slug, index code, etc.) genuinely doesn't exist. For example:
+  - Requesting daily data for a real ticker over a date range with no trading days → 200 with an empty list
+  - Requesting daily data for a ticker that doesn't exist → 404
+
+  **More helpful error messages.** Date-range errors now tell you exactly what's wrong. Previously, problems like a future end date could return a generic "Use a valid date format" message even when your format was fine. Now you'll see the precise reason, e.g. "End date cannot be in the future" or "Start date cannot be after end date."
+
+  **Company Screener billing note:** For the [Company Screener](./indonesia/screener/companies), a 400 only consumes credits (1 credit) when you use the natural-language `?q=` parameter and the failure happens after your query was sent to the language model (e.g. an untranslatable query) — because that work was already done. Structured (`where`/`order_by`) queries and any pre-model validation errors are free. A successful `?q=` search costs 3 credits; a successful structured search costs 1.
+
+- **Broker activity date-range clamp**: The [Broker Summary by Symbol](./indonesia/brokers/broker-summary-by-symbol) and [Broker Activity by Code](./indonesia/brokers/broker-activity-by-code) endpoints now accept a maximum date range of **14 days** (previously 30). Requests exceeding 14 days return a 400 error.
+
+- **Introduces [SGX Subsectors helper](./singapore/helper-list/sgx-subsectors)**: [`https://api.sectors.app/v2/sgx/subsectors/`](./singapore/helper-list/sgx-subsectors) — reference list of SGX sub-sector slugs and display names, for use with the SGX Company Screener `where` parameter
+  - **SGX subsector slug standardization**: Several SGX sub-sector slugs have been updated for consistency with SGX's own classification. Natural-language queries (`?q=`) are unaffected, but callers using hardcoded `where` clauses with the old slugs must update:
+    - `Banks` → `Banks & Credit Services`
+    - `Financial Services` → `Financial Services` (unchanged, but `Financials` is no longer a valid sector alias)
+    - `Real Estate` → `Properties & Real Estate`
+    - `Logistics` / `Transportation` → `Transportation & Logistics`
+
+- **Updated IDX endpoints**:
+  - [`https://api.sectors.app/v2/company/get_quarterly_financial_dates/{symbol}/`](./indonesia/helper-list/company-quarterly-dates): Returns available quarterly report dates grouped by year with quarter labels (Q1–Q4). Use these dates as input to the [Company Quarterly Financials](./indonesia/report/quarterly-financials) endpoint
+  - [`https://api.sectors.app/v2/close/`](./indonesia/transaction/close): Returns daily close prices for every IDX ticker on a single date, paginated via `limit`/`offset`. Defaults to the latest available trading day when no `date` is provided
+
 ## 2026-06-12
 
 - **IDX Company Report field removals**:
