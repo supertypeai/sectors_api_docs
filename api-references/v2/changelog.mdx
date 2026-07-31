@@ -2,6 +2,36 @@
 title: v2 Changelog
 sidebarTitle: Changelog
 ---
+## 2026-07-31
+
+- **Billing standardization**: Credits are now charged consistently across all endpoints — 2xx/404 bill the endpoint's stated cost; 400, 401/403, 429, and 5xx are free. Previously, some 400 errors could consume a credit.
+  - **404 = lookup performed**: A valid request for a symbol/slug that doesn't exist costs 1 credit (the DB query ran)
+  - **400 = free**: Malformed parameters, invalid dates, unknown sections cost nothing
+  - **Company Screener exception**: A 400 from the screener costs 1 credit only when the failure occurs after the natural-language `?q=` query was sent to the LLM (sunk cost). Structured (`where`/`order_by`) validation errors are free. Successful `?q=` = 3 credits; structured = 1 credit
+
+- **Empty results are no longer errors**: List, filter, ranking, and date-range queries that match nothing now return `200` with an empty result (empty list or empty groups with a hint message) instead of a 400 error. A 404 is reserved for genuinely missing resources (e.g. a ticker that doesn't exist)
+
+- **More helpful error messages**: Date-range errors now surface the specific reason (e.g. "End date cannot be in the future") instead of the generic "Use a valid date format"
+
+- **Structured error codes**: Every middleware error response now includes a machine-readable `code` field: `subscription_does_not_allow`, `subscription_not_active`, `monthly_limit_exceeded`, `insufficient_credits`, `service_unavailable`
+
+- **503 on database failures**: Unreachable database (connection dropped, pgbouncer reaping) returns `503` with `code: service_unavailable` instead of a 500. Clients should retry
+
+- **Broker activity date-range clamp**: [Broker Summary by Symbol](./indonesia/brokers/broker-summary-by-symbol) and [Broker Activity by Code](./indonesia/brokers/broker-activity-by-code) now accept a maximum date range of **14 days** (previously 30)
+
+- **Introduces [SGX Subsectors helper](./singapore/helper-list/sgx-subsectors)**: [`https://api.sectors.app/v2/sgx/subsectors/`](./singapore/helper-list/sgx-subsectors) — reference list of SGX sub-sector slugs for use with the SGX Company Screener `where` parameter
+  - **SGX subsector slug standardization**: Slugs updated for consistency with SGX classification. NL queries (`?q=`) unaffected; hardcoded `where` clauses must update:
+    - `Banks` → `Banks & Credit Services`
+    - `Real Estate` → `Properties & Real Estate`
+    - `Logistics` / `Transportation` → `Transportation & Logistics`
+
+- **New IDX endpoints**:
+  - [`https://api.sectors.app/v2/companies/quarterly-financial-dates/`](./indonesia/helper-list/latest-quarterly-dates): Latest quarterly report date for every IDX company, paginated. Supports `?since=` for freshness polling
+  - [`https://api.sectors.app/v2/close/`](./indonesia/transaction/close): Daily close prices for every IDX ticker on a single date, paginated
+
+- **Updated IDX endpoints**:
+  - [`https://api.sectors.app/v2/company/get_quarterly_financial_dates/{symbol}/`](./indonesia/helper-list/company-quarterly-dates): Quarterly report dates grouped by year with Q1–Q4 labels
+
 ## 2026-06-12
 
 - **IDX Company Report field removals**:
