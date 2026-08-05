@@ -7,12 +7,12 @@ sidebarTitle: "3. Sectors in Claude"
 
 Sectors is available as a **custom connector** inside Claude — connect once with OAuth and Claude can pull live IDX, SGX, and KLSE data into any conversation. No API key to paste into a config file, no JSON to edit, and access is revocable from your Sectors dashboard at any time.
 
-This guide covers the OAuth flow on **claude.ai (web)** and the **Claude Desktop** app. If you're setting up Claude Code, Cursor, VS Code, or any other SSE-based client, see [Use Sectors MCP Server for Financial Analysis](/recipes/sectors-for-ai-agents/00-sectors-mcp-guide).
+This guide covers the OAuth flow on **claude.ai (web)** and the **Claude Desktop** app. If you're setting up Claude Code, Cursor, VS Code, or any other Streamable HTTP client, see [Use Sectors MCP Server for Financial Analysis](/recipes/sectors-for-ai-agents/00-sectors-mcp-guide).
 
 | Setup style | Best for | Auth | Endpoint |
 |---|---|---|---|
 | **OAuth custom connector** (this guide) | claude.ai, Claude Desktop | Browser sign-in | `https://sectors-mcp.supertype.ai/mcp` |
-| API key + SSE | Claude Code, Cursor, VS Code, JetBrains | `Bearer YOUR_API_KEY` header | `https://sectors-mcp.supertype.ai/sse` |
+| API key + Streamable HTTP | Claude Code, Cursor, VS Code, JetBrains | `Bearer YOUR_API_KEY` header | `https://sectors-mcp.supertype.ai/mcp` |
 
 ## Prerequisites
 
@@ -118,7 +118,7 @@ This usually means you're signed into the wrong Sectors account, or your session
 The OAuth grant may have been revoked from your Sectors dashboard, or your Insider subscription has lapsed. Reconnect the connector — Claude will redirect you to authorize again.
 
 **A tool returns an empty array.**
-Same causes as the SSE flow: wrong subsector slug, ticker not found, or a date range with no trading days. See the [data & coverage FAQ](/recipes/sectors-for-ai-agents/00-sectors-mcp-guide#data-coverage) in the main guide.
+Same causes as the API key flow: wrong subsector slug, ticker not found, or a date range with no trading days. See the [data & coverage FAQ](/recipes/sectors-for-ai-agents/00-sectors-mcp-guide#data-coverage) in the main guide.
 
 ## Next Steps
 
