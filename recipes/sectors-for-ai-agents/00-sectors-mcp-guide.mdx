@@ -21,7 +21,7 @@ MCP uses a **client-server model** where the AI app (client) connects to an MCP 
 
 There are two transport types in MCP, which determine how the server connects and runs:
 - **stdio**: Local subprocess. This means that the MCP server runs on your local machine.
-- **SSE** (Server-Sent Events): Remote server over HTTP. This means that the MCP server runs remotely and is accessible over the internet.
+- **Streamable HTTP**: Remote server over HTTP. This means that the MCP server runs remotely and is accessible over the internet.
 
 ### What is Sectors MCP?
 The **Sectors MCP Server** is a cloud-hosted service built on MCP that gives your AI assistant access to **financial market data and analytics** through a standardized interface. Once connected, you can fetch a variety of market and company data, such as:
@@ -44,7 +44,7 @@ Before beginning, make sure you have:
    - [Claude Desktop](https://claude.ai/download)
    - [Cursor](https://cursor.com)
    - [VS Code](https://code.visualstudio.com) (with GitHub Copilot)
-   - [Windsurf](https://windsurf.com/), [JetBrains IDEs](https://www.jetbrains.com/), or any client that supports SSE transport
+   - [Windsurf](https://windsurf.com/), [JetBrains IDEs](https://www.jetbrains.com/), or any client that supports Streamable HTTP transport
 
 ## Quick Start Setup
 
@@ -56,8 +56,8 @@ Before beginning, make sure you have:
 Run the following command in your terminal:
 
 ```bash
-claude mcp add --transport sse sectors https://sectors-mcp.supertype.ai/sse \
-  --header "Authorization: Bearer YOUR_API_KEY_HERE"
+claude mcp add -t http sectors https://sectors-mcp.supertype.ai/mcp \
+  -H "Authorization: Bearer YOUR_API_KEY_HERE"
 ```
 
 Replace `YOUR_API_KEY_HERE` with your Sectors Financial API key. The server will be available in your next Claude Code session.
@@ -69,7 +69,7 @@ Open or create `~/.cursor/mcp.json` and add the following:
 {
   "mcpServers": {
     "sectors": {
-      "url": "https://sectors-mcp.supertype.ai/sse",
+      "url": "https://sectors-mcp.supertype.ai/mcp",
       "headers": {
         "Authorization": "Bearer YOUR_API_KEY_HERE"
       }
@@ -87,8 +87,8 @@ Create a `.vscode/mcp.json` file in your workspace and add the following:
 {
   "servers": {
     "sectors": {
-      "type": "sse",
-      "url": "https://sectors-mcp.supertype.ai/sse",
+      "type": "http",
+      "url": "https://sectors-mcp.supertype.ai/mcp",
       "headers": {
         "Authorization": "Bearer ${input:sectors-api-key}"
       }
@@ -107,13 +107,13 @@ Create a `.vscode/mcp.json` file in your workspace and add the following:
 
 VS Code will securely prompt you for your Sectors Financial API key the first time the server starts. This config is workspace-scoped, so you'll need it in each project where you want Sectors data.
 
-### Generic SSE Client
-If you're using any other MCP-compatible client that supports SSE transport, connect with these settings:
+### Generic Streamable HTTP Client
+If you're using any other MCP-compatible client that supports Streamable HTTP transport, connect with these settings:
 
 | Setting | Value |
 |---|---|
-| Transport | `sse` |
-| URL | `https://sectors-mcp.supertype.ai/sse` |
+| Transport | `http` |
+| URL | `https://sectors-mcp.supertype.ai/mcp` |
 | Authorization header | `Bearer YOUR_API_KEY_HERE` |
 
 ## Usage Examples
