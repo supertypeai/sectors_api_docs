@@ -31,7 +31,7 @@ The **Sectors MCP Server** is a cloud-hosted service built on MCP that gives you
 - **IDX & SGX Coverage**: Comprehensive tools for Indonesian and Singapore Exchange listed companies.
 - **Advanced Metrics**: Earnings yield, historical volatility, and more.
 
-The server is **cloud-hosted** on Cloudflare Workers with **40+ tools** covering IDX, SGX, and KLSE data — no local installation required.
+The server is **cloud-hosted** on Cloudflare Workers with **65+ tools** covering IDX, SGX, KLSE, and Indonesian mining data — no local installation required.
 
 ## Prerequisites
 Before beginning, make sure you have:
@@ -152,13 +152,13 @@ If you're using any other MCP-compatible client that supports Streamable HTTP tr
 ### Example 2: Market Screening
 > "What are the top 5 banking stocks in Indonesia by market cap?"
 
-**Tool called:** `fetch-top-companies`
+**Tool called:** `fetch-companies-by-subsector`
 
 ```json
 {
-  "sub_sector": "banks",
-  "classifications": "market_cap",
-  "n_stock": 5
+  "where": "sub_sector = 'banks'",
+  "order_by": "-market_cap",
+  "limit": 5
 }
 ```
 
@@ -179,12 +179,11 @@ If you're using any other MCP-compatible client that supports Streamable HTTP tr
 ### Example 3: Comparing Stocks
 > "Compare BBCA, BMRI, and BBRI — show me their PE ratio and market cap"
 
-**Tool called:** `get-companies-report`
+**Tool called:** `fetch-companies-by-subsector`
 
 ```json
 {
-  "symbols": ["BBCA", "BMRI", "BBRI"],
-  "columns": ["company_name", "market_cap", "forward_pe", "last_close_price"]
+  "where": "symbol in ['BBCA', 'BMRI', 'BBRI']"
 }
 ```
 
@@ -255,65 +254,108 @@ If you're using any other MCP-compatible client that supports Streamable HTTP tr
 ### Company Analysis
 | Tool | Description | Key Parameters |
 |------|-------------|----------------|
-| `fetch-company-report` | Full company report with selectable sections (overview, valuation, future, peers, financials, dividend, management, ownership) | `ticker`, `sections` |
-| `get-companies-report` | Fetch specific columns for one or more companies in a single call | `symbols[]`, `columns[]` |
-| `fetch-company-segments` | Business segment breakdown by revenue/profit for a given year | `ticker`, `financialYear` |
-| `fetch-listing-performance` | IPO and post-listing price performance | `ticker` |
-| `get-companies-nipe` | Net Income Per Employee — productivity metric across companies | `symbols[]` |
+| `fetch-company-report` | Full company report with selectable sections (overview, valuation, future, peers, financials, dividend, management, ownership) | `symbol`, `sections` |
+| `fetch-company-segments` | Revenue and cost segment breakdown for a financial year | `symbol`, `financial_year` |
+| `fetch-listing-performance` | Price performance since listing date across 7d, 30d, 90d, and 365d windows | `symbol` |
+| `fetch-corporate-actions` | Splits, rights, warrants, bonus shares, AGM events, and dividend history | `symbol` |
+| `fetch-shareholders-composition` | Monthly shareholder breakdown by investor category (local and foreign) | `symbol`, `year` |
 
 ### Market Screening & Rankings
 | Tool | Description | Key Parameters |
 |------|-------------|----------------|
-| `fetch-top-companies` | Rank companies by market cap, PE, PB, PS, dividend yield, revenue, or earnings — with optional filters | `classifications`, `sub_sector`, `n_stock`, `filters` |
-| `fetch-top-company-movers` | Top price gainers and losers over 1d / 7d / 14d / 30d / 365d | `periods`, `classifications`, `sub_sector`, `n_stock` |
-| `fetch-most-traded-stocks` | Most traded stocks by transaction volume over a date range | `startDate`, `endDate`, `nStock`, `subSector` |
-| `fetch-top-growth-companies` | Top earnings and revenue growth gainers/losers | `classifications`, `sub_sector`, `n_stock` |
-| `get-top-companies-by-metrics` | Rank IDX companies by a single metric (market cap, EPS, dividend, employee count) | `metric`, `subsector`, `limit` |
+| `fetch-companies-by-subsector` | Filter and sort IDX companies — structured query (`where`/`order_by`) or natural language (`q`) | `q`, `where`, `order_by`, `limit` |
+| `fetch-companies-top-changes` | Top gainers and losers across 1d/7d/14d/30d/365d periods | `classifications`, `periods`, `sub_sector`, `n_stock` |
+| `fetch-most-traded-stocks` | Most traded IDX stocks by transaction volume over a date range | `start`, `end`, `n_stock`, `sub_sector` |
+| `fetch-close` | Closing price for every IDX ticker on a single trading day | `date` |
 
 ### Financial Data
 | Tool | Description | Key Parameters |
 |------|-------------|----------------|
-| `fetch-quarterly-financials` | Quarterly income statement and balance sheet | `ticker`, `nQuarters`, `reportDate` |
-| `fetch-quarterly-financial-dates` | List of available quarterly report dates for a company | `ticker` |
-| `get-company-financial` | Latest financial snapshot — PE, PB, ROE, ROA, DAR, DER | `symbol` |
-| `get-company-dividend` | Dividend payments and yield for a specific year | `symbol`, `year` |
-| `get-companies-historical-financial` | Yearly historical financials — revenue, earnings, assets, equity, cash flow, and more | `symbol`, `fields[]` |
+| `fetch-quarterly-financials` | Quarterly income statement and balance sheet | `symbol`, `n_quarters`, `report_date` |
+| `fetch-quarterly-financial-dates` | Available quarterly report dates for a company | `symbol` |
+| `fetch-companies-quarterly-financial-dates` | Latest quarterly report date for every IDX company — for freshness polling | `since`, `year` |
 
 ### Market Indices & Daily Data
 | Tool | Description | Key Parameters |
 |------|-------------|----------------|
-| `fetch-index` | Current snapshot of a market index | `index` |
-| `fetch-index-daily` | Daily index price history over a date range | `index_code`, `start_date`, `end_date` |
-| `fetch-idx-market-cap` | Historical total IDX market capitalization | `startDate`, `endDate` |
-| `get-daily-transaction` | Daily close price, volume, and market cap for specific stocks | `symbols[]`, `startDate`, `endDate` |
-| `fetch-companies-by-index` | List all companies in a given index (e.g. `lq45`, `idx30`, `kompas100`) | `index` |
+| `fetch-index-daily` | Daily closing price for a market index over a date range | `index_code`, `start`, `end` |
+| `fetch-idx-market-cap` | Historical total IDX market capitalization | `start`, `end` |
+| `fetch-daily-transaction` | Daily close price, volume, and market cap for a stock | `symbol`, `start`, `end` |
+| `fetch-foreign-flow` | Net daily foreign broker inflow/outflow for a stock | `symbol`, `start`, `end` |
+| `fetch-free-float` | Free float percentage for IDX companies, filterable by sector taxonomy | `sector`, `sub_sector`, `industry` |
 
 ### Sector & Industry Classification
 | Tool | Description | Key Parameters |
 |------|-------------|----------------|
-| `get-subsectors` | List all available subsectors with their parent sectors | — |
-| `fetch-industries` | List all industries | — |
-| `fetch-subindustries` | List all sub-industries | — |
-| `fetch-companies-by-subsector` | All companies in a given subsector | `subSector` |
-| `fetch-companies-by-subindustry` | All companies in a given sub-industry | `subIndustry` |
-| `fetch-companies-with-segments` | All companies that have segment-level financial data available | — |
-| `get-subsector-report` | Aggregated metrics and company list for a subsector | `subsector`, `columns[]` |
-| `fetch-ipo-companies` | Recently listed IPO companies, filterable by sector and date range | `startDate`, `endDate`, `sector`, `subSector` |
+| `get-subsectors` | All sector/subsector pairs as kebab-case slugs | — |
+| `fetch-industries` | All subsector/industry pairs | — |
+| `fetch-subindustries` | All industry/sub-industry pairs | — |
+| `fetch-subsector-report` | Aggregated metrics and company list for a subsector | `sub_sector`, `sections` |
+| `fetch-companies-with-segments` | All companies with revenue/cost segment data available | — |
 
-### Singapore (SGX) Tools
+### News, Filings & Events
 | Tool | Description | Key Parameters |
 |------|-------------|----------------|
-| `fetch-sgx-sectors` | List all available SGX sectors | — |
-| `fetch-sgx-company-report` | Comprehensive SGX company report — overview, valuation, financials, dividend | `ticker` |
-| `fetch-sgx-companies-by-sector` | List SGX companies in a given sector | `sector` |
-| `fetch-sgx-top-companies` | Top SGX companies by dividend yield, revenue, earnings, market cap, or PE | `classifications`, `sector`, `minMarketCapMillion` |
-| `get-singapore-companies-report` | Fetch specific columns for one or more SGX companies | `symbols[]`, `columns[]` |
-| `get-singapore-company-historical-financial` | Yearly historical revenue and earnings for an SGX company | `symbol` |
-| `get-singapore-daily-transaction` | Daily close price, volume, and market cap for SGX stocks | `symbols[]`, `startDate`, `endDate` |
-| `get-singapore-company-dividend` | SGX dividend breakdown and yield for a specific year | `symbol`, `year` |
-| `get-singapore-top-companies-by-metrics` | Rank SGX companies by a single metric (market cap, PE, PB, dividend yield, EPS, etc.) | `metric`, `subsector`, `limit` |
-| `calculate-singapore-earnings-yield` | Calculates earnings yield (1 ÷ PE) for an SGX company | `symbol` |
-| `calculate-singapore-historical-volatility` | Estimates annualized historical volatility from price range data | `symbol`, `useTimeframe` |
+| `fetch-news` | IDX and mining news articles, filterable by sector, symbol, tag, or keyword | `extension`, `sector`, `sub_sector`, `symbols`, `keyword`, `tags`, `start`, `end` |
+| `fetch-filings` | IDX insider trading buy/sell filings | `symbol`, `transaction_type`, `holder_type`, `sector`, `start`, `end` |
+| `fetch-suspensions` | Historical IDX stock suspensions with dates and official reasons | `symbol`, `start`, `end` |
+| `fetch-tags` | All valid tag slugs for use in news and filings filters | — |
+
+### Broker Data
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `fetch-brokers` | IDX broker registry with origin (foreign/domestic) and cohort classifications | `origin`, `cohort` |
+| `fetch-top-brokers` | Brokers ranked by gross trade value or net flow for a given date | `date`, `metric`, `n_brokers`, `origin`, `cohort` |
+| `fetch-broker-summary` | Per-broker daily trading rows for a single stock | `symbol`, `broker_code`, `start`, `end` |
+| `fetch-broker-summary-top` | Top accumulating and distributing brokers for a stock | `symbol`, `start`, `end`, `n_brokers` |
+| `fetch-broker-activity` | All stocks traded by a single broker over a date range | `broker_code`, `symbol`, `start`, `end` |
+| `fetch-broker-activity-top` | Top accumulations and distributions by a single broker | `broker_code`, `start`, `end` |
+
+### Singapore (SGX)
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `fetch-sgx-sectors` | All SGX sector slugs | — |
+| `fetch-sgx-subsectors` | All SGX sector/subsector pairs | — |
+| `fetch-sgx-company-report` | SGX company report — overview, valuation, financials, dividend | `symbol`, `sections` |
+| `fetch-sgx-companies-by-sector` | SGX companies in a given sector | `sector` |
+| `fetch-sgx-top-companies` | Top SGX companies by dividend yield, revenue, earnings, market cap, or PE | `classifications`, `sector` |
+| `fetch-sgx-daily-transaction` | Daily close price and volume for an SGX stock | `symbol`, `start`, `end` |
+| `fetch-sgx-filings` | SGX insider trading buy/sell filings | `symbol`, `transaction_type`, `holder_type`, `start`, `end` |
+| `fetch-sgx-news` | SGX news articles, filterable by sector, symbol, and tag | `sector`, `symbols`, `tags`, `start`, `end` |
+| `fetch-sgx-buybacks` | SGX share buyback records | `symbol`, `start`, `end` |
+| `fetch-sgx-short-sell` | SGX short sell data | `symbol`, `start`, `end` |
+| `fetch-sgx-tags` | All valid tag slugs for SGX news filters | — |
+
+### Malaysia (KLSE)
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `fetch-klse-sectors` | All KLSE sector slugs | — |
+| `fetch-klse-company-report` | KLSE company report — overview, valuation, financials, dividend | `symbol`, `sections` |
+| `fetch-klse-companies-by-sector` | KLSE companies in a given sector | `sector` |
+| `fetch-klse-top-companies` | Top KLSE companies by dividend yield, revenue, earnings, market cap, or PE | `classifications`, `sector` |
+
+### Mining (Indonesia)
+| Tool | Description | Key Parameters |
+|------|-------------|----------------|
+| `fetch-mining-commodities` | Available commodities with price database coverage metadata | — |
+| `fetch-mining-commodity-price` | Historical commodity price by year range (monthly, up to 3 years) | `commodity_name`, `start_year`, `end_year` |
+| `fetch-mining-global-commodity` | Global production, reserves, and trade data by commodity and country | `commodity_type`, `country` |
+| `fetch-mining-companies` | Search mining companies by name, symbol, commodity, or company type | `keyword`, `commodity_type`, `company_type` |
+| `fetch-mining-company-detail` | Operational details — activities, licenses, contracts, and site count | `slug` |
+| `fetch-mining-company-financials` | Annual financial records (assets, revenue, profit) in USD millions | `slug`, `year` |
+| `fetch-mining-company-ownership` | Corporate ownership tree — parent companies and subsidiaries with percentage stakes | `slug` |
+| `fetch-mining-company-performance` | Production volume, sales, strip ratio, and reserves for a given year | `slug`, `commodity_type`, `year` |
+| `fetch-mining-sites` | Mining sites with filters for location, commodity, and production volume | `commodity_type`, `province`, `year`, `min_production` |
+| `fetch-mining-site-detail` | Full details for a single mining site including coordinates | `slug` |
+| `fetch-mining-total-production` | National total production for a commodity across all years | `commodity_type` |
+| `fetch-mining-exports` | Top export destinations by country for a commodity and year | `commodity_type`, `year` |
+| `fetch-mining-sales-destination` | Revenue and volume by destination country for a mining company | `slug`, `year` |
+| `fetch-mining-contracts` | Active mining contracts linking mine owners to service contractors | `mine_owner`, `contractor` |
+| `fetch-mining-licenses` | Mining licenses (IUP/IUPK) with filters for status, commodity, and location | `commodity_type`, `province`, `license_type`, `expiring_soon` |
+| `fetch-mining-license-auctions` | Mining license auctions from the ESDM Minerba portal | `commodity_type`, `province`, `status` |
+| `fetch-mining-license-auction-detail` | Full auction record including phases timeline and participant list | `wiup_code` |
+| `fetch-mining-resources-reserves` | Discovery index of available resources/reserves data by province and commodity | — |
+| `fetch-mining-resources-reserves-detail` | Resources and reserves data for a province, nested by year and commodity | `province`, `commodity_type`, `year` |
 
 ## Troubleshooting & FAQ
 
@@ -344,7 +386,7 @@ The MCP server uses the same key as the Sectors Financial API. Make sure you're 
 **Which markets does the Sectors MCP server cover?**
 
 The server covers three Southeast Asian exchanges:
-- **IDX** — Indonesia Stock Exchange (primary coverage, 40+ tools)
+- **IDX** — Indonesia Stock Exchange (primary coverage, 40+ tools across equities, brokers, filings, and mining)
 - **SGX** — Singapore Exchange (full company reports, rankings, dividends)
 - **KLSE** — Bursa Malaysia (basic company report and sector data)
 
