@@ -54,7 +54,7 @@
         "/v2/broker-activity/{broker_code}/": {
             "get": {
                 "operationId": "broker_activity_retrieve",
-                "description": "All (stock, day) trading activity for one broker over a date range up to 14 days, grouped by date. Optionally filter to a single stock via `symbol`. Each entry in `data` lists every stock the broker touched that day with buy/sell/net values.\n\n<Note>Broker codes are the two-letter exchange-member identifiers (e.g. `MG`, `AK`, `CC`). Retrieve the full list of valid codes from the [Broker Registry](https://docs.sectors.app/api-references/v2/indonesia/brokers/broker-registry) endpoint.</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "description": "All (stock, day) trading activity for one broker over a date range up to 14 days, grouped by date. Optionally filter to a single stock via `symbol`. Each entry in `data` lists every stock the broker touched that day with buy/sell/net values.\n\n<Note>Each row also carries the foreign-investor split of that broker's trades: the `f_*` fields are the portion of the buy/sell frequency, lots, and value executed for foreign investors, and `d_bavg_per_share` / `d_savg_per_share` are the domestic-investor average prices. Domestic frequency, lots, and value are `total - foreign`. These fields are `null` when no foreign-investor participation was recorded for that broker on that day.</Note>\n\n<Note>Broker codes are the two-letter exchange-member identifiers (e.g. `MG`, `AK`, `CC`). Retrieve the full list of valid codes from the [Broker Registry](https://docs.sectors.app/api-references/v2/indonesia/brokers/broker-registry) endpoint.</Note>\n\n<Info>Costs 1 API credit.</Info>",
                 "summary": "Broker Activity By Code",
                 "parameters": [
                     {
@@ -144,7 +144,17 @@
                                                             "savg_per_share": 6706.8758,
                                                             "nlot": 1290,
                                                             "nval": 868045000,
-                                                            "navg_per_share": 6710.2025
+                                                            "navg_per_share": 6710.2025,
+                                                            "f_bfreq": 1,
+                                                            "f_blot": 1,
+                                                            "f_bval": 667500,
+                                                            "f_bavg_per_share": 6675.0,
+                                                            "d_bavg_per_share": 6710.2066,
+                                                            "f_sfreq": 0,
+                                                            "f_slot": 0,
+                                                            "f_sval": 0,
+                                                            "f_savg_per_share": null,
+                                                            "d_savg_per_share": 6706.8758
                                                         }
                                                     ]
                                                 }
@@ -169,6 +179,25 @@
                         },
                         "description": "Broker activity for the broker code, grouped by date."
                     },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Invalid parameter or date window."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid parameter or date window."
+                    },
                     "404": {
                         "content": {
                             "application/json": {
@@ -179,7 +208,8 @@
                                 "examples": {
                                     "NotFound": {
                                         "value": {
-                                            "error": "Broker 'ZZ' not found in broker data."
+                                            "error": "NOT_FOUND",
+                                            "message": "Broker 'ZZ' not found in broker data."
                                         }
                                     }
                                 }
@@ -214,7 +244,7 @@
         "/v2/broker-activity/{broker_code}/top/": {
             "get": {
                 "operationId": "broker_activity_top_retrieve",
-                "description": "Returns the stocks a single broker has been most actively accumulating and distributing over a date range. `top_accumulations` ranks stocks the broker has net bought (largest positive net IDR first); `top_distributions` ranks stocks the broker has net sold (largest negative net IDR first). Useful for tracking a specific broker's directional positioning across the IDX universe.\n\n<Note>Broker codes are the two-letter exchange-member identifiers (e.g. `MG`, `AK`, `CC`). Retrieve the full list of valid codes from the [Broker Registry](https://docs.sectors.app/api-references/v2/indonesia/brokers/broker-registry) endpoint.</Note>\n\n<Info>Costs 2 API credits.</Info>",
+                "description": "Returns the stocks a single broker has been most actively accumulating and distributing over a date range. `top_accumulations` ranks stocks the broker has net bought (largest positive net IDR first); `top_distributions` ranks stocks the broker has net sold (largest negative net IDR first). Each entry also reports how much of that flow was executed for foreign investors (`foreign_net_idr`, `foreign_buy_idr`, `foreign_sell_idr`); pass `foreign=true` to rank by `foreign_net_idr` instead, i.e. the stocks the broker's foreign clients are moving. Useful for tracking a specific broker's directional positioning across the IDX universe.\n\n<Note>Broker codes are the two-letter exchange-member identifiers (e.g. `MG`, `AK`, `CC`). Retrieve the full list of valid codes from the [Broker Registry](https://docs.sectors.app/api-references/v2/indonesia/brokers/broker-registry) endpoint.</Note>\n\n<Info>Costs 2 API credits.</Info>",
                 "summary": "Top Accumulations and Distributions Per Broker",
                 "parameters": [
                     {
@@ -237,7 +267,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Start date (YYYY-MM-DD). Default: end - 30 days.",
+                        "description": "Start date (YYYY-MM-DD). Default: end - 90 days.",
                         "examples": {
                             "Example": {
                                 "value": "2025-05-01"
@@ -255,6 +285,20 @@
                         "examples": {
                             "Example": {
                                 "value": "2025-05-14"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "foreign",
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "description": "If `true`, rank by the foreign-investor portion of each broker's flow instead of the total. Bare `?foreign` also means `true`; any value other than `true`/`false` returns 400. Default `false`. Accumulations and distributions are then ranked by `foreign_net_idr`.",
+                        "examples": {
+                            "Example": {
+                                "value": true
                             }
                         }
                     },
@@ -290,13 +334,17 @@
                                             "broker_code": "YP",
                                             "start": "2025-05-01",
                                             "end": "2025-05-14",
+                                            "foreign": false,
                                             "top_accumulations": [
                                                 {
                                                     "rank": 1,
                                                     "symbol": "ASII.JK",
                                                     "net_idr": 58416394000,
                                                     "buy_idr": 117493365000,
-                                                    "sell_idr": 59076971000
+                                                    "sell_idr": 59076971000,
+                                                    "foreign_net_idr": 368546000,
+                                                    "foreign_buy_idr": 393128000,
+                                                    "foreign_sell_idr": 24582000
                                                 }
                                             ],
                                             "top_distributions": [
@@ -305,7 +353,10 @@
                                                     "symbol": "BBCA.JK",
                                                     "net_idr": -99677162500,
                                                     "buy_idr": 97605242500,
-                                                    "sell_idr": 197282405000
+                                                    "sell_idr": 197282405000,
+                                                    "foreign_net_idr": -902287500,
+                                                    "foreign_buy_idr": 211035000,
+                                                    "foreign_sell_idr": 1113322500
                                                 }
                                             ]
                                         },
@@ -328,6 +379,25 @@
                         },
                         "description": "Top accumulations and distributions for the broker over the date range."
                     },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Invalid parameter or date window."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid parameter or date window."
+                    },
                     "404": {
                         "content": {
                             "application/json": {
@@ -338,7 +408,8 @@
                                 "examples": {
                                     "NotFound": {
                                         "value": {
-                                            "error": "Broker 'ZZ' not found in broker data."
+                                            "error": "NOT_FOUND",
+                                            "message": "Broker 'ZZ' not found in broker data."
                                         }
                                     }
                                 }
@@ -373,7 +444,7 @@
         "/v2/broker-summary/{symbol}/": {
             "get": {
                 "operationId": "broker_summary_retrieve",
-                "description": "Per-broker daily trading rows for one IDX ticker over a date range up to 14 days, grouped by date. Optionally filter to a single broker via `broker_code`. Each entry in `data` lists every broker active on that day with buy/sell/net values, lots, frequency, and weighted avg price per share.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `GOTO`.</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "description": "Per-broker daily trading rows for one IDX ticker over a date range up to 14 days, grouped by date. Optionally filter to a single broker via `broker_code`. Each entry in `data` lists every broker active on that day with buy/sell/net values, lots, frequency, and weighted avg price per share.\n\n<Note>Each row also carries the foreign-investor split of that broker's trades: the `f_*` fields are the portion of the buy/sell frequency, lots, and value executed for foreign investors, and `d_bavg_per_share` / `d_savg_per_share` are the domestic-investor average prices. Domestic frequency, lots, and value are `total - foreign`. These fields are `null` when no foreign-investor participation was recorded for that broker on that day.</Note>\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `GOTO`.</Note>\n\n<Info>Costs 1 API credit.</Info>",
                 "summary": "Broker Activity Per Symbol",
                 "parameters": [
                     {
@@ -463,7 +534,17 @@
                                                             "savg_per_share": 8975.0,
                                                             "nlot": 5,
                                                             "nval": 4075000,
-                                                            "navg_per_share": 8900.0
+                                                            "navg_per_share": 8900.0,
+                                                            "f_bfreq": null,
+                                                            "f_blot": null,
+                                                            "f_bval": null,
+                                                            "f_bavg_per_share": null,
+                                                            "d_bavg_per_share": 8900.0,
+                                                            "f_sfreq": null,
+                                                            "f_slot": null,
+                                                            "f_sval": null,
+                                                            "f_savg_per_share": null,
+                                                            "d_savg_per_share": 8975.0
                                                         }
                                                     ]
                                                 }
@@ -488,6 +569,25 @@
                         },
                         "description": "Broker activity for the symbol, grouped by date."
                     },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Invalid parameter or date window."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid parameter or date window."
+                    },
                     "404": {
                         "content": {
                             "application/json": {
@@ -498,7 +598,8 @@
                                 "examples": {
                                     "NotFound": {
                                         "value": {
-                                            "error": "Symbol 'XYZA' not found in broker data."
+                                            "error": "NOT_FOUND",
+                                            "message": "Symbol 'XYZA' not found in broker data."
                                         }
                                     }
                                 }
@@ -533,7 +634,7 @@
         "/v2/broker-summary/{symbol}/top/": {
             "get": {
                 "operationId": "broker_summary_top_retrieve",
-                "description": "Returns the brokers most actively accumulating and distributing a single IDX ticker over a date range. `top_buyers` ranks brokers by net buy value (largest positive net IDR first); `top_sellers` ranks brokers by net sell value (largest negative net IDR first). Useful for spotting institutional accumulation or distribution patterns on a specific stock.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `GOTO`.</Note>\n\n<Info>Costs 2 API credits.</Info>",
+                "description": "Returns the brokers most actively accumulating and distributing a single IDX ticker over a date range. `top_buyers` ranks brokers by net buy value (largest positive net IDR first); `top_sellers` ranks brokers by net sell value (largest negative net IDR first). Each entry also reports how much of that broker's flow was executed for foreign investors (`foreign_net_idr`, `foreign_buy_idr`, `foreign_sell_idr`); pass `foreign=true` to rank by `foreign_net_idr` instead, i.e. the top foreign buyers and sellers of the stock. Useful for spotting institutional accumulation or distribution patterns on a specific stock.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `GOTO`.</Note>\n\n<Note>The `origin` filter uses the broker's registry classification (a foreign- or domestic-owned member), not the origin of its clients. Use the `foreign_*` fields for investor-origin flow.</Note>\n\n<Info>Costs 2 API credits.</Info>",
                 "summary": "Top Buyers and Sellers Per Symbol",
                 "parameters": [
                     {
@@ -556,7 +657,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Start date (YYYY-MM-DD). Default: end - 30 days.",
+                        "description": "Start date (YYYY-MM-DD). Default: end - 90 days.",
                         "examples": {
                             "Example": {
                                 "value": "2025-05-01"
@@ -594,6 +695,20 @@
                         "examples": {
                             "Example": {
                                 "value": "retail"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "foreign",
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "description": "If `true`, rank by the foreign-investor portion of each broker's flow instead of the total. Bare `?foreign` also means `true`; any value other than `true`/`false` returns 400. Default `false`. Buyers and sellers are then ranked by `foreign_net_idr`.",
+                        "examples": {
+                            "Example": {
+                                "value": true
                             }
                         }
                     },
@@ -649,13 +764,17 @@
                                             "end": "2025-05-14",
                                             "origin": "all",
                                             "cohort": "all",
+                                            "foreign": false,
                                             "top_buyers": [
                                                 {
                                                     "rank": 1,
                                                     "broker_code": "KZ",
                                                     "net_idr": 645536242500,
                                                     "buy_idr": 1163325432500,
-                                                    "sell_idr": 517789190000
+                                                    "sell_idr": 517789190000,
+                                                    "foreign_net_idr": 687991035000,
+                                                    "foreign_buy_idr": 1154137832500,
+                                                    "foreign_sell_idr": 466146797500
                                                 }
                                             ],
                                             "top_sellers": [
@@ -664,7 +783,10 @@
                                                     "broker_code": "BK",
                                                     "net_idr": -318961117500,
                                                     "buy_idr": 561727337500,
-                                                    "sell_idr": 880688455000
+                                                    "sell_idr": 880688455000,
+                                                    "foreign_net_idr": -333245172500,
+                                                    "foreign_buy_idr": 547443282500,
+                                                    "foreign_sell_idr": 880688455000
                                                 }
                                             ]
                                         },
@@ -687,6 +809,25 @@
                         },
                         "description": "Top net buyers and top net sellers for the symbol over the date range."
                     },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Invalid parameter or date window."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid parameter or date window."
+                    },
                     "404": {
                         "content": {
                             "application/json": {
@@ -697,7 +838,8 @@
                                 "examples": {
                                     "NotFound": {
                                         "value": {
-                                            "error": "Symbol 'XYZA' not found in broker data."
+                                            "error": "NOT_FOUND",
+                                            "message": "Symbol 'XYZA' not found in broker data."
                                         }
                                     }
                                 }
@@ -835,7 +977,7 @@
         "/v2/brokers/top/": {
             "get": {
                 "operationId": "brokers_top_retrieve",
-                "description": "Brokers ranked by gross trade value (default) or absolute net flow for a single date. Optionally filter by `origin` (foreign/domestic) and `cohort` (retail/mixed/institutional/unknown). Returns all matching brokers if `n_brokers` is omitted.\n\n<Note>Origin and cohort classifications come from the broker registry. Retrieve the full list with these classifications from the [Broker Registry](https://docs.sectors.app/api-references/v2/indonesia/brokers/broker-registry) endpoint.</Note>\n\n<Info>Costs 2 API credits.</Info>",
+                "description": "Brokers ranked by gross trade value (default) or absolute net flow for a single date. Optionally filter by `origin` (foreign/domestic) and `cohort` (retail/mixed/institutional/unknown). Returns all matching brokers if `n_brokers` is omitted. Each row also reports the portion of the broker's turnover executed for foreign investors (`foreign_gross`, `foreign_net`); pass `foreign=true` to rank by those instead of the totals.\n\n<Note>Origin and cohort classifications come from the broker registry and describe the broker itself (a foreign- or domestic-owned member), not its clients. Use the `foreign_*` fields for investor-origin flow. Retrieve the full list with these classifications from the [Broker Registry](https://docs.sectors.app/api-references/v2/indonesia/brokers/broker-registry) endpoint.</Note>\n\n<Info>Costs 2 API credits.</Info>",
                 "summary": "Top Brokers Daily Ranking",
                 "parameters": [
                     {
@@ -868,6 +1010,20 @@
                         "examples": {
                             "Example": {
                                 "value": "2025-05-01"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "foreign",
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "description": "If `true`, rank by the foreign-investor portion of each broker's flow instead of the total. Bare `?foreign` also means `true`; any value other than `true`/`false` returns 400. Default `false`. With `metric=gross` ranks by `foreign_gross`; with `metric=net` by absolute `foreign_net`.",
+                        "examples": {
+                            "Example": {
+                                "value": true
                             }
                         }
                     },
@@ -935,16 +1091,19 @@
                                 "examples": {
                                     "TopBrokers": {
                                         "value": {
-                                            "date": "2026-07-08",
+                                            "date": "2026-09-16",
                                             "metric": "gross",
                                             "origin": "foreign",
                                             "cohort": "all",
+                                            "foreign": false,
                                             "results": [
                                                 {
                                                     "rank": 1,
                                                     "broker_code": "AK",
-                                                    "gross": 1984643350000,
-                                                    "net": -326211642600
+                                                    "gross": 3052554804600,
+                                                    "net": -335856549600,
+                                                    "foreign_gross": 2474550573100,
+                                                    "foreign_net": -201072766900
                                                 }
                                             ]
                                         },
@@ -964,6 +1123,25 @@
                         },
                         "description": "Ranked brokers with trade values for the target date."
                     },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Invalid parameter or date window."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid parameter or date window."
+                    },
                     "404": {
                         "content": {
                             "application/json": {
@@ -974,7 +1152,8 @@
                                 "examples": {
                                     "NotFound": {
                                         "value": {
-                                            "error": "No broker activity available."
+                                            "error": "NOT_FOUND",
+                                            "message": "No broker activity available."
                                         }
                                     }
                                 }
@@ -3210,7 +3389,7 @@
         "/v2/company/corporate-actions/{symbol}/": {
             "get": {
                 "operationId": "company_corporate_actions_retrieve",
-                "description": "<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `BMRI`, `TLKM`.</Note>\n\nReturns all corporate action history for a given IDX-listed company: stock splits, right issues, warrants, bonus shares, AGM events, upcoming dividends, and historical dividends.\n\n<Info>Costs 1 API credit.</Info>",
+                "description": "<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `BMRI`, `TLKM`.</Note>\n\nReturns all corporate action history for a given IDX-listed company: stock splits, right issues, warrants, bonus shares, AGM events, upcoming dividends, and historical dividends.\n\n<Note>For every company's actions in a date window, see the market-wide [Corporate Actions Calendar](https://docs.sectors.app/api-references/v2/indonesia/news/corporate-actions).</Note>\n\n<Info>Costs 1 API credit.</Info>",
                 "summary": "Corporate Actions",
                 "parameters": [
                     {
@@ -4819,6 +4998,185 @@
                 "x-playground-summary": "Monthly shareholder composition snapshots for one company."
             }
         },
+        "/v2/corporate-actions/": {
+            "get": {
+                "operationId": "corporate_actions_retrieve",
+                "description": "Corporate actions across every IDX ticker in a date window, grouped by type: the market-wide counterpart of the per-symbol [Corporate Actions](https://docs.sectors.app/api-references/v2/indonesia/company/corporate-actions) endpoint. Row keys match the per-symbol endpoint. `start`/`end` filter (and sort) each type on one key: `dividend`, `upcoming_dividend`, `bonus` and `right_issue` on `ex_date`, `stock_split` on `date` (its ex-date), `warrant` on `trading_period_start`, and `agm` on `agm_date`; ties sort by `symbol`.\n\n<Note>`end` may be in the future, so the window works as a calendar. Default window: today - 30 days to today + 30 days. Wider ranges are clamped to the 90 days ending at `end`.</Note>\n\n<Note>Only the requested `type` keys are present in the response.</Note>\n\n<Info>Costs 1 API credit per requested type. Default (all 7 types) consumes 7 credits.</Info>",
+                "summary": "Corporate Actions Calendar",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "start",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Start date (YYYY-MM-DD). Default: end - 30 days.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025-05-01"
+                            }
+                        },
+                        "x-max-days": 90
+                    },
+                    {
+                        "in": "query",
+                        "name": "end",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "End date (YYYY-MM-DD); may be in the future. Default: today + 30 days.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025-05-31"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "type",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "agm",
+                                    "bonus",
+                                    "dividend",
+                                    "right_issue",
+                                    "stock_split",
+                                    "upcoming_dividend",
+                                    "warrant"
+                                ]
+                            }
+                        },
+                        "description": "Comma-separated action types. Default: all.",
+                        "examples": {
+                            "Example": {
+                                "value": "dividend,stock_split"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "News & Filings"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CorporateActionsCalendarResponse"
+                                },
+                                "examples": {
+                                    "CorporateActionsCalendar": {
+                                        "value": {
+                                            "start": "2025-07-01",
+                                            "end": "2025-07-31",
+                                            "dividend": [
+                                                {
+                                                    "symbol": "BBMD.JK",
+                                                    "ex_date": "2025-07-01",
+                                                    "cum_date": "2025-06-30",
+                                                    "recording_date": "2025-07-02",
+                                                    "payment_date": "2025-07-18",
+                                                    "dividend_amount": 34.25,
+                                                    "dividend_yield": 0.0168784
+                                                }
+                                            ],
+                                            "stock_split": [
+                                                {
+                                                    "symbol": "CUAN.JK",
+                                                    "date": "2025-07-15",
+                                                    "cum_date": "2025-07-14",
+                                                    "recording_date": "2025-07-16",
+                                                    "split_ratio": 10.0,
+                                                    "ratio": "1:10"
+                                                }
+                                            ],
+                                            "right_issue": [
+                                                {
+                                                    "symbol": "WIFI.JK",
+                                                    "ex_date": "2025-07-02",
+                                                    "cum_date": "2025-07-01",
+                                                    "recording_date": "2025-07-03",
+                                                    "trading_period_start": "2025-07-07",
+                                                    "trading_period_end": "2025-07-15",
+                                                    "subscription_date": "2025-07-03",
+                                                    "price": 2000.0,
+                                                    "old_ratio": 4.0,
+                                                    "new_ratio": 5.0
+                                                }
+                                            ],
+                                            "agm": [
+                                                {
+                                                    "symbol": "DRMA.JK",
+                                                    "agm_date": "2025-07-01",
+                                                    "recording_date": "2025-06-05",
+                                                    "agm_time": "14:00:00",
+                                                    "agm_place": "Pt Dharma Polimetal Tbk Jl. Angsana Raya Blok A9 No. 8, Delta Silicon 1, Cikarang 17550 Kotabekasi Jawa Barat"
+                                                }
+                                            ]
+                                        },
+                                        "summary": "Corporate actions calendar",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/corporate-actions/",
+                                            "url": "https://api.sectors.app/v2/corporate-actions/?type=dividend%2Cstock_split%2Cright_issue%2Cagm&start=2025-07-01&end=2025-07-31",
+                                            "query": {
+                                                "type": "dividend,stock_split,right_issue,agm",
+                                                "start": "2025-07-01",
+                                                "end": "2025-07-31"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Requested action types, each a list of rows sorted by date then symbol."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Invalid type(s): foo. Valid types: dividend, upcoming_dividend, stock_split, bonus, right_issue, warrant, agm."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Unknown type, invalid date, or start after end."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/indonesia/news/corporate-actions",
+                "x-playground-summary": "Market-wide corporate actions in a date window, by type."
+            }
+        },
         "/v2/daily/{symbol}/": {
             "get": {
                 "operationId": "daily_retrieve",
@@ -5454,10 +5812,177 @@
                 "x-playground-summary": "Quarterly financial statements for one company."
             }
         },
+        "/v2/foreign-flow/": {
+            "get": {
+                "operationId": "foreign_flow_universe_retrieve",
+                "description": "Returns the net foreign-investor flow (IDR) of **every** IDX ticker on a single trading day, in one paginated feed — instead of calling the per-symbol [Daily Net Foreign Inflow](https://docs.sectors.app/api-references/v2/indonesia/brokers/foreign-flow-by-symbol) endpoint once per ticker. Sorted by `net_foreign_inflow` descending by default, so the first page is the day's top foreign buys; `order_by=net_foreign_inflow` puts the top foreign sells first.\n\n<Note>Defaults to the most recent trading day. Pass `date` (`YYYY-MM-DD`) to pull a specific day. Future dates return 400.</Note>\n\n<Note>Flow is attributed by the investor's origin, not the broker's. Tickers with no foreign-investor participation on the day are omitted.</Note>\n\n<Info>Costs 1 API credit per page. The full universe (typically 550-700 tickers with foreign activity on the day) is about 20-25 pages at the maximum `limit` of 30.</Info>",
+                "summary": "Daily Full-Universe Foreign Flow",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "order_by",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "-foreign_buy_idr",
+                                "-foreign_sell_idr",
+                                "-net_foreign_inflow",
+                                "-symbol",
+                                "foreign_buy_idr",
+                                "foreign_sell_idr",
+                                "net_foreign_inflow",
+                                "symbol"
+                            ],
+                            "default": "-net_foreign_inflow"
+                        },
+                        "description": "Sort field; prefix with `-` for descending. Default `-net_foreign_inflow` (top foreign buys first).",
+                        "examples": {
+                            "Example": {
+                                "value": "-net_foreign_inflow"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "minimum": 1,
+                            "maximum": 30
+                        },
+                        "description": "Maximum number of tickers to return per page. Max: 30.",
+                        "examples": {
+                            "Example": {
+                                "value": 30
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0,
+                            "minimum": 0
+                        },
+                        "description": "Number of tickers to skip for pagination.",
+                        "examples": {
+                            "Example": {
+                                "value": 0
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "date",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Trading day to pull, in `YYYY-MM-DD` format. Defaults to the most recent trading day with data. Future dates return 400.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025-05-02"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "Brokers"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForeignFlowUniverse"
+                                },
+                                "examples": {
+                                    "Full-universeForeignFlow": {
+                                        "value": {
+                                            "results": [
+                                                {
+                                                    "symbol": "ANTM.JK",
+                                                    "date": "2025-05-02",
+                                                    "net_foreign_inflow": 294630023000,
+                                                    "foreign_buy_idr": 377682427000,
+                                                    "foreign_sell_idr": 83052404000
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "total_count": 558,
+                                                "showing": 1,
+                                                "limit": 30,
+                                                "offset": 0,
+                                                "has_next": true,
+                                                "has_previous": false,
+                                                "next_offset": 30,
+                                                "previous_offset": null
+                                            }
+                                        },
+                                        "summary": "Full-universe foreign flow",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/foreign-flow/",
+                                            "url": "https://api.sectors.app/v2/foreign-flow/?date=2025-05-02&limit=30",
+                                            "query": {
+                                                "date": "2025-05-02",
+                                                "limit": 30
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Paginated per-ticker foreign flow for the requested day."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Use a valid date format of YYYY-MM-DD."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid date, future date, or unknown `order_by` field."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/indonesia/brokers/foreign-flow",
+                "x-playground-summary": "Net foreign-investor flow for every IDX ticker on a single day, paginated and sortable."
+            }
+        },
         "/v2/foreign-flow/{symbol}/": {
             "get": {
                 "operationId": "foreign_flow_retrieve",
-                "description": "Daily net foreign-broker inflow (IDR) for one IDX ticker over a date range up to 90 days. Positive `net_foreign_inflow` means foreign brokers were net buyers that day; negative means foreign brokers were net sellers. Useful for tracking foreign sentiment and capital flow on a specific stock.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `GOTO`.</Note>\n\n<Note>Only foreign flow is returned because the exchange is a closed market: for any `(symbol, date)`, foreign and domestic net values always sum to zero, so domestic flow is simply `-net_foreign_inflow`.</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "description": "Daily net foreign-investor inflow (IDR) for one IDX ticker over a date range up to 90 days. Positive `net_foreign_inflow` means foreign investors were net buyers that day; negative means they were net sellers. `foreign_share` is the foreign fraction of the stock's two-sided turnover. Usually useful for tracking foreign sentiment and capital flow on a specific stock.\n\n<Note>Pass `IHSG` (any case, with or without `.JK`) for the market-wide series: every ticker summed, one point per day, `symbol` echoed as `IHSG`. For every ticker's flow on one day use the [Daily Full-Universe Foreign Flow](https://docs.sectors.app/api-references/v2/indonesia/brokers/foreign-flow) endpoint.</Note>\n\n<Note>Flow is attributed by the investor's origin, not the broker's. Every broker's daily activity on the stock is split into its foreign-investor and domestic-investor portions, and this endpoint sums the foreign portion across all brokers, so a foreign-owned broker's domestic clients count as domestic and a local broker's foreign clients count as foreign.</Note>\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `GOTO`.</Note>\n\n<Note>Only foreign flow is returned because the exchange is a closed market: for any `(symbol, date)`, foreign and domestic net values always sum to zero, so domestic flow is simply `-net_foreign_inflow`.</Note>\n\n<Info>Costs 1 API credit.</Info>",
                 "summary": "Daily Net Foreign Inflow",
                 "parameters": [
                     {
@@ -5480,7 +6005,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Start date (YYYY-MM-DD). Default: end - 30 days.",
+                        "description": "Start date (YYYY-MM-DD). Default: end - 90 days.",
                         "examples": {
                             "Example": {
                                 "value": "2025-05-01"
@@ -5521,7 +6046,10 @@
                                             "data": [
                                                 {
                                                     "date": "2025-05-02",
-                                                    "net_foreign_inflow": 199859810000
+                                                    "net_foreign_inflow": 146476750000,
+                                                    "foreign_buy_idr": 558094712500,
+                                                    "foreign_sell_idr": 411617962500,
+                                                    "foreign_share": 0.5875
                                                 }
                                             ]
                                         },
@@ -5544,6 +6072,25 @@
                         },
                         "description": "Daily net foreign inflow for the symbol."
                     },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Invalid parameter or date window."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid parameter or date window."
+                    },
                     "404": {
                         "content": {
                             "application/json": {
@@ -5554,7 +6101,8 @@
                                 "examples": {
                                     "NotFound": {
                                         "value": {
-                                            "error": "Symbol 'XYZA' not found in broker data."
+                                            "error": "NOT_FOUND",
+                                            "message": "Symbol 'XYZA' not found in broker data."
                                         }
                                     }
                                 }
@@ -5583,7 +6131,7 @@
                     }
                 },
                 "x-mdx-path": "v2/indonesia/brokers/foreign-flow-by-symbol",
-                "x-playground-summary": "Daily net foreign-broker inflow for one stock over a date range."
+                "x-playground-summary": "Daily net foreign-investor inflow for one stock (or the whole market via IHSG) over a date range."
             }
         },
         "/v2/free-float/": {
@@ -5820,6 +6368,110 @@
                 },
                 "x-mdx-path": "v2/indonesia/transaction/idx-total",
                 "x-playground-summary": "Total IDX market capitalisation over time."
+            }
+        },
+        "/v2/index-daily/": {
+            "get": {
+                "operationId": "index_daily_universe_retrieve",
+                "description": "Returns the closing level of **every** IDX index on a single trading day in one call — instead of calling the per-index [Index Daily Transaction Data](https://docs.sectors.app/api-references/v2/indonesia/transaction/index-daily) endpoint once per index.\n\n<Note>Defaults to the most recent trading day. Pass `date` (`YYYY-MM-DD`) to pull a specific day. Future dates return 400.</Note>\n\n<Note>Indices with no recorded close for the requested day are omitted. </Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "summary": "Daily Full-Universe Index Close",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "date",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Trading day to pull, in `YYYY-MM-DD` format. Defaults to the most recent trading day with data. Future dates return 400.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025-05-02"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "Transaction Data"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/IndexDailyUniverseItem"
+                                    }
+                                },
+                                "examples": {
+                                    "AllIndices": {
+                                        "value": [
+                                            {
+                                                "index_code": "ECONOMIC30",
+                                                "date": "2025-05-05",
+                                                "price": 107.42
+                                            }
+                                        ],
+                                        "summary": "All indices",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/index-daily/{index_code}/",
+                                            "url": "https://api.sectors.app/v2/index-daily/lq45/?start=2025-05-02&end=2025-05-09",
+                                            "path_params": {
+                                                "index_code": "lq45"
+                                            },
+                                            "query": {
+                                                "start": "2025-05-02",
+                                                "end": "2025-05-09"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Closing level of each IDX index on the requested day."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Use a valid date format of YYYY-MM-DD."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid date or future date."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/indonesia/transaction/index-daily-universe",
+                "x-playground-summary": "Closing level of every IDX index on a single day."
             }
         },
         "/v2/index-daily/{index_code}/": {
@@ -10510,6 +11162,147 @@
                 "x-playground-summary": "SGX share-buyback records, filterable by symbol and date."
             }
         },
+        "/v2/sgx/close/": {
+            "get": {
+                "operationId": "sgx_close_retrieve",
+                "description": "Returns the daily closing price for **every** SGX ticker on a single trading day, in one paginated feed — instead of calling the per-symbol [SGX Daily Price Data](https://docs.sectors.app/api-references/v2/singapore/transaction/daily) endpoint once per ticker.\n\n<Note>Defaults to the most recent trading day. Pass `date` (`YYYY-MM-DD`) to pull a specific day. Future dates return 400.</Note>\n\n<Note>Tickers with no recorded close for the requested day are omitted. Output symbols always carry the `.SI` suffix; prices are in SGD.</Note>\n\n<Info>Costs 1 API credit per page. The full universe (roughly 560-600 tickers) is about 20 pages at the maximum `limit` of 30 (~20 credits per full pull).</Info>",
+                "summary": "SGX Daily Full-Universe Close",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "minimum": 1,
+                            "maximum": 30
+                        },
+                        "description": "Maximum number of tickers to return per page. Max: 30.",
+                        "examples": {
+                            "Example": {
+                                "value": 30
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0,
+                            "minimum": 0
+                        },
+                        "description": "Number of tickers to skip for pagination.",
+                        "examples": {
+                            "Example": {
+                                "value": 0
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "date",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Trading day to pull, in `YYYY-MM-DD` format. Defaults to the most recent trading day with data. Future dates return 400.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025-05-02"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "SGX - Transaction Data"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SgxCloseUniverse"
+                                },
+                                "examples": {
+                                    "Full-universeClose": {
+                                        "value": {
+                                            "results": [
+                                                {
+                                                    "symbol": "1A0.SI",
+                                                    "date": "2025-05-02",
+                                                    "close": 0.038
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "total_count": 603,
+                                                "showing": 1,
+                                                "limit": 30,
+                                                "offset": 0,
+                                                "has_next": true,
+                                                "has_previous": false,
+                                                "next_offset": 30,
+                                                "previous_offset": null
+                                            }
+                                        },
+                                        "summary": "Full-universe close",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/sgx/close/",
+                                            "url": "https://api.sectors.app/v2/sgx/close/?date=2025-05-02&limit=30",
+                                            "query": {
+                                                "date": "2025-05-02",
+                                                "limit": 30
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Paginated closing prices for all SGX tickers on the requested day."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Use a valid date format of YYYY-MM-DD."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid date or future date."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/singapore/transaction/close",
+                "x-playground-summary": "Daily closing price for every SGX ticker on a single day, paginated."
+            }
+        },
         "/v2/sgx/companies/": {
             "get": {
                 "operationId": "sgx_companies_retrieve",
@@ -12061,7 +12854,7 @@
         "/v2/sgx/short-sell/": {
             "get": {
                 "operationId": "sgx_short_sell_retrieve",
-                "description": "Returns SGX short sell data. Supports filtering by symbol and date range.\n\n<Note>SGX symbol: 3-4 characters (letters or digits). E.g. `D05`, `U11`, `Z74`, `TCPD`. Output always carries the `.SI` suffix.</Note>\n\n<Note>Date filters: both `start` and `end` are independent and optional — omit either side to leave that bound unconstrained. Future `end` dates return 400.</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "description": "Returns SGX short sell data. Supports filtering by symbol and date range, and sorting via `order_by` (e.g. `start=2025-05-02&end=2025-05-02&order_by=-value` lists the most shorted stocks that day).\n\n<Note>SGX symbol: 3-4 characters (letters or digits). E.g. `D05`, `U11`, `Z74`, `TCPD`. Output always carries the `.SI` suffix.</Note>\n\n<Note>Date filters: both `start` and `end` are independent and optional — omit either side to leave that bound unconstrained. Future `end` dates return 400.</Note>\n\n<Info>Costs 1 API credit.</Info>",
                 "summary": "SGX Short Sell",
                 "parameters": [
                     {
@@ -12100,6 +12893,30 @@
                         "examples": {
                             "Example": {
                                 "value": "2025-05-14"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "order_by",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "-date",
+                                "-symbol",
+                                "-value",
+                                "-volume",
+                                "date",
+                                "symbol",
+                                "value",
+                                "volume"
+                            ],
+                            "default": "-date"
+                        },
+                        "description": "Sort field; prefix with `-` for descending. Default `-date` (newest first).",
+                        "examples": {
+                            "Example": {
+                                "value": "-value"
                             }
                         }
                     },
@@ -12182,6 +12999,25 @@
                             }
                         },
                         "description": "Paginated short sell records."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Invalid date, order_by, or query parameter."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid date, order_by, or query parameter."
                     },
                     "429": {
                         "content": {
@@ -13524,6 +14360,60 @@
             "BrokerActivityRow": {
                 "type": "object",
                 "properties": {
+                    "f_bfreq": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Buy frequency from foreign investors."
+                    },
+                    "f_blot": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Buy lots from foreign investors."
+                    },
+                    "f_bval": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Buy value from foreign investors (IDR)."
+                    },
+                    "f_bavg_per_share": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Foreign-investor buy avg per share."
+                    },
+                    "d_bavg_per_share": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Domestic-investor buy avg per share."
+                    },
+                    "f_sfreq": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Sell frequency from foreign investors."
+                    },
+                    "f_slot": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Sell lots from foreign investors."
+                    },
+                    "f_sval": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Sell value from foreign investors (IDR)."
+                    },
+                    "f_savg_per_share": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Foreign-investor sell avg per share."
+                    },
+                    "d_savg_per_share": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Domestic-investor sell avg per share."
+                    },
                     "symbol": {
                         "type": "string",
                         "description": "Ticker symbol (e.g. BBCA.JK)."
@@ -13581,6 +14471,16 @@
                     "bfreq",
                     "blot",
                     "bval",
+                    "d_bavg_per_share",
+                    "d_savg_per_share",
+                    "f_bavg_per_share",
+                    "f_bfreq",
+                    "f_blot",
+                    "f_bval",
+                    "f_savg_per_share",
+                    "f_sfreq",
+                    "f_slot",
+                    "f_sval",
                     "navg_per_share",
                     "nlot",
                     "nval",
@@ -13594,6 +14494,18 @@
             "BrokerActivityTopAccumulation": {
                 "type": "object",
                 "properties": {
+                    "foreign_net_idr": {
+                        "type": "integer",
+                        "description": "Net value from foreign investors (buy - sell, IDR)."
+                    },
+                    "foreign_buy_idr": {
+                        "type": "integer",
+                        "description": "Buy value from foreign investors (IDR)."
+                    },
+                    "foreign_sell_idr": {
+                        "type": "integer",
+                        "description": "Sell value from foreign investors (IDR)."
+                    },
                     "rank": {
                         "type": "integer"
                     },
@@ -13612,6 +14524,9 @@
                 },
                 "required": [
                     "buy_idr",
+                    "foreign_buy_idr",
+                    "foreign_net_idr",
+                    "foreign_sell_idr",
                     "net_idr",
                     "rank",
                     "sell_idr",
@@ -13621,6 +14536,18 @@
             "BrokerActivityTopDistribution": {
                 "type": "object",
                 "properties": {
+                    "foreign_net_idr": {
+                        "type": "integer",
+                        "description": "Net value from foreign investors (buy - sell, IDR)."
+                    },
+                    "foreign_buy_idr": {
+                        "type": "integer",
+                        "description": "Buy value from foreign investors (IDR)."
+                    },
+                    "foreign_sell_idr": {
+                        "type": "integer",
+                        "description": "Sell value from foreign investors (IDR)."
+                    },
                     "rank": {
                         "type": "integer"
                     },
@@ -13639,6 +14566,9 @@
                 },
                 "required": [
                     "buy_idr",
+                    "foreign_buy_idr",
+                    "foreign_net_idr",
+                    "foreign_sell_idr",
                     "net_idr",
                     "rank",
                     "sell_idr",
@@ -13659,6 +14589,10 @@
                         "type": "string",
                         "format": "date"
                     },
+                    "foreign": {
+                        "type": "boolean",
+                        "description": "Whether the ranking used foreign-investor flow."
+                    },
                     "top_accumulations": {
                         "type": "array",
                         "items": {
@@ -13675,6 +14609,7 @@
                 "required": [
                     "broker_code",
                     "end",
+                    "foreign",
                     "start",
                     "top_accumulations",
                     "top_distributions"
@@ -13815,6 +14750,60 @@
                         "type": "number",
                         "format": "double",
                         "description": "Net avg per share."
+                    },
+                    "f_bfreq": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Buy frequency from foreign investors."
+                    },
+                    "f_blot": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Buy lots from foreign investors."
+                    },
+                    "f_bval": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Buy value from foreign investors (IDR)."
+                    },
+                    "f_bavg_per_share": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Foreign-investor buy avg per share."
+                    },
+                    "d_bavg_per_share": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Domestic-investor buy avg per share."
+                    },
+                    "f_sfreq": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Sell frequency from foreign investors."
+                    },
+                    "f_slot": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Sell lots from foreign investors."
+                    },
+                    "f_sval": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Sell value from foreign investors (IDR)."
+                    },
+                    "f_savg_per_share": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Foreign-investor sell avg per share."
+                    },
+                    "d_savg_per_share": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Domestic-investor sell avg per share."
                     }
                 },
                 "required": [
@@ -13823,6 +14812,16 @@
                     "blot",
                     "broker_code",
                     "bval",
+                    "d_bavg_per_share",
+                    "d_savg_per_share",
+                    "f_bavg_per_share",
+                    "f_bfreq",
+                    "f_blot",
+                    "f_bval",
+                    "f_savg_per_share",
+                    "f_sfreq",
+                    "f_slot",
+                    "f_sval",
                     "navg_per_share",
                     "nlot",
                     "nval",
@@ -13835,6 +14834,18 @@
             "BrokerSummaryTopBuyer": {
                 "type": "object",
                 "properties": {
+                    "foreign_net_idr": {
+                        "type": "integer",
+                        "description": "Net value from foreign investors (buy - sell, IDR)."
+                    },
+                    "foreign_buy_idr": {
+                        "type": "integer",
+                        "description": "Buy value from foreign investors (IDR)."
+                    },
+                    "foreign_sell_idr": {
+                        "type": "integer",
+                        "description": "Sell value from foreign investors (IDR)."
+                    },
                     "rank": {
                         "type": "integer"
                     },
@@ -13854,6 +14865,9 @@
                 "required": [
                     "broker_code",
                     "buy_idr",
+                    "foreign_buy_idr",
+                    "foreign_net_idr",
+                    "foreign_sell_idr",
                     "net_idr",
                     "rank",
                     "sell_idr"
@@ -13882,6 +14896,10 @@
                     "cohort": {
                         "type": "string"
                     },
+                    "foreign": {
+                        "type": "boolean",
+                        "description": "Whether the ranking used foreign-investor flow."
+                    },
                     "top_buyers": {
                         "type": "array",
                         "items": {
@@ -13898,6 +14916,7 @@
                 "required": [
                     "cohort",
                     "end",
+                    "foreign",
                     "origin",
                     "start",
                     "symbol",
@@ -13908,6 +14927,18 @@
             "BrokerSummaryTopSeller": {
                 "type": "object",
                 "properties": {
+                    "foreign_net_idr": {
+                        "type": "integer",
+                        "description": "Net value from foreign investors (buy - sell, IDR)."
+                    },
+                    "foreign_buy_idr": {
+                        "type": "integer",
+                        "description": "Buy value from foreign investors (IDR)."
+                    },
+                    "foreign_sell_idr": {
+                        "type": "integer",
+                        "description": "Sell value from foreign investors (IDR)."
+                    },
                     "rank": {
                         "type": "integer"
                     },
@@ -13927,6 +14958,9 @@
                 "required": [
                     "broker_code",
                     "buy_idr",
+                    "foreign_buy_idr",
+                    "foreign_net_idr",
+                    "foreign_sell_idr",
                     "net_idr",
                     "rank",
                     "sell_idr"
@@ -14101,6 +15135,87 @@
                     "results"
                 ]
             },
+            "CorporateActionsAgmRow": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string"
+                    },
+                    "agm_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Meeting date."
+                    },
+                    "recording_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "agm_time": {
+                        "type": "string",
+                        "format": "time",
+                        "nullable": true
+                    },
+                    "agm_place": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "agm_date",
+                    "agm_place",
+                    "agm_time",
+                    "recording_date",
+                    "symbol"
+                ]
+            },
+            "CorporateActionsBonusRow": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string"
+                    },
+                    "ex_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Ex-date."
+                    },
+                    "cum_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "recording_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "payment_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "old_ratio": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "new_ratio": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "cum_date",
+                    "ex_date",
+                    "new_ratio",
+                    "old_ratio",
+                    "payment_date",
+                    "recording_date",
+                    "symbol"
+                ]
+            },
             "CorporateActionsByType": {
                 "type": "object",
                 "properties": {
@@ -14150,6 +15265,112 @@
                     "warrant"
                 ]
             },
+            "CorporateActionsCalendarResponse": {
+                "type": "object",
+                "properties": {
+                    "start": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "end": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "dividend": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CorporateActionsDividendRow"
+                        }
+                    },
+                    "upcoming_dividend": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CorporateActionsUpcomingDividendRow"
+                        }
+                    },
+                    "stock_split": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CorporateActionsStockSplitRow"
+                        }
+                    },
+                    "bonus": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CorporateActionsBonusRow"
+                        }
+                    },
+                    "right_issue": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CorporateActionsRightIssueRow"
+                        }
+                    },
+                    "warrant": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CorporateActionsWarrantRow"
+                        }
+                    },
+                    "agm": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CorporateActionsAgmRow"
+                        }
+                    }
+                },
+                "required": [
+                    "end",
+                    "start"
+                ]
+            },
+            "CorporateActionsDividendRow": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string"
+                    },
+                    "ex_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Ex-date."
+                    },
+                    "cum_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "recording_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "payment_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "dividend_amount": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "dividend_yield": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "cum_date",
+                    "dividend_amount",
+                    "dividend_yield",
+                    "ex_date",
+                    "payment_date",
+                    "recording_date",
+                    "symbol"
+                ]
+            },
             "CorporateActionsResponse": {
                 "type": "object",
                 "properties": {
@@ -14164,6 +15385,212 @@
                 "required": [
                     "corporate_actions",
                     "symbol"
+                ]
+            },
+            "CorporateActionsRightIssueRow": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string"
+                    },
+                    "ex_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Ex-date."
+                    },
+                    "cum_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "recording_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "trading_period_start": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "trading_period_end": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "subscription_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "old_ratio": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "new_ratio": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "cum_date",
+                    "ex_date",
+                    "new_ratio",
+                    "old_ratio",
+                    "price",
+                    "recording_date",
+                    "subscription_date",
+                    "symbol",
+                    "trading_period_end",
+                    "trading_period_start"
+                ]
+            },
+            "CorporateActionsStockSplitRow": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Ex-date."
+                    },
+                    "cum_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "recording_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "split_ratio": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "ratio": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "E.g. `1:2`."
+                    }
+                },
+                "required": [
+                    "cum_date",
+                    "date",
+                    "ratio",
+                    "recording_date",
+                    "split_ratio",
+                    "symbol"
+                ]
+            },
+            "CorporateActionsUpcomingDividendRow": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string"
+                    },
+                    "ex_date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Ex-date."
+                    },
+                    "cum_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "recording_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "payment_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "dividend_amount": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "cum_date",
+                    "dividend_amount",
+                    "ex_date",
+                    "payment_date",
+                    "recording_date",
+                    "symbol"
+                ]
+            },
+            "CorporateActionsWarrantRow": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string"
+                    },
+                    "trading_period_start": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "First trading day of the warrant."
+                    },
+                    "trading_period_end": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "ex_per_start": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "ex_per_end": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "maturity_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "ratio_warrant": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    },
+                    "ratio_shares": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "ex_per_end",
+                    "ex_per_start",
+                    "maturity_date",
+                    "price",
+                    "ratio_shares",
+                    "ratio_warrant",
+                    "symbol",
+                    "trading_period_end",
+                    "trading_period_start"
                 ]
             },
             "DailyDataItem": {
@@ -14263,11 +15690,31 @@
                     },
                     "net_foreign_inflow": {
                         "type": "integer",
-                        "description": "IDR. Positive = foreign brokers were net buyers that day."
+                        "nullable": true,
+                        "description": "IDR. Positive = foreign investors were net buyers that day. Null if the day has no foreign split."
+                    },
+                    "foreign_buy_idr": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Buy value from foreign investors (IDR)."
+                    },
+                    "foreign_sell_idr": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Sell value from foreign investors (IDR)."
+                    },
+                    "foreign_share": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Foreign-investor share of two-sided turnover, 0-1: (foreign buy + foreign sell) / (all buy + all sell)."
                     }
                 },
                 "required": [
                     "date",
+                    "foreign_buy_idr",
+                    "foreign_sell_idr",
+                    "foreign_share",
                     "net_foreign_inflow"
                 ]
             },
@@ -14300,6 +15747,106 @@
                     "end",
                     "start",
                     "symbol"
+                ]
+            },
+            "ForeignFlowUniverse": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ForeignFlowUniverseItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/ForeignFlowUniversePagination"
+                    }
+                },
+                "required": [
+                    "pagination",
+                    "results"
+                ]
+            },
+            "ForeignFlowUniverseItem": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "IDX ticker symbol (with `.JK` suffix)."
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Trading date."
+                    },
+                    "net_foreign_inflow": {
+                        "type": "integer",
+                        "description": "IDR. Positive = foreign investors were net buyers that day."
+                    },
+                    "foreign_buy_idr": {
+                        "type": "integer",
+                        "description": "Buy value from foreign investors (IDR)."
+                    },
+                    "foreign_sell_idr": {
+                        "type": "integer",
+                        "description": "Sell value from foreign investors (IDR)."
+                    }
+                },
+                "required": [
+                    "date",
+                    "foreign_buy_idr",
+                    "foreign_sell_idr",
+                    "net_foreign_inflow",
+                    "symbol"
+                ]
+            },
+            "ForeignFlowUniversePagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
                 ]
             },
             "FreeFloatItem": {
@@ -14935,6 +16482,30 @@
                 ]
             },
             "IndexDailyDataItem": {
+                "type": "object",
+                "properties": {
+                    "index_code": {
+                        "type": "string",
+                        "description": "Index code (e.g. IDX30, LQ45)."
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Trading date."
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Index closing price."
+                    }
+                },
+                "required": [
+                    "date",
+                    "index_code",
+                    "price"
+                ]
+            },
+            "IndexDailyUniverseItem": {
                 "type": "object",
                 "properties": {
                     "index_code": {
@@ -16995,6 +18566,97 @@
                     "total_count"
                 ]
             },
+            "SgxCloseUniverse": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SgxCloseUniverseItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/SgxCloseUniversePagination"
+                    }
+                },
+                "required": [
+                    "pagination",
+                    "results"
+                ]
+            },
+            "SgxCloseUniverseItem": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "SGX ticker symbol (with `.SI` suffix)."
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Trading date."
+                    },
+                    "close": {
+                        "type": "number",
+                        "format": "double",
+                        "description": "Closing price in SGD."
+                    }
+                },
+                "required": [
+                    "close",
+                    "date",
+                    "symbol"
+                ]
+            },
+            "SgxCloseUniversePagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
+                ]
+            },
             "SgxCompanyScreenerItem": {
                 "type": "object",
                 "properties": {
@@ -17810,6 +19472,10 @@
                     "cohort": {
                         "type": "string"
                     },
+                    "foreign": {
+                        "type": "boolean",
+                        "description": "Whether the ranking used foreign-investor flow."
+                    },
                     "results": {
                         "type": "array",
                         "items": {
@@ -17820,6 +19486,7 @@
                 "required": [
                     "cohort",
                     "date",
+                    "foreign",
                     "metric",
                     "origin",
                     "results"
@@ -17842,10 +19509,20 @@
                     "net": {
                         "type": "integer",
                         "description": "Sum of net value (IDR, signed)."
+                    },
+                    "foreign_gross": {
+                        "type": "integer",
+                        "description": "Buy + sell value from foreign investors (IDR)."
+                    },
+                    "foreign_net": {
+                        "type": "integer",
+                        "description": "Net value from foreign investors (IDR, signed)."
                     }
                 },
                 "required": [
                     "broker_code",
+                    "foreign_gross",
+                    "foreign_net",
                     "gross",
                     "net",
                     "rank"
