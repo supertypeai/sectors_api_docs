@@ -235,6 +235,7 @@
                 "api-references/v2/indonesia/transaction/close",
                 "api-references/v2/indonesia/transaction/daily",
                 "api-references/v2/indonesia/transaction/idx-total",
+                "api-references/v2/indonesia/transaction/index-daily-universe",
                 "api-references/v2/indonesia/transaction/index-daily"
               ]
             },
@@ -257,6 +258,7 @@
               "group": "News & Filings",
               "icon": "newspaper",
               "pages": [
+                "api-references/v2/indonesia/news/corporate-actions",
                 "api-references/v2/indonesia/news/filings",
                 "api-references/v2/indonesia/news/news",
                 "api-references/v2/indonesia/news/suspensions"
@@ -272,6 +274,7 @@
                 "api-references/v2/indonesia/brokers/broker-summary-top",
                 "api-references/v2/indonesia/brokers/broker-registry",
                 "api-references/v2/indonesia/brokers/top",
+                "api-references/v2/indonesia/brokers/foreign-flow",
                 "api-references/v2/indonesia/brokers/foreign-flow-by-symbol"
               ]
             }
@@ -309,6 +312,7 @@
               "icon": "money-bill-transfer",
               "pages": [
                 "api-references/v2/singapore/transaction/share-buybacks",
+                "api-references/v2/singapore/transaction/close",
                 "api-references/v2/singapore/transaction/daily",
                 "api-references/v2/singapore/transaction/short-sell"
               ]
