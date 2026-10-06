@@ -304,6 +304,7 @@
               "group": "Detailed Reports",
               "icon": "file-contract",
               "pages": [
+                "api-references/v2/singapore/report/corporate-actions",
                 "api-references/v2/singapore/report/company-report"
               ]
             },
