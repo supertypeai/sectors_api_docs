@@ -1335,7 +1335,7 @@
         "/v2/companies/": {
             "get": {
                 "operationId": "companies_retrieve",
-                "description": "High-performance API for filtering and sorting IDX-listed companies. Supports both structured SQL-like queries (`where`, `order_by`) and natural language queries (`q`). Returns a paginated list of companies.\n\n**Query modes** (mutually exclusive — `q` overrides all others):\n- `q`: Natural language, e.g. `top 10 tech companies by revenue in 2023`\n- `where` + `order_by`: SQL-like structured query\n\n<Note>For the most precise natural language results, filter by sector/industry slugs. Retrieve the complete slug list from the [Subsectors](https://docs.sectors.app/api-references/v2/indonesia/helper-list/subsectors), [Industries](https://docs.sectors.app/api-references/v2/indonesia/helper-list/industries), or [Subindustries](https://docs.sectors.app/api-references/v2/indonesia/helper-list/subindustries) endpoints.</Note>\n\n<Accordion title=\"Smart FY Handling\">\nTo account for reporting lags, 'latest year' queries made between January and April default to the previous audited year (e.g. a query in early 2026 uses 2024 data).\n</Accordion>\n\n<Accordion title=\"Syntax and Operators\">\n**Operators:** `=`, `!=`, `>`, `>=`, `<`, `<=`, `like`, `in`\n\n**Logic:** combine conditions with `and` and `or`\n\n**String values:** use single or double quotes — `sector = 'Technology'`\n\n**Lists (for `in`):** `tags in ['blue-chip', 'dividend']`\n</Accordion>\n\n<Accordion title=\"Yearly and Forecast Data\">\nAccess historical or forecast data using bracket notation: `field[YYYY]`\n\nExamples: `revenue[2023] > 100000000000` or `forecast_eps_growth[2025] > 0.15`\n</Accordion>\n\n<Accordion title=\"Arithmetic Expressions\">\nPerform calculations within your query on both sides of a condition.\n\nExamples: `revenue[2024] / total_assets[2024] > 0.5` or `revenue[2024] > revenue[2023] * 1.2`\n</Accordion>\n\n<Accordion title=\"Available Fields\">\n<AccordionGroup>\n\n<Accordion title=\"Direct Fields (Top-level columns)\">\n**How to Use:** Query these fields directly using standard operators (`=`, `!=`, `>`, `<`, `LIKE`, `IN`). String comparisons are case-insensitive.\n\n<Accordion title=\"Examples\">\n- `where=market_cap > 500000000000000`\n- `where=company_name like '%energi%'`\n- `where=sector = 'Financials' and listing_date > '2005-01-01'`\n</Accordion>\n\n- **symbol**: IDX ticker symbol (e.g. BBCA, TLKM)\n- **company_name**: Full registered company name\n- **listing_board**: IDX board: Main, Development, or Acceleration\n- **industry**: IDX industry classification\n- **sub_industry**: IDX sub-industry classification\n- **sector**: IDX sector classification (broader than industry)\n- **sub_sector**: IDX sub-sector classification\n- **market_cap**: Market capitalisation in IDR\n- **market_cap_rank**: Rank by market cap among all IDX companies (1 = largest)\n- **employee_num**: Total number of employees\n- **employee_num_rank**: Rank by employee count among all IDX companies\n- **listing_date**: Date the company was first listed on IDX\n- **last_ex_dividend_date**: Most recent ex-dividend date\n- **last_close_price**: Latest closing price in IDR\n- **daily_close_change**: Day-over-day closing price change as a decimal\n- **forward_pe**: Forward price-to-earnings ratio based on next year earnings estimate\n- **intrinsic_value**: Estimated intrinsic value per share in IDR\n- **esg_score**: ESG (Environmental, Social, Governance) composite score\n- **yield_ttm**: Dividend yield over the trailing twelve months\n- **dividend_ttm**: Total dividends paid per share over the trailing twelve months in IDR\n- **payout_ratio**: Proportion of earnings paid out as dividends\n- **cash_payout_ratio**: Proportion of free cash flow paid out as dividends\n- **yoy_quarter_earnings_growth**: Year-over-year earnings growth based on the most recent quarter\n- **yoy_quarter_revenue_growth**: Year-over-year revenue growth based on the most recent quarter\n</Accordion>\n\n<Accordion title=\"Array Fields\">\n**How to Use:** Query using the `in` operator to check if any of the provided values exist in the array.\n\n<Accordion title=\"Examples\">\n- `where=indices in ['LQ45', 'IDX30']`\n- `where=tags in ['52-w-high', 'public-float-under-25']`\n</Accordion>\n\n- **tags**: Analyst sentiment tags (e.g. 'bullish'). Filter with `in` operator.\n- **indices**: IDX indices this stock belongs to (e.g. LQ45, IDX30). Filter with `in` operator.\n- **affiliates**: Related company tickers (affiliates/group entities)\n</Accordion>\n\n<Accordion title=\"JSON Object Fields (Most Recent Data)\">\n**How to Use:** Query as if they were direct fields — the parser automatically extracts the value from the underlying JSON.\n\n<Accordion title=\"Examples\">\n- `where=pe_ttm < 15 and roe_ttm > 0.1`\n- `where=last_close_price < all_time_high_price`\n- `where=ytd_low_date > '2025-03-01'`\n</Accordion>\n\n- **pe_ttm**: Price-to-earnings ratio (trailing twelve months)\n- **pb_mrq**: Price-to-book ratio (most recent quarter)\n- **ps_ttm**: Price-to-sales ratio (trailing twelve months)\n- **dar_mrq**: Debt-to-assets ratio (most recent quarter)\n- **der_mrq**: Debt-to-equity ratio (most recent quarter)\n- **roa_ttm**: Return on assets (trailing twelve months)\n- **roe_ttm**: Return on equity (trailing twelve months)\n- **total_assets_mrq**: Total assets in IDR (most recent quarter)\n- **total_equity_mrq**: Total shareholders equity in IDR (most recent quarter)\n- **total_revenue_mrq**: Total revenue in IDR (most recent quarter)\n- **earnings_mrq**: Net profit/loss in IDR (most recent quarter)\n- **total_liabilities_mrq**: Total liabilities in IDR (most recent quarter)\n- **yearly_mcap_change**: Year-over-year market cap change as a decimal\n- **dividend_yield_avg_period**: Number of years used to compute average dividend yield\n- **dividend_yield_avg**: Average annual dividend yield over the period\n- **ytd_low_price**: Year-to-date lowest closing price in IDR\n- **ytd_low_date**: Date of the year-to-date lowest closing price\n- **ytd_high_price**: Year-to-date highest closing price in IDR\n- **ytd_high_date**: Date of the year-to-date highest closing price\n- **52_w_low_price**: 52-week lowest closing price in IDR\n- **52_w_low_date**: Date of the 52-week lowest closing price\n- **52_w_high_price**: 52-week highest closing price in IDR\n- **52_w_high_date**: Date of the 52-week highest closing price\n- **90_d_low_price**: 90-day lowest closing price in IDR\n- **90_d_low_date**: Date of the 90-day lowest closing price\n- **90_d_high_price**: 90-day highest closing price in IDR\n- **90_d_high_date**: Date of the 90-day highest closing price\n- **all_time_low_price**: All-time lowest closing price in IDR\n- **all_time_low_date**: Date of the all-time lowest closing price\n- **all_time_high_price**: All-time highest closing price in IDR\n- **all_time_high_date**: Date of the all-time highest closing price\n</Accordion>\n\n<Accordion title=\"Yearly JSON Fields (Historical & Forecast Data)\">\n**How to Use:** Must use bracket notation `field[YYYY]` to access data for a specific year. Supports all numeric operators, field-to-field comparisons, and arithmetic expressions.\n\n<Accordion title=\"Examples\">\n- `where=revenue[2023] > earnings[2023] * 5`\n- `where=roe[2023] > 0.15 and roe[2022] > 0.15`\n- `where=pe[2024] < pe_peer_avg[2024]`\n</Accordion>\n\n- **eps**: Earnings per share for the year. Use: `eps[2024]`.\n- **eps_growth**: Year-over-year EPS growth rate. Use: `eps_growth[2024]`.\n- **total_dividend**: Total dividends paid per share for the year. Use: `total_dividend[2024]`.\n- **total_yield**: Total dividend yield for the year. Use: `total_yield[2024]`.\n- **earnings**: Annual net profit/loss in IDR. Use: `earnings[2024]`.\n- **allowance_for_loans**: Allowance for loan losses in IDR. Use: `allowance_for_loans[2024]`. (banking)\n- **capital_expenditure**: Capital expenditure in IDR. Use: `capital_expenditure[2024]`.\n- **cash_and_equivalents**: Cash and cash equivalents in IDR. Use: `cash_and_equivalents[2024]`.\n- **cash_inflow**: Total cash inflow in IDR. Use: `cash_inflow[2024]`.\n- **cash_only**: Cash excluding equivalents in IDR. Use: `cash_only[2024]`.\n- **cash_outflow**: Total cash outflow in IDR. Use: `cash_outflow[2024]`.\n- **core_capital_tier1**: Tier 1 core capital in IDR. Use: `core_capital_tier1[2024]`. (banking)\n- **cost_of_revenue**: Cost of goods sold / cost of revenue in IDR. Use: `cost_of_revenue[2024]`.\n- **credit_rwa**: Credit risk-weighted assets in IDR. Use: `credit_rwa[2024]`. (banking)\n- **current_account**: Current account deposits in IDR. Use: `current_account[2024]`. (banking)\n- **current_assets**: Total current assets in IDR. Use: `current_assets[2024]`.\n- **current_liabilities**: Total current liabilities in IDR. Use: `current_liabilities[2024]`.\n- **earnings_before_tax**: Earnings before income tax in IDR. Use: `earnings_before_tax[2024]`.\n- **ebit**: Earnings before interest and tax in IDR. Use: `ebit[2024]`.\n- **ebitda**: Earnings before interest, tax, depreciation and amortisation in IDR. Use: `ebitda[2024]`.\n- **end_cash_position**: Ending cash position from the cash flow statement in IDR. Use: `end_cash_position[2024]`.\n- **financing_cash_flow**: Net cash from financing activities in IDR. Use: `financing_cash_flow[2024]`.\n- **fixed_assets**: Net property, plant and equipment in IDR. Use: `fixed_assets[2024]`.\n- **free_cash_flow**: Operating cash flow minus capex in IDR. Use: `free_cash_flow[2024]`.\n- **gross_loan**: Gross loan portfolio before allowances in IDR. Use: `gross_loan[2024]`. (banking)\n- **gross_profit**: Revenue minus cost of revenue in IDR. Use: `gross_profit[2024]`.\n- **high_quality_liquid_asset**: High-quality liquid assets (HQLA) held in IDR. Use: `high_quality_liquid_asset[2024]`. (banking)\n- **interest_expense**: Total interest expense in IDR. Use: `interest_expense[2024]`.\n- **interest_expense_non_operating**: Non-operating interest expense in IDR. Use: `interest_expense_non_operating[2024]`.\n- **interest_income**: Total interest income in IDR. Use: `interest_income[2024]`.\n- **inventories**: Inventories on the balance sheet in IDR. Use: `inventories[2024]`.\n- **investing_cash_flow**: Net cash from investing activities in IDR. Use: `investing_cash_flow[2024]`.\n- **market_rwa**: Market risk-weighted assets in IDR. Use: `market_rwa[2024]`. (banking)\n- **net_cash_flow**: Net change in cash for the period in IDR. Use: `net_cash_flow[2024]`.\n- **net_interest_income**: Interest income minus interest expense in IDR. Use: `net_interest_income[2024]`. (banking)\n- **net_loan**: Net loans after allowances in IDR. Use: `net_loan[2024]`. (banking)\n- **net_premium_income**: Net insurance premium income in IDR. Use: `net_premium_income[2024]`. (insurance)\n- **non_current_liabilities**: Long-term liabilities in IDR. Use: `non_current_liabilities[2024]`.\n- **non_interest_bearing_liabilities**: Liabilities that do not accrue interest in IDR. Use: `non_interest_bearing_liabilities[2024]`. (banking)\n- **non_interest_income**: Fee and commission income outside of interest in IDR. Use: `non_interest_income[2024]`. (banking)\n- **non_loan_assets**: Total assets excluding loans in IDR. Use: `non_loan_assets[2024]`. (banking)\n- **non_loan_earning_assets**: Interest-earning assets excluding loans in IDR. Use: `non_loan_earning_assets[2024]`. (banking)\n- **non_loan_non_earning_assets**: Non-earning assets excluding loans in IDR. Use: `non_loan_non_earning_assets[2024]`. (banking)\n- **non_operating_income_or_loss**: Income or losses outside core operations in IDR. Use: `non_operating_income_or_loss[2024]`.\n- **operating_cash_flow**: Net cash generated from core operations in IDR. Use: `operating_cash_flow[2024]`.\n- **operating_expense**: Total operating expenses in IDR. Use: `operating_expense[2024]`.\n- **operating_pnl**: Operating profit/loss (revenue minus operating expenses) in IDR. Use: `operating_pnl[2024]`.\n- **operational_rwa**: Operational risk-weighted assets in IDR. Use: `operational_rwa[2024]`. (banking)\n- **other_interest_bearing_liabilities**: Other interest-bearing liabilities excluding deposits in IDR. Use: `other_interest_bearing_liabilities[2024]`. (banking)\n- **outstanding_shares**: Total shares outstanding. Use: `outstanding_shares[2024]`.\n- **prepaid_assets**: Prepaid expenses and other current assets in IDR. Use: `prepaid_assets[2024]`.\n- **premium_expense**: Insurance premium expenses in IDR. Use: `premium_expense[2024]`. (insurance)\n- **premium_income**: Gross insurance premium income in IDR. Use: `premium_income[2024]`. (insurance)\n- **provision**: Provision for loan losses or liabilities in IDR. Use: `provision[2024]`.\n- **realized_capital_goods_investment**: Realised investment in capital goods in IDR. Use: `realized_capital_goods_investment[2024]`.\n- **retained_earnings**: Cumulative retained earnings on balance sheet in IDR. Use: `retained_earnings[2024]`.\n- **revenue**: Annual total revenue in IDR. Use: `revenue[2024]`.\n- **savings_account**: Savings account deposits in IDR. Use: `savings_account[2024]`. (banking)\n- **supplementary_capital_tier2**: Tier 2 supplementary capital in IDR. Use: `supplementary_capital_tier2[2024]`. (banking)\n- **tax**: Income tax expense in IDR. Use: `tax[2024]`.\n- **time_deposit**: Time deposit liabilities in IDR. Use: `time_deposit[2024]`. (banking)\n- **total_assets**: Total assets on the balance sheet in IDR. Use: `total_assets[2024]`.\n- **total_capital**: Total regulatory capital in IDR. Use: `total_capital[2024]`. (banking)\n- **total_cash_and_due_from_banks**: Cash and amounts due from other banks in IDR. Use: `total_cash_and_due_from_banks[2024]`. (banking)\n- **total_debt**: Total interest-bearing debt in IDR. Use: `total_debt[2024]`.\n- **total_deposit**: Total customer deposits in IDR. Use: `total_deposit[2024]`. (banking)\n- **total_equity**: Total shareholders equity in IDR. Use: `total_equity[2024]`.\n- **total_liabilities**: Total liabilities on the balance sheet in IDR. Use: `total_liabilities[2024]`.\n- **total_risk_weighted_asset**: Total risk-weighted assets in IDR. Use: `total_risk_weighted_asset[2024]`. (banking)\n- **special_mention_loan**: Special mention (watch-list) loans in IDR. Use: `special_mention_loan[2024]`. (banking)\n- **non_performing_loan**: Non-performing loans (NPL) in IDR. Use: `non_performing_loan[2024]`. (banking)\n- **restructured_loan_current**: Restructured loans currently performing in IDR. Use: `restructured_loan_current[2024]`. (banking)\n- **forecast_eps_growth**: Analyst consensus EPS growth forecast. Use: `forecast_eps_growth[2025]`.\n- **forecast_revenue_growth**: Analyst consensus revenue growth forecast. Use: `forecast_revenue_growth[2025]`.\n- **forecast_eps_estimate**: Analyst consensus EPS estimate in IDR. Use: `forecast_eps_estimate[2025]`.\n- **forecast_revenue_estimate**: Analyst consensus revenue estimate in IDR. Use: `forecast_revenue_estimate[2025]`.\n- **pe**: Price-to-earnings ratio for the year. Use: `pe[2024]`.\n- **pb**: Price-to-book ratio for the year. Use: `pb[2024]`.\n- **ps**: Price-to-sales ratio for the year. Use: `ps[2024]`.\n- **pcf**: Price-to-cash-flow ratio for the year. Use: `pcf[2024]`.\n- **peg**: Price/earnings-to-growth ratio for the year. Use: `peg[2024]`.\n- **enterprise_to_ebitda**: Enterprise value to EBITDA for the year. Use: `enterprise_to_ebitda[2024]`.\n- **enterprise_to_revenue**: Enterprise value to revenue for the year. Use: `enterprise_to_revenue[2024]`.\n- **pb_peer_avg**: Peer average price-to-book ratio for the year. Use: `pb_peer_avg[2024]`.\n- **pe_peer_avg**: Peer average price-to-earnings ratio for the year. Use: `pe_peer_avg[2024]`.\n- **ps_peer_avg**: Peer average price-to-sales ratio for the year. Use: `ps_peer_avg[2024]`.\n- **debt_to_asset_ratio**: Total debt divided by total assets. Use: `debt_to_asset_ratio[2024]`.\n- **debt_to_equity_ratio**: Total debt divided by shareholders equity. Use: `debt_to_equity_ratio[2024]`.\n- **cash_flow_to_debt_ratio**: Operating cash flow divided by total debt. Use: `cash_flow_to_debt_ratio[2024]`.\n- **interest_coverage_ratio**: EBIT divided by interest expense. Use: `interest_coverage_ratio[2024]`.\n- **current_ratio**: Current assets divided by current liabilities. Use: `current_ratio[2024]`.\n- **operating_cash_flow_margin**: Operating cash flow as a percentage of revenue. Use: `operating_cash_flow_margin[2024]`.\n- **fixed_asset_turnover**: Revenue divided by net fixed assets. Use: `fixed_asset_turnover[2024]`.\n- **total_asset_turnover**: Revenue divided by total assets. Use: `total_asset_turnover[2024]`.\n- **roa**: Return on assets for the year. Use: `roa[2024]`.\n- **roe**: Return on equity for the year. Use: `roe[2024]`.\n- **net_profit_margin**: Net profit as a percentage of revenue. Use: `net_profit_margin[2024]`.\n- **gross_profit_margin**: Gross profit as a percentage of revenue. Use: `gross_profit_margin[2024]`.\n- **operating_profit_margin**: Operating profit as a percentage of revenue. Use: `operating_profit_margin[2024]`.\n- **capital_adequacy_ratio**: Regulatory capital as a percentage of risk-weighted assets. Use: `capital_adequacy_ratio[2024]`. (banking)\n- **casa_ratio**: Current and savings account deposits as a share of total deposits. Use: `casa_ratio[2024]`. (banking)\n- **leverage_ratio**: Tier 1 capital divided by total exposure. Use: `leverage_ratio[2024]`. (banking)\n- **loan_to_deposit_ratio**: Net loans divided by total deposits. Use: `loan_to_deposit_ratio[2024]`. (banking)\n- **liquidity_coverage_ratio**: HQLA divided by net cash outflows over 30 days. Use: `liquidity_coverage_ratio[2024]`. (banking)\n- **efficiency_ratio**: Operating expenses divided by net revenue. Use: `efficiency_ratio[2024]`.\n- **net_interest_margin**: Net interest income as a percentage of earning assets. Use: `net_interest_margin[2024]`. (banking)\n- **cost_to_income_ratio**: Operating costs divided by operating income. Use: `cost_to_income_ratio[2024]`.\n</Accordion>\n\n<Accordion title=\"Quarterly Financial Data\">\n**How to Use:** Must use bracket notation `field[Qi-YYYY]` to access data for a specific quarter.\n\n<Accordion title=\"Examples\">\n- `where=revenue_q[Q1-2024] > 1000000000`\n- `where=earnings_q[Q4-2023] > earnings_q[Q3-2023]`\n</Accordion>\n\n- **revenue_q**: Quarterly revenue in IDR. Use: `revenue_q[Q1-2024]`.\n- **earnings_q**: Quarterly net profit/loss in IDR. Use: `earnings_q[Q1-2024]`.\n- **net_loan_q**: Quarterly net loans in IDR. Use: `net_loan_q[Q1-2024]`. (banking)\n- **gross_profit_q**: Quarterly gross profit in IDR. Use: `gross_profit_q[Q1-2024]`.\n- **time_deposit_q**: Quarterly time deposits in IDR. Use: `time_deposit_q[Q1-2024]`. (banking)\n- **operating_pnl_q**: Quarterly operating profit/loss in IDR. Use: `operating_pnl_q[Q1-2024]`.\n- **total_deposit_q**: Quarterly total deposits in IDR. Use: `total_deposit_q[Q1-2024]`. (banking)\n- **ebit_q**: Quarterly EBIT in IDR. Use: `ebit_q[Q1-2024]`.\n- **ebitda_q**: Quarterly EBITDA in IDR. Use: `ebitda_q[Q1-2024]`.\n- **earnings_before_tax_q**: Quarterly earnings before tax in IDR. Use: `earnings_before_tax_q[Q1-2024]`.\n- **tax_q**: Quarterly income tax expense in IDR. Use: `tax_q[Q1-2024]`.\n- **cost_of_revenue_q**: Quarterly cost of revenue in IDR. Use: `cost_of_revenue_q[Q1-2024]`.\n- **current_account_q**: Quarterly current account deposits in IDR. Use: `current_account_q[Q1-2024]`. (banking)\n- **interest_income_q**: Quarterly interest income in IDR. Use: `interest_income_q[Q1-2024]`. (banking)\n- **premium_expense_q**: Quarterly premium expenses in IDR. Use: `premium_expense_q[Q1-2024]`. (insurance)\n- **savings_account_q**: Quarterly savings account deposits in IDR. Use: `savings_account_q[Q1-2024]`. (banking)\n- **interest_expense_q**: Quarterly interest expense in IDR. Use: `interest_expense_q[Q1-2024]`.\n- **operating_expense_q**: Quarterly operating expenses in IDR. Use: `operating_expense_q[Q1-2024]`.\n- **non_operating_income_or_loss_q**: Quarterly non-operating income/loss in IDR. Use: `non_operating_income_or_loss_q[Q1-2024]`.\n- **interest_expense_non_operating_q**: Quarterly non-operating interest expense in IDR. Use: `interest_expense_non_operating_q[Q1-2024]`.\n- **non_interest_bearing_liabilities_q**: Quarterly non-interest-bearing liabilities in IDR. Use: `non_interest_bearing_liabilities_q[Q1-2024]`. (banking)\n- **realized_capital_goods_investment_q**: Quarterly realised capital goods investment in IDR. Use: `realized_capital_goods_investment_q[Q1-2024]`.\n- **other_interest_bearing_liabilities_q**: Quarterly other interest-bearing liabilities in IDR. Use: `other_interest_bearing_liabilities_q[Q1-2024]`. (banking)\n- **total_assets_q**: Quarterly total assets in IDR. Use: `total_assets_q[Q1-2024]`.\n- **current_assets_q**: Quarterly current assets in IDR. Use: `current_assets_q[Q1-2024]`.\n- **total_liabilities_q**: Quarterly total liabilities in IDR. Use: `total_liabilities_q[Q1-2024]`.\n- **net_premium_income_q**: Quarterly net premium income in IDR. Use: `net_premium_income_q[Q1-2024]`. (insurance)\n- **allowance_for_loans_q**: Quarterly allowance for loan losses in IDR. Use: `allowance_for_loans_q[Q1-2024]`. (banking)\n- **current_liabilities_q**: Quarterly current liabilities in IDR. Use: `current_liabilities_q[Q1-2024]`.\n- **non_current_liabilities_q**: Quarterly non-current liabilities in IDR. Use: `non_current_liabilities_q[Q1-2024]`.\n- **total_equity_q**: Quarterly total equity in IDR. Use: `total_equity_q[Q1-2024]`.\n- **total_debt_q**: Quarterly total debt in IDR. Use: `total_debt_q[Q1-2024]`.\n- **cash_only_q**: Quarterly cash (excluding equivalents) in IDR. Use: `cash_only_q[Q1-2024]`.\n- **provision_q**: Quarterly provision for losses in IDR. Use: `provision_q[Q1-2024]`.\n- **gross_loan_q**: Quarterly gross loans before allowances in IDR. Use: `gross_loan_q[Q1-2024]`. (banking)\n- **total_cash_and_due_from_banks_q**: Quarterly cash and amounts due from banks in IDR. Use: `total_cash_and_due_from_banks_q[Q1-2024]`. (banking)\n- **operating_cash_flow_q**: Quarterly operating cash flow in IDR. Use: `operating_cash_flow_q[Q1-2024]`.\n- **investing_cash_flow_q**: Quarterly investing cash flow in IDR. Use: `investing_cash_flow_q[Q1-2024]`.\n- **financing_cash_flow_q**: Quarterly financing cash flow in IDR. Use: `financing_cash_flow_q[Q1-2024]`.\n- **net_interest_income_q**: Quarterly net interest income in IDR. Use: `net_interest_income_q[Q1-2024]`. (banking)\n- **non_interest_income_q**: Quarterly non-interest income in IDR. Use: `non_interest_income_q[Q1-2024]`. (banking)\n- **free_cash_flow_q**: Quarterly free cash flow in IDR. Use: `free_cash_flow_q[Q1-2024]`.\n- **premium_income_q**: Quarterly gross premium income in IDR. Use: `premium_income_q[Q1-2024]`. (insurance)\n- **capital_expenditure_q**: Quarterly capital expenditure in IDR. Use: `capital_expenditure_q[Q1-2024]`.\n</Accordion>\n\n<Accordion title=\"JSON List Fields\">\n**How to Use:** The query checks if **any** object in the list matches the condition. Use `=` or `like` for strings, numeric operators for numbers.\n\n<Accordion title=\"Examples\">\n- `where=major_shareholders_name like 'PT%' and major_shareholders_share_percentage > 0.1`\n- `where=key_executives_name = 'Prajogo Pangestu'`\n</Accordion>\n\n- **key_executives_name**: Filter by executive name in the key_executives list. Use `like` operator.\n- **key_executives_position**: Filter by executive position/title in the key_executives list. Use `like` operator.\n- **executives_shareholdings_name**: Filter by executive name in the shareholdings list.\n- **executives_shareholdings_share_amount**: Filter by executive share amount (number of shares).\n- **executives_shareholdings_share_percentage**: Filter by executive ownership percentage.\n- **major_shareholders_name**: Filter by major shareholder name. Use `like` operator.\n- **major_shareholders_share_value**: Filter by major shareholder share value in IDR.\n- **major_shareholders_share_amount**: Filter by major shareholder number of shares.\n- **major_shareholders_share_percentage**: Filter by major shareholder ownership percentage.\n- **free_float**: Public (non-insider) ownership percentage from major_shareholders. Value is a decimal (0.45 = 45%).\n</Accordion>\n\n</AccordionGroup>\n</Accordion>\n\n<Info>Costs 1 API credit for structured queries. Using the natural-language `?q=` parameter costs 3 API credits.</Info>",
+                "description": "High-performance API for filtering and sorting IDX-listed companies. Supports both structured SQL-like queries (`where`, `order_by`) and natural language queries (`q`). Returns a paginated list of companies.\n\n**Query modes** (mutually exclusive — `q` overrides all others):\n- `q`: Natural language, e.g. `top 10 tech companies by revenue in 2023`\n- `where` + `order_by`: SQL-like structured query\n\n<Note>For the most precise natural language results, filter by sector/industry slugs. Retrieve the complete slug list from the [Subsectors](https://docs.sectors.app/api-references/v2/indonesia/helper-list/subsectors), [Industries](https://docs.sectors.app/api-references/v2/indonesia/helper-list/industries), or [Subindustries](https://docs.sectors.app/api-references/v2/indonesia/helper-list/subindustries) endpoints.</Note>\n\n<Accordion title=\"Smart FY Handling\">\nTo account for reporting lags, 'latest year' queries made between January and April default to the previous audited year (e.g. a query in early 2026 uses 2024 data).\n</Accordion>\n\n<Accordion title=\"Syntax and Operators\">\n**Operators:** `=`, `!=`, `>`, `>=`, `<`, `<=`, `like`, `in`\n\n**Logic:** combine conditions with `and` and `or`\n\n**String values:** use single or double quotes — `sector = 'Technology'`\n\n**Lists (for `in`):** `tags in ['blue-chip', 'dividend']`\n</Accordion>\n\n<Accordion title=\"Yearly and Forecast Data\">\nAccess historical or forecast data using bracket notation: `field[YYYY]`\n\nExamples: `revenue[2023] > 100000000000` or `forecast_eps_growth[2025] > 0.15`\n</Accordion>\n\n<Accordion title=\"Arithmetic Expressions\">\nPerform calculations within your query on both sides of a condition.\n\nExamples: `revenue[2024] / total_assets[2024] > 0.5` or `revenue[2024] > revenue[2023] * 1.2`\n</Accordion>\n\n<Accordion title=\"Available Fields\">\n<AccordionGroup>\n\n<Accordion title=\"Direct Fields (Top-level columns)\">\n**How to Use:** Query these fields directly using standard operators (`=`, `!=`, `>`, `<`, `LIKE`, `IN`). String comparisons are case-insensitive.\n\n<Accordion title=\"Examples\">\n- `where=market_cap > 500000000000000`\n- `where=company_name like '%energi%'`\n- `where=sector = 'Financials' and listing_date > '2005-01-01'`\n</Accordion>\n\n- **symbol**: IDX ticker symbol (e.g. BBCA, TLKM)\n- **company_name**: Full registered company name\n- **listing_board**: IDX board: Main, Development, or Acceleration\n- **industry**: IDX industry classification\n- **sub_industry**: IDX sub-industry classification\n- **sector**: IDX sector classification (broader than industry)\n- **sub_sector**: IDX sub-sector classification\n- **market_cap**: Market capitalisation in IDR\n- **market_cap_rank**: Rank by market cap among all IDX companies (1 = largest)\n- **employee_num**: Total number of employees\n- **employee_num_rank**: Rank by employee count among all IDX companies\n- **listing_date**: Date the company was first listed on IDX\n- **last_ex_dividend_date**: Most recent ex-dividend date\n- **last_close_price**: Latest closing price in IDR\n- **daily_close_change**: Day-over-day closing price change as a decimal\n- **forward_pe**: Forward price-to-earnings ratio based on next year earnings estimate\n- **intrinsic_value**: Estimated intrinsic value per share in IDR\n- **esg_score**: ESG (Environmental, Social, Governance) composite score\n- **yield_ttm**: Dividend yield over the trailing twelve months\n- **dividend_ttm**: Total dividends paid per share over the trailing twelve months in IDR\n- **payout_ratio**: Proportion of earnings paid out as dividends\n- **cash_payout_ratio**: Proportion of free cash flow paid out as dividends\n- **yoy_quarter_earnings_growth**: Year-over-year earnings growth based on the most recent quarter\n- **yoy_quarter_revenue_growth**: Year-over-year revenue growth based on the most recent quarter\n- **yoy_ttm_earnings_growth**: Year-over-year growth of trailing twelve month earnings\n- **yoy_ttm_revenue_growth**: Year-over-year growth of trailing twelve month revenue\n</Accordion>\n\n<Accordion title=\"Array Fields\">\n**How to Use:** Query using the `in` operator to check if any of the provided values exist in the array.\n\n<Accordion title=\"Examples\">\n- `where=indices in ['LQ45', 'IDX30']`\n- `where=tags in ['52-w-high', 'public-float-under-25']`\n</Accordion>\n\n- **tags**: Analyst sentiment tags (e.g. 'bullish'). Filter with `in` operator.\n- **indices**: IDX indices this stock belongs to (e.g. LQ45, IDX30). Filter with `in` operator.\n- **affiliates**: Related company tickers (affiliates/group entities)\n</Accordion>\n\n<Accordion title=\"JSON Object Fields (Most Recent Data)\">\n**How to Use:** Query as if they were direct fields — the parser automatically extracts the value from the underlying JSON.\n\n<Accordion title=\"Examples\">\n- `where=pe_ttm < 15 and roe_ttm > 0.1`\n- `where=last_close_price < all_time_high_price`\n- `where=ytd_low_date > '2025-03-01'`\n</Accordion>\n\n- **pe_ttm**: Price-to-earnings ratio (trailing twelve months)\n- **pb_mrq**: Price-to-book ratio (most recent quarter)\n- **ps_ttm**: Price-to-sales ratio (trailing twelve months)\n- **dar_mrq**: Debt-to-assets ratio (most recent quarter)\n- **der_mrq**: Debt-to-equity ratio (most recent quarter)\n- **roa_ttm**: Return on assets (trailing twelve months)\n- **roe_ttm**: Return on equity (trailing twelve months)\n- **total_assets_mrq**: Total assets in IDR (most recent quarter)\n- **total_equity_mrq**: Total shareholders equity in IDR (most recent quarter)\n- **total_revenue_mrq**: Total revenue in IDR (most recent quarter)\n- **earnings_mrq**: Net profit/loss in IDR (most recent quarter)\n- **total_liabilities_mrq**: Total liabilities in IDR (most recent quarter)\n- **yearly_mcap_change**: Year-over-year market cap change as a decimal\n- **dividend_yield_avg_period**: Number of years used to compute average dividend yield\n- **dividend_yield_avg**: Average annual dividend yield over the period\n- **ytd_low_price**: Year-to-date lowest closing price in IDR\n- **ytd_low_date**: Date of the year-to-date lowest closing price\n- **ytd_high_price**: Year-to-date highest closing price in IDR\n- **ytd_high_date**: Date of the year-to-date highest closing price\n- **52_w_low_price**: 52-week lowest closing price in IDR\n- **52_w_low_date**: Date of the 52-week lowest closing price\n- **52_w_high_price**: 52-week highest closing price in IDR\n- **52_w_high_date**: Date of the 52-week highest closing price\n- **90_d_low_price**: 90-day lowest closing price in IDR\n- **90_d_low_date**: Date of the 90-day lowest closing price\n- **90_d_high_price**: 90-day highest closing price in IDR\n- **90_d_high_date**: Date of the 90-day highest closing price\n- **all_time_low_price**: All-time lowest closing price in IDR\n- **all_time_low_date**: Date of the all-time lowest closing price\n- **all_time_high_price**: All-time highest closing price in IDR\n- **all_time_high_date**: Date of the all-time highest closing price\n</Accordion>\n\n<Accordion title=\"Yearly JSON Fields (Historical & Forecast Data)\">\n**How to Use:** Must use bracket notation `field[YYYY]` to access data for a specific year. Supports all numeric operators, field-to-field comparisons, and arithmetic expressions.\n\n<Accordion title=\"Examples\">\n- `where=revenue[2023] > earnings[2023] * 5`\n- `where=roe[2023] > 0.15 and roe[2022] > 0.15`\n- `where=pe[2024] < pe_peer_avg[2024]`\n</Accordion>\n\n- **eps**: Earnings per share for the year. Use: `eps[2024]`.\n- **eps_growth**: Year-over-year EPS growth rate. Use: `eps_growth[2024]`.\n- **total_dividend**: Total dividends paid per share for the year. Use: `total_dividend[2024]`.\n- **total_yield**: Total dividend yield for the year. Use: `total_yield[2024]`.\n- **earnings**: Annual net profit/loss in IDR. Use: `earnings[2024]`.\n- **allowance_for_loans**: Allowance for loan losses in IDR. Use: `allowance_for_loans[2024]`. (banking)\n- **capital_expenditure**: Capital expenditure in IDR. Use: `capital_expenditure[2024]`.\n- **cash_and_equivalents**: Cash and cash equivalents in IDR. Use: `cash_and_equivalents[2024]`.\n- **cash_inflow**: Total cash inflow in IDR. Use: `cash_inflow[2024]`.\n- **cash_only**: Cash excluding equivalents in IDR. Use: `cash_only[2024]`.\n- **cash_outflow**: Total cash outflow in IDR. Use: `cash_outflow[2024]`.\n- **core_capital_tier1**: Tier 1 core capital in IDR. Use: `core_capital_tier1[2024]`. (banking)\n- **cost_of_revenue**: Cost of goods sold / cost of revenue in IDR. Use: `cost_of_revenue[2024]`.\n- **credit_rwa**: Credit risk-weighted assets in IDR. Use: `credit_rwa[2024]`. (banking)\n- **current_account**: Current account deposits in IDR. Use: `current_account[2024]`. (banking)\n- **current_assets**: Total current assets in IDR. Use: `current_assets[2024]`.\n- **current_liabilities**: Total current liabilities in IDR. Use: `current_liabilities[2024]`.\n- **earnings_before_tax**: Earnings before income tax in IDR. Use: `earnings_before_tax[2024]`.\n- **ebit**: Earnings before interest and tax in IDR. Use: `ebit[2024]`.\n- **ebitda**: Earnings before interest, tax, depreciation and amortisation in IDR. Use: `ebitda[2024]`.\n- **end_cash_position**: Ending cash position from the cash flow statement in IDR. Use: `end_cash_position[2024]`.\n- **financing_cash_flow**: Net cash from financing activities in IDR. Use: `financing_cash_flow[2024]`.\n- **fixed_assets**: Net property, plant and equipment in IDR. Use: `fixed_assets[2024]`.\n- **free_cash_flow**: Operating cash flow minus capex in IDR. Use: `free_cash_flow[2024]`.\n- **gross_loan**: Gross loan portfolio before allowances in IDR. Use: `gross_loan[2024]`. (banking)\n- **gross_profit**: Revenue minus cost of revenue in IDR. Use: `gross_profit[2024]`.\n- **high_quality_liquid_asset**: High-quality liquid assets (HQLA) held in IDR. Use: `high_quality_liquid_asset[2024]`. (banking)\n- **interest_expense**: Total interest expense in IDR. Use: `interest_expense[2024]`.\n- **interest_expense_non_operating**: Non-operating interest expense in IDR. Use: `interest_expense_non_operating[2024]`.\n- **interest_income**: Total interest income in IDR. Use: `interest_income[2024]`.\n- **inventories**: Inventories on the balance sheet in IDR. Use: `inventories[2024]`.\n- **investing_cash_flow**: Net cash from investing activities in IDR. Use: `investing_cash_flow[2024]`.\n- **market_rwa**: Market risk-weighted assets in IDR. Use: `market_rwa[2024]`. (banking)\n- **net_cash_flow**: Net change in cash for the period in IDR. Use: `net_cash_flow[2024]`.\n- **net_interest_income**: Interest income minus interest expense in IDR. Use: `net_interest_income[2024]`. (banking)\n- **net_loan**: Net loans after allowances in IDR. Use: `net_loan[2024]`. (banking)\n- **net_premium_income**: Net insurance premium income in IDR. Use: `net_premium_income[2024]`. (insurance)\n- **non_current_liabilities**: Long-term liabilities in IDR. Use: `non_current_liabilities[2024]`.\n- **non_interest_bearing_liabilities**: Liabilities that do not accrue interest in IDR. Use: `non_interest_bearing_liabilities[2024]`. (banking)\n- **non_interest_income**: Fee and commission income outside of interest in IDR. Use: `non_interest_income[2024]`. (banking)\n- **non_loan_assets**: Total assets excluding loans in IDR. Use: `non_loan_assets[2024]`. (banking)\n- **non_loan_earning_assets**: Interest-earning assets excluding loans in IDR. Use: `non_loan_earning_assets[2024]`. (banking)\n- **non_loan_non_earning_assets**: Non-earning assets excluding loans in IDR. Use: `non_loan_non_earning_assets[2024]`. (banking)\n- **non_operating_income_or_loss**: Income or losses outside core operations in IDR. Use: `non_operating_income_or_loss[2024]`.\n- **operating_cash_flow**: Net cash generated from core operations in IDR. Use: `operating_cash_flow[2024]`.\n- **operating_expense**: Total operating expenses in IDR. Use: `operating_expense[2024]`.\n- **operating_pnl**: Operating profit/loss (revenue minus operating expenses) in IDR. Use: `operating_pnl[2024]`.\n- **operational_rwa**: Operational risk-weighted assets in IDR. Use: `operational_rwa[2024]`. (banking)\n- **other_interest_bearing_liabilities**: Other interest-bearing liabilities excluding deposits in IDR. Use: `other_interest_bearing_liabilities[2024]`. (banking)\n- **outstanding_shares**: Total shares outstanding. Use: `outstanding_shares[2024]`.\n- **prepaid_assets**: Prepaid expenses and other current assets in IDR. Use: `prepaid_assets[2024]`.\n- **premium_expense**: Insurance premium expenses in IDR. Use: `premium_expense[2024]`. (insurance)\n- **premium_income**: Gross insurance premium income in IDR. Use: `premium_income[2024]`. (insurance)\n- **provision**: Provision for loan losses or liabilities in IDR. Use: `provision[2024]`.\n- **realized_capital_goods_investment**: Realised investment in capital goods in IDR. Use: `realized_capital_goods_investment[2024]`.\n- **retained_earnings**: Cumulative retained earnings on balance sheet in IDR. Use: `retained_earnings[2024]`.\n- **revenue**: Annual total revenue in IDR. Use: `revenue[2024]`.\n- **savings_account**: Savings account deposits in IDR. Use: `savings_account[2024]`. (banking)\n- **supplementary_capital_tier2**: Tier 2 supplementary capital in IDR. Use: `supplementary_capital_tier2[2024]`. (banking)\n- **tax**: Income tax expense in IDR. Use: `tax[2024]`.\n- **time_deposit**: Time deposit liabilities in IDR. Use: `time_deposit[2024]`. (banking)\n- **total_assets**: Total assets on the balance sheet in IDR. Use: `total_assets[2024]`.\n- **total_capital**: Total regulatory capital in IDR. Use: `total_capital[2024]`. (banking)\n- **total_cash_and_due_from_banks**: Cash and amounts due from other banks in IDR. Use: `total_cash_and_due_from_banks[2024]`. (banking)\n- **total_debt**: Total interest-bearing debt in IDR. Use: `total_debt[2024]`.\n- **total_deposit**: Total customer deposits in IDR. Use: `total_deposit[2024]`. (banking)\n- **total_equity**: Total shareholders equity in IDR. Use: `total_equity[2024]`.\n- **total_liabilities**: Total liabilities on the balance sheet in IDR. Use: `total_liabilities[2024]`.\n- **total_risk_weighted_asset**: Total risk-weighted assets in IDR. Use: `total_risk_weighted_asset[2024]`. (banking)\n- **special_mention_loan**: Special mention (watch-list) loans in IDR. Use: `special_mention_loan[2024]`. (banking)\n- **non_performing_loan**: Non-performing loans (NPL) in IDR. Use: `non_performing_loan[2024]`. (banking)\n- **restructured_loan_current**: Restructured loans currently performing in IDR. Use: `restructured_loan_current[2024]`. (banking)\n- **forecast_eps_growth**: Analyst consensus EPS growth forecast. Use: `forecast_eps_growth[2025]`.\n- **forecast_revenue_growth**: Analyst consensus revenue growth forecast. Use: `forecast_revenue_growth[2025]`.\n- **forecast_eps_estimate**: Analyst consensus EPS estimate in IDR. Use: `forecast_eps_estimate[2025]`.\n- **forecast_revenue_estimate**: Analyst consensus revenue estimate in IDR. Use: `forecast_revenue_estimate[2025]`.\n- **pe**: Price-to-earnings ratio for the year. Use: `pe[2024]`.\n- **pb**: Price-to-book ratio for the year. Use: `pb[2024]`.\n- **ps**: Price-to-sales ratio for the year. Use: `ps[2024]`.\n- **pcf**: Price-to-cash-flow ratio for the year. Use: `pcf[2024]`.\n- **peg**: Price/earnings-to-growth ratio for the year. Use: `peg[2024]`.\n- **enterprise_to_ebitda**: Enterprise value to EBITDA for the year. Use: `enterprise_to_ebitda[2024]`.\n- **enterprise_to_revenue**: Enterprise value to revenue for the year. Use: `enterprise_to_revenue[2024]`.\n- **pb_peer_avg**: Peer average price-to-book ratio for the year. Use: `pb_peer_avg[2024]`.\n- **pe_peer_avg**: Peer average price-to-earnings ratio for the year. Use: `pe_peer_avg[2024]`.\n- **ps_peer_avg**: Peer average price-to-sales ratio for the year. Use: `ps_peer_avg[2024]`.\n- **debt_to_asset_ratio**: Total debt divided by total assets. Use: `debt_to_asset_ratio[2024]`.\n- **debt_to_equity_ratio**: Total debt divided by shareholders equity. Use: `debt_to_equity_ratio[2024]`.\n- **cash_flow_to_debt_ratio**: Operating cash flow divided by total debt. Use: `cash_flow_to_debt_ratio[2024]`.\n- **interest_coverage_ratio**: EBIT divided by interest expense. Use: `interest_coverage_ratio[2024]`.\n- **current_ratio**: Current assets divided by current liabilities. Use: `current_ratio[2024]`.\n- **operating_cash_flow_margin**: Operating cash flow as a percentage of revenue. Use: `operating_cash_flow_margin[2024]`.\n- **fixed_asset_turnover**: Revenue divided by net fixed assets. Use: `fixed_asset_turnover[2024]`.\n- **total_asset_turnover**: Revenue divided by total assets. Use: `total_asset_turnover[2024]`.\n- **roa**: Return on assets for the year. Use: `roa[2024]`.\n- **roe**: Return on equity for the year. Use: `roe[2024]`.\n- **net_profit_margin**: Net profit as a percentage of revenue. Use: `net_profit_margin[2024]`.\n- **gross_profit_margin**: Gross profit as a percentage of revenue. Use: `gross_profit_margin[2024]`.\n- **operating_profit_margin**: Operating profit as a percentage of revenue. Use: `operating_profit_margin[2024]`.\n- **capital_adequacy_ratio**: Regulatory capital as a percentage of risk-weighted assets. Use: `capital_adequacy_ratio[2024]`. (banking)\n- **casa_ratio**: Current and savings account deposits as a share of total deposits. Use: `casa_ratio[2024]`. (banking)\n- **leverage_ratio**: Tier 1 capital divided by total exposure. Use: `leverage_ratio[2024]`. (banking)\n- **loan_to_deposit_ratio**: Net loans divided by total deposits. Use: `loan_to_deposit_ratio[2024]`. (banking)\n- **liquidity_coverage_ratio**: HQLA divided by net cash outflows over 30 days. Use: `liquidity_coverage_ratio[2024]`. (banking)\n- **efficiency_ratio**: Operating expenses divided by net revenue. Use: `efficiency_ratio[2024]`.\n- **net_interest_margin**: Net interest income as a percentage of earning assets. Use: `net_interest_margin[2024]`. (banking)\n- **cost_to_income_ratio**: Operating costs divided by operating income. Use: `cost_to_income_ratio[2024]`.\n</Accordion>\n\n<Accordion title=\"Quarterly Financial Data\">\n**How to Use:** Must use bracket notation `field[Qi-YYYY]` to access data for a specific quarter.\n\n<Accordion title=\"Examples\">\n- `where=revenue_q[Q1-2024] > 1000000000`\n- `where=earnings_q[Q4-2023] > earnings_q[Q3-2023]`\n</Accordion>\n\n- **revenue_q**: Quarterly revenue in IDR. Use: `revenue_q[Q1-2024]`.\n- **earnings_q**: Quarterly net profit/loss in IDR. Use: `earnings_q[Q1-2024]`.\n- **net_loan_q**: Quarterly net loans in IDR. Use: `net_loan_q[Q1-2024]`. (banking)\n- **gross_profit_q**: Quarterly gross profit in IDR. Use: `gross_profit_q[Q1-2024]`.\n- **time_deposit_q**: Quarterly time deposits in IDR. Use: `time_deposit_q[Q1-2024]`. (banking)\n- **operating_pnl_q**: Quarterly operating profit/loss in IDR. Use: `operating_pnl_q[Q1-2024]`.\n- **total_deposit_q**: Quarterly total deposits in IDR. Use: `total_deposit_q[Q1-2024]`. (banking)\n- **ebit_q**: Quarterly EBIT in IDR. Use: `ebit_q[Q1-2024]`.\n- **ebitda_q**: Quarterly EBITDA in IDR. Use: `ebitda_q[Q1-2024]`.\n- **earnings_before_tax_q**: Quarterly earnings before tax in IDR. Use: `earnings_before_tax_q[Q1-2024]`.\n- **tax_q**: Quarterly income tax expense in IDR. Use: `tax_q[Q1-2024]`.\n- **cost_of_revenue_q**: Quarterly cost of revenue in IDR. Use: `cost_of_revenue_q[Q1-2024]`.\n- **current_account_q**: Quarterly current account deposits in IDR. Use: `current_account_q[Q1-2024]`. (banking)\n- **interest_income_q**: Quarterly interest income in IDR. Use: `interest_income_q[Q1-2024]`. (banking)\n- **premium_expense_q**: Quarterly premium expenses in IDR. Use: `premium_expense_q[Q1-2024]`. (insurance)\n- **savings_account_q**: Quarterly savings account deposits in IDR. Use: `savings_account_q[Q1-2024]`. (banking)\n- **interest_expense_q**: Quarterly interest expense in IDR. Use: `interest_expense_q[Q1-2024]`.\n- **operating_expense_q**: Quarterly operating expenses in IDR. Use: `operating_expense_q[Q1-2024]`.\n- **non_operating_income_or_loss_q**: Quarterly non-operating income/loss in IDR. Use: `non_operating_income_or_loss_q[Q1-2024]`.\n- **interest_expense_non_operating_q**: Quarterly non-operating interest expense in IDR. Use: `interest_expense_non_operating_q[Q1-2024]`.\n- **non_interest_bearing_liabilities_q**: Quarterly non-interest-bearing liabilities in IDR. Use: `non_interest_bearing_liabilities_q[Q1-2024]`. (banking)\n- **realized_capital_goods_investment_q**: Quarterly realised capital goods investment in IDR. Use: `realized_capital_goods_investment_q[Q1-2024]`.\n- **other_interest_bearing_liabilities_q**: Quarterly other interest-bearing liabilities in IDR. Use: `other_interest_bearing_liabilities_q[Q1-2024]`. (banking)\n- **total_assets_q**: Quarterly total assets in IDR. Use: `total_assets_q[Q1-2024]`.\n- **current_assets_q**: Quarterly current assets in IDR. Use: `current_assets_q[Q1-2024]`.\n- **total_liabilities_q**: Quarterly total liabilities in IDR. Use: `total_liabilities_q[Q1-2024]`.\n- **net_premium_income_q**: Quarterly net premium income in IDR. Use: `net_premium_income_q[Q1-2024]`. (insurance)\n- **allowance_for_loans_q**: Quarterly allowance for loan losses in IDR. Use: `allowance_for_loans_q[Q1-2024]`. (banking)\n- **current_liabilities_q**: Quarterly current liabilities in IDR. Use: `current_liabilities_q[Q1-2024]`.\n- **non_current_liabilities_q**: Quarterly non-current liabilities in IDR. Use: `non_current_liabilities_q[Q1-2024]`.\n- **total_equity_q**: Quarterly total equity in IDR. Use: `total_equity_q[Q1-2024]`.\n- **total_debt_q**: Quarterly total debt in IDR. Use: `total_debt_q[Q1-2024]`.\n- **cash_only_q**: Quarterly cash (excluding equivalents) in IDR. Use: `cash_only_q[Q1-2024]`.\n- **provision_q**: Quarterly provision for losses in IDR. Use: `provision_q[Q1-2024]`.\n- **gross_loan_q**: Quarterly gross loans before allowances in IDR. Use: `gross_loan_q[Q1-2024]`. (banking)\n- **total_cash_and_due_from_banks_q**: Quarterly cash and amounts due from banks in IDR. Use: `total_cash_and_due_from_banks_q[Q1-2024]`. (banking)\n- **operating_cash_flow_q**: Quarterly operating cash flow in IDR. Use: `operating_cash_flow_q[Q1-2024]`.\n- **investing_cash_flow_q**: Quarterly investing cash flow in IDR. Use: `investing_cash_flow_q[Q1-2024]`.\n- **financing_cash_flow_q**: Quarterly financing cash flow in IDR. Use: `financing_cash_flow_q[Q1-2024]`.\n- **net_interest_income_q**: Quarterly net interest income in IDR. Use: `net_interest_income_q[Q1-2024]`. (banking)\n- **non_interest_income_q**: Quarterly non-interest income in IDR. Use: `non_interest_income_q[Q1-2024]`. (banking)\n- **free_cash_flow_q**: Quarterly free cash flow in IDR. Use: `free_cash_flow_q[Q1-2024]`.\n- **premium_income_q**: Quarterly gross premium income in IDR. Use: `premium_income_q[Q1-2024]`. (insurance)\n- **capital_expenditure_q**: Quarterly capital expenditure in IDR. Use: `capital_expenditure_q[Q1-2024]`.\n</Accordion>\n\n<Accordion title=\"JSON List Fields\">\n**How to Use:** The query checks if **any** object in the list matches the condition. Use `=` or `like` for strings, numeric operators for numbers.\n\n<Accordion title=\"Examples\">\n- `where=major_shareholders_name like 'PT%' and major_shareholders_share_percentage > 0.1`\n- `where=key_executives_name = 'Prajogo Pangestu'`\n</Accordion>\n\n- **key_executives_name**: Filter by executive name in the key_executives list. Use `like` operator.\n- **key_executives_position**: Filter by executive position/title in the key_executives list. Use `like` operator.\n- **executives_shareholdings_name**: Filter by executive name in the shareholdings list.\n- **executives_shareholdings_share_amount**: Filter by executive share amount (number of shares).\n- **executives_shareholdings_share_percentage**: Filter by executive ownership percentage.\n- **major_shareholders_name**: Filter by major shareholder name. Use `like` operator.\n- **major_shareholders_share_value**: Filter by major shareholder share value in IDR.\n- **major_shareholders_share_amount**: Filter by major shareholder number of shares.\n- **major_shareholders_share_percentage**: Filter by major shareholder ownership percentage.\n- **free_float**: Public (non-insider) ownership percentage from major_shareholders. Value is a decimal (0.45 = 45%).\n</Accordion>\n\n</AccordionGroup>\n</Accordion>\n\n<Info>Costs 1 API credit for structured queries. Using the natural-language `?q=` parameter costs 3 API credits.</Info>",
                 "summary": "Companies Screener",
                 "parameters": [
                     {
@@ -3774,7 +3774,7 @@
         "/v2/company/report/": {
             "get": {
                 "operationId": "company_report_retrieve",
-                "description": "Returns a comprehensive company report organized into distinct sections. By default all sections are included. Use `sections` to request only the data you need and reduce response size.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BREN`, `BBCA`, `TLKM`.</Note>\n\n<Accordion title=\"Available sections\">\n- **overview**: Company identity, market cap, price history, ESG score, tags, indices, affiliates\n- **valuation**: Close price, forward PE, intrinsic value, historical valuation (PB, PE, PS, PCF, PEG by year)\n- **future**: Analyst forecasts, EPS growth estimates\n- **peers**: Peer comparison within the same subsector\n- **financials**: Historical annual financials (revenue, earnings, assets, equity, margins)\n- **dividend**: Dividend history, yield, payout ratio\n- **management**: Key executives and their shareholdings\n- **ownership**: Major shareholders and ownership structure\n</Accordion>\n\n<Info>Costs 1 API credit per requested section. Default behavior (all 8 sections) consumes 8 credits.</Info>",
+                "description": "Returns a comprehensive company report organized into distinct sections. By default all sections are included. Use `sections` to request only the data you need and reduce response size.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BREN`, `BBCA`, `TLKM`.</Note>\n\n<Accordion title=\"Available sections\">\n- **overview**: Company identity, market cap, price history, ESG score, tags, indices, affiliates\n- **valuation**: Close price, forward PE, intrinsic value, historical valuation (PB, PE, PS, PCF, PEG by year)\n- **future**: Analyst forecasts, EPS growth estimates\n- **peers**: Peer comparison within the same subsector\n- **financials**: Historical annual financials (revenue, earnings, assets, equity, margins), plus year-over-year growth of the latest quarter and of trailing twelve month revenue and earnings\n- **dividend**: Dividend history, yield, payout ratio\n- **management**: Key executives and their shareholdings\n- **ownership**: Major shareholders and ownership structure\n</Accordion>\n\n<Info>Costs 1 API credit per requested section. Default behavior (all 8 sections) consumes 8 credits.</Info>",
                 "summary": "Company Report",
                 "parameters": [
                     {
@@ -3883,7 +3883,7 @@
                                                 "sub_industry": "Banks",
                                                 "sector": "Financials",
                                                 "sub_sector": "Banks",
-                                                "market_cap": 753611199412500,
+                                                "market_cap": 744458026950000,
                                                 "market_cap_rank": 1,
                                                 "address": "Menara BCA, Grand Indonesia\r\nJalan MH Thamrin No. 1\r\nJakarta 10310",
                                                 "employee_num": 27937.0,
@@ -3892,9 +3892,9 @@
                                                 "website": "www.bca.co.id",
                                                 "phone": "021-23588000",
                                                 "email": "investor_relations@bca.co.id",
-                                                "last_close_price": 6175,
-                                                "latest_close_date": "2026-07-08",
-                                                "daily_close_change": -0.0198412698412698,
+                                                "last_close_price": 6100,
+                                                "latest_close_date": "2026-10-02",
+                                                "daily_close_change": 0.0166666666666667,
                                                 "all_time_price": {
                                                     "ytd_low": {
                                                         "2026-06-09": 4820
@@ -3903,16 +3903,16 @@
                                                         "2026-06-09": 4820
                                                     },
                                                     "90_d_low": {
-                                                        "2026-06-09": 4820
+                                                        "2026-07-06": 5975
                                                     },
                                                     "ytd_high": {
                                                         "2026-01-06": 8175
                                                     },
                                                     "52_w_high": {
-                                                        "2025-08-13": 8975
+                                                        "2025-10-30": 8750
                                                     },
                                                     "90_d_high": {
-                                                        "2026-04-14": 6800
+                                                        "2026-09-04": 6850
                                                     },
                                                     "all_time_low": {
                                                         "2004-06-08": 175
@@ -3921,24 +3921,25 @@
                                                         "2024-09-23": 10950
                                                     }
                                                 },
-                                                "esg_score": 21.44,
+                                                "esg_score": 21.71,
                                                 "tags": [
                                                     "dividend-yield-ttm-above-5-percent",
                                                     "esg-under-25",
-                                                    "top-90d-transaction-value",
-                                                    "top-90d-transaction-volume"
+                                                    "last-volume-above-10d-volume-average",
+                                                    "top-20-institution-selling",
+                                                    "top-90d-transaction-value"
                                                 ],
                                                 "indices": [
+                                                    "IDXHIDIV20",
+                                                    "LQ45",
+                                                    "KOMPAS100",
+                                                    "IDXQ30",
                                                     "IDXESGL",
+                                                    "IDX30",
                                                     "ECONOMIC30",
                                                     "IDXG30",
-                                                    "IDX30",
-                                                    "LQ45",
                                                     "FTSE",
-                                                    "SRIKEHATI",
-                                                    "KOMPAS100",
-                                                    "IDXHIDIV20",
-                                                    "IDXQ30"
+                                                    "SRIKEHATI"
                                                 ],
                                                 "affiliates": [
                                                     "Djarum",
@@ -3946,10 +3947,10 @@
                                                 ]
                                             },
                                             "valuation": {
-                                                "last_close_price": 6175,
-                                                "latest_close_date": "2026-07-08",
-                                                "daily_close_change": -0.0198412698412698,
-                                                "forward_pe": 12.7984576757419,
+                                                "last_close_price": 6100,
+                                                "latest_close_date": "2026-10-02",
+                                                "daily_close_change": 0.0166666666666667,
+                                                "forward_pe": 12.6430108213806,
                                                 "intrinsic_value": 13694,
                                                 "historical_valuation": [
                                                     {
@@ -3984,12 +3985,12 @@
                                                     }
                                                 ],
                                                 "analyst_rating_breakdown": {
-                                                    "buy": 1,
-                                                    "hold": 1,
+                                                    "buy": 89,
+                                                    "hold": 4,
                                                     "sell": 0,
-                                                    "n_analyst": 23,
-                                                    "strong_buy": 21,
-                                                    "updated_on": "2026-05-07 18:03:41",
+                                                    "n_analyst": 93,
+                                                    "strong_buy": 0,
+                                                    "updated_on": "2026-09-02 17:00:00",
                                                     "strong_sell": 0
                                                 }
                                             },
@@ -4058,6 +4059,7 @@
                                                         "non_interest_income": null,
                                                         "operating_cash_flow": 24462746000000,
                                                         "cash_and_equivalents": null,
+                                                        "net_increased_decreased": null,
                                                         "non_loan_earning_assets": null,
                                                         "high_quality_liquid_asset": null,
                                                         "total_risk_weighted_asset": null,
@@ -4102,33 +4104,35 @@
                                                         }
                                                     }
                                                 ],
-                                                "yoy_quarter_earnings_growth": 0.0387073681660018,
-                                                "yoy_quarter_revenue_growth": 0.0110150546891309
+                                                "yoy_quarter_earnings_growth": -0.00136772238340106,
+                                                "yoy_quarter_revenue_growth": 0.00305775623420816,
+                                                "yoy_ttm_earnings_growth": 0.0192787923970613,
+                                                "yoy_ttm_revenue_growth": 0.0170401957969341
                                             },
                                             "dividend": {
                                                 "historical_dividends": {
                                                     "2026": {
                                                         "breakdown": [
                                                             {
-                                                                "date": "2026-06-17",
-                                                                "total": 20,
-                                                                "yield": 0.00323886639676113
+                                                                "date": "2026-08-31",
+                                                                "total": 25,
+                                                                "yield": 0.00409836065573771
                                                             }
                                                         ],
-                                                        "total_yield": 0.0487449392712551,
-                                                        "total_dividend": 301
+                                                        "total_yield": 0.0534426229508197,
+                                                        "total_dividend": 326
                                                     }
                                                 },
                                                 "upcoming_dividends": null,
-                                                "yield_ttm": 0.0576518218623482,
+                                                "yield_ttm": 0.0624590163934426,
                                                 "dividend_yield_avg": {
                                                     "period": 5,
-                                                    "avg_yield": 0.0283050359692425
+                                                    "avg_yield": 0.0283050412777811
                                                 },
-                                                "dividend_ttm": 356.0,
-                                                "payout_ratio": 0.748637602001087,
-                                                "cash_payout_ratio": 0.687782037617804,
-                                                "last_ex_dividend_date": "2026-06-17"
+                                                "dividend_ttm": 381.0,
+                                                "payout_ratio": 0.801491566752531,
+                                                "cash_payout_ratio": 1.12888987895419,
+                                                "last_ex_dividend_date": "2026-08-31"
                                             },
                                             "management": {
                                                 "key_executives": [
@@ -4150,30 +4154,30 @@
                                                 "major_shareholders": [
                                                     {
                                                         "name": "PT Dwimuria Investama Andalan",
-                                                        "share_value": 418232441250000,
+                                                        "share_value": 413152695000000,
                                                         "share_amount": 67729950000,
                                                         "share_percentage": "0.54942"
                                                     }
                                                 ],
                                                 "top_transactions": {
-                                                    "date": "2026-04-30",
+                                                    "date": "2026-08-31",
                                                     "top_buyers": [
                                                         {
-                                                            "name": "Fidelity Institutional Asset Management",
-                                                            "changeAmount": 186742480
+                                                            "name": "Vanguard",
+                                                            "changeAmount": 61979185
                                                         }
                                                     ],
                                                     "top_sellers": [
                                                         {
                                                             "name": "Fidelity Management & Research Company LLC",
-                                                            "changeAmount": -833622654
+                                                            "changeAmount": -490522692
                                                         }
                                                     ]
                                                 },
                                                 "institutional_transaction_flow": [
                                                     {
-                                                        "date": "2026-04-30",
-                                                        "net_transaction": -4575387238
+                                                        "date": "2026-08-31",
+                                                        "net_transaction": -838411040
                                                     }
                                                 ],
                                                 "whale_investors": [
@@ -4192,10 +4196,10 @@
                                                                 "group": [
                                                                     "self"
                                                                 ],
-                                                                "pb_mrq": 2.96707963218973,
-                                                                "pe_ttm": 13.2251882418153,
+                                                                "pb_mrq": 2.70766325147393,
+                                                                "pe_ttm": 12.5998286604257,
                                                                 "symbol": "BBCA.JK",
-                                                                "market_cap": 768866486850000,
+                                                                "market_cap": 732253797000000,
                                                                 "net_income": 57537287000000,
                                                                 "company_name": "PT Bank Central Asia Tbk.",
                                                                 "employee_num": 27937,
@@ -4210,7 +4214,7 @@
                                                                         "maxpoint": 18
                                                                     }
                                                                 ],
-                                                                "yearly_mcap_chg": -0.275862068965517,
+                                                                "yearly_mcap_chg": -0.2,
                                                                 "operating_expense": 36734403000000,
                                                                 "revenue_breakdown": null,
                                                                 "total_liabilities": 1305140000000000,
@@ -4319,7 +4323,7 @@
         "/v2/company/report/{symbol}/": {
             "get": {
                 "operationId": "company_report_retrieve_2",
-                "description": "Returns a comprehensive company report organized into distinct sections. By default all sections are included. Use `sections` to request only the data you need and reduce response size.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BREN`, `BBCA`, `TLKM`.</Note>\n\n<Accordion title=\"Available sections\">\n- **overview**: Company identity, market cap, price history, ESG score, tags, indices, affiliates\n- **valuation**: Close price, forward PE, intrinsic value, historical valuation (PB, PE, PS, PCF, PEG by year)\n- **future**: Analyst forecasts, EPS growth estimates\n- **peers**: Peer comparison within the same subsector\n- **financials**: Historical annual financials (revenue, earnings, assets, equity, margins)\n- **dividend**: Dividend history, yield, payout ratio\n- **management**: Key executives and their shareholdings\n- **ownership**: Major shareholders and ownership structure\n</Accordion>\n\n<Info>Costs 1 API credit per requested section. Default behavior (all 8 sections) consumes 8 credits.</Info>",
+                "description": "Returns a comprehensive company report organized into distinct sections. By default all sections are included. Use `sections` to request only the data you need and reduce response size.\n\n<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BREN`, `BBCA`, `TLKM`.</Note>\n\n<Accordion title=\"Available sections\">\n- **overview**: Company identity, market cap, price history, ESG score, tags, indices, affiliates\n- **valuation**: Close price, forward PE, intrinsic value, historical valuation (PB, PE, PS, PCF, PEG by year)\n- **future**: Analyst forecasts, EPS growth estimates\n- **peers**: Peer comparison within the same subsector\n- **financials**: Historical annual financials (revenue, earnings, assets, equity, margins), plus year-over-year growth of the latest quarter and of trailing twelve month revenue and earnings\n- **dividend**: Dividend history, yield, payout ratio\n- **management**: Key executives and their shareholdings\n- **ownership**: Major shareholders and ownership structure\n</Accordion>\n\n<Info>Costs 1 API credit per requested section. Default behavior (all 8 sections) consumes 8 credits.</Info>",
                 "summary": "Company Report",
                 "parameters": [
                     {
@@ -4428,7 +4432,7 @@
                                                 "sub_industry": "Banks",
                                                 "sector": "Financials",
                                                 "sub_sector": "Banks",
-                                                "market_cap": 753611199412500,
+                                                "market_cap": 744458026950000,
                                                 "market_cap_rank": 1,
                                                 "address": "Menara BCA, Grand Indonesia\r\nJalan MH Thamrin No. 1\r\nJakarta 10310",
                                                 "employee_num": 27937.0,
@@ -4437,9 +4441,9 @@
                                                 "website": "www.bca.co.id",
                                                 "phone": "021-23588000",
                                                 "email": "investor_relations@bca.co.id",
-                                                "last_close_price": 6175,
-                                                "latest_close_date": "2026-07-08",
-                                                "daily_close_change": -0.0198412698412698,
+                                                "last_close_price": 6100,
+                                                "latest_close_date": "2026-10-02",
+                                                "daily_close_change": 0.0166666666666667,
                                                 "all_time_price": {
                                                     "ytd_low": {
                                                         "2026-06-09": 4820
@@ -4448,16 +4452,16 @@
                                                         "2026-06-09": 4820
                                                     },
                                                     "90_d_low": {
-                                                        "2026-06-09": 4820
+                                                        "2026-07-06": 5975
                                                     },
                                                     "ytd_high": {
                                                         "2026-01-06": 8175
                                                     },
                                                     "52_w_high": {
-                                                        "2025-08-13": 8975
+                                                        "2025-10-30": 8750
                                                     },
                                                     "90_d_high": {
-                                                        "2026-04-14": 6800
+                                                        "2026-09-04": 6850
                                                     },
                                                     "all_time_low": {
                                                         "2004-06-08": 175
@@ -4466,24 +4470,25 @@
                                                         "2024-09-23": 10950
                                                     }
                                                 },
-                                                "esg_score": 21.44,
+                                                "esg_score": 21.71,
                                                 "tags": [
                                                     "dividend-yield-ttm-above-5-percent",
                                                     "esg-under-25",
-                                                    "top-90d-transaction-value",
-                                                    "top-90d-transaction-volume"
+                                                    "last-volume-above-10d-volume-average",
+                                                    "top-20-institution-selling",
+                                                    "top-90d-transaction-value"
                                                 ],
                                                 "indices": [
+                                                    "IDXHIDIV20",
+                                                    "LQ45",
+                                                    "KOMPAS100",
+                                                    "IDXQ30",
                                                     "IDXESGL",
+                                                    "IDX30",
                                                     "ECONOMIC30",
                                                     "IDXG30",
-                                                    "IDX30",
-                                                    "LQ45",
                                                     "FTSE",
-                                                    "SRIKEHATI",
-                                                    "KOMPAS100",
-                                                    "IDXHIDIV20",
-                                                    "IDXQ30"
+                                                    "SRIKEHATI"
                                                 ],
                                                 "affiliates": [
                                                     "Djarum",
@@ -4491,10 +4496,10 @@
                                                 ]
                                             },
                                             "valuation": {
-                                                "last_close_price": 6175,
-                                                "latest_close_date": "2026-07-08",
-                                                "daily_close_change": -0.0198412698412698,
-                                                "forward_pe": 12.7984576757419,
+                                                "last_close_price": 6100,
+                                                "latest_close_date": "2026-10-02",
+                                                "daily_close_change": 0.0166666666666667,
+                                                "forward_pe": 12.6430108213806,
                                                 "intrinsic_value": 13694,
                                                 "historical_valuation": [
                                                     {
@@ -4529,12 +4534,12 @@
                                                     }
                                                 ],
                                                 "analyst_rating_breakdown": {
-                                                    "buy": 1,
-                                                    "hold": 1,
+                                                    "buy": 89,
+                                                    "hold": 4,
                                                     "sell": 0,
-                                                    "n_analyst": 23,
-                                                    "strong_buy": 21,
-                                                    "updated_on": "2026-05-07 18:03:41",
+                                                    "n_analyst": 93,
+                                                    "strong_buy": 0,
+                                                    "updated_on": "2026-09-02 17:00:00",
                                                     "strong_sell": 0
                                                 }
                                             },
@@ -4603,6 +4608,7 @@
                                                         "non_interest_income": null,
                                                         "operating_cash_flow": 24462746000000,
                                                         "cash_and_equivalents": null,
+                                                        "net_increased_decreased": null,
                                                         "non_loan_earning_assets": null,
                                                         "high_quality_liquid_asset": null,
                                                         "total_risk_weighted_asset": null,
@@ -4647,33 +4653,35 @@
                                                         }
                                                     }
                                                 ],
-                                                "yoy_quarter_earnings_growth": 0.0387073681660018,
-                                                "yoy_quarter_revenue_growth": 0.0110150546891309
+                                                "yoy_quarter_earnings_growth": -0.00136772238340106,
+                                                "yoy_quarter_revenue_growth": 0.00305775623420816,
+                                                "yoy_ttm_earnings_growth": 0.0192787923970613,
+                                                "yoy_ttm_revenue_growth": 0.0170401957969341
                                             },
                                             "dividend": {
                                                 "historical_dividends": {
                                                     "2026": {
                                                         "breakdown": [
                                                             {
-                                                                "date": "2026-06-17",
-                                                                "total": 20,
-                                                                "yield": 0.00323886639676113
+                                                                "date": "2026-08-31",
+                                                                "total": 25,
+                                                                "yield": 0.00409836065573771
                                                             }
                                                         ],
-                                                        "total_yield": 0.0487449392712551,
-                                                        "total_dividend": 301
+                                                        "total_yield": 0.0534426229508197,
+                                                        "total_dividend": 326
                                                     }
                                                 },
                                                 "upcoming_dividends": null,
-                                                "yield_ttm": 0.0576518218623482,
+                                                "yield_ttm": 0.0624590163934426,
                                                 "dividend_yield_avg": {
                                                     "period": 5,
-                                                    "avg_yield": 0.0283050359692425
+                                                    "avg_yield": 0.0283050412777811
                                                 },
-                                                "dividend_ttm": 356.0,
-                                                "payout_ratio": 0.748637602001087,
-                                                "cash_payout_ratio": 0.687782037617804,
-                                                "last_ex_dividend_date": "2026-06-17"
+                                                "dividend_ttm": 381.0,
+                                                "payout_ratio": 0.801491566752531,
+                                                "cash_payout_ratio": 1.12888987895419,
+                                                "last_ex_dividend_date": "2026-08-31"
                                             },
                                             "management": {
                                                 "key_executives": [
@@ -4695,30 +4703,30 @@
                                                 "major_shareholders": [
                                                     {
                                                         "name": "PT Dwimuria Investama Andalan",
-                                                        "share_value": 418232441250000,
+                                                        "share_value": 413152695000000,
                                                         "share_amount": 67729950000,
                                                         "share_percentage": "0.54942"
                                                     }
                                                 ],
                                                 "top_transactions": {
-                                                    "date": "2026-04-30",
+                                                    "date": "2026-08-31",
                                                     "top_buyers": [
                                                         {
-                                                            "name": "Fidelity Institutional Asset Management",
-                                                            "changeAmount": 186742480
+                                                            "name": "Vanguard",
+                                                            "changeAmount": 61979185
                                                         }
                                                     ],
                                                     "top_sellers": [
                                                         {
                                                             "name": "Fidelity Management & Research Company LLC",
-                                                            "changeAmount": -833622654
+                                                            "changeAmount": -490522692
                                                         }
                                                     ]
                                                 },
                                                 "institutional_transaction_flow": [
                                                     {
-                                                        "date": "2026-04-30",
-                                                        "net_transaction": -4575387238
+                                                        "date": "2026-08-31",
+                                                        "net_transaction": -838411040
                                                     }
                                                 ],
                                                 "whale_investors": [
@@ -4737,10 +4745,10 @@
                                                                 "group": [
                                                                     "self"
                                                                 ],
-                                                                "pb_mrq": 2.96707963218973,
-                                                                "pe_ttm": 13.2251882418153,
+                                                                "pb_mrq": 2.70766325147393,
+                                                                "pe_ttm": 12.5998286604257,
                                                                 "symbol": "BBCA.JK",
-                                                                "market_cap": 768866486850000,
+                                                                "market_cap": 732253797000000,
                                                                 "net_income": 57537287000000,
                                                                 "company_name": "PT Bank Central Asia Tbk.",
                                                                 "employee_num": 27937,
@@ -4755,7 +4763,7 @@
                                                                         "maxpoint": 18
                                                                     }
                                                                 ],
-                                                                "yearly_mcap_chg": -0.275862068965517,
+                                                                "yearly_mcap_chg": -0.2,
                                                                 "operating_expense": 36734403000000,
                                                                 "revenue_breakdown": null,
                                                                 "total_liabilities": 1305140000000000,
@@ -11306,7 +11314,7 @@
         "/v2/sgx/companies/": {
             "get": {
                 "operationId": "sgx_companies_retrieve",
-                "description": "High-performance API for filtering and sorting SGX-listed companies. Supports both structured SQL-like queries (`where`, `order_by`) and natural language queries (`q`). Returns a paginated list of companies.\n\n**Query modes** (mutually exclusive — `q` overrides all others):\n- `q`: Natural language, e.g. `top 5 SGX banks by market cap`\n- `where` + `order_by`: SQL-like structured query\n\n<Note>SGX symbol: 3-4 characters (letters or digits), optional `.SI` suffix on input. E.g. `D05`, `U11`, `Z74`, `TCPD`. Output always carries the `.SI` suffix.</Note>\n\n<Note>SGX sector column contains duplicate variants (e.g. `Consumer Cyclical` / `Consumer Cyclicals`, `Financial Services` / `Financials`, `Real Estate` / `Properties & Real Estate` / `REIT`) pending upstream cleanup. To capture all matching companies, query with `OR` (e.g. `sector = 'Real Estate' OR sector = 'Properties & Real Estate' OR sector = 'REIT'`).</Note>\n\n<Accordion title=\"Smart FY Handling\">\nTo account for reporting lags, 'latest year' queries made between January and April default to the previous audited year (e.g. a query in early 2026 uses 2024 data).\n</Accordion>\n\n<Accordion title=\"Syntax and Operators\">\n**Operators:** `=`, `!=`, `>`, `>=`, `<`, `<=`, `like`, `in`\n\n**Logic:** combine conditions with `and` and `or`\n\n**String values:** use single or double quotes — `sector = 'Technology'`\n\n**Lists (for `in`):** `tags in ['blue-chip', 'dividend']`\n</Accordion>\n\n<Accordion title=\"Yearly Data\">\nAccess historical data using bracket notation: `field[YYYY]`\n\nExamples: `revenue[2023] > 1000000000` or `total_yield[2024] > 0.05`\n\n**Note:** SGX data is annual only — there is no quarterly data.\n</Accordion>\n\n<Accordion title=\"Arithmetic Expressions\">\nPerform calculations within your query on both sides of a condition.\n\nExamples: `earnings[2024] > earnings[2023] * 1.25` or `revenue[2024] / revenue[2023] > 1.5`\n</Accordion>\n\n<Accordion title=\"SGX-Specific Limitations\">\nSome IDX screener features are **not available** for SGX due to data scope:\n\n- **No person / entity ownership queries** — no `executives`, `major_shareholders`, or `affiliates` fields.\n- **No peer averages** — no `pe_peer_avg`, `pb_peer_avg`, etc.\n- **No `free_float` field**.\n- **No quarterly data** — only annual fields like `revenue[2024]`.\n- **Coverage caveats**: yearly fields marked `[Big caps only]` are populated only for ~22 large-caps; fields marked `[Banks only]` are populated only for DBS / OCBC / UOB.\n</Accordion>\n\n<Accordion title=\"Available Fields\">\n<AccordionGroup>\n\n<Accordion title=\"Direct Fields (Top-level columns)\">\n**How to Use:** Query these fields directly using standard operators (`=`, `!=`, `>`, `<`, `LIKE`, `IN`). String comparisons are case-insensitive.\n\n<Accordion title=\"Examples\">\n- `where=market_cap > 500000000000000`\n- `where=company_name like '%energi%'`\n- `where=sector = 'Financials' and listing_date > '2005-01-01'`\n</Accordion>\n\n- **symbol**: SGX ticker symbol (3-4 characters, e.g. `D05`, `U11`, `Z74`, `TCPD`; accepts optional `.SI` suffix on input, always returned with it)\n- **company_name**: Full registered company name\n- **sector**: SGX sector classification. NB: source data contains duplicate labels (e.g. `Consumer Cyclical` vs `Consumer Cyclicals`, `Financial Services` vs `Financials`) — pending upstream cleanup.\n- **sub_sector**: SGX sub-sector classification (126 distinct values)\n- **market_cap**: Market capitalisation in SGD\n- **volume**: Recent average daily trading volume (shares)\n- **last_close_price**: Most recent close price in SGD\n- **employee_num**: Total number of employees\n- **pe**: Price-to-earnings ratio\n- **eps**: Earnings per share (SGD)\n- **beta**: Beta vs SGX market\n- **ps**: Price-to-sales ratio\n- **pcf**: Price-to-cash-flow ratio\n- **pb**: Price-to-book ratio\n- **gross_margin**: Gross profit margin (decimal, e.g. 0.45 = 45%)\n- **operating_margin**: Operating profit margin (decimal)\n- **net_profit_margin**: Net profit margin (decimal)\n- **quick_ratio**: Quick ratio (acid test)\n- **current_ratio**: Current ratio\n- **debt_to_equity**: Debt-to-equity ratio\n- **one_year_eps_growth**: 1-year EPS growth (decimal)\n- **one_year_sales_growth**: 1-year sales (revenue) growth (decimal)\n- **forward_dividend**: Forward annual dividend per share in SGD\n- **forward_dividend_yield**: Forward annual dividend yield (decimal)\n- **dividend_ttm**: Trailing-twelve-month dividend per share in SGD\n- **dividend_yield_5y_avg**: 5-year average dividend yield (decimal)\n- **dividend_growth_rate**: Year-over-year dividend growth rate (decimal)\n- **payout_ratio**: Dividend payout ratio (decimal)\n- **change_1d**: 1-day price change (decimal)\n- **change_7d**: 7-day price change (decimal)\n- **change_1m**: 1-month price change (decimal)\n- **change_ytd**: Year-to-date price change (decimal)\n- **change_1y**: 1-year price change (decimal)\n- **change_3y**: 3-year price change (decimal)\n</Accordion>\n\n<Accordion title=\"Array Fields\">\n**How to Use:** Query using the `in` operator to check if any of the provided values exist in the array.\n\n<Accordion title=\"Examples\">\n- `where=indices in ['LQ45', 'IDX30']`\n- `where=tags in ['52-w-high', 'public-float-under-25']`\n</Accordion>\n\n- **tags**: Analyst sentiment / classification tags\n</Accordion>\n\n<Accordion title=\"JSON Object Fields (Most Recent Data)\">\n**How to Use:** Query as if they were direct fields — the parser automatically extracts the value from the underlying JSON.\n\n<Accordion title=\"Examples\">\n- `where=pe_ttm < 15 and roe_ttm > 0.1`\n- `where=last_close_price < all_time_high_price`\n- `where=ytd_low_date > '2025-03-01'`\n</Accordion>\n\n- **ytd_low_price**: Year-to-date lowest closing price in SGD\n- **ytd_low_date**: Date of the year-to-date lowest closing price\n- **ytd_high_price**: Year-to-date highest closing price in SGD\n- **ytd_high_date**: Date of the year-to-date highest closing price\n- **52_w_low_price**: 52-week lowest closing price in SGD\n- **52_w_low_date**: Date of the 52-week lowest closing price\n- **52_w_high_price**: 52-week highest closing price in SGD\n- **52_w_high_date**: Date of the 52-week highest closing price\n- **90_d_low_price**: 90-day lowest closing price in SGD\n- **90_d_low_date**: Date of the 90-day lowest closing price\n- **90_d_high_price**: 90-day highest closing price in SGD\n- **90_d_high_date**: Date of the 90-day highest closing price\n- **all_time_low_price**: All-time lowest closing price in SGD\n- **all_time_low_date**: Date of the all-time lowest closing price\n- **all_time_high_price**: All-time highest closing price in SGD\n- **all_time_high_date**: Date of the all-time highest closing price\n</Accordion>\n\n<Accordion title=\"Yearly JSON Fields (Historical & Forecast Data)\">\n**How to Use:** Must use bracket notation `field[YYYY]` to access data for a specific year. Supports all numeric operators, field-to-field comparisons, and arithmetic expressions.\n\n<Accordion title=\"Examples\">\n- `where=revenue[2023] > earnings[2023] * 5`\n- `where=roe[2023] > 0.15 and roe[2022] > 0.15`\n- `where=pe[2024] < pe_peer_avg[2024]`\n</Accordion>\n\n- **revenue**: Annual revenue in SGD. Use: `revenue[2024]`.\n- **earnings**: Annual net profit/loss in SGD. Use: `earnings[2024]`.\n- **total_dividend**: Total dividends paid per share for the year (SGD). Use: `total_dividend[2024]`.\n- **total_yield**: Total dividend yield for the year (decimal). Use: `total_yield[2024]`.\n- **operating_cash_flow**: Operating cash flow in SGD. Use: `operating_cash_flow[2024]`. _(coverage: Big caps only)_\n- **investing_cash_flow**: Investing cash flow in SGD. Use: `investing_cash_flow[2024]`. _(coverage: Big caps only)_\n- **financing_cash_flow**: Financing cash flow in SGD. Use: `financing_cash_flow[2024]`. _(coverage: Big caps only)_\n- **free_cash_flow**: Free cash flow in SGD. Use: `free_cash_flow[2024]`. _(coverage: Big caps only)_\n- **net_cash_flow**: Net cash flow in SGD. Use: `net_cash_flow[2024]`. _(coverage: Big caps only)_\n- **capital_expenditure**: Capital expenditure in SGD. Use: `capital_expenditure[2024]`. _(coverage: Big caps only)_\n- **ebit**: EBIT (earnings before interest and tax) in SGD. Use: `ebit[2024]`. _(coverage: Big caps only)_\n- **ebitda**: EBITDA in SGD. Use: `ebitda[2024]`. _(coverage: Big caps only)_\n- **gross_income**: Gross income in SGD. Use: `gross_income[2024]`. _(coverage: Big caps only)_\n- **cost_of_revenue**: Cost of revenue in SGD. Use: `cost_of_revenue[2024]`. _(coverage: Big caps only)_\n- **operating_income**: Operating income in SGD. Use: `operating_income[2024]`. _(coverage: Big caps only)_\n- **operating_expense**: Operating expense in SGD. Use: `operating_expense[2024]`. _(coverage: Big caps only)_\n- **pretax_income**: Pre-tax income in SGD. Use: `pretax_income[2024]`. _(coverage: Big caps only)_\n- **income_taxes**: Income taxes paid in SGD. Use: `income_taxes[2024]`. _(coverage: Big caps only)_\n- **total_asset**: Total assets in SGD. Use: `total_asset[2024]`. _(coverage: Big caps only)_\n- **total_equity**: Total equity in SGD. Use: `total_equity[2024]`. _(coverage: Big caps only)_\n- **total_liabilities**: Total liabilities in SGD. Use: `total_liabilities[2024]`. _(coverage: Big caps only)_\n- **working_capital**: Working capital in SGD. Use: `working_capital[2024]`. _(coverage: Big caps only)_\n- **total_current_asset**: Total current assets in SGD. Use: `total_current_asset[2024]`. _(coverage: Big caps only)_\n- **total_non_current_asset**: Total non-current assets in SGD. Use: `total_non_current_asset[2024]`. _(coverage: Big caps only)_\n- **net_interest_income**: Net interest income in SGD. Use: `net_interest_income[2024]`. _(coverage: Banks only)_\n- **interest_income**: Total interest income in SGD. Use: `interest_income[2024]`. _(coverage: Banks only)_\n- **interest_expense**: Total interest expense in SGD. Use: `interest_expense[2024]`. _(coverage: Banks only)_\n- **net_fee_and_commission_income**: Net fee and commission income in SGD. Use: `net_fee_and_commission_income[2024]`. _(coverage: Banks only)_\n- **net_trading_income**: Net trading income in SGD. Use: `net_trading_income[2024]`. _(coverage: Banks only)_\n- **net_loan**: Net loans outstanding in SGD. Use: `net_loan[2024]`. _(coverage: Banks only)_\n- **gross_loan**: Gross loans outstanding in SGD. Use: `gross_loan[2024]`. _(coverage: Banks only)_\n- **total_deposit**: Total customer deposits in SGD. Use: `total_deposit[2024]`. _(coverage: Banks only)_\n- **core_capital_tier1**: Core capital (Tier 1) in SGD. Use: `core_capital_tier1[2024]`. _(coverage: Banks only)_\n- **total_risk_weighted_asset**: Total risk-weighted assets in SGD. Use: `total_risk_weighted_asset[2024]`. _(coverage: Banks only)_\n</Accordion>\n\n<Accordion title=\"Quarterly Financial Data\">\n**How to Use:** Must use bracket notation `field[Qi-YYYY]` to access data for a specific quarter.\n\n<Accordion title=\"Examples\">\n- `where=revenue_q[Q1-2024] > 1000000000`\n- `where=earnings_q[Q4-2023] > earnings_q[Q3-2023]`\n</Accordion>\n\n\n</Accordion>\n\n<Accordion title=\"JSON List Fields\">\n**How to Use:** The query checks if **any** object in the list matches the condition. Use `=` or `like` for strings, numeric operators for numbers.\n\n<Accordion title=\"Examples\">\n- `where=major_shareholders_name like 'PT%' and major_shareholders_share_percentage > 0.1`\n- `where=key_executives_name = 'Prajogo Pangestu'`\n</Accordion>\n\n\n</Accordion>\n\n</AccordionGroup>\n</Accordion>\n\n<Info>Costs 1 API credit for structured queries. Using the natural-language `?q=` parameter costs 3 API credits.</Info>",
+                "description": "High-performance API for filtering and sorting SGX-listed companies. Supports both structured SQL-like queries (`where`, `order_by`) and natural language queries (`q`). Returns a paginated list of companies.\n\n**Query modes** (mutually exclusive — `q` overrides all others):\n- `q`: Natural language, e.g. `top 5 SGX banks by market cap`\n- `where` + `order_by`: SQL-like structured query\n\n<Note>SGX symbol: 3-4 characters (letters or digits), optional `.SI` suffix on input. E.g. `D05`, `U11`, `Z74`, `TCPD`. Output always carries the `.SI` suffix.</Note>\n\n<Note>SGX sector column contains duplicate variants (e.g. `Consumer Cyclical` / `Consumer Cyclicals`, `Financial Services` / `Financials`, `Real Estate` / `Properties & Real Estate` / `REIT`) pending upstream cleanup. To capture all matching companies, query with `OR` (e.g. `sector = 'Real Estate' OR sector = 'Properties & Real Estate' OR sector = 'REIT'`).</Note>\n\n<Accordion title=\"Smart FY Handling\">\nTo account for reporting lags, 'latest year' queries made between January and April default to the previous audited year (e.g. a query in early 2026 uses 2024 data).\n</Accordion>\n\n<Accordion title=\"Syntax and Operators\">\n**Operators:** `=`, `!=`, `>`, `>=`, `<`, `<=`, `like`, `in`\n\n**Logic:** combine conditions with `and` and `or`\n\n**String values:** use single or double quotes — `sector = 'Technology'`\n\n**Lists (for `in`):** `tags in ['blue-chip', 'dividend']`\n</Accordion>\n\n<Accordion title=\"Yearly Data\">\nAccess historical data using bracket notation: `field[YYYY]`\n\nExamples: `revenue[2023] > 1000000000` or `total_yield[2024] > 0.05`\n\n**Note:** SGX data is annual only — there is no quarterly data.\n</Accordion>\n\n<Accordion title=\"Arithmetic Expressions\">\nPerform calculations within your query on both sides of a condition.\n\nExamples: `earnings[2024] > earnings[2023] * 1.25` or `revenue[2024] / revenue[2023] > 1.5`\n</Accordion>\n\n<Accordion title=\"SGX-Specific Limitations\">\nSome IDX screener features are **not available** for SGX due to data scope:\n\n- **No affiliates or executive shareholdings**. Person and entity searches work through `management_name` and `major_shareholders_name` instead.\n- **No peer averages** — no `pe_peer_avg`, `pb_peer_avg`, etc.\n- **No `free_float` field**.\n- **No quarterly data** — only annual fields like `revenue[2024]`.\n- **Coverage caveats**: yearly fields marked `[Big caps only]` are populated only for ~22 large-caps; fields marked `[Banks only]` are populated only for DBS / OCBC / UOB.\n</Accordion>\n\n<Accordion title=\"Available Fields\">\n<AccordionGroup>\n\n<Accordion title=\"Direct Fields (Top-level columns)\">\n**How to Use:** Query these fields directly using standard operators (`=`, `!=`, `>`, `<`, `LIKE`, `IN`). String comparisons are case-insensitive.\n\n<Accordion title=\"Examples\">\n- `where=market_cap > 10000000000`\n- `where=company_name like '%bank%'`\n- `where=sector = 'REIT' and listing_date > '2010-01-01'`\n</Accordion>\n\n- **symbol**: SGX ticker symbol (3-4 characters, e.g. `D05`, `U11`, `Z74`, `TCPD`; accepts optional `.SI` suffix on input, always returned with it)\n- **company_name**: Full registered company name\n- **sector**: SGX sector classification. NB: source data contains duplicate labels (e.g. `Consumer Cyclical` vs `Consumer Cyclicals`, `Financial Services` vs `Financials`) — pending upstream cleanup.\n- **sub_sector**: SGX sub-sector classification (126 distinct values)\n- **market_cap**: Market capitalisation in SGD\n- **volume**: Recent average daily trading volume (shares)\n- **last_close_price**: Most recent close price in SGD\n- **employee_num**: Total number of employees\n- **listing_date**: Date the company was first listed on SGX\n- **pe**: Price-to-earnings ratio\n- **eps_current**: Most recent earnings per share in SGD, which can differ from the reported annual figure in `eps[YYYY]`\n- **beta**: Beta vs SGX market\n- **ps**: Price-to-sales ratio\n- **pcf**: Price-to-cash-flow ratio\n- **pb**: Price-to-book ratio\n- **gross_margin**: Gross profit margin (decimal, e.g. 0.45 = 45%)\n- **operating_margin**: Operating profit margin (decimal)\n- **net_profit_margin**: Net profit margin (decimal)\n- **quick_ratio**: Quick ratio (acid test)\n- **current_ratio**: Current ratio\n- **debt_to_equity**: Debt-to-equity ratio\n- **one_year_eps_growth**: 1-year EPS growth (decimal)\n- **one_year_sales_growth**: 1-year sales (revenue) growth (decimal)\n- **forward_dividend**: Forward annual dividend per share in SGD\n- **forward_dividend_yield**: Forward annual dividend yield (decimal)\n- **dividend_ttm**: Trailing-twelve-month dividend per share in SGD\n- **dividend_yield_5y_avg**: 5-year average dividend yield (decimal)\n- **dividend_growth_rate**: Year-over-year dividend growth rate (decimal)\n- **payout_ratio**: Dividend payout ratio (decimal)\n- **change_1d**: 1-day price change (decimal)\n- **change_7d**: 7-day price change (decimal)\n- **change_1m**: 1-month price change (decimal)\n- **change_ytd**: Year-to-date price change (decimal)\n- **change_1y**: 1-year price change (decimal)\n- **change_3y**: 3-year price change (decimal)\n</Accordion>\n\n<Accordion title=\"Array Fields\">\n**How to Use:** Query using the `in` operator to check if any of the provided values exist in the array.\n\n<Accordion title=\"Examples\">\n- `where=tags in ['dividend-yield-ttm-above-5-percent', '52-w-low']`\n</Accordion>\n\n- **tags**: Analyst sentiment / classification tags\n</Accordion>\n\n<Accordion title=\"JSON Object Fields (Most Recent Data)\">\n**How to Use:** Query as if they were direct fields — the parser automatically extracts the value from the underlying JSON.\n\n<Accordion title=\"Examples\">\n- `where=last_close_price < all_time_high_price * 0.5`\n- `where=ytd_low_date > '2026-06-01'`\n</Accordion>\n\n- **ytd_low_price**: Year-to-date lowest closing price in SGD\n- **ytd_low_date**: Date of the year-to-date lowest closing price\n- **ytd_high_price**: Year-to-date highest closing price in SGD\n- **ytd_high_date**: Date of the year-to-date highest closing price\n- **52_w_low_price**: 52-week lowest closing price in SGD\n- **52_w_low_date**: Date of the 52-week lowest closing price\n- **52_w_high_price**: 52-week highest closing price in SGD\n- **52_w_high_date**: Date of the 52-week highest closing price\n- **90_d_low_price**: 90-day lowest closing price in SGD\n- **90_d_low_date**: Date of the 90-day lowest closing price\n- **90_d_high_price**: 90-day highest closing price in SGD\n- **90_d_high_date**: Date of the 90-day highest closing price\n- **all_time_low_price**: All-time lowest closing price in SGD\n- **all_time_low_date**: Date of the all-time lowest closing price\n- **all_time_high_price**: All-time highest closing price in SGD\n- **all_time_high_date**: Date of the all-time highest closing price\n</Accordion>\n\n<Accordion title=\"Yearly JSON Fields (Historical & Forecast Data)\">\n**How to Use:** Must use bracket notation `field[YYYY]` to access data for a specific year. Supports all numeric operators, field-to-field comparisons, and arithmetic expressions.\n\n<Accordion title=\"Examples\">\n- `where=revenue[2024] > revenue[2023] * 1.2`\n- `where=total_yield[2024] > 0.05 and eps_growth[2024] > 0.1`\n</Accordion>\n\n- **revenue**: Annual revenue in SGD. Use: `revenue[2024]`.\n- **earnings**: Annual net profit/loss in SGD. Use: `earnings[2024]`.\n- **total_dividend**: Total dividends paid per share for the year (SGD). Use: `total_dividend[2024]`.\n- **total_yield**: Total dividend yield for the year (decimal). Use: `total_yield[2024]`.\n- **eps**: Earnings per share for the year in SGD. Use: `eps[2024]`.\n- **eps_growth**: Year-over-year EPS growth rate (decimal). Use: `eps_growth[2024]`.\n- **operating_cash_flow**: Operating cash flow in SGD. Use: `operating_cash_flow[2024]`. _(coverage: Big caps only)_\n- **investing_cash_flow**: Investing cash flow in SGD. Use: `investing_cash_flow[2024]`. _(coverage: Big caps only)_\n- **financing_cash_flow**: Financing cash flow in SGD. Use: `financing_cash_flow[2024]`. _(coverage: Big caps only)_\n- **free_cash_flow**: Free cash flow in SGD. Use: `free_cash_flow[2024]`. _(coverage: Big caps only)_\n- **net_cash_flow**: Net cash flow in SGD. Use: `net_cash_flow[2024]`. _(coverage: Big caps only)_\n- **capital_expenditure**: Capital expenditure in SGD. Use: `capital_expenditure[2024]`. _(coverage: Big caps only)_\n- **ebit**: EBIT (earnings before interest and tax) in SGD. Use: `ebit[2024]`. _(coverage: Big caps only)_\n- **ebitda**: EBITDA in SGD. Use: `ebitda[2024]`. _(coverage: Big caps only)_\n- **gross_income**: Gross income in SGD. Use: `gross_income[2024]`. _(coverage: Big caps only)_\n- **cost_of_revenue**: Cost of revenue in SGD. Use: `cost_of_revenue[2024]`. _(coverage: Big caps only)_\n- **operating_income**: Operating income in SGD. Use: `operating_income[2024]`. _(coverage: Big caps only)_\n- **operating_expense**: Operating expense in SGD. Use: `operating_expense[2024]`. _(coverage: Big caps only)_\n- **pretax_income**: Pre-tax income in SGD. Use: `pretax_income[2024]`. _(coverage: Big caps only)_\n- **income_taxes**: Income taxes paid in SGD. Use: `income_taxes[2024]`. _(coverage: Big caps only)_\n- **total_asset**: Total assets in SGD. Use: `total_asset[2024]`. _(coverage: Big caps only)_\n- **total_equity**: Total equity in SGD. Use: `total_equity[2024]`. _(coverage: Big caps only)_\n- **total_liabilities**: Total liabilities in SGD. Use: `total_liabilities[2024]`. _(coverage: Big caps only)_\n- **working_capital**: Working capital in SGD. Use: `working_capital[2024]`. _(coverage: Big caps only)_\n- **total_current_asset**: Total current assets in SGD. Use: `total_current_asset[2024]`. _(coverage: Big caps only)_\n- **total_non_current_asset**: Total non-current assets in SGD. Use: `total_non_current_asset[2024]`. _(coverage: Big caps only)_\n- **net_interest_income**: Net interest income in SGD. Use: `net_interest_income[2024]`. _(coverage: Banks only)_\n- **interest_income**: Total interest income in SGD. Use: `interest_income[2024]`. _(coverage: Banks only)_\n- **interest_expense**: Total interest expense in SGD. Use: `interest_expense[2024]`. _(coverage: Banks only)_\n- **net_fee_and_commission_income**: Net fee and commission income in SGD. Use: `net_fee_and_commission_income[2024]`. _(coverage: Banks only)_\n- **net_trading_income**: Net trading income in SGD. Use: `net_trading_income[2024]`. _(coverage: Banks only)_\n- **net_loan**: Net loans outstanding in SGD. Use: `net_loan[2024]`. _(coverage: Banks only)_\n- **gross_loan**: Gross loans outstanding in SGD. Use: `gross_loan[2024]`. _(coverage: Banks only)_\n- **total_deposit**: Total customer deposits in SGD. Use: `total_deposit[2024]`. _(coverage: Banks only)_\n- **core_capital_tier1**: Core capital (Tier 1) in SGD. Use: `core_capital_tier1[2024]`. _(coverage: Banks only)_\n- **total_risk_weighted_asset**: Total risk-weighted assets in SGD. Use: `total_risk_weighted_asset[2024]`. _(coverage: Banks only)_\n</Accordion>\n\n<Accordion title=\"JSON List Fields\">\n**How to Use:** The query checks if **any** object in the list matches the condition. Use `=` or `like` for strings, numeric operators for numbers.\n\n<Accordion title=\"Examples\">\n- `where=major_shareholders_name like '%Temasek%' and major_shareholders_share_percentage > 0.1`\n- `where=management_position like '%Chief Executive%'`\n</Accordion>\n\n- **management_name**: Filter by the name of a current director or executive. Use `like` operator.\n- **management_position**: Filter by the position or title of a current director or executive. Use `like` operator.\n- **major_shareholders_name**: Filter by major shareholder name. Use `like` operator.\n- **major_shareholders_share_value**: Filter by major shareholder share value in SGD.\n- **major_shareholders_share_amount**: Filter by major shareholder number of shares.\n- **major_shareholders_share_percentage**: Filter by major shareholder ownership percentage.\n</Accordion>\n\n</AccordionGroup>\n</Accordion>\n\n<Info>Costs 1 API credit for structured queries. Using the natural-language `?q=` parameter costs 3 API credits.</Info>",
                 "summary": "SGX Companies Screener",
                 "parameters": [
                     {
@@ -11697,10 +11705,147 @@
                 "x-playground-summary": "Top SGX companies ranked by a classification."
             }
         },
+        "/v2/sgx/company/corporate-actions/{symbol}/": {
+            "get": {
+                "operationId": "sgx_company_corporate_actions_retrieve",
+                "description": "<Note>SGX symbol: 3-4 characters (letters or digits), optionally followed by `.SI` (case-insensitive) on input. E.g. `D05`, `U11`, `Z74`. Output always carries the `.SI` suffix.</Note>\n\nReturns the corporate action history of an SGX-listed company grouped by type, in the same shape as the IDX [Corporate Actions](https://docs.sectors.app/api-references/v2/indonesia/company/corporate-actions) endpoint. SGX coverage includes paid dividends, dividends that have been announced but not yet paid, and annual general meetings along with their resolution results. A type with no recorded events for the company is returned as `null`.\n\n<Info>Costs 1 API credit.</Info>",
+                "summary": "SGX Corporate Actions",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "symbol",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "SGX symbol. E.g. `C07`, `D05`.",
+                        "required": true,
+                        "examples": {
+                            "Example": {
+                                "value": "C07"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "SGX - Detailed Reports"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SgxCorporateActionsResponse"
+                                },
+                                "examples": {
+                                    "C07CorporateActions": {
+                                        "value": {
+                                            "symbol": "C07.SI",
+                                            "corporate_actions": {
+                                                "agm": [
+                                                    {
+                                                        "agm_date": "2026-10-01",
+                                                        "agm_time": "10:00:00",
+                                                        "agm_place": "Atrium Suites, Lobby Level, Mandarin Oriental Singapore, 5 Raffles Avenue, Singapore 039797",
+                                                        "agm_result": "Resolution 1: Shareholders approved the Proposed Constitutional Amendment (100.00% for, carried).\nResolution 2: Shareholders approved the Proposed Change of Name (99.98% for, carried).\nResolution 3: Shareholders approved the Proposed Distribution (Special Dividend) (100.00% for, carried)."
+                                                    }
+                                                ],
+                                                "dividend": [
+                                                    {
+                                                        "payment_date": "2022-05-30",
+                                                        "dividend_yield": 0.02748,
+                                                        "dividend_amount": 0.79292
+                                                    }
+                                                ],
+                                                "upcoming_dividend": [
+                                                    {
+                                                        "ex_date": "2026-10-08",
+                                                        "payment_date": "2026-12-02",
+                                                        "dividend_amount": 0.473304
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        "summary": "C07 Corporate Actions",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/sgx/company/corporate-actions/{symbol}/",
+                                            "url": "https://api.sectors.app/v2/sgx/company/corporate-actions/C07/",
+                                            "path_params": {
+                                                "symbol": "C07"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Corporate actions grouped by type."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Unsupported query parameter(s): test. No query parameters are allowed."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Unsupported query parameter."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "NOT_FOUND",
+                                            "message": "No data found for symbol 'XYZ.SI'."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Symbol not found."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/singapore/report/corporate-actions",
+                "x-playground-summary": "Dividends and AGM results for one SGX company."
+            }
+        },
         "/v2/sgx/company/report/": {
             "get": {
                 "operationId": "sgx_company_report_retrieve",
-                "description": "<Note>SGX symbol: 3-4 characters (letters or digits), optionally followed by `.SI` (case-insensitive) on input. E.g. `D05`, `U11`, `Z74`. Output always carries the `.SI` suffix.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d/1m/1y/3y/ytd), all-time price highs/lows\n- **valuation**: PE, PS, PCF, PB ratios\n- **financials**: Historical revenue and earnings by year, EPS, margins, ratios\n- **dividend**: Dividend yield, growth rate, payout ratio, historical dividends\n</Accordion>\n\n<Info>Costs 1 API credit per requested section. Default behavior (all 4 sections) consumes 4 credits.</Info>",
+                "description": "<Note>SGX symbol: 3-4 characters (letters or digits), optionally followed by `.SI` (case-insensitive) on input. E.g. `D05`, `U11`, `Z74`. Output always carries the `.SI` suffix.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d/1m/1y/3y/ytd), all-time price highs/lows, listing date, registered address and website\n- **valuation**: PE, PS, PCF, PB ratios\n- **financials**: Historical revenue and earnings by year, EPS along with its yearly history and growth, margins, ratios\n- **dividend**: Dividend yield, growth rate, payout ratio, historical dividends and any announced upcoming dividends\n- **management**: Current directors and executives with their position, age and appointment date, together with former officers and the date they stepped down\n- **ownership**: Major shareholders with their share count, ownership percentage and holding value in SGD\n</Accordion>\n\n<Info>Costs 1 API credit per requested section. Default behavior (all 6 sections) consumes 6 credits.</Info>",
                 "summary": "Full company report for an SGX-listed symbol",
                 "parameters": [
                     {
@@ -11727,12 +11872,14 @@
                                 "enum": [
                                     "dividend",
                                     "financials",
+                                    "management",
                                     "overview",
+                                    "ownership",
                                     "valuation"
                                 ]
                             }
                         },
-                        "description": "Comma-separated sections to include. Options: `overview`, `valuation`, `financials`, `dividend`. Default: all sections.",
+                        "description": "Comma-separated sections to include. Options: `overview`, `valuation`, `financials`, `dividend`, `management`, `ownership`. Default: all sections.",
                         "examples": {
                             "Example": {
                                 "value": "overview"
@@ -11772,6 +11919,14 @@
                                         "dividend": {
                                             "type": "object",
                                             "description": "Dividend history, yield, growth, payout ratio."
+                                        },
+                                        "management": {
+                                            "type": "object",
+                                            "description": "Current and former directors and executives."
+                                        },
+                                        "ownership": {
+                                            "type": "object",
+                                            "description": "Major shareholders and their holdings."
                                         }
                                     }
                                 },
@@ -11781,120 +11936,200 @@
                                             "symbol": "D05.SI",
                                             "name": "DBS Group Holdings Ltd",
                                             "overview": {
-                                                "market_cap": 194775527849,
-                                                "volume": 4746800,
+                                                "market_cap": 219585288024,
+                                                "volume": 4524700,
                                                 "employee_num": 41000.0,
                                                 "sector": "Financial Services",
                                                 "sub_sector": "Banks & Credit Services",
                                                 "tags": [
-                                                    "52-w-high",
-                                                    "90-d-high",
-                                                    "all-time-high",
-                                                    "dividend-increase-5y",
                                                     "last-volume-above-10d-volume-average",
-                                                    "top-90d-transaction-value",
-                                                    "ytd-high"
+                                                    "top-90d-transaction-value"
                                                 ],
-                                                "last_close_price": 69.1,
-                                                "change_1d": 0.006701631701631702,
-                                                "change_7d": 0.05609047837383463,
-                                                "change_1m": 0.10101975780752072,
-                                                "change_1y": 0.20804193692234377,
+                                                "last_close_price": 77.21,
+                                                "change_1d": -0.0019389865563598759,
+                                                "change_7d": -0.010128205128205128,
+                                                "change_1m": -0.005025773195876289,
+                                                "change_1y": 0.1539381258406815,
                                                 "change_3y": null,
-                                                "change_ytd": 0.20804193692234377,
-                                                "all_time_price": {
-                                                    "ytd_low": {
-                                                        "2026-03-09": 52.8054313659668
-                                                    },
-                                                    "52_w_low": {
-                                                        "2025-07-09": 43.142433166503906
-                                                    },
-                                                    "90_d_low": {
-                                                        "2026-04-29": 55.779266357421875
-                                                    },
-                                                    "ytd_high": {
-                                                        "2026-07-07": 68.63999938964844
-                                                    },
-                                                    "52_w_high": {
-                                                        "2026-07-07": 68.63999938964844
-                                                    },
-                                                    "90_d_high": {
-                                                        "2026-07-07": 68.63999938964844
-                                                    },
-                                                    "all_time_low": {
-                                                        "2009-03-09": 2.7301738262176514
-                                                    },
-                                                    "all_time_high": {
-                                                        "2026-07-07": 68.63999938964844
-                                                    }
-                                                }
+                                                "change_ytd": 0.1539381258406815,
+                                                "all_time_price": null,
+                                                "listing_date": "1968-11-29",
+                                                "address": "12 Marina Boulevard, Level 41, DBS Asia Central @ Marina Bay Financial Centre Tower 3, Singapore 018982",
+                                                "website": "http://www.dbs.com"
                                             },
                                             "valuation": {
-                                                "pe": 17.287106,
-                                                "beta": 1.200065,
-                                                "ps": 8.203445,
-                                                "pcf": 17.064846,
-                                                "pb": 2.713704
+                                                "pe": 19.734579,
+                                                "beta": 1.25122,
+                                                "ps": 9.425071,
+                                                "pcf": null,
+                                                "pb": 3.12989
                                             },
                                             "financials": {
                                                 "historical_financials": {
                                                     "2025": {
                                                         "date": "2025-12-31",
-                                                        "revenue": 22895000000,
-                                                        "earnings": 10934000000,
-                                                        "updated_on": "2026-07-01T03:56:07.450539+00:00",
+                                                        "revenue": 22900000000,
+                                                        "earnings": 10933000000,
+                                                        "source_url": "https://www.dbs.com/iwov-resources/images/investors/annual-report/dbs-annual-report-2025.pdf",
+                                                        "updated_on": "2026-08-14T02:07:33+00:00",
+                                                        "sankey_component": {
+                                                            "links": [
+                                                                {
+                                                                    "value": 2665000000,
+                                                                    "source": "Placement and balances with banks",
+                                                                    "target": "Interest Income"
+                                                                }
+                                                            ],
+                                                            "nodes": [
+                                                                {
+                                                                    "id": "Placement and balances with banks",
+                                                                    "nodeColor": "hsl(195, 53%, 79%)"
+                                                                }
+                                                            ]
+                                                        },
                                                         "cash_flow_metrics": {
-                                                            "net_cash_flow": -970000000,
-                                                            "free_cash_flow": 10499000000,
-                                                            "capital_expenditure": 525000000,
+                                                            "net_cash_flow": -864000000,
+                                                            "free_cash_flow": 10108000000,
+                                                            "capital_expenditure": 916000000,
                                                             "financing_cash_flow": -11180000000,
                                                             "investing_cash_flow": -708000000,
                                                             "operating_cash_flow": 11024000000
                                                         },
+                                                        "industry_breakdown": {
+                                                            "non_loan_asset": [
+                                                                {
+                                                                    "class": "Earning Asset",
+                                                                    "amount": 55844000000,
+                                                                    "category": "Cash and balances"
+                                                                }
+                                                            ],
+                                                            "customer_breakdown": {
+                                                                "Others": 6000000,
+                                                                "Consumer": 6106000000,
+                                                                "Institutional": 6268000000,
+                                                                "Markets Trading": 2120000000
+                                                            },
+                                                            "loan_by_economic_sectors": {
+                                                                "Others": 39091000000,
+                                                                "Housing loans": 84012000000,
+                                                                "Manufacturing": 46829000000,
+                                                                "General commerce": 45576000000,
+                                                                "Building and construction": 111925000000,
+                                                                "Transportation, storage and communications": 33703000000,
+                                                                "Financial institutions, investment and holding companies": 45343000000,
+                                                                "Professionals and private individuals (excluding housing loans)": 44437000000
+                                                            }
+                                                        },
                                                         "income_stmt_metrics": {
+                                                            "minorities": 1000000,
                                                             "income_taxes": 2065000000,
                                                             "pretax_income": 12999000000,
-                                                            "operating_expense": 9309000000,
+                                                            "interest_income": 28268000000,
+                                                            "interest_expense": 13768000000,
+                                                            "operating_income": 12737000000,
+                                                            "operating_expense": 9349000000,
+                                                            "net_trading_income": 3361000000,
+                                                            "net_interest_income": 14500000000,
+                                                            "int_income_breakdown": [
+                                                                {
+                                                                    "class": "Interbank Placement",
+                                                                    "amount": 2665000000,
+                                                                    "category": "Placement and balances with banks"
+                                                                }
+                                                            ],
+                                                            "other_non_interest_income": 141000000,
                                                             "diluted_shares_outstanding": 2850000000,
-                                                            "amortization_of_intangible_assets": 23000000
+                                                            "operating_expense_breakdown": [
+                                                                {
+                                                                    "class": "Salaries & Benefits",
+                                                                    "amount": 5832000000,
+                                                                    "category": "Employee benefit"
+                                                                }
+                                                            ],
+                                                            "non_operating_income_or_loss": 0,
+                                                            "net_fee_and_commission_income": 4898000000,
+                                                            "amortization_of_intangible_assets": 23000000,
+                                                            "allowances_for_credit_and_other_losses": 791000000
                                                         },
                                                         "balance_sheet_metrics": {
+                                                            "net_loan": 445011000000,
+                                                            "credit_rwa": 288007000000,
+                                                            "gross_loan": 450916000000,
+                                                            "market_rwa": 35733000000,
                                                             "total_asset": 897488000000,
+                                                            "time_deposit": 277537000000,
                                                             "total_equity": 68916000000,
-                                                            "total_liabilities": 828572000000
+                                                            "earning_asset": 857588000000,
+                                                            "total_capital": 65446000000,
+                                                            "total_deposit": 610023000000,
+                                                            "non_loan_asset": 452477000000,
+                                                            "current_account": 123498000000,
+                                                            "operational_rwa": 41641000000,
+                                                            "savings_account": 208988000000,
+                                                            "total_liabilities": 828572000000,
+                                                            "core_capital_tier1": 62195000000,
+                                                            "allowance_for_loans": -5905000000,
+                                                            "total_risk_weighted_asset": 365381000000,
+                                                            "supplementary_capital_tier2": 3251000000,
+                                                            "non_interest_bearing_liabilities": 36506000000,
+                                                            "other_interest_bearing_liabilities": 182043000000
                                                         }
                                                     }
                                                 },
                                                 "eps": 3.818229,
+                                                "historical_eps": {
+                                                    "2025": {
+                                                        "eps": 3.836140350877193,
+                                                        "eps_growth": -0.0339
+                                                    }
+                                                },
                                                 "gross_margin": 0.0,
                                                 "operating_margin": null,
                                                 "net_profit_margin": 0.477351,
-                                                "one_year_eps_growth": 0.0646,
+                                                "one_year_eps_growth": -0.0339,
                                                 "one_year_sales_growth": 0.030517,
                                                 "quick_ratio": null,
                                                 "current_ratio": null,
                                                 "debt_to_equity": 1.089114
                                             },
                                             "dividend": {
-                                                "dividend_yield_5y_avg": 0.0459,
-                                                "dividend_growth_rate": -0.431578947368421,
-                                                "payout_ratio": 0.79800004,
-                                                "forward_dividend": 3.24,
-                                                "forward_dividend_yield": 0.0495,
-                                                "dividend_ttm": 3.12,
-                                                "historical_dividends": {
-                                                    "2026": {
-                                                        "breakdown": [
-                                                            {
-                                                                "date": "2026-04-08",
-                                                                "total": 0.81,
-                                                                "yield": null
-                                                            }
-                                                        ],
-                                                        "total_yield": null,
-                                                        "total_dividend": 1.62
+                                                "dividend_yield_5y_avg": null,
+                                                "dividend_growth_rate": null,
+                                                "payout_ratio": 0.7975,
+                                                "forward_dividend": 3.18,
+                                                "forward_dividend_yield": 0.041,
+                                                "dividend_ttm": 3.18,
+                                                "historical_dividends": null,
+                                                "upcoming_dividends": null
+                                            },
+                                            "management": {
+                                                "management": [
+                                                    {
+                                                        "age": null,
+                                                        "name": "Peter Seah",
+                                                        "position": "Non-Executive Chairman",
+                                                        "start_date": "2009-11-16"
                                                     }
-                                                }
+                                                ],
+                                                "former_management": [
+                                                    {
+                                                        "age": "65",
+                                                        "name": "Piyush Gupta",
+                                                        "end_date": "2025-03-28",
+                                                        "position": "Chief Executive Officer, Chairman of Board Sustainability Committee",
+                                                        "start_date": "2009-11-09"
+                                                    }
+                                                ]
+                                            },
+                                            "ownership": {
+                                                "major_shareholders": [
+                                                    {
+                                                        "name": "Maju Holdings Pte Ltd",
+                                                        "share_value": 37430624704.55,
+                                                        "share_amount": 484789855.0,
+                                                        "share_percentage": "0.1708"
+                                                    }
+                                                ]
                                             }
                                         },
                                         "summary": "DBS Group (D05)",
@@ -11976,7 +12211,7 @@
         "/v2/sgx/company/report/{symbol}/": {
             "get": {
                 "operationId": "sgx_company_report_retrieve_2",
-                "description": "<Note>SGX symbol: 3-4 characters (letters or digits), optionally followed by `.SI` (case-insensitive) on input. E.g. `D05`, `U11`, `Z74`. Output always carries the `.SI` suffix.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d/1m/1y/3y/ytd), all-time price highs/lows\n- **valuation**: PE, PS, PCF, PB ratios\n- **financials**: Historical revenue and earnings by year, EPS, margins, ratios\n- **dividend**: Dividend yield, growth rate, payout ratio, historical dividends\n</Accordion>\n\n<Info>Costs 1 API credit per requested section. Default behavior (all 4 sections) consumes 4 credits.</Info>",
+                "description": "<Note>SGX symbol: 3-4 characters (letters or digits), optionally followed by `.SI` (case-insensitive) on input. E.g. `D05`, `U11`, `Z74`. Output always carries the `.SI` suffix.</Note>\n\nReturns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.\n\n<Accordion title=\"Available sections\">\n- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d/1m/1y/3y/ytd), all-time price highs/lows, listing date, registered address and website\n- **valuation**: PE, PS, PCF, PB ratios\n- **financials**: Historical revenue and earnings by year, EPS along with its yearly history and growth, margins, ratios\n- **dividend**: Dividend yield, growth rate, payout ratio, historical dividends and any announced upcoming dividends\n- **management**: Current directors and executives with their position, age and appointment date, together with former officers and the date they stepped down\n- **ownership**: Major shareholders with their share count, ownership percentage and holding value in SGD\n</Accordion>\n\n<Info>Costs 1 API credit per requested section. Default behavior (all 6 sections) consumes 6 credits.</Info>",
                 "summary": "Full company report for an SGX-listed symbol",
                 "parameters": [
                     {
@@ -12003,12 +12238,14 @@
                                 "enum": [
                                     "dividend",
                                     "financials",
+                                    "management",
                                     "overview",
+                                    "ownership",
                                     "valuation"
                                 ]
                             }
                         },
-                        "description": "Comma-separated sections to include. Options: `overview`, `valuation`, `financials`, `dividend`. Default: all sections.",
+                        "description": "Comma-separated sections to include. Options: `overview`, `valuation`, `financials`, `dividend`, `management`, `ownership`. Default: all sections.",
                         "examples": {
                             "Example": {
                                 "value": "overview"
@@ -12048,6 +12285,14 @@
                                         "dividend": {
                                             "type": "object",
                                             "description": "Dividend history, yield, growth, payout ratio."
+                                        },
+                                        "management": {
+                                            "type": "object",
+                                            "description": "Current and former directors and executives."
+                                        },
+                                        "ownership": {
+                                            "type": "object",
+                                            "description": "Major shareholders and their holdings."
                                         }
                                     }
                                 },
@@ -12057,120 +12302,200 @@
                                             "symbol": "D05.SI",
                                             "name": "DBS Group Holdings Ltd",
                                             "overview": {
-                                                "market_cap": 194775527849,
-                                                "volume": 4746800,
+                                                "market_cap": 219585288024,
+                                                "volume": 4524700,
                                                 "employee_num": 41000.0,
                                                 "sector": "Financial Services",
                                                 "sub_sector": "Banks & Credit Services",
                                                 "tags": [
-                                                    "52-w-high",
-                                                    "90-d-high",
-                                                    "all-time-high",
-                                                    "dividend-increase-5y",
                                                     "last-volume-above-10d-volume-average",
-                                                    "top-90d-transaction-value",
-                                                    "ytd-high"
+                                                    "top-90d-transaction-value"
                                                 ],
-                                                "last_close_price": 69.1,
-                                                "change_1d": 0.006701631701631702,
-                                                "change_7d": 0.05609047837383463,
-                                                "change_1m": 0.10101975780752072,
-                                                "change_1y": 0.20804193692234377,
+                                                "last_close_price": 77.21,
+                                                "change_1d": -0.0019389865563598759,
+                                                "change_7d": -0.010128205128205128,
+                                                "change_1m": -0.005025773195876289,
+                                                "change_1y": 0.1539381258406815,
                                                 "change_3y": null,
-                                                "change_ytd": 0.20804193692234377,
-                                                "all_time_price": {
-                                                    "ytd_low": {
-                                                        "2026-03-09": 52.8054313659668
-                                                    },
-                                                    "52_w_low": {
-                                                        "2025-07-09": 43.142433166503906
-                                                    },
-                                                    "90_d_low": {
-                                                        "2026-04-29": 55.779266357421875
-                                                    },
-                                                    "ytd_high": {
-                                                        "2026-07-07": 68.63999938964844
-                                                    },
-                                                    "52_w_high": {
-                                                        "2026-07-07": 68.63999938964844
-                                                    },
-                                                    "90_d_high": {
-                                                        "2026-07-07": 68.63999938964844
-                                                    },
-                                                    "all_time_low": {
-                                                        "2009-03-09": 2.7301738262176514
-                                                    },
-                                                    "all_time_high": {
-                                                        "2026-07-07": 68.63999938964844
-                                                    }
-                                                }
+                                                "change_ytd": 0.1539381258406815,
+                                                "all_time_price": null,
+                                                "listing_date": "1968-11-29",
+                                                "address": "12 Marina Boulevard, Level 41, DBS Asia Central @ Marina Bay Financial Centre Tower 3, Singapore 018982",
+                                                "website": "http://www.dbs.com"
                                             },
                                             "valuation": {
-                                                "pe": 17.287106,
-                                                "beta": 1.200065,
-                                                "ps": 8.203445,
-                                                "pcf": 17.064846,
-                                                "pb": 2.713704
+                                                "pe": 19.734579,
+                                                "beta": 1.25122,
+                                                "ps": 9.425071,
+                                                "pcf": null,
+                                                "pb": 3.12989
                                             },
                                             "financials": {
                                                 "historical_financials": {
                                                     "2025": {
                                                         "date": "2025-12-31",
-                                                        "revenue": 22895000000,
-                                                        "earnings": 10934000000,
-                                                        "updated_on": "2026-07-01T03:56:07.450539+00:00",
+                                                        "revenue": 22900000000,
+                                                        "earnings": 10933000000,
+                                                        "source_url": "https://www.dbs.com/iwov-resources/images/investors/annual-report/dbs-annual-report-2025.pdf",
+                                                        "updated_on": "2026-08-14T02:07:33+00:00",
+                                                        "sankey_component": {
+                                                            "links": [
+                                                                {
+                                                                    "value": 2665000000,
+                                                                    "source": "Placement and balances with banks",
+                                                                    "target": "Interest Income"
+                                                                }
+                                                            ],
+                                                            "nodes": [
+                                                                {
+                                                                    "id": "Placement and balances with banks",
+                                                                    "nodeColor": "hsl(195, 53%, 79%)"
+                                                                }
+                                                            ]
+                                                        },
                                                         "cash_flow_metrics": {
-                                                            "net_cash_flow": -970000000,
-                                                            "free_cash_flow": 10499000000,
-                                                            "capital_expenditure": 525000000,
+                                                            "net_cash_flow": -864000000,
+                                                            "free_cash_flow": 10108000000,
+                                                            "capital_expenditure": 916000000,
                                                             "financing_cash_flow": -11180000000,
                                                             "investing_cash_flow": -708000000,
                                                             "operating_cash_flow": 11024000000
                                                         },
+                                                        "industry_breakdown": {
+                                                            "non_loan_asset": [
+                                                                {
+                                                                    "class": "Earning Asset",
+                                                                    "amount": 55844000000,
+                                                                    "category": "Cash and balances"
+                                                                }
+                                                            ],
+                                                            "customer_breakdown": {
+                                                                "Others": 6000000,
+                                                                "Consumer": 6106000000,
+                                                                "Institutional": 6268000000,
+                                                                "Markets Trading": 2120000000
+                                                            },
+                                                            "loan_by_economic_sectors": {
+                                                                "Others": 39091000000,
+                                                                "Housing loans": 84012000000,
+                                                                "Manufacturing": 46829000000,
+                                                                "General commerce": 45576000000,
+                                                                "Building and construction": 111925000000,
+                                                                "Transportation, storage and communications": 33703000000,
+                                                                "Financial institutions, investment and holding companies": 45343000000,
+                                                                "Professionals and private individuals (excluding housing loans)": 44437000000
+                                                            }
+                                                        },
                                                         "income_stmt_metrics": {
+                                                            "minorities": 1000000,
                                                             "income_taxes": 2065000000,
                                                             "pretax_income": 12999000000,
-                                                            "operating_expense": 9309000000,
+                                                            "interest_income": 28268000000,
+                                                            "interest_expense": 13768000000,
+                                                            "operating_income": 12737000000,
+                                                            "operating_expense": 9349000000,
+                                                            "net_trading_income": 3361000000,
+                                                            "net_interest_income": 14500000000,
+                                                            "int_income_breakdown": [
+                                                                {
+                                                                    "class": "Interbank Placement",
+                                                                    "amount": 2665000000,
+                                                                    "category": "Placement and balances with banks"
+                                                                }
+                                                            ],
+                                                            "other_non_interest_income": 141000000,
                                                             "diluted_shares_outstanding": 2850000000,
-                                                            "amortization_of_intangible_assets": 23000000
+                                                            "operating_expense_breakdown": [
+                                                                {
+                                                                    "class": "Salaries & Benefits",
+                                                                    "amount": 5832000000,
+                                                                    "category": "Employee benefit"
+                                                                }
+                                                            ],
+                                                            "non_operating_income_or_loss": 0,
+                                                            "net_fee_and_commission_income": 4898000000,
+                                                            "amortization_of_intangible_assets": 23000000,
+                                                            "allowances_for_credit_and_other_losses": 791000000
                                                         },
                                                         "balance_sheet_metrics": {
+                                                            "net_loan": 445011000000,
+                                                            "credit_rwa": 288007000000,
+                                                            "gross_loan": 450916000000,
+                                                            "market_rwa": 35733000000,
                                                             "total_asset": 897488000000,
+                                                            "time_deposit": 277537000000,
                                                             "total_equity": 68916000000,
-                                                            "total_liabilities": 828572000000
+                                                            "earning_asset": 857588000000,
+                                                            "total_capital": 65446000000,
+                                                            "total_deposit": 610023000000,
+                                                            "non_loan_asset": 452477000000,
+                                                            "current_account": 123498000000,
+                                                            "operational_rwa": 41641000000,
+                                                            "savings_account": 208988000000,
+                                                            "total_liabilities": 828572000000,
+                                                            "core_capital_tier1": 62195000000,
+                                                            "allowance_for_loans": -5905000000,
+                                                            "total_risk_weighted_asset": 365381000000,
+                                                            "supplementary_capital_tier2": 3251000000,
+                                                            "non_interest_bearing_liabilities": 36506000000,
+                                                            "other_interest_bearing_liabilities": 182043000000
                                                         }
                                                     }
                                                 },
                                                 "eps": 3.818229,
+                                                "historical_eps": {
+                                                    "2025": {
+                                                        "eps": 3.836140350877193,
+                                                        "eps_growth": -0.0339
+                                                    }
+                                                },
                                                 "gross_margin": 0.0,
                                                 "operating_margin": null,
                                                 "net_profit_margin": 0.477351,
-                                                "one_year_eps_growth": 0.0646,
+                                                "one_year_eps_growth": -0.0339,
                                                 "one_year_sales_growth": 0.030517,
                                                 "quick_ratio": null,
                                                 "current_ratio": null,
                                                 "debt_to_equity": 1.089114
                                             },
                                             "dividend": {
-                                                "dividend_yield_5y_avg": 0.0459,
-                                                "dividend_growth_rate": -0.431578947368421,
-                                                "payout_ratio": 0.79800004,
-                                                "forward_dividend": 3.24,
-                                                "forward_dividend_yield": 0.0495,
-                                                "dividend_ttm": 3.12,
-                                                "historical_dividends": {
-                                                    "2026": {
-                                                        "breakdown": [
-                                                            {
-                                                                "date": "2026-04-08",
-                                                                "total": 0.81,
-                                                                "yield": null
-                                                            }
-                                                        ],
-                                                        "total_yield": null,
-                                                        "total_dividend": 1.62
+                                                "dividend_yield_5y_avg": null,
+                                                "dividend_growth_rate": null,
+                                                "payout_ratio": 0.7975,
+                                                "forward_dividend": 3.18,
+                                                "forward_dividend_yield": 0.041,
+                                                "dividend_ttm": 3.18,
+                                                "historical_dividends": null,
+                                                "upcoming_dividends": null
+                                            },
+                                            "management": {
+                                                "management": [
+                                                    {
+                                                        "age": null,
+                                                        "name": "Peter Seah",
+                                                        "position": "Non-Executive Chairman",
+                                                        "start_date": "2009-11-16"
                                                     }
-                                                }
+                                                ],
+                                                "former_management": [
+                                                    {
+                                                        "age": "65",
+                                                        "name": "Piyush Gupta",
+                                                        "end_date": "2025-03-28",
+                                                        "position": "Chief Executive Officer, Chairman of Board Sustainability Committee",
+                                                        "start_date": "2009-11-09"
+                                                    }
+                                                ]
+                                            },
+                                            "ownership": {
+                                                "major_shareholders": [
+                                                    {
+                                                        "name": "Maju Holdings Pte Ltd",
+                                                        "share_value": 37430624704.55,
+                                                        "share_amount": 484789855.0,
+                                                        "share_percentage": "0.1708"
+                                                    }
+                                                ]
                                             }
                                         },
                                         "summary": "DBS Group (D05)",
@@ -12513,23 +12838,57 @@
                                         "value": {
                                             "results": [
                                                 {
-                                                    "symbol": "S59.SI",
-                                                    "timestamp": "2026-07-06",
-                                                    "transaction_type": "award",
-                                                    "holder_name": "Chin Yau Seng",
+                                                    "symbol": "S58.SI",
+                                                    "timestamp": "2026-08-04",
+                                                    "transaction_type": "others",
+                                                    "holder_name": "Chan Lai Fung",
                                                     "holder_type": "insider",
-                                                    "holding_before": 172700,
-                                                    "holding_after": 495193,
-                                                    "amount_transaction": 322493,
-                                                    "transaction_value": null,
-                                                    "price_per_share": null,
-                                                    "share_percentage_before": 0.00015,
-                                                    "share_percentage_after": 0.00044,
-                                                    "share_percentage_transaction": 0.00029
+                                                    "transaction_value": 45178.0,
+                                                    "price_per_share": [
+                                                        {
+                                                            "price": 4.7061,
+                                                            "amount": 9600
+                                                        }
+                                                    ],
+                                                    "share_percentage_transaction": {
+                                                        "total": 1e-05,
+                                                        "deemed": 0.0,
+                                                        "direct": 1e-05
+                                                    },
+                                                    "interest_breakdown": {
+                                                        "after": {
+                                                            "total": {
+                                                                "amount": 23730,
+                                                                "percentage": 2e-05
+                                                            },
+                                                            "deemed": {
+                                                                "amount": 0,
+                                                                "percentage": 0.0
+                                                            },
+                                                            "direct": {
+                                                                "amount": 23730,
+                                                                "percentage": 2e-05
+                                                            }
+                                                        },
+                                                        "before": {
+                                                            "total": {
+                                                                "amount": 14130,
+                                                                "percentage": 1e-05
+                                                            },
+                                                            "deemed": {
+                                                                "amount": 0,
+                                                                "percentage": 0.0
+                                                            },
+                                                            "direct": {
+                                                                "amount": 14130,
+                                                                "percentage": 1e-05
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             ],
                                             "pagination": {
-                                                "total_count": 541,
+                                                "total_count": 578,
                                                 "showing": 1,
                                                 "limit": 2,
                                                 "offset": 0,
@@ -18749,6 +19108,50 @@
                     "results"
                 ]
             },
+            "SgxCorporateActionsByType": {
+                "type": "object",
+                "properties": {
+                    "dividend": {
+                        "type": "array",
+                        "items": {},
+                        "nullable": true,
+                        "description": "Paid dividends with payment date, amount per share (SGD) and yield."
+                    },
+                    "upcoming_dividend": {
+                        "type": "array",
+                        "items": {},
+                        "nullable": true,
+                        "description": "Dividends announced but not yet paid, with ex-date, payment date and amount per share (SGD)."
+                    },
+                    "agm": {
+                        "type": "array",
+                        "items": {},
+                        "nullable": true,
+                        "description": "Annual general meetings with their date, time, venue and resolution results."
+                    }
+                },
+                "required": [
+                    "agm",
+                    "dividend",
+                    "upcoming_dividend"
+                ]
+            },
+            "SgxCorporateActionsResponse": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string",
+                        "description": "SGX ticker symbol (with `.SI` suffix)."
+                    },
+                    "corporate_actions": {
+                        "$ref": "#/components/schemas/SgxCorporateActionsByType"
+                    }
+                },
+                "required": [
+                    "corporate_actions",
+                    "symbol"
+                ]
+            },
             "SgxDailyDataItem": {
                 "type": "object",
                 "properties": {
@@ -18848,21 +19251,6 @@
                         "nullable": true,
                         "description": "One of: insider, institution."
                     },
-                    "holding_before": {
-                        "type": "integer",
-                        "nullable": true,
-                        "description": "Share count held before the transaction."
-                    },
-                    "holding_after": {
-                        "type": "integer",
-                        "nullable": true,
-                        "description": "Share count held after the transaction."
-                    },
-                    "amount_transaction": {
-                        "type": "integer",
-                        "nullable": true,
-                        "description": "Number of shares in this transaction."
-                    },
                     "transaction_value": {
                         "type": "number",
                         "format": "double",
@@ -18870,39 +19258,23 @@
                         "description": "Total transaction value (SGD)."
                     },
                     "price_per_share": {
-                        "type": "number",
-                        "format": "double",
                         "nullable": true,
-                        "description": "Price per share (SGD)."
-                    },
-                    "share_percentage_before": {
-                        "type": "number",
-                        "format": "double",
-                        "nullable": true,
-                        "description": "Holder's ownership percentage before the transaction."
-                    },
-                    "share_percentage_after": {
-                        "type": "number",
-                        "format": "double",
-                        "nullable": true,
-                        "description": "Holder's ownership percentage after the transaction."
+                        "description": "Per-share price as a structured JSON array [{price, amount?}]."
                     },
                     "share_percentage_transaction": {
-                        "type": "number",
-                        "format": "double",
                         "nullable": true,
-                        "description": "Percentage change in ownership from this transaction."
+                        "description": "Ownership % moved by this transaction, split as {total, deemed, direct}."
+                    },
+                    "interest_breakdown": {
+                        "nullable": true,
+                        "description": "Holdings before/after split as {before, after} x {total, deemed, direct} x {amount, percentage}."
                     }
                 },
                 "required": [
-                    "amount_transaction",
                     "holder_name",
                     "holder_type",
-                    "holding_after",
-                    "holding_before",
+                    "interest_breakdown",
                     "price_per_share",
-                    "share_percentage_after",
-                    "share_percentage_before",
                     "share_percentage_transaction",
                     "symbol",
                     "timestamp",
