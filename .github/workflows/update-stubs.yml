@@ -42,8 +42,8 @@ jobs:
       - name: Run stub generator
         run: python scripts/generate_mdx_stubs.py --schema schema.json --mintlify-root api-references --prune
 
-      - name: Update mint.json v2 navigation
-        run: python scripts/update_mint_nav.py --schema schema.json --mint mint.json
+      - name: Update docs.json v2 navigation
+        run: python scripts/update_mint_nav.py --schema schema.json --mint docs.json
 
       - name: Commit and push changes
         env:
@@ -67,5 +67,5 @@ jobs:
             --head new-schema \
             --base main \
             --title "chore: sync schema, MDX stubs, and postman collection (${{ github.event.client_payload.ref || 'manual' }})" \
-            --body "Auto-generated from sectors_api push to ${{ github.event.client_payload.ref || 'manual' }}. Updates schema, MDX stubs, mint.json navigation, and static Postman collection JSON." \
+            --body "Auto-generated from sectors_api push to ${{ github.event.client_payload.ref || 'manual' }}. Updates schema, MDX stubs, docs.json navigation, and static Postman collection JSON." \
             2>/dev/null || echo "PR already exists"
