@@ -25,8 +25,6 @@
             "group": "Getting Started",
             "pages": [
               "get-started/v2/overview",
-              "idx-api",
-              "broker-summary-api",
               "get-started/v2/migration-guide"
             ]
           },
@@ -337,6 +335,14 @@
             "pages": [
               "recipes/api-security/01-securing-api-usage"
             ]
+          },
+          {
+            "group": "API Guides",
+            "pages": [
+              "idx-api",
+              "broker-summary-api",
+              "sgx-api"
+            ]
           }
         ]
       },
@@ -599,6 +605,14 @@
   ],
   "seo": {
     "indexing": "navigable",
+    "organization": {
+      "name": "Sectors",
+      "url": "https://sectors.app",
+      "sameAs": [
+        "https://www.instagram.com/sectorsapp/",
+        "https://www.linkedin.com/showcase/sectorsapp/"
+      ]
+    },
     "metatags": {
       "og:site_name": "Sectors API",
       "twitter:card": "summary_large_image"
