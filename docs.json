@@ -26,6 +26,7 @@
             "pages": [
               "get-started/v2/overview",
               "idx-api",
+              "broker-summary-api",
               "get-started/v2/migration-guide"
             ]
           },
