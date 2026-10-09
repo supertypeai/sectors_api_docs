@@ -125,19 +125,28 @@ ChatGPT will ask for permission to run the `fetch-company-report` tool, then ret
 
 ## Troubleshooting
 
-**I don't see a Create app button.**
+### I don't see a Create app button
 Developer mode isn't enabled, or your ChatGPT plan doesn't expose custom MCP apps. Recheck **Advanced settings → Developer mode**, then confirm your plan supports custom connectors against [OpenAI's docs](https://platform.openai.com/docs/guides/apps-sdk).
 
-**Dynamic Client Registration fails or endpoints don't auto-populate.**
+### Should I turn on "Enforce CSP in developer mode"?
+No. That toggle applies ChatGPT's production Content Security Policy sandbox to developer-mode apps, which only matters if you are building an app with a custom UI. Sectors works with it off; turn it on only if your IT policy requires it.
+
+### Dynamic Client Registration fails or endpoints don't auto-populate
 This usually means the request to the MCP server was blocked (corporate network, ad blocker) or the server was briefly unreachable. Close and reopen the Create app dialog, then try again. If it still fails, check [status.supertype.ai](https://status.supertype.ai) — or fall back to entering endpoints manually under Advanced OAuth settings.
 
-**Authorization succeeds but tool calls return `401 Unauthorized`.**
+### "Unable to fetch authentication verification keys"
+This is a ChatGPT-side authentication error (HTTP 503), not a Sectors error. Check [status.openai.com](https://status.openai.com), wait a few minutes, then retry the connection.
+
+### Authorization succeeds but tool calls return `401 Unauthorized`
 The OAuth grant was likely revoked from your Sectors dashboard, or your Insider subscription has lapsed. Remove and re-add the Sectors app to trigger a fresh OAuth flow.
 
-**ChatGPT isn't calling the Sectors app even though it's enabled.**
+### `api_tool.list_resources` returns no tools (`{"finite": true}`)
+ChatGPT did not discover the Sectors tools in this chat. Make sure the Sectors app is enabled for the conversation (the **+** menu in the composer), then start a new chat. If the list is still empty, remove and re-add the app to refresh its tool list.
+
+### ChatGPT isn't calling the Sectors app even though it's enabled
 ChatGPT sometimes won't route to a custom app unless you mention it by name. Prefix prompts with *"Using the Sectors app, ..."* or *"With Sectors, ..."* until you confirm it's being picked up consistently.
 
-**Memory disappeared after enabling developer mode.**
+### Memory disappeared after enabling developer mode
 This is expected — ChatGPT disables Memory while developer mode is on. Turn developer mode off (your apps stay added) to restore Memory.
 
 ## Next Steps

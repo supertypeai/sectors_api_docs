@@ -444,7 +444,8 @@
       "group": "Stock Investing and Finance",
       "pages": [
         "recipes/stock-investing-and-finance/01-portfolio-optimization",
-        "recipes/stock-investing-and-finance/02-benchmarking-idx-banking-stocks-sectors-api"
+        "recipes/stock-investing-and-finance/02-benchmarking-idx-banking-stocks-sectors-api",
+        "recipes/stock-investing-and-finance/03-commodity-to-equity"
       ]
     },
     {
