@@ -2,7 +2,7 @@
 """
 update_mint_nav.py
 
-Rebuild the v2 API References block in mint.json from schema.json.
+Rebuild the v2 API References block in docs.json from schema.json.
 
 Each operation in the schema carries:
   - `tags`: [<tag>]          — which subgroup it belongs to
@@ -19,9 +19,8 @@ Each tag in `tags[]` may also declare an `x-sidebar-icon`.
 
 What we touch
 -------------
-Only the navigation entry with `group == "API References"` and
-`version == "v2"`. Everything else in mint.json — recipes, v1 nav,
-anchors, top-level keys — is left byte-identical.
+Only the navigation group `"API References"`. Everything else in
+docs.json — recipes, anchors, top-level keys — is left byte-identical.
 
 Group label conventions
 -----------------------
@@ -43,7 +42,7 @@ Usage
 -----
     python scripts/update_mint_nav.py \\
         --schema schema.json \\
-        --mint mint.json
+        --mint docs.json
 
     # Dry-run:
     python scripts/update_mint_nav.py --dry-run
@@ -56,7 +55,6 @@ from collections import OrderedDict
 
 
 V2_API_GROUP = "API References"
-V2_VERSION = "v2"
 
 
 def collect_tag_to_pages(schema: dict) -> "OrderedDict[str, list[str]]":
@@ -183,18 +181,15 @@ def _subgroup_label(tag: str, section_label: str) -> str:
 
 def update_mint(mint: dict, new_pages: list) -> bool:
     """Replace the v2 API References pages in-place. Returns True if changed."""
-    nav = mint.get("navigation", [])
-    for entry in nav:
-        if entry.get("group") == V2_API_GROUP and entry.get("version") == V2_VERSION:
-            if entry.get("pages") == new_pages:
-                return False
-            entry["pages"] = new_pages
-            return True
+    for anchor in mint["navigation"].get("anchors", []):
+        for entry in anchor.get("groups", []):
+            if entry.get("group") == V2_API_GROUP:
+                if entry.get("pages") == new_pages:
+                    return False
+                entry["pages"] = new_pages
+                return True
 
-    raise RuntimeError(
-        f"Could not find navigation entry with group='{V2_API_GROUP}' and "
-        f"version='{V2_VERSION}' in mint.json"
-    )
+    raise RuntimeError(f"Could not find navigation group '{V2_API_GROUP}' in docs.json")
 
 
 def main() -> None:
@@ -202,7 +197,7 @@ def main() -> None:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument("--schema", default="schema.json")
-    parser.add_argument("--mint", default="mint.json")
+    parser.add_argument("--mint", default="docs.json")
     parser.add_argument(
         "--dry-run",
         action="store_true",
@@ -219,13 +214,13 @@ def main() -> None:
     changed = update_mint(mint, new_pages)
 
     if not changed:
-        print("mint.json v2 navigation already in sync; no changes.")
+        print("docs.json v2 navigation already in sync; no changes.")
         return
 
     serialized = json.dumps(mint, indent=2, ensure_ascii=False) + "\n"
 
     if args.dry_run:
-        print("[dry-run] would update v2 API References block in mint.json")
+        print("[dry-run] would update v2 API References block in docs.json")
         print(
             "[dry-run] new v2 pages:\n"
             + json.dumps(new_pages, indent=2, ensure_ascii=False)

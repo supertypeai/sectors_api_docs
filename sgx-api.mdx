@@ -1,0 +1,133 @@
+---
+title: "SGX API: Singapore Exchange Stock Data API"
+sidebarTitle: "SGX Overview"
+description: "REST API for Singapore Exchange (SGX) stock data: daily prices, company reports, a stock screener with plain-English queries, short sell, buybacks, insider filings and news. JSON over HTTPS."
+icon: "chart-line"
+---
+
+import ApiPricing from "/snippets/api-pricing.mdx";
+
+## Overview
+
+The Sectors SGX API returns data on companies listed on the Singapore Exchange as JSON. You call `https://api.sectors.app/v2/sgx/` with an API key in the `Authorization` header and get back prices, company reports, screener results, short sell volumes, share buybacks, insider filings and news for SGX tickers such as `D05` (DBS), `U11` (UOB) or `Z74` (Singtel).
+
+| | |
+|---|---|
+| **Base URL** | `https://api.sectors.app/v2/sgx/` |
+| **Auth** | API key in the `Authorization` header |
+| **Format** | JSON |
+| **Symbols** | 3-4 character SGX codes, letters or digits (e.g. `D05`, `TCPD`). Responses carry the `.SI` suffix |
+| **Also covers** | Indonesia ([IDX API](/idx-api)), Malaysia (KLSE) and Indonesian mining data |
+| **AI access** | [MCP server](/recipes/sectors-for-ai-agents/00-sectors-mcp-guide) for Claude, ChatGPT and Cursor |
+
+## Your first SGX request
+
+Get your API key from the [API page](https://sectors.app/api) after signing in, then request DBS's daily prices:
+
+<CodeGroup>
+```bash cURL
+curl "https://api.sectors.app/v2/sgx/daily/D05/?start=2025-05-02&end=2025-05-02" \
+  -H "Authorization: YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.sectors.app/v2/sgx/daily/D05/",
+    params={"start": "2025-05-02", "end": "2025-05-02"},
+    headers={"Authorization": "YOUR_API_KEY"},
+)
+print(response.json())
+```
+</CodeGroup>
+
+Response:
+
+```json
+[
+  {
+    "symbol": "D05.SI",
+    "date": "2025-05-02",
+    "close": 42.7,
+    "open": 42.84,
+    "high": 42.85,
+    "low": 42.5,
+    "volume": 4354400
+  }
+]
+```
+
+The date range defaults to the last 30 days and is capped at 90 days. Each request costs 1 API credit.
+
+## SGX stock screener
+
+[`/v2/sgx/companies/`](/api-references/v2/singapore/screener/sgx-companies) filters and sorts SGX-listed companies. Pass a plain-English question in `q`, or a SQL-style `where` with `order_by`:
+
+```bash
+curl "https://api.sectors.app/v2/sgx/companies/?q=top+3+banks+by+market+cap&include_query_values=true" \
+  -H "Authorization: YOUR_API_KEY"
+```
+
+```json
+{
+  "results": [
+    {
+      "symbol": "D05.SI",
+      "company_name": "DBS Group Holdings Ltd",
+      "query_values": {
+        "sub_sector": "Banks & Credit Services",
+        "market_cap": 194775527849
+      }
+    }
+  ],
+  "pagination": {"total_count": 10, "showing": 1, "limit": 3, "offset": 0, "has_next": true},
+  "llm_translation": {
+    "natural_query": "top 3 banks by market cap",
+    "translated_params": {
+      "where": "sub_sector = 'Banks & Credit Services' and market_cap IS NOT NULL",
+      "order_by": "-market_cap",
+      "limit": 3
+    }
+  }
+}
+```
+
+The response shows the `where` clause the `q` query was translated into, so you can reuse it directly. Structured queries support `=`, `!=`, `>`, `>=`, `<`, `<=`, `like` and `in`, yearly fields like `revenue[2024]`, and arithmetic such as `earnings[2024] > earnings[2023] * 1.25`. SGX data is annual only. `limit` goes up to 200. A natural-language `q` query costs 3 API credits.
+
+## What the SGX API covers
+
+| Data | Endpoint | Credits |
+|---|---|---|
+| Daily OHLC prices and volume | [`/v2/sgx/daily/{symbol}/`](/api-references/v2/singapore/transaction/daily) | 1 |
+| Closing prices for every SGX stock on a date | [`/v2/sgx/close/`](/api-references/v2/singapore/transaction/close) | 1 per page |
+| Company report (6 sections) | [`/v2/sgx/company/report/{symbol}/`](/api-references/v2/singapore/report/company-report) | 1 per section, 6 by default |
+| Corporate actions | [`/v2/sgx/company/corporate-actions/{symbol}/`](/api-references/v2/singapore/report/corporate-actions) | 1 |
+| Stock screener | [`/v2/sgx/companies/`](/api-references/v2/singapore/screener/sgx-companies) | 1, or 3 with `q` |
+| Top companies by classification | [`/v2/sgx/companies/top/`](/api-references/v2/singapore/ranking/top-companies) | 1 per classification, 5 by default |
+| Short sell volumes | [`/v2/sgx/short-sell/`](/api-references/v2/singapore/transaction/short-sell) | 1 |
+| Share buybacks | [`/v2/sgx/buybacks/`](/api-references/v2/singapore/transaction/share-buybacks) | 1 |
+| Insider filings | [`/v2/sgx/filings/`](/api-references/v2/singapore/news/sgx-filings) | 1 |
+| News | [`/v2/sgx/news/`](/api-references/v2/singapore/news/sgx-news) | 1 |
+| Sectors, subsectors and news tags | [`/v2/sgx/sectors/`](/api-references/v2/singapore/helper-list/sgx-sectors), [`/v2/sgx/subsectors/`](/api-references/v2/singapore/helper-list/sgx-subsectors), [`/v2/sgx/tags/`](/api-references/v2/singapore/helper-list/sgx-tags) | 1 |
+
+## Pricing
+
+<ApiPricing />
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Do I need the .SI suffix on SGX tickers?">
+    No. The screener accepts `D05` or `D05.SI`. Responses always return the `.SI` form.
+  </Accordion>
+  <Accordion title="Does the SGX API include quarterly financials?">
+    No. SGX fundamentals in the screener are annual, queried with fields like `revenue[2024]`. Some yearly fields are filled only for large caps or only for DBS, OCBC and UOB. The [screener reference](/api-references/v2/singapore/screener/sgx-companies) lists which.
+  </Accordion>
+  <Accordion title="Is there a free SGX API?">
+    No. The free Sectors plan does not include API access. The Insider plan includes 5,000 API credits per month.
+  </Accordion>
+  <Accordion title="Can I query SGX data from ChatGPT or Claude?">
+    Yes, through the Sectors MCP server. Follow the guides for [ChatGPT](/recipes/sectors-for-ai-agents/03-sectors-in-chatgpt) or [Claude](/recipes/sectors-for-ai-agents/02-sectors-in-claude).
+  </Accordion>
+</AccordionGroup>
