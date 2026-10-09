@@ -25,6 +25,7 @@
             "group": "Getting Started",
             "pages": [
               "get-started/v2/overview",
+              "idx-api",
               "get-started/v2/migration-guide"
             ]
           },

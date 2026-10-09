@@ -1,0 +1,111 @@
+---
+title: "IDX API: Indonesia Stock Exchange Data API"
+sidebarTitle: "IDX API"
+description: "REST API for Indonesia Stock Exchange (IDX) data: daily prices, company reports, quarterly financials, broker summary, foreign flow and a stock screener. JSON over HTTPS."
+icon: "building-columns"
+---
+
+import ApiPricing from "/snippets/api-pricing.mdx";
+
+## Overview
+
+The Sectors IDX API returns data on companies listed on the Indonesia Stock Exchange (IDX, also called Bursa Efek Indonesia or BEI) as JSON. You call `https://api.sectors.app/v2/` with an API key in the `Authorization` header and get back prices, financials, broker activity, foreign flow, news and filings for any IDX ticker such as `BBCA`, `TLKM` or `GOTO`.
+
+<Note>
+This page is about the Indonesia Stock Exchange. If you are looking for the IDX Broker real-estate listings API, that is a different product.
+</Note>
+
+| | |
+|---|---|
+| **Base URL** | `https://api.sectors.app/v2/` |
+| **Auth** | API key in the `Authorization` header |
+| **Format** | JSON |
+| **Symbols** | 4-letter IDX tickers, with or without `.JK` (e.g. `BBCA` or `BBCA.JK`) |
+| **Also covers** | Singapore (SGX), Malaysia (KLSE) and Indonesian mining data |
+| **AI access** | [MCP server](/recipes/sectors-for-ai-agents/00-sectors-mcp-guide) for Claude, ChatGPT and Cursor |
+
+## Your first IDX request
+
+Get your API key from the [API page](https://sectors.app/api) after signing in, then request BBCA's daily prices:
+
+<CodeGroup>
+```bash cURL
+curl "https://api.sectors.app/v2/daily/BBCA/?start=2025-05-02&end=2025-05-02" \
+  -H "Authorization: YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.sectors.app/v2/daily/BBCA/",
+    params={"start": "2025-05-02", "end": "2025-05-02"},
+    headers={"Authorization": "YOUR_API_KEY"},
+)
+print(response.json())
+```
+</CodeGroup>
+
+Response:
+
+```json
+[
+  {
+    "symbol": "BBCA.JK",
+    "date": "2025-05-02",
+    "close": 8975,
+    "open": 9000,
+    "high": 9000,
+    "low": 8850,
+    "volume": 92219000,
+    "market_cap": 1095329638012500
+  }
+]
+```
+
+Each request covers up to 90 days and costs 1 API credit.
+
+## What the IDX API covers
+
+| Data | Endpoint |
+|---|---|
+| Daily OHLC prices, volume and market cap | [`/v2/daily/{symbol}/`](/api-references/v2/indonesia/transaction/daily) |
+| Closing prices for every IDX stock on a date | [`/v2/close/`](/api-references/v2/indonesia/transaction/close) |
+| Company report (overview, valuation, peers, financials, dividends) | [`/v2/company/report/{symbol}/`](/api-references/v2/indonesia/report/company-report) |
+| Quarterly financial statements | [`/v2/financials/quarterly/{symbol}/`](/api-references/v2/indonesia/report/quarterly-financials) |
+| Stock screener with SQL-style or plain-English filters | [`/v2/companies/`](/api-references/v2/indonesia/screener/companies) |
+| Broker summary per stock | [`/v2/broker-summary/{symbol}/`](/api-references/v2/indonesia/brokers/broker-summary-by-symbol) |
+| Broker activity per broker code | [`/v2/broker-activity/{broker_code}/`](/api-references/v2/indonesia/brokers/broker-activity-by-code) |
+| Broker code list | [`/v2/brokers/`](/api-references/v2/indonesia/brokers/broker-registry) |
+| Net foreign flow per stock | [`/v2/foreign-flow/{symbol}/`](/api-references/v2/indonesia/brokers/foreign-flow-by-symbol) |
+| Free float | [`/v2/free-float/`](/api-references/v2/indonesia/screener/free-float) |
+| Index prices (IHSG, LQ45, IDX30 and others) | [`/v2/index-daily/{index_code}/`](/api-references/v2/indonesia/transaction/index-daily) |
+| Shareholder composition | [`/v2/company/shareholders-composition/{symbol}/`](/api-references/v2/indonesia/company/shareholders-composition) |
+| Corporate actions and dividends calendar | [`/v2/corporate-actions/`](/api-references/v2/indonesia/news/corporate-actions) |
+| IPO and listing performance | [`/v2/listing-performance/{symbol}/`](/api-references/v2/indonesia/ipo/listing-performance) |
+| News, filings and suspensions | [`/v2/news/`](/api-references/v2/indonesia/news/news), [`/v2/filings/`](/api-references/v2/indonesia/news/filings), [`/v2/suspensions/`](/api-references/v2/indonesia/news/suspensions) |
+| Top movers and most traded stocks | [`/v2/companies/top-changes/`](/api-references/v2/indonesia/ranking/top-changes), [`/v2/most-traded/`](/api-references/v2/indonesia/ranking/most-traded) |
+
+## Pricing
+
+<ApiPricing />
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Does the Indonesia Stock Exchange have an official public API?">
+    IDX sells market data through its own [data services](https://www.idx.co.id/id/produk/layanan-data-bei). The Sectors API is a separate REST API built for developers, with JSON responses and per-request credits.
+  </Accordion>
+  <Accordion title="Is there a free IDX API?">
+    No. The free Sectors plan does not include API access. The Insider plan includes 5,000 API credits per month, and most endpoints cost 1 credit per request.
+  </Accordion>
+  <Accordion title="Can I use the IDX API in Python, Excel or Google Sheets?">
+    Yes. Any tool that can send an HTTP request works. See [Your First Request in Python](/recipes/quick-start-in-python/00-your-first-request), [Excel Power Query](/recipes/non-programmatical-tools/01-excel/01-excel) and [Google Sheets](/recipes/non-programmatical-tools/02-sheets/02-sheets).
+  </Accordion>
+  <Accordion title="Can I query IDX data from ChatGPT or Claude?">
+    Yes, through the Sectors MCP server. Follow the guides for [ChatGPT](/recipes/sectors-for-ai-agents/03-sectors-in-chatgpt) or [Claude](/recipes/sectors-for-ai-agents/02-sectors-in-claude).
+  </Accordion>
+  <Accordion title="Do I need the .JK suffix on tickers?">
+    No. `BBCA` and `BBCA.JK` both work, in any letter case. Responses always return the `.JK` form.
+  </Accordion>
+</AccordionGroup>
