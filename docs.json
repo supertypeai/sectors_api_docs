@@ -25,6 +25,8 @@
             "group": "Getting Started",
             "pages": [
               "get-started/v2/overview",
+              "idx-api",
+              "sgx-api",
               "get-started/v2/migration-guide"
             ]
           },
@@ -339,9 +341,7 @@
           {
             "group": "API Guides",
             "pages": [
-              "idx-api",
-              "broker-summary-api",
-              "sgx-api"
+              "broker-summary-api"
             ]
           }
         ]
