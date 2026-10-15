@@ -1,0 +1,124 @@
+---
+title: "IDX Broker Summary API: Broker Activity and Foreign Flow"
+sidebarTitle: "Broker Summary API"
+description: "Broker summary API for Indonesian stocks (IDX): daily buy and sell value per broker code, top buyers and sellers, foreign vs domestic flow and the full broker code list."
+icon: "chart-column"
+---
+
+import ApiPricing from "/snippets/api-pricing.mdx";
+
+## Overview
+
+The Sectors broker summary API returns what each Indonesia Stock Exchange (IDX) broker bought and sold, per stock and per day. It is the same data Indonesian traders read as *broker summary* or use for *bandarmologi*, delivered as JSON so you can rank brokers, track accumulation and split foreign from domestic flow in code.
+
+Every row comes with buy, sell and net values in IDR, lots, trade frequency and average price per share, plus the portion executed for foreign investors.
+
+| Question | Endpoint | Credits |
+|---|---|---|
+| Which brokers traded this stock each day? | [`/v2/broker-summary/{symbol}/`](/api-references/v2/indonesia/brokers/broker-summary-by-symbol) | 1 |
+| Who are the top buyers and sellers of this stock? | [`/v2/broker-summary/{symbol}/top/`](/api-references/v2/indonesia/brokers/broker-summary-top) | 2 |
+| What did this broker trade each day? | [`/v2/broker-activity/{broker_code}/`](/api-references/v2/indonesia/brokers/broker-activity-by-code) | 1 |
+| Which stocks is this broker accumulating or distributing? | [`/v2/broker-activity/{broker_code}/top/`](/api-references/v2/indonesia/brokers/broker-activity-top) | 2 |
+| Which brokers traded the most on a given day? | [`/v2/brokers/top/`](/api-references/v2/indonesia/brokers/top) | 2 |
+| What are the valid broker codes? | [`/v2/brokers/`](/api-references/v2/indonesia/brokers/broker-registry) | 1 |
+
+## Top buyers and sellers of a stock
+
+Rank the brokers with the largest net buying and selling of BBCA over two weeks:
+
+<CodeGroup>
+```bash cURL
+curl "https://api.sectors.app/v2/broker-summary/BBCA/top/?start=2025-05-01&end=2025-05-14" \
+  -H "Authorization: YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.sectors.app/v2/broker-summary/BBCA/top/",
+    params={"start": "2025-05-01", "end": "2025-05-14"},
+    headers={"Authorization": "YOUR_API_KEY"},
+)
+print(response.json())
+```
+</CodeGroup>
+
+Response (one entry per list shown):
+
+```json
+{
+  "symbol": "BBCA.JK",
+  "start": "2025-05-01",
+  "end": "2025-05-14",
+  "origin": "all",
+  "cohort": "all",
+  "foreign": false,
+  "top_buyers": [
+    {
+      "rank": 1,
+      "broker_code": "KZ",
+      "net_idr": 645536242500,
+      "buy_idr": 1163325432500,
+      "sell_idr": 517789190000,
+      "foreign_net_idr": 687991035000,
+      "foreign_buy_idr": 1154137832500,
+      "foreign_sell_idr": 466146797500
+    }
+  ],
+  "top_sellers": [
+    {
+      "rank": 1,
+      "broker_code": "BK",
+      "net_idr": -318961117500,
+      "buy_idr": 561727337500,
+      "sell_idr": 880688455000,
+      "foreign_net_idr": -333245172500,
+      "foreign_buy_idr": 547443282500,
+      "foreign_sell_idr": 880688455000
+    }
+  ]
+}
+```
+
+Add `foreign=true` to rank by foreign-investor flow instead of the total, `n_brokers` to return up to 90 brokers per side, and `origin` or `cohort` to filter by broker type.
+
+## Daily broker summary fields
+
+The daily endpoints (`/v2/broker-summary/{symbol}/` and `/v2/broker-activity/{broker_code}/`) return these fields for each broker and day. Each call covers up to 14 days.
+
+| Field | Meaning |
+|---|---|
+| `bfreq`, `blot`, `bval` | Buy frequency, lots and value (IDR) |
+| `sfreq`, `slot`, `sval` | Sell frequency, lots and value (IDR) |
+| `nlot`, `nval` | Net lots and net value (buy minus sell) |
+| `bavg_per_share`, `savg_per_share`, `navg_per_share` | Average buy, sell and net price per share |
+| `f_bfreq`, `f_blot`, `f_bval`, `f_sfreq`, `f_slot`, `f_sval` | The part of each value executed for foreign investors |
+| `d_bavg_per_share`, `d_savg_per_share` | Average domestic-investor buy and sell price |
+
+Domestic frequency, lots and value are the total minus the foreign part. The `f_*` fields are `null` when a broker had no foreign-investor trades that day.
+
+## Broker origin vs investor origin
+
+The `origin` filter (foreign or domestic) and `cohort` filter (retail, mixed, institutional) describe the broker itself, as classified in the [broker code list](/api-references/v2/indonesia/brokers/broker-registry). To measure money from foreign investors, use the `foreign_*` and `f_*` fields, which track who the trades were executed for. For market-wide foreign flow per stock, see [`/v2/foreign-flow/{symbol}/`](/api-references/v2/indonesia/brokers/foreign-flow-by-symbol).
+
+## Pricing
+
+<ApiPricing />
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Where do I get the list of IDX broker codes?">
+    Call [`/v2/brokers/`](/api-references/v2/indonesia/brokers/broker-registry). It returns every IDX exchange-member broker with its code, name, foreign or domestic origin, cohort and license type.
+  </Accordion>
+  <Accordion title="Can I get broker summary for more than 14 days?">
+    The daily endpoints return up to 14 days per request, so loop over date ranges for longer history. The `/top/` endpoints aggregate the last 90 days by default and accept your own `start` and `end`.
+  </Accordion>
+  <Accordion title="Can I use broker summary data in ChatGPT or Claude?">
+    Yes. The broker endpoints are available as tools in the [Sectors MCP server](/recipes/sectors-for-ai-agents/00-sectors-mcp-guide), so you can ask for the top buyers of a stock in plain language.
+  </Accordion>
+  <Accordion title="What does a broker code like MG, AK or CC mean?">
+    Each IDX member broker has a two-letter code. Look up the broker name and classification with [`/v2/brokers/`](/api-references/v2/indonesia/brokers/broker-registry).
+  </Accordion>
+</AccordionGroup>
