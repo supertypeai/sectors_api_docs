@@ -11848,57 +11848,57 @@
                     "value": {
                       "results": [
                         {
-                          "symbol": "5UF.SI",
-                          "timestamp": "2026-10-14",
-                          "transaction_type": "buy",
-                          "holder_name": "Koh Wee Seng",
+                          "symbol": "S58.SI",
+                          "timestamp": "2026-08-04",
+                          "transaction_type": "others",
+                          "holder_name": "Chan Lai Fung",
                           "holder_type": "insider",
-                          "transaction_value": 78750.0,
+                          "transaction_value": 45178.0,
                           "price_per_share": [
                             {
-                              "price": 0.315,
-                              "amount": 250000
+                              "price": 4.7061,
+                              "amount": 9600
                             }
                           ],
                           "share_percentage_transaction": {
-                            "total": 0.0001,
+                            "total": 1e-5,
                             "deemed": 0.0,
-                            "direct": 0.0001
+                            "direct": 1e-5
                           },
                           "interest_breakdown": {
                             "after": {
                               "total": {
-                                "amount": 1567327454,
-                                "percentage": 0.7597
+                                "amount": 23730,
+                                "percentage": 2e-5
                               },
                               "deemed": {
-                                "amount": 1354778942,
-                                "percentage": 0.6567
+                                "amount": 0,
+                                "percentage": 0.0
                               },
                               "direct": {
-                                "amount": 212548512,
-                                "percentage": 0.103
+                                "amount": 23730,
+                                "percentage": 2e-5
                               }
                             },
                             "before": {
                               "total": {
-                                "amount": 1567077454,
-                                "percentage": 0.7596
+                                "amount": 14130,
+                                "percentage": 1e-5
                               },
                               "deemed": {
-                                "amount": 1354778942,
-                                "percentage": 0.6567
+                                "amount": 0,
+                                "percentage": 0.0
                               },
                               "direct": {
-                                "amount": 212298512,
-                                "percentage": 0.1029
+                                "amount": 14130,
+                                "percentage": 1e-5
                               }
                             }
                           }
                         }
                       ],
                       "pagination": {
-                        "total_count": 2839,
+                        "total_count": 578,
                         "showing": 1,
                         "limit": 2,
                         "offset": 0,
