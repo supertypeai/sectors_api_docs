@@ -2,6 +2,57 @@
 title: v2 Changelog
 sidebarTitle: Changelog
 ---
+## 2026-10-15
+
+- **Introduces SGX REITs**: All 38 REITs listed on SGX are now covered, with their financials, property portfolios, top tenants and property deals. Endpoints that report a single year take `financial_year`, default to the REIT's latest year and list the other years in `available_years`. Each call costs 1 credit, except a screener call with `q`, which costs 3
+  - [`https://api.sectors.app/v2/sgx/reits/`](https://docs.sectors.app/api-references/v2/singapore/reits/reits): REIT screener with the same `where`, `order_by` and `q` parameters as the [SGX Companies Screener](https://docs.sectors.app/api-references/v2/singapore/screener/sgx-companies). Since REITs close their books in different months, yearly fields accept `[latest]` for each REIT's own most recent year, as in `aggregate_leverage[latest] < 0.4`, and `include_query_values=true` shows which year was used. Fields that hold several names, such as `countries`, `property_categories` and `tenant_industries`, match a whole name with `=` or `in`, so `countries[latest] = 'Japan'` finds every REIT with a property in Japan
+  - [`https://api.sectors.app/v2/sgx/reits/profile/{symbol}/`](https://docs.sectors.app/api-references/v2/singapore/reits/reit-profile): Sub-sector, sponsor, trustee, managers and board of a REIT
+  - [`https://api.sectors.app/v2/sgx/reits/performance/{symbol}/`](https://docs.sectors.app/api-references/v2/singapore/reits/reit-performance): Portfolio, distribution, debt and lease figures for a financial year, next to today's market cap, distribution yield and price to NAV
+  - [`https://api.sectors.app/v2/sgx/reits/properties/{symbol}/`](https://docs.sectors.app/api-references/v2/singapore/reits/reit-properties): Every property in the portfolio, with its valuation, ownership, occupancy, floor area and lease terms
+  - [`https://api.sectors.app/v2/sgx/reits/tenants/{symbol}/`](https://docs.sectors.app/api-references/v2/singapore/reits/reit-tenants): Largest tenants, with their industry and the share each one accounts for
+  - [`https://api.sectors.app/v2/sgx/reits/trade-mix/{symbol}/`](https://docs.sectors.app/api-references/v2/singapore/reits/reit-trade-mix): Rental income split by tenant trade, such as food and beverage or professional services
+  - [`https://api.sectors.app/v2/sgx/reits/transactions/`](https://docs.sectors.app/api-references/v2/singapore/reits/reit-transactions): Property acquisitions and divestments across all REITs, filterable by REIT, deal type, financial year and completion date
+
+## 2026-10-06
+
+- **Management and ownership in the [SGX Company Report](https://docs.sectors.app/api-references/v2/singapore/report/company-report)**: The new `management` section lists current directors and executives with their position, age and appointment date, together with former officers and the date they stepped down, while the new `ownership` section lists major shareholders with their share count, ownership percentage and holding value in SGD. Existing sections also grow, with `overview` adding the listing date, registered address and website, `financials` adding `historical_eps` for yearly EPS and EPS growth, and `dividend` adding `upcoming_dividends`. Since a request without `sections` returns every section, its cost rises from 4 to 6 credits, so pass `sections` explicitly if you want to keep the previous cost
+
+- **Introduces [SGX Corporate Actions](https://docs.sectors.app/api-references/v2/singapore/report/corporate-actions)**: [`https://api.sectors.app/v2/sgx/company/corporate-actions/{symbol}/`](https://docs.sectors.app/api-references/v2/singapore/report/corporate-actions) returns the paid dividends, announced upcoming dividends and annual general meeting resolutions of an SGX company, in the same shape as the IDX [Corporate Actions](https://docs.sectors.app/api-references/v2/indonesia/company/corporate-actions) endpoint
+
+- **More fields in the [SGX Companies Screener](https://docs.sectors.app/api-references/v2/singapore/screener/sgx-companies)**: You can now filter on `listing_date`, yearly `eps[YYYY]` and `eps_growth[YYYY]`, `management_name`, `management_position` and the `major_shareholders_*` fields. Natural language questions about who owns or leads a company, such as "SGX companies where Temasek is a major shareholder", are now answered instead of being rejected
+
+- **Breaking change to `eps` in the [SGX Companies Screener](https://docs.sectors.app/api-references/v2/singapore/screener/sgx-companies)**: To match the IDX screener, `eps` is now a yearly field read as `eps[2024]`, and the most recent EPS figure has moved to `eps_current`. A query such as `where=eps > 0.5` now returns a `400` asking for a year, so rewrite it as `eps_current > 0.5` to keep the previous meaning
+
+- **Trailing twelve month growth for IDX**: The `financials` section of the [Company Report](https://docs.sectors.app/api-references/v2/indonesia/report/company-report) now includes `yoy_ttm_earnings_growth` and `yoy_ttm_revenue_growth`, which compare trailing twelve month earnings and revenue with the same window a year earlier. Both fields can also be used as filters in the [Companies Screener](https://docs.sectors.app/api-references/v2/indonesia/screener/companies)
+
+## 2026-09-17
+
+- **Breaking change to [SGX Insider Filings](https://docs.sectors.app/api-references/v2/singapore/news/sgx-filings)**: Each filing now describes the holder's position through a single `interest_breakdown` object, which splits holdings before and after the transaction into total, deemed and direct interest, each with a share amount and a percentage. The flat `holding_before`, `holding_after`, `amount_transaction`, `share_percentage_before` and `share_percentage_after` fields are removed. `share_percentage_transaction` is now an object with `total`, `deemed` and `direct` keys, and `price_per_share` is now a list of `{price, amount}` entries so that a filing executed at several prices keeps every price. Small ownership percentages are written in plain decimal notation such as `0.00002`
+
+- **Foreign flow now follows investor origin**: Foreign flow is calculated from the foreign investor share of each broker's trades, replacing the earlier method that classified flow by whether the broker itself is foreign owned and was off by a factor of two to four on sampled days. Historical values change accordingly. [Daily Net Foreign Inflow](https://docs.sectors.app/api-references/v2/indonesia/brokers/foreign-flow-by-symbol) adds buy and sell legs together with `foreign_share`, returns the market-wide series when queried with `IHSG`, and reports `null` rather than zero on days without a foreign split. [Top Brokers](https://docs.sectors.app/api-references/v2/indonesia/brokers/top), [Top Buyers and Sellers Per Symbol](https://docs.sectors.app/api-references/v2/indonesia/brokers/broker-summary-top) and [Top Accumulations and Distributions Per Broker](https://docs.sectors.app/api-references/v2/indonesia/brokers/broker-activity-top) report the foreign portion of each broker's flow and accept `foreign=true` to rank by it
+
+- **New market-wide endpoints**:
+  - [`https://api.sectors.app/v2/corporate-actions/`](https://docs.sectors.app/api-references/v2/indonesia/news/corporate-actions): Calendar of corporate actions across every IDX ticker within a date window, filterable by `type`, where `end` may fall in the future so upcoming events can be planned for. Each requested type costs 1 credit
+  - [`https://api.sectors.app/v2/foreign-flow/`](https://docs.sectors.app/api-references/v2/indonesia/brokers/foreign-flow): Net foreign flow of every IDX ticker on a single trading day, paginated and sortable through `order_by`
+  - [`https://api.sectors.app/v2/index-daily/`](https://docs.sectors.app/api-references/v2/indonesia/transaction/index-daily-universe): Closing level of every IDX index on a single trading day
+  - [`https://api.sectors.app/v2/sgx/close/`](https://docs.sectors.app/api-references/v2/singapore/transaction/close): Closing price of every SGX ticker on a single trading day, paginated
+
+- **Sorting for [SGX Short Sell](https://docs.sectors.app/api-references/v2/singapore/transaction/short-sell)**: `order_by` accepts `date`, `value`, `volume` and `symbol`, with a leading `-` for descending order and `-date` as the default, so the most shorted stocks of a day take a single call
+
+- **Screener expression limits**: `where` and `order_by` expressions in both screeners may nest parentheses at most three levels deep. Deeper or unbalanced expressions now return a `400` that points to the problem, where some of them previously ended in a `500`
+
+## 2026-09-02
+
+- **Open, high and low prices**: [Daily Transaction Data](https://docs.sectors.app/api-references/v2/indonesia/transaction/daily) and [SGX Daily Price Data](https://docs.sectors.app/api-references/v2/singapore/transaction/daily) now return `open`, `high` and `low` alongside `close`
+
+## 2026-08-26
+
+- **Consistent SGX symbols**: Every SGX endpoint accepts symbols with or without the `.SI` suffix in any letter case, and always returns them with the suffix
+
+## 2026-08-13
+
+- **Breaking change to error bodies**: Errors raised by the request middleware and every `429` response now share one shape, `{"error": "<CODE>", "message": "<explanation>"}`. The `code` field introduced in the 2026-07-31 release has been replaced by `error`, and its values are now upper case: `SUBSCRIPTION_DOES_NOT_ALLOW`, `SUBSCRIPTION_NOT_ACTIVE`, `MONTHLY_LIMIT_EXCEEDED`, `INSUFFICIENT_CREDITS`, `SERVICE_UNAVAILABLE` and `TOKEN_NOT_VALID`. Burst rate limiting, which used to answer with `{"code": 429}`, now returns `RATE_LIMIT_EXCEEDED`. Clients that branch on `body.code` should read `body.error` instead
+
 ## 2026-07-31
 
 - **Billing standardization**: Credits are now charged consistently across all endpoints — 2xx/404 bill the endpoint's stated cost; 400, 401/403, 429, and 5xx are free. Previously, some 400 errors could consume a credit.
