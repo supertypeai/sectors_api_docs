@@ -309,6 +309,19 @@
               ]
             },
             {
+              "group": "REITs",
+              "icon": "city",
+              "pages": [
+                "api-references/v2/singapore/reits/reits",
+                "api-references/v2/singapore/reits/reit-performance",
+                "api-references/v2/singapore/reits/reit-profile",
+                "api-references/v2/singapore/reits/reit-properties",
+                "api-references/v2/singapore/reits/reit-tenants",
+                "api-references/v2/singapore/reits/reit-trade-mix",
+                "api-references/v2/singapore/reits/reit-transactions"
+              ]
+            },
+            {
               "group": "Transaction Data",
               "icon": "money-bill-transfer",
               "pages": [
