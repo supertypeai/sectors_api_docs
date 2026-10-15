@@ -13155,7 +13155,7 @@
         "/v2/sgx/reits/": {
             "get": {
                 "operationId": "sgx_reits_retrieve",
-                "description": "Filter and sort SGX-listed REITs with a SQL-like `where` or a natural-language `q`. Returns the matching REITs; add `include_query_values=true` to see the values each was filtered and sorted on. The full financial history of one REIT is the [SGX REIT Performance](https://docs.sectors.app/api-references/v2/singapore/reits/reit-performance) endpoint.\n\n**Query modes** (`q` overrides `where` and `order_by`):\n- `q`: natural language, e.g. `industrial REITs with gearing below 40%`\n- `where` + `order_by`: SQL-like structured query\n\n<Accordion title=\"Years and latest\">\nEvery metric is yearly: `aggregate_leverage[2025]`, or `aggregate_leverage[latest]` for each REIT's own newest year (REITs have different year ends). With `include_query_values=true`, each `field[latest]` also returns `field[latest]_year`, the year used. `acquisition_count` and `divestment_count` take a year only.\n</Accordion>\n\n<Accordion title=\"List fields\">\n`countries`, `property_categories`, `tenant_names`, `tenant_industries`, `trade_mix_categories` and the management fields (`sponsor`, `trustee`, ...) hold several names. `countries[latest] = 'Japan'` means the list contains Japan, `in ['Japan', 'China']` contains either, and `sponsor like '%CapitaLand%'` matches inside a name.\n</Accordion>\n\n<Note>All money is SGD; ratios are fractions (0.4 = 40%). `market_cap`, `last_close_price`, `distribution_yield` and `price_to_nav` are today's values.</Note>\n\n<Accordion title=\"Available Fields\">\n<AccordionGroup>\n\n<Accordion title=\"Direct Fields (Top-level columns)\">\n**How to Use:** Query these fields directly using standard operators (`=`, `!=`, `>`, `<`, `LIKE`, `IN`). String comparisons are case-insensitive.\n\n<Accordion title=\"Examples\">\n- `where=distribution_yield > 0.07`\n- `where=sub_sector = 'Industrial' and price_to_nav < 1`\n</Accordion>\n\n- **symbol**: SGX REIT symbol, e.g. `A17U`, `C38U` (optional `.SI` suffix).\n- **company_name**: REIT name.\n- **sub_sector**: REIT sub-sector: Data Centre, Diversified, Healthcare, Hospitality, Industrial, Office or Retail.\n- **market_cap**: Market capitalisation in SGD.\n- **last_close_price**: Latest closing price in SGD.\n- **distribution_yield**: Latest-year distribution per unit / latest price (fraction).\n- **price_to_nav**: Latest price / latest-year NAV per unit.\n</Accordion>\n\n<Accordion title=\"JSON Object Fields (Most Recent Data)\">\n**How to Use:** Query as if they were direct fields — the parser automatically extracts the value from the underlying JSON.\n\n<Accordion title=\"Examples\">\n- `where=sponsor like '%CapitaLand%'`\n</Accordion>\n\n- **sponsor**: Sponsor(s).\n- **trustee**: Trustee(s).\n- **reit_manager**: REIT manager(s).\n- **property_manager**: Property manager(s).\n- **master_lessee**: Master lessee(s), where the REIT has one.\n- **operator**: Operator(s), where the REIT has one.\n</Accordion>\n\n<Accordion title=\"Yearly JSON Fields (Historical & Forecast Data)\">\n**How to Use:** Must use bracket notation `field[YYYY]` to access data for a specific year. Supports all numeric operators, field-to-field comparisons, and arithmetic expressions.\n\n<Accordion title=\"Examples\">\n- `where=aggregate_leverage[latest] < 0.4`\n- `where=countries[latest] = 'Japan'`\n- `where=top_country[latest] = 'United Kingdom' and top_country_share[latest] > 0.5`\n- `where=divestment_count[2025] > 0`\n</Accordion>\n\n- **period_end**: Last day of the financial year.\n- **portfolio_value**: Portfolio valuation in SGD.\n- **gross_revenue**: Gross revenue in SGD.\n- **net_property_income**: Net property income in SGD.\n- **portfolio_occupancy**: Portfolio occupancy (fraction).\n- **distribution_per_unit**: Distribution per unit in SGD.\n- **distribution_paid**: Distributions paid in SGD.\n- **distribution_declared**: Distributions declared in SGD.\n- **distributable_income_opening**: Distributable income at the start of the year, SGD.\n- **income_for_year**: Distributable income for the year, SGD.\n- **other_additions**: Other additions to distributable income, SGD.\n- **amount_retained**: Distributable income retained, SGD.\n- **distributable_income_closing**: Distributable income at the end of the year, SGD.\n- **net_asset_value_per_unit**: NAV per unit in SGD.\n- **units_in_issue**: Units in issue.\n- **units_to_be_issued**: Units owed for manager and property-manager fees paid in units.\n- **number_of_unitholders**: Number of unitholders.\n- **aggregate_leverage**: Aggregate leverage (fraction; 0.4 = 40%).\n- **interest_coverage_ratio**: Interest coverage ratio (times).\n- **cost_of_debt**: Average cost of debt (fraction).\n- **weighted_average_debt_maturity**: Weighted average debt maturity in years.\n- **weighted_average_lease_expiry**: Weighted average lease expiry (WALE) in years.\n- **property_count**: Number of properties held.\n- **countries**: Countries where the REIT holds a property.\n- **property_categories**: Property categories held, e.g. `Data Centers`.\n- **top_country**: Country holding the largest share of portfolio value.\n- **top_country_share**: Share of portfolio value in top_country (fraction).\n- **tenant_names**: Names of the top tenants.\n- **tenant_industries**: Industries of the top tenants.\n- **trade_mix_categories**: Tenant trade categories in the income mix.\n- **acquisition_count**: Property acquisitions completed in the year.\n- **divestment_count**: Property divestments completed in the year.\n</Accordion>\n\n<Accordion title=\"JSON List Fields\">\n**How to Use:** The query checks if **any** object in the list matches the condition. Use `=` or `like` for strings, numeric operators for numbers.\n\n<Accordion title=\"Examples\">\n- `where=board_member_name like '%Tan%'`\n</Accordion>\n\n- **board_member_name**: Name of a board member of the REIT manager.\n- **board_member_position**: Position of a board member, e.g. `Chairman`.\n</Accordion>\n\n</AccordionGroup>\n</Accordion>\n\n<Info>Costs 1 API credit per page. A natural-language `q` costs 3.</Info>",
+                "description": "Filter and sort SGX-listed REITs with a SQL-like `where` or a natural-language `q`. You get back the REITs that match; add `include_query_values=true` to also see the numbers each one was filtered and sorted on. To get REIT's full financials metrics, use [SGX REIT Performance](https://docs.sectors.app/api-references/v2/singapore/reits/reit-performance).\n\n**Query modes** (`q` overrides `where` and `order_by`):\n- `q`: natural language, e.g. `industrial REITs with gearing below 40%`\n- `where` + `order_by`: SQL-like structured query\n\n<Accordion title=\"Years and latest\">\nEvery metric is kept per year. Ask for a specific year with `aggregate_leverage[2025]`, or use `aggregate_leverage[latest]` to get each REIT's most recent year, since REITs close their books in different months. With `include_query_values=true`, every `field[latest]` also comes with `field[latest]_year` so you can see which year was used. `acquisition_count` and `divestment_count` need an actual year.\n</Accordion>\n\n<Accordion title=\"List fields\">\nSome fields hold several names: `countries`, `property_categories`, `tenant_names`, `tenant_industries`, `trade_mix_categories` and the management fields (`sponsor`, `trustee`, ...). `countries[latest] = 'Japan'` finds REITs with a property in Japan, `in ['Japan', 'China']` finds either, and `sponsor like '%CapitaLand%'` matches part of a name.\n</Accordion>\n\n<Note>Money is in SGD, and ratios are fractions (0.4 means 40%). `market_cap`, `last_close_price`, `distribution_yield` and `price_to_nav` are today's numbers.</Note>\n\n<Accordion title=\"Available Fields\">\n<AccordionGroup>\n\n<Accordion title=\"Direct Fields (Top-level columns)\">\n**How to Use:** Query these fields directly using standard operators (`=`, `!=`, `>`, `<`, `LIKE`, `IN`). String comparisons are case-insensitive.\n\n<Accordion title=\"Examples\">\n- `where=distribution_yield > 0.07`\n- `where=sub_sector = 'Industrial' and price_to_nav < 1`\n</Accordion>\n\n- **symbol**: SGX REIT symbol, e.g. `A17U`, `C38U` (optional `.SI` suffix).\n- **company_name**: REIT name.\n- **sub_sector**: REIT sub-sector: Data Centre, Diversified, Healthcare, Hospitality, Industrial, Office or Retail.\n- **market_cap**: Market capitalisation in SGD.\n- **last_close_price**: Latest closing price in SGD.\n- **distribution_yield**: Latest-year distribution per unit / latest price (fraction).\n- **price_to_nav**: Latest price / latest-year NAV per unit.\n</Accordion>\n\n<Accordion title=\"JSON Object Fields (Most Recent Data)\">\n**How to Use:** Query as if they were direct fields — the parser automatically extracts the value from the underlying JSON.\n\n<Accordion title=\"Examples\">\n- `where=sponsor like '%CapitaLand%'`\n</Accordion>\n\n- **sponsor**: Sponsor(s).\n- **trustee**: Trustee(s).\n- **reit_manager**: REIT manager(s).\n- **property_manager**: Property manager(s).\n- **master_lessee**: Master lessee(s), where the REIT has one.\n- **operator**: Operator(s), where the REIT has one.\n</Accordion>\n\n<Accordion title=\"Yearly JSON Fields (Historical & Forecast Data)\">\n**How to Use:** Must use bracket notation `field[YYYY]` to access data for a specific year. Supports all numeric operators, field-to-field comparisons, and arithmetic expressions.\n\n<Accordion title=\"Examples\">\n- `where=aggregate_leverage[latest] < 0.4`\n- `where=countries[latest] = 'Japan'`\n- `where=top_country[latest] = 'United Kingdom' and top_country_share[latest] > 0.5`\n- `where=divestment_count[2025] > 0`\n</Accordion>\n\n- **period_end**: Last day of the financial year.\n- **portfolio_value**: Portfolio valuation in SGD.\n- **gross_revenue**: Gross revenue in SGD.\n- **net_property_income**: Net property income in SGD.\n- **portfolio_occupancy**: Portfolio occupancy (fraction).\n- **distribution_per_unit**: Distribution per unit in SGD.\n- **distribution_paid**: Distributions paid in SGD.\n- **distribution_declared**: Distributions declared in SGD.\n- **distributable_income_opening**: Distributable income at the start of the year, SGD.\n- **income_for_year**: Distributable income for the year, SGD.\n- **other_additions**: Other additions to distributable income, SGD.\n- **amount_retained**: Distributable income retained, SGD.\n- **distributable_income_closing**: Distributable income at the end of the year, SGD.\n- **net_asset_value_per_unit**: NAV per unit in SGD.\n- **units_in_issue**: Units in issue.\n- **units_to_be_issued**: Units owed for manager and property-manager fees paid in units.\n- **number_of_unitholders**: Number of unitholders.\n- **aggregate_leverage**: Aggregate leverage (fraction; 0.4 = 40%).\n- **interest_coverage_ratio**: Interest coverage ratio (times).\n- **cost_of_debt**: Average cost of debt (fraction).\n- **weighted_average_debt_maturity**: Weighted average debt maturity in years.\n- **weighted_average_lease_expiry**: Weighted average lease expiry (WALE) in years.\n- **property_count**: Number of properties held.\n- **countries**: Countries where the REIT holds a property.\n- **property_categories**: Property categories held, e.g. `Data Centers`.\n- **top_country**: Country holding the largest share of portfolio value.\n- **top_country_share**: Share of portfolio value in top_country (fraction).\n- **tenant_names**: Names of the top tenants.\n- **tenant_industries**: Industries of the top tenants.\n- **trade_mix_categories**: Tenant trade categories in the income mix.\n- **acquisition_count**: Property acquisitions completed in the year.\n- **divestment_count**: Property divestments completed in the year.\n</Accordion>\n\n<Accordion title=\"JSON List Fields\">\n**How to Use:** The query checks if **any** object in the list matches the condition. Use `=` or `like` for strings, numeric operators for numbers.\n\n<Accordion title=\"Examples\">\n- `where=board_member_name like '%Tan%'`\n</Accordion>\n\n- **board_member_name**: Name of a board member of the REIT manager.\n- **board_member_position**: Position of a board member, e.g. `Chairman`.\n</Accordion>\n\n</AccordionGroup>\n</Accordion>\n\n<Info>Costs 1 API credit per page. A natural-language `q` costs 3.</Info>",
                 "summary": "SGX REIT Screener",
                 "parameters": [
                     {
@@ -13164,7 +13164,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "SQL-like filter, e.g. `aggregate_leverage[latest] < 0.4 and countries[latest] = 'Japan'`.",
+                        "description": "SQL-like conditions for advanced filtering. Ignored if q is present. Supports operators =, !=, >, >=, <, <=, like, in combined with and/or; e.g. `aggregate_leverage[latest] < 0.4 and countries[latest] = 'Japan'`. Supports arithmetic expression.",
                         "examples": {
                             "Example": {
                                 "value": "aggregate_leverage[latest] < 0.4"
@@ -13189,9 +13189,9 @@
                         "name": "order_by",
                         "schema": {
                             "type": "string",
-                            "default": "-market_cap"
+                            "default": "symbol"
                         },
-                        "description": "Sort field; prefix with `-` for descending. Default `-market_cap`.",
+                        "description": "Field to sort results by. Use `-` prefix for descending order (e.g. `-market_cap`). Supports arithmetic expressions. Ignored if `q` is present.",
                         "examples": {
                             "Example": {
                                 "value": "-distribution_yield"
@@ -13226,7 +13226,7 @@
                             "type": "boolean",
                             "default": false
                         },
-                        "description": "Add `query_values`: the values each REIT was filtered and sorted on.",
+                        "description": "Also return `query_values`, the numbers each REIT was filtered and sorted on.",
                         "examples": {
                             "Example": {
                                 "value": true
@@ -13332,7 +13332,7 @@
         "/v2/sgx/reits/performance/{symbol}/": {
             "get": {
                 "operationId": "sgx_reits_performance_retrieve",
-                "description": "One SGX REIT's financials for a financial year: portfolio, distribution, debt and lease metrics. Also today's `market_cap`, `last_close_price`, `distribution_yield` (latest DPU / price) and `price_to_nav` (price / latest NAV per unit), which do not change with `financial_year`.\n\n<Note>REITs have different year ends, so the same `financial_year` label can cover different periods; `period_end` is the reliable key. `properties_location` is as reported by the REIT. All money is SGD; ratios are fractions (0.4 = 40%).</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "description": "One SGX REIT's results for a financial year: portfolio value and occupancy, revenue and net property income, distributions, debt (gearing, interest cover, cost of debt) and lease expiry.\n\n`market_cap`, `last_close_price`, `distribution_yield` and `price_to_nav` are today's numbers, so they stay the same whichever `financial_year` returned. Distribution yield is the latest distribution per unit divided by today's price, and price to NAV is today's price divided by the latest NAV per unit.\n\n<Note>REITs close their books in different months, so one REIT's FY2025 can end in March and another's in December. `period_end` gives the exact date. `properties_location` is written the way the REIT reports it. Money is in SGD, and ratios are fractions (0.4 means 40%).</Note>\n\n<Info>Costs 1 API credit.</Info>",
                 "summary": "SGX REIT Performance",
                 "parameters": [
                     {
@@ -13341,7 +13341,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "REIT symbol, 3-4 characters with optional `.SI`. E.g. `A17U`, `C38U`.",
+                        "description": "REIT ticker, with or without `.SI`, e.g. `A17U` or `C38U`.",
                         "required": true,
                         "examples": {
                             "Example": {
@@ -13355,7 +13355,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Financial year. Defaults to the REIT's latest; `available_years` lists the rest.",
+                        "description": "Which financial year to return. Omit this to return the latest; `available_years` in the response lists every year available for the specific data.",
                         "examples": {
                             "Example": {
                                 "value": "2025"
@@ -13499,13 +13499,13 @@
                     }
                 },
                 "x-mdx-path": "v2/singapore/reits/reit-performance",
-                "x-playground-summary": "One SGX REIT's financials for a financial year."
+                "x-playground-summary": "An SGX REIT's yearly financials, plus today's price, yield and price to NAV."
             }
         },
         "/v2/sgx/reits/profile/{symbol}/": {
             "get": {
                 "operationId": "sgx_reits_profile_retrieve",
-                "description": "Identity and governance of one SGX REIT: name, sub-sector, the management entities (sponsor, trustee, REIT manager, property manager, and master lessee or operator where the REIT has one) and the board of the REIT manager.\n\n<Info>Costs 1 API credit.</Info>",
+                "description": "The basics on one SGX REIT: its name and sub-sector, who runs it (sponsor, trustee, REIT manager, property manager, and the master lessee or operator if it has one), and the board of directors of the REIT manager.\n\n<Info>Costs 1 API credit.</Info>",
                 "summary": "SGX REIT Profile",
                 "parameters": [
                     {
@@ -13514,7 +13514,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "REIT symbol, 3-4 characters with optional `.SI`. E.g. `A17U`, `C38U`.",
+                        "description": "REIT ticker, with or without `.SI`, e.g. `A17U` or `C38U`.",
                         "required": true,
                         "examples": {
                             "Example": {
@@ -13638,13 +13638,13 @@
                     }
                 },
                 "x-mdx-path": "v2/singapore/reits/reit-profile",
-                "x-playground-summary": "One SGX REIT's name, sub-sector, management and board."
+                "x-playground-summary": "Who runs an SGX REIT: sponsor, trustee, managers and board."
             }
         },
         "/v2/sgx/reits/properties/{symbol}/": {
             "get": {
                 "operationId": "sgx_reits_properties_retrieve",
-                "description": "Every property one SGX REIT reported for a financial year, largest valuation first. Divested and held-for-sale properties are included with their `status`.\n\n<Note>Valuations and revenue are 100% of the asset; multiply by `ownership` for the REIT's share (`null` means undisclosed). Areas are square metres. `lease_term_years` is the initial term only. A 0% `occupancy_rate` on an active property normally means redevelopment or construction.</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "description": "Every property one SGX REIT reported for a financial year, from the highest valuation down. Properties that were sold or are up for sale stay in the list, marked in `status`.\n\n<Note>Valuation and revenue cover the whole property, even when the REIT owns only part of it. Multiply by `ownership` to get the REIT's share; `null` means unreported. Areas are in square metres, and `lease_term_years` is the original lease length, not what's left. An active property at 0% occupancy is usually being redeveloped or built.</Note>\n\n<Info>Costs 1 API credit.</Info>",
                 "summary": "SGX REIT Properties",
                 "parameters": [
                     {
@@ -13653,7 +13653,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "REIT symbol, 3-4 characters with optional `.SI`. E.g. `A17U`, `C38U`.",
+                        "description": "REIT ticker, with or without `.SI`, e.g. `A17U` or `C38U`.",
                         "required": true,
                         "examples": {
                             "Example": {
@@ -13667,7 +13667,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Financial year. Defaults to the REIT's latest; `available_years` lists the rest.",
+                        "description": "Which financial year to return. Omit this to return the latest; `available_years` in the response lists every year available for the specific data.",
                         "examples": {
                             "Example": {
                                 "value": "2025"
@@ -13794,13 +13794,13 @@
                     }
                 },
                 "x-mdx-path": "v2/singapore/reits/reit-properties",
-                "x-playground-summary": "One SGX REIT's property portfolio for a financial year."
+                "x-playground-summary": "Every property an SGX REIT owns, with valuation, occupancy and lease terms."
             }
         },
         "/v2/sgx/reits/tenants/{symbol}/": {
             "get": {
                 "operationId": "sgx_reits_tenants_retrieve",
-                "description": "The top tenants one SGX REIT reported for a financial year, by rank.\n\n<Note>`pct` is a share of `pct_basis`, which differs between REITs, so it is not comparable across them. Segmented REITs number ranks across segments; `rank_in_segment` re-ranks within each `basis_segment`.</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "description": "One SGX REIT's biggest tenants for a financial year, in rank order.\n\n<Note>`pct` is the tenant's share of whatever the REIT measures, named in `pct_basis`: usually gross rental income, sometimes gross revenue, headline rent or net property income. REITs measure differently, hence it's recommended to compare `pct` within one REIT rather than between REITs. A few REITs list tenants per segment, such as office and retail, in `basis_segment`. For those, `rank` runs across the whole list and `rank_in_segment` starts again at 1 in each segment.</Note>\n\n<Info>Costs 1 API credit.</Info>",
                 "summary": "SGX REIT Tenants",
                 "parameters": [
                     {
@@ -13809,7 +13809,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "REIT symbol, 3-4 characters with optional `.SI`. E.g. `A17U`, `C38U`.",
+                        "description": "REIT ticker, with or without `.SI`, e.g. `A17U` or `C38U`.",
                         "required": true,
                         "examples": {
                             "Example": {
@@ -13823,7 +13823,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Financial year. Defaults to the REIT's latest; `available_years` lists the rest.",
+                        "description": "Which financial year to return. Omit this to return the latest; `available_years` in the response lists every year available for the specific data.",
                         "examples": {
                             "Example": {
                                 "value": "2025"
@@ -13937,13 +13937,13 @@
                     }
                 },
                 "x-mdx-path": "v2/singapore/reits/reit-tenants",
-                "x-playground-summary": "One SGX REIT's top tenants for a financial year."
+                "x-playground-summary": "An SGX REIT's biggest tenants and how much of its income each brings in."
             }
         },
         "/v2/sgx/reits/trade-mix/{symbol}/": {
             "get": {
                 "operationId": "sgx_reits_trade_mix_retrieve",
-                "description": "How one SGX REIT's rental income splits across tenant trades (e.g. Food & Beverages, Financial & Professional Services) for a financial year, largest share first.\n\n<Note>`pct` is a fraction of `pct_basis`. Where `basis_segment` is set, REITs disagree on the denominator: for some each segment sums to 1, for others all segments together do. Read `pct` within one REIT and segment.</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "description": "How one SGX REIT's rental income splits by the kind of business its tenants run, such as Food & Beverages or Financial & Professional Services, for a financial year. Biggest share first.\n\n<Note>`pct` is a share of the measure named in `pct_basis`, usually gross rental income. A few REITs split their mix by segment (`basis_segment`), and they don't add up the same way: for some, each segment adds up to 100% on its own; for others, all segments together add up to 100%. So only compare `pct` within the same REIT and segment.</Note>\n\n<Info>Costs 1 API credit.</Info>",
                 "summary": "SGX REIT Trade Mix",
                 "parameters": [
                     {
@@ -13952,7 +13952,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "REIT symbol, 3-4 characters with optional `.SI`. E.g. `A17U`, `C38U`.",
+                        "description": "REIT ticker, with or without `.SI`, e.g. `A17U` or `C38U`.",
                         "required": true,
                         "examples": {
                             "Example": {
@@ -13966,7 +13966,7 @@
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Financial year. Defaults to the REIT's latest; `available_years` lists the rest.",
+                        "description": "Which financial year to return. Omit this to return the latest; `available_years` in the response lists every year available for the specific data.",
                         "examples": {
                             "Example": {
                                 "value": "2025"
@@ -14077,13 +14077,13 @@
                     }
                 },
                 "x-mdx-path": "v2/singapore/reits/reit-trade-mix",
-                "x-playground-summary": "One SGX REIT's rental income by tenant trade for a financial year."
+                "x-playground-summary": "Which kinds of tenants an SGX REIT's rental income comes from."
             }
         },
         "/v2/sgx/reits/transactions/": {
             "get": {
                 "operationId": "sgx_reits_transactions_retrieve",
-                "description": "Completed property acquisitions and divestments across every SGX REIT, newest first.\n\n<Note>`interest_pct` is the stake that changed hands, and `basis_value` is stated on that same stake, so it is comparable with `transaction_price`. `basis` says what the reference is (`valuation`, `book_value` or `purchase_price`) and differs between deals, so compare a price with its own basis rather than across deals.</Note>\n\n<Note>All amounts are SGD. A few rows have no `completed_date`; they sort last and are excluded when `start` or `end` is given.</Note>\n\n<Info>Costs 1 API credit per page.</Info>",
+                "description": "Completed property purchases and sales by SGX REITs, newest first. Filter by REIT, deal type, financial year or completion date.\n\n<Note>`transaction_price` is the price for the part of the property that changed hands, `interest_pct` (0.5 means half). `basis_value` is a reference price for that same part, so the two line up: a sale at 120m against a `basis_value` of 100m went for 20% above it. `basis` says what the reference is: the latest `valuation`, the `book_value` or the original `purchase_price`. It varies from deal to deal, so compare each price with its own `basis_value`, not with other deals.</Note>\n\n<Note>Amounts are in SGD. A few deals have no `completed_date`; they come last and drop out when you filter by `start` or `end`.</Note>\n\n<Info>Costs 1 API credit per page.</Info>",
                 "summary": "SGX REIT Property Transactions",
                 "parameters": [
                     {
@@ -14293,7 +14293,7 @@
                     }
                 },
                 "x-mdx-path": "v2/singapore/reits/reit-transactions",
-                "x-playground-summary": "Completed REIT property acquisitions and divestments across SGX."
+                "x-playground-summary": "Completed property purchases and sales by SGX REITs."
             }
         },
         "/v2/sgx/sectors/": {
@@ -20757,7 +20757,7 @@
                         "type": "number",
                         "format": "double",
                         "nullable": true,
-                        "description": "Stake transacted, 0-1."
+                        "description": "Share of the property that changed hands, from 0 to 1."
                     },
                     "completed_date": {
                         "type": "string",
@@ -20767,22 +20767,22 @@
                     "deal_id": {
                         "type": "string",
                         "nullable": true,
-                        "description": "Groups properties sold or bought in one deal."
+                        "description": "Shared by properties bought or sold together in one deal."
                     },
                     "transaction_price": {
                         "type": "integer",
                         "nullable": true,
-                        "description": "SGD, for the stake transacted."
+                        "description": "Price paid for that share, in SGD."
                     },
                     "basis": {
                         "type": "string",
                         "nullable": true,
-                        "description": "valuation, book_value or purchase_price."
+                        "description": "What basis_value is: valuation, book_value or purchase_price."
                     },
                     "basis_value": {
                         "type": "integer",
                         "nullable": true,
-                        "description": "SGD, on the same stake as the price."
+                        "description": "Reference price for the same share, in SGD."
                     }
                 },
                 "required": [
