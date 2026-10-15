@@ -25,6 +25,7 @@
                     "SGX - Company Screener",
                     "SGX - Helper Lists",
                     "SGX - Detailed Reports",
+                    "SGX - REITs",
                     "SGX - Transaction Data",
                     "SGX - Rankings",
                     "SGX - News & Filings"
@@ -13151,6 +13152,1150 @@
                 "x-playground-summary": "SGX news articles, filterable by sector, tags, symbols, and date."
             }
         },
+        "/v2/sgx/reits/": {
+            "get": {
+                "operationId": "sgx_reits_retrieve",
+                "description": "Filter and sort SGX-listed REITs with a SQL-like `where` or a natural-language `q`. Returns the matching REITs; add `include_query_values=true` to see the values each was filtered and sorted on. The full financial history of one REIT is the [SGX REIT Performance](https://docs.sectors.app/api-references/v2/singapore/reits/reit-performance) endpoint.\n\n**Query modes** (`q` overrides `where` and `order_by`):\n- `q`: natural language, e.g. `industrial REITs with gearing below 40%`\n- `where` + `order_by`: SQL-like structured query\n\n<Accordion title=\"Years and latest\">\nEvery metric is yearly: `aggregate_leverage[2025]`, or `aggregate_leverage[latest]` for each REIT's own newest year (REITs have different year ends). With `include_query_values=true`, each `field[latest]` also returns `field[latest]_year`, the year used. `acquisition_count` and `divestment_count` take a year only.\n</Accordion>\n\n<Accordion title=\"List fields\">\n`countries`, `property_categories`, `tenant_names`, `tenant_industries`, `trade_mix_categories` and the management fields (`sponsor`, `trustee`, ...) hold several names. `countries[latest] = 'Japan'` means the list contains Japan, `in ['Japan', 'China']` contains either, and `sponsor like '%CapitaLand%'` matches inside a name.\n</Accordion>\n\n<Note>All money is SGD; ratios are fractions (0.4 = 40%). `market_cap`, `last_close_price`, `distribution_yield` and `price_to_nav` are today's values.</Note>\n\n<Accordion title=\"Available Fields\">\n<AccordionGroup>\n\n<Accordion title=\"Direct Fields (Top-level columns)\">\n**How to Use:** Query these fields directly using standard operators (`=`, `!=`, `>`, `<`, `LIKE`, `IN`). String comparisons are case-insensitive.\n\n<Accordion title=\"Examples\">\n- `where=distribution_yield > 0.07`\n- `where=sub_sector = 'Industrial' and price_to_nav < 1`\n</Accordion>\n\n- **symbol**: SGX REIT symbol, e.g. `A17U`, `C38U` (optional `.SI` suffix).\n- **company_name**: REIT name.\n- **sub_sector**: REIT sub-sector: Data Centre, Diversified, Healthcare, Hospitality, Industrial, Office or Retail.\n- **market_cap**: Market capitalisation in SGD.\n- **last_close_price**: Latest closing price in SGD.\n- **distribution_yield**: Latest-year distribution per unit / latest price (fraction).\n- **price_to_nav**: Latest price / latest-year NAV per unit.\n</Accordion>\n\n<Accordion title=\"JSON Object Fields (Most Recent Data)\">\n**How to Use:** Query as if they were direct fields — the parser automatically extracts the value from the underlying JSON.\n\n<Accordion title=\"Examples\">\n- `where=sponsor like '%CapitaLand%'`\n</Accordion>\n\n- **sponsor**: Sponsor(s).\n- **trustee**: Trustee(s).\n- **reit_manager**: REIT manager(s).\n- **property_manager**: Property manager(s).\n- **master_lessee**: Master lessee(s), where the REIT has one.\n- **operator**: Operator(s), where the REIT has one.\n</Accordion>\n\n<Accordion title=\"Yearly JSON Fields (Historical & Forecast Data)\">\n**How to Use:** Must use bracket notation `field[YYYY]` to access data for a specific year. Supports all numeric operators, field-to-field comparisons, and arithmetic expressions.\n\n<Accordion title=\"Examples\">\n- `where=aggregate_leverage[latest] < 0.4`\n- `where=countries[latest] = 'Japan'`\n- `where=top_country[latest] = 'United Kingdom' and top_country_share[latest] > 0.5`\n- `where=divestment_count[2025] > 0`\n</Accordion>\n\n- **period_end**: Last day of the financial year.\n- **portfolio_value**: Portfolio valuation in SGD.\n- **gross_revenue**: Gross revenue in SGD.\n- **net_property_income**: Net property income in SGD.\n- **portfolio_occupancy**: Portfolio occupancy (fraction).\n- **distribution_per_unit**: Distribution per unit in SGD.\n- **distribution_paid**: Distributions paid in SGD.\n- **distribution_declared**: Distributions declared in SGD.\n- **distributable_income_opening**: Distributable income at the start of the year, SGD.\n- **income_for_year**: Distributable income for the year, SGD.\n- **other_additions**: Other additions to distributable income, SGD.\n- **amount_retained**: Distributable income retained, SGD.\n- **distributable_income_closing**: Distributable income at the end of the year, SGD.\n- **net_asset_value_per_unit**: NAV per unit in SGD.\n- **units_in_issue**: Units in issue.\n- **units_to_be_issued**: Units owed for manager and property-manager fees paid in units.\n- **number_of_unitholders**: Number of unitholders.\n- **aggregate_leverage**: Aggregate leverage (fraction; 0.4 = 40%).\n- **interest_coverage_ratio**: Interest coverage ratio (times).\n- **cost_of_debt**: Average cost of debt (fraction).\n- **weighted_average_debt_maturity**: Weighted average debt maturity in years.\n- **weighted_average_lease_expiry**: Weighted average lease expiry (WALE) in years.\n- **property_count**: Number of properties held.\n- **countries**: Countries where the REIT holds a property.\n- **property_categories**: Property categories held, e.g. `Data Centers`.\n- **top_country**: Country holding the largest share of portfolio value.\n- **top_country_share**: Share of portfolio value in top_country (fraction).\n- **tenant_names**: Names of the top tenants.\n- **tenant_industries**: Industries of the top tenants.\n- **trade_mix_categories**: Tenant trade categories in the income mix.\n- **acquisition_count**: Property acquisitions completed in the year.\n- **divestment_count**: Property divestments completed in the year.\n</Accordion>\n\n<Accordion title=\"JSON List Fields\">\n**How to Use:** The query checks if **any** object in the list matches the condition. Use `=` or `like` for strings, numeric operators for numbers.\n\n<Accordion title=\"Examples\">\n- `where=board_member_name like '%Tan%'`\n</Accordion>\n\n- **board_member_name**: Name of a board member of the REIT manager.\n- **board_member_position**: Position of a board member, e.g. `Chairman`.\n</Accordion>\n\n</AccordionGroup>\n</Accordion>\n\n<Info>Costs 1 API credit per page. A natural-language `q` costs 3.</Info>",
+                "summary": "SGX REIT Screener",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "where",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "SQL-like filter, e.g. `aggregate_leverage[latest] < 0.4 and countries[latest] = 'Japan'`.",
+                        "examples": {
+                            "Example": {
+                                "value": "aggregate_leverage[latest] < 0.4"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "q",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Natural-language query. Overrides `where` and `order_by`.",
+                        "examples": {
+                            "Example": {
+                                "value": "industrial REITs with gearing below 40%"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "order_by",
+                        "schema": {
+                            "type": "string",
+                            "default": "-market_cap"
+                        },
+                        "description": "Sort field; prefix with `-` for descending. Default `-market_cap`.",
+                        "examples": {
+                            "Example": {
+                                "value": "-distribution_yield"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "minimum": 1,
+                            "maximum": 30
+                        },
+                        "description": "Items per page. Max 30."
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0,
+                            "minimum": 0
+                        },
+                        "description": "Number of items to skip."
+                    },
+                    {
+                        "in": "query",
+                        "name": "include_query_values",
+                        "schema": {
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "description": "Add `query_values`: the values each REIT was filtered and sorted on.",
+                        "examples": {
+                            "Example": {
+                                "value": true
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "SGX - REITs"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SgxReitList"
+                                },
+                                "examples": {
+                                    "SGXREITs": {
+                                        "value": {
+                                            "results": [
+                                                {
+                                                    "symbol": "8C8U.SI",
+                                                    "company_name": "Centurion Accommodation REIT",
+                                                    "query_values": {
+                                                        "aggregate_leverage[latest]": 0.221,
+                                                        "aggregate_leverage[latest]_year": "2025"
+                                                    }
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "total_count": 22,
+                                                "showing": 1,
+                                                "limit": 2,
+                                                "offset": 0,
+                                                "has_next": true,
+                                                "has_previous": false,
+                                                "next_offset": 2,
+                                                "previous_offset": null
+                                            }
+                                        },
+                                        "summary": "SGX REITs",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/sgx/reits/",
+                                            "url": "https://api.sectors.app/v2/sgx/reits/?where=aggregate_leverage%5Blatest%5D+%3C+0.4&order_by=aggregate_leverage%5Blatest%5D&include_query_values=true&limit=2",
+                                            "query": {
+                                                "where": "aggregate_leverage[latest] < 0.4",
+                                                "order_by": "aggregate_leverage[latest]",
+                                                "include_query_values": "true",
+                                                "limit": 2
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Paginated REITs matching the query."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Invalid field name 'dividend_yield'. Use bracket notation for yearly fields: field[year]"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid where, order_by or query parameter."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/singapore/reits/reits",
+                "x-playground-summary": "Screen SGX REITs with SQL-like or natural-language queries."
+            }
+        },
+        "/v2/sgx/reits/performance/{symbol}/": {
+            "get": {
+                "operationId": "sgx_reits_performance_retrieve",
+                "description": "One SGX REIT's financials for a financial year: portfolio, distribution, debt and lease metrics. Also today's `market_cap`, `last_close_price`, `distribution_yield` (latest DPU / price) and `price_to_nav` (price / latest NAV per unit), which do not change with `financial_year`.\n\n<Note>REITs have different year ends, so the same `financial_year` label can cover different periods; `period_end` is the reliable key. `properties_location` is as reported by the REIT. All money is SGD; ratios are fractions (0.4 = 40%).</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "summary": "SGX REIT Performance",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "symbol",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "REIT symbol, 3-4 characters with optional `.SI`. E.g. `A17U`, `C38U`.",
+                        "required": true,
+                        "examples": {
+                            "Example": {
+                                "value": "A17U"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "financial_year",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Financial year. Defaults to the REIT's latest; `available_years` lists the rest.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "SGX - REITs"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "SGXREITPerformance": {
+                                        "value": {
+                                            "symbol": "A17U.SI",
+                                            "financial_year": 2025,
+                                            "available_years": [
+                                                2024,
+                                                2025
+                                            ],
+                                            "market_cap": 10889567690,
+                                            "last_close_price": 2.17,
+                                            "distribution_yield": 0.069147465437788,
+                                            "price_to_nav": 0.947598253275109,
+                                            "performance": {
+                                                "period_end": "2025-12-31",
+                                                "portfolio_value": 18202446000,
+                                                "gross_revenue": 1538574000,
+                                                "net_property_income": 1067560000,
+                                                "portfolio_occupancy": 0.909,
+                                                "properties_location": [
+                                                    "Singapore",
+                                                    "Australia",
+                                                    "United States",
+                                                    "United Kingdom"
+                                                ],
+                                                "distribution_per_unit": 0.15005,
+                                                "distribution_paid": 669086000,
+                                                "distribution_declared": 678268000,
+                                                "distribution_record": [
+                                                    {
+                                                        "dpu": 0.06479,
+                                                        "period_end": "2025-06-05",
+                                                        "period_start": "2025-01-01"
+                                                    }
+                                                ],
+                                                "distributable_income_opening": 338376000,
+                                                "income_for_year": 597294000,
+                                                "other_additions": 80974000,
+                                                "amount_retained": null,
+                                                "distributable_income_closing": 347558000,
+                                                "net_asset_value_per_unit": 2.29,
+                                                "units_in_issue": 4611952000,
+                                                "units_to_be_issued": 555000,
+                                                "number_of_unitholders": 37372,
+                                                "aggregate_leverage": 0.39,
+                                                "interest_coverage_ratio": 3.6,
+                                                "cost_of_debt": 0.035,
+                                                "weighted_average_debt_maturity": 3.1,
+                                                "weighted_average_lease_expiry": 3.7
+                                            }
+                                        },
+                                        "summary": "SGX REIT Performance",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/sgx/reits/performance/{symbol}/",
+                                            "url": "https://api.sectors.app/v2/sgx/reits/performance/A17U/",
+                                            "path_params": {
+                                                "symbol": "A17U"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "SGX REIT Performance"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "financial_year must be a 4-digit year."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid financial_year or unsupported query parameter."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "NOT_FOUND",
+                                            "message": "Symbol 'ZZZZ.SI' is not a covered SGX REIT."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Not a covered SGX REIT, or no data for the requested financial year."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/singapore/reits/reit-performance",
+                "x-playground-summary": "One SGX REIT's financials for a financial year."
+            }
+        },
+        "/v2/sgx/reits/profile/{symbol}/": {
+            "get": {
+                "operationId": "sgx_reits_profile_retrieve",
+                "description": "Identity and governance of one SGX REIT: name, sub-sector, the management entities (sponsor, trustee, REIT manager, property manager, and master lessee or operator where the REIT has one) and the board of the REIT manager.\n\n<Info>Costs 1 API credit.</Info>",
+                "summary": "SGX REIT Profile",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "symbol",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "REIT symbol, 3-4 characters with optional `.SI`. E.g. `A17U`, `C38U`.",
+                        "required": true,
+                        "examples": {
+                            "Example": {
+                                "value": "A17U"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "SGX - REITs"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "SGXREITProfile": {
+                                        "value": {
+                                            "symbol": "A17U.SI",
+                                            "company_name": "CapitaLand Ascendas REIT",
+                                            "sub_sector": "Industrial",
+                                            "management": {
+                                                "sponsor": [
+                                                    "CapitaLand Investment Limited"
+                                                ],
+                                                "trustee": [
+                                                    "HSBC Institutional Trust Services (Singapore) Limited"
+                                                ],
+                                                "reit_manager": [
+                                                    "CapitaLand Ascendas REIT Management Limited"
+                                                ],
+                                                "property_manager": [
+                                                    "Ascendas Services Pte Ltd",
+                                                    "Ascendas Funds Management (Australia) Pty Ltd",
+                                                    "CapitaLand International Management (UK) Ltd",
+                                                    "CapitaLand International (US) LLC"
+                                                ]
+                                            },
+                                            "board": [
+                                                {
+                                                    "name": "Beh Swan Gin",
+                                                    "position": "Chairman, Non-Executive Independent Director"
+                                                }
+                                            ]
+                                        },
+                                        "summary": "SGX REIT Profile",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/sgx/reits/profile/{symbol}/",
+                                            "url": "https://api.sectors.app/v2/sgx/reits/profile/A17U/",
+                                            "path_params": {
+                                                "symbol": "A17U"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "SGX REIT Profile"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Unsupported query parameter(s): foo."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Unsupported query parameter."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "NOT_FOUND",
+                                            "message": "Symbol 'ZZZZ.SI' is not a covered SGX REIT."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Not a covered SGX REIT, or no data for the requested financial year."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/singapore/reits/reit-profile",
+                "x-playground-summary": "One SGX REIT's name, sub-sector, management and board."
+            }
+        },
+        "/v2/sgx/reits/properties/{symbol}/": {
+            "get": {
+                "operationId": "sgx_reits_properties_retrieve",
+                "description": "Every property one SGX REIT reported for a financial year, largest valuation first. Divested and held-for-sale properties are included with their `status`.\n\n<Note>Valuations and revenue are 100% of the asset; multiply by `ownership` for the REIT's share (`null` means undisclosed). Areas are square metres. `lease_term_years` is the initial term only. A 0% `occupancy_rate` on an active property normally means redevelopment or construction.</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "summary": "SGX REIT Properties",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "symbol",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "REIT symbol, 3-4 characters with optional `.SI`. E.g. `A17U`, `C38U`.",
+                        "required": true,
+                        "examples": {
+                            "Example": {
+                                "value": "A17U"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "financial_year",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Financial year. Defaults to the REIT's latest; `available_years` lists the rest.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "SGX - REITs"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "SGXREITProperties": {
+                                        "value": {
+                                            "symbol": "A17U.SI",
+                                            "financial_year": 2025,
+                                            "available_years": [
+                                                2024,
+                                                2025
+                                            ],
+                                            "properties": [
+                                                {
+                                                    "property_name": "Galaxis",
+                                                    "country": "Singapore",
+                                                    "category": "Specialized",
+                                                    "address": "1 & 3 Fusionopolis Place",
+                                                    "latitude": 1.29986251400969,
+                                                    "longitude": 103.788101008299,
+                                                    "ownership": 1.0,
+                                                    "market_valuation": 848700000,
+                                                    "purchase_price": 697500000,
+                                                    "valuation_date": "2025-12-31",
+                                                    "gross_revenue": 59300000,
+                                                    "net_property_income": null,
+                                                    "occupancy_rate": 0.879,
+                                                    "net_lettable_area": 60926.0,
+                                                    "gross_floor_area": 68835.0,
+                                                    "land_tenure": "Leasehold",
+                                                    "lease_term_years": 60.0,
+                                                    "lease_expiry_date": "2072-07-11",
+                                                    "purchase_date": "2021-06-30",
+                                                    "status": "active"
+                                                }
+                                            ]
+                                        },
+                                        "summary": "SGX REIT Properties",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/sgx/reits/properties/{symbol}/",
+                                            "url": "https://api.sectors.app/v2/sgx/reits/properties/A17U/",
+                                            "path_params": {
+                                                "symbol": "A17U"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "SGX REIT Properties"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "financial_year must be a 4-digit year."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid financial_year or unsupported query parameter."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "NOT_FOUND",
+                                            "message": "Symbol 'ZZZZ.SI' is not a covered SGX REIT."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Not a covered SGX REIT, or no data for the requested financial year."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/singapore/reits/reit-properties",
+                "x-playground-summary": "One SGX REIT's property portfolio for a financial year."
+            }
+        },
+        "/v2/sgx/reits/tenants/{symbol}/": {
+            "get": {
+                "operationId": "sgx_reits_tenants_retrieve",
+                "description": "The top tenants one SGX REIT reported for a financial year, by rank.\n\n<Note>`pct` is a share of `pct_basis`, which differs between REITs, so it is not comparable across them. Segmented REITs number ranks across segments; `rank_in_segment` re-ranks within each `basis_segment`.</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "summary": "SGX REIT Tenants",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "symbol",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "REIT symbol, 3-4 characters with optional `.SI`. E.g. `A17U`, `C38U`.",
+                        "required": true,
+                        "examples": {
+                            "Example": {
+                                "value": "A17U"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "financial_year",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Financial year. Defaults to the REIT's latest; `available_years` lists the rest.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "SGX - REITs"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "SGXREITTenants": {
+                                        "value": {
+                                            "symbol": "AJBU.SI",
+                                            "financial_year": 2025,
+                                            "available_years": [
+                                                2024,
+                                                2025
+                                            ],
+                                            "tenants": [
+                                                {
+                                                    "rank": 1,
+                                                    "client_name": "Fortune Global 500 Company (Hyperscaler)",
+                                                    "industry": "IT & Telecommunications",
+                                                    "pct": 0.421,
+                                                    "pct_basis": "gross_rental_income",
+                                                    "basis_segment": null,
+                                                    "rank_in_segment": 1
+                                                }
+                                            ]
+                                        },
+                                        "summary": "SGX REIT Tenants",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/sgx/reits/tenants/{symbol}/",
+                                            "url": "https://api.sectors.app/v2/sgx/reits/tenants/AJBU/",
+                                            "path_params": {
+                                                "symbol": "AJBU"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "SGX REIT Tenants"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "financial_year must be a 4-digit year."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid financial_year or unsupported query parameter."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "NOT_FOUND",
+                                            "message": "Symbol 'ZZZZ.SI' is not a covered SGX REIT."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Not a covered SGX REIT, or no data for the requested financial year."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/singapore/reits/reit-tenants",
+                "x-playground-summary": "One SGX REIT's top tenants for a financial year."
+            }
+        },
+        "/v2/sgx/reits/trade-mix/{symbol}/": {
+            "get": {
+                "operationId": "sgx_reits_trade_mix_retrieve",
+                "description": "How one SGX REIT's rental income splits across tenant trades (e.g. Food & Beverages, Financial & Professional Services) for a financial year, largest share first.\n\n<Note>`pct` is a fraction of `pct_basis`. Where `basis_segment` is set, REITs disagree on the denominator: for some each segment sums to 1, for others all segments together do. Read `pct` within one REIT and segment.</Note>\n\n<Info>Costs 1 API credit.</Info>",
+                "summary": "SGX REIT Trade Mix",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "symbol",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "REIT symbol, 3-4 characters with optional `.SI`. E.g. `A17U`, `C38U`.",
+                        "required": true,
+                        "examples": {
+                            "Example": {
+                                "value": "A17U"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "financial_year",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Financial year. Defaults to the REIT's latest; `available_years` lists the rest.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "SGX - REITs"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "SGXREITTradeMix": {
+                                        "value": {
+                                            "symbol": "C38U.SI",
+                                            "financial_year": 2025,
+                                            "available_years": [
+                                                2024,
+                                                2025
+                                            ],
+                                            "trade_mix": [
+                                                {
+                                                    "category": "Other Retail Trades",
+                                                    "pct": 0.22,
+                                                    "pct_basis": "gross_rental_income",
+                                                    "basis_segment": null
+                                                }
+                                            ]
+                                        },
+                                        "summary": "SGX REIT Trade Mix",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/sgx/reits/trade-mix/{symbol}/",
+                                            "url": "https://api.sectors.app/v2/sgx/reits/trade-mix/C38U/",
+                                            "path_params": {
+                                                "symbol": "C38U"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "SGX REIT Trade Mix"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "financial_year must be a 4-digit year."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid financial_year or unsupported query parameter."
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "NotFound": {
+                                        "value": {
+                                            "error": "NOT_FOUND",
+                                            "message": "Symbol 'ZZZZ.SI' is not a covered SGX REIT."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Not a covered SGX REIT, or no data for the requested financial year."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/singapore/reits/reit-trade-mix",
+                "x-playground-summary": "One SGX REIT's rental income by tenant trade for a financial year."
+            }
+        },
+        "/v2/sgx/reits/transactions/": {
+            "get": {
+                "operationId": "sgx_reits_transactions_retrieve",
+                "description": "Completed property acquisitions and divestments across every SGX REIT, newest first.\n\n<Note>`interest_pct` is the stake that changed hands, and `basis_value` is stated on that same stake, so it is comparable with `transaction_price`. `basis` says what the reference is (`valuation`, `book_value` or `purchase_price`) and differs between deals, so compare a price with its own basis rather than across deals.</Note>\n\n<Note>All amounts are SGD. A few rows have no `completed_date`; they sort last and are excluded when `start` or `end` is given.</Note>\n\n<Info>Costs 1 API credit per page.</Info>",
+                "summary": "SGX REIT Property Transactions",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "symbol",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter to one REIT. E.g. `C38U`.",
+                        "examples": {
+                            "Example": {
+                                "value": "C38U"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "start",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Earliest `completed_date` (YYYY-MM-DD). Optional.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025-01-01"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "end",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Latest `completed_date` (YYYY-MM-DD). Optional.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025-12-31"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "order_by",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "-completed_date",
+                                "-symbol",
+                                "-transaction_price",
+                                "completed_date",
+                                "symbol",
+                                "transaction_price"
+                            ],
+                            "default": "-completed_date"
+                        },
+                        "description": "Sort field; prefix with `-` for descending.",
+                        "examples": {
+                            "Example": {
+                                "value": "-transaction_price"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "minimum": 1,
+                            "maximum": 30
+                        },
+                        "description": "Items per page. Max 30."
+                    },
+                    {
+                        "in": "query",
+                        "name": "offset",
+                        "schema": {
+                            "type": "integer",
+                            "default": 0,
+                            "minimum": 0
+                        },
+                        "description": "Number of items to skip."
+                    },
+                    {
+                        "in": "query",
+                        "name": "financial_year",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Filter by financial year.",
+                        "examples": {
+                            "Example": {
+                                "value": "2025"
+                            }
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "transaction_type",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "acquisition",
+                                "divestment"
+                            ]
+                        },
+                        "description": "Filter by deal direction.",
+                        "examples": {
+                            "Example": {
+                                "value": "divestment"
+                            }
+                        }
+                    }
+                ],
+                "tags": [
+                    "SGX - REITs"
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SgxReitTransaction"
+                                },
+                                "examples": {
+                                    "REITTransactions": {
+                                        "value": {
+                                            "results": [
+                                                {
+                                                    "symbol": "AJBU.SI",
+                                                    "financial_year": 2026,
+                                                    "transaction_type": "acquisition",
+                                                    "property_name": "Tokyo Data Centre 4",
+                                                    "counterparty": "unrelated third party",
+                                                    "interest_pct": 0.8862,
+                                                    "completed_date": "2026-10-01",
+                                                    "deal_id": "ajbu:SG260901OTHR7MAH",
+                                                    "transaction_price": 1372000000,
+                                                    "basis": "valuation",
+                                                    "basis_value": 1400701197
+                                                }
+                                            ],
+                                            "pagination": {
+                                                "total_count": 185,
+                                                "showing": 1,
+                                                "limit": 2,
+                                                "offset": 0,
+                                                "has_next": true,
+                                                "has_previous": false,
+                                                "next_offset": 2,
+                                                "previous_offset": null
+                                            }
+                                        },
+                                        "summary": "REIT transactions",
+                                        "x-example-request": {
+                                            "method": "GET",
+                                            "path": "/v2/sgx/reits/transactions/",
+                                            "url": "https://api.sectors.app/v2/sgx/reits/transactions/?limit=2",
+                                            "query": {
+                                                "limit": 2
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Paginated REIT property transactions."
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "BadRequest": {
+                                        "value": {
+                                            "error": "BAD_REQUEST",
+                                            "message": "Use a valid date format of YYYY-MM-DD."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Invalid date, transaction_type, order_by or query parameter."
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {}
+                                },
+                                "examples": {
+                                    "RateLimit": {
+                                        "value": {
+                                            "error": "RATE_LIMIT_EXCEEDED",
+                                            "message": "Rate limit exceeded. Consider upgrading."
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Rate limit exceeded."
+                    }
+                },
+                "x-mdx-path": "v2/singapore/reits/reit-transactions",
+                "x-playground-summary": "Completed REIT property acquisitions and divestments across SGX."
+            }
+        },
         "/v2/sgx/sectors/": {
             "get": {
                 "operationId": "sgx_sectors_list",
@@ -19485,6 +20630,224 @@
                     "total_count"
                 ]
             },
+            "SgxReitList": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SgxReitListItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/SgxReitListPagination"
+                    }
+                },
+                "required": [
+                    "pagination",
+                    "results"
+                ]
+            },
+            "SgxReitListItem": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string"
+                    },
+                    "company_name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "query_values": {
+                        "description": "Only with include_query_values=true."
+                    }
+                },
+                "required": [
+                    "company_name",
+                    "symbol"
+                ]
+            },
+            "SgxReitListPagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
+                ]
+            },
+            "SgxReitTransaction": {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SgxReitTransactionItem"
+                        }
+                    },
+                    "pagination": {
+                        "$ref": "#/components/schemas/SgxReitTransactionPagination"
+                    }
+                },
+                "required": [
+                    "pagination",
+                    "results"
+                ]
+            },
+            "SgxReitTransactionItem": {
+                "type": "object",
+                "properties": {
+                    "symbol": {
+                        "type": "string"
+                    },
+                    "financial_year": {
+                        "type": "integer"
+                    },
+                    "transaction_type": {
+                        "type": "string"
+                    },
+                    "property_name": {
+                        "type": "string"
+                    },
+                    "counterparty": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "interest_pct": {
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true,
+                        "description": "Stake transacted, 0-1."
+                    },
+                    "completed_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "deal_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Groups properties sold or bought in one deal."
+                    },
+                    "transaction_price": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "SGD, for the stake transacted."
+                    },
+                    "basis": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "valuation, book_value or purchase_price."
+                    },
+                    "basis_value": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "SGD, on the same stake as the price."
+                    }
+                },
+                "required": [
+                    "basis",
+                    "basis_value",
+                    "completed_date",
+                    "counterparty",
+                    "deal_id",
+                    "financial_year",
+                    "interest_pct",
+                    "property_name",
+                    "symbol",
+                    "transaction_price",
+                    "transaction_type"
+                ]
+            },
+            "SgxReitTransactionPagination": {
+                "type": "object",
+                "properties": {
+                    "total_count": {
+                        "type": "integer",
+                        "description": "Total number of matching results."
+                    },
+                    "showing": {
+                        "type": "integer",
+                        "description": "Number of results in this page."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results per page."
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Number of results skipped."
+                    },
+                    "has_next": {
+                        "type": "boolean",
+                        "description": "Whether a next page exists."
+                    },
+                    "has_previous": {
+                        "type": "boolean",
+                        "description": "Whether a previous page exists."
+                    },
+                    "next_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the next page, or null."
+                    },
+                    "previous_offset": {
+                        "type": "integer",
+                        "nullable": true,
+                        "description": "Offset for the previous page, or null."
+                    }
+                },
+                "required": [
+                    "has_next",
+                    "has_previous",
+                    "limit",
+                    "next_offset",
+                    "offset",
+                    "previous_offset",
+                    "showing",
+                    "total_count"
+                ]
+            },
             "SgxShortSell": {
                 "type": "object",
                 "properties": {
@@ -20105,6 +21468,11 @@
             "name": "SGX - Detailed Reports",
             "description": "Singapore Stock Exchange full company reports",
             "x-sidebar-icon": "file-contract"
+        },
+        {
+            "name": "SGX - REITs",
+            "description": "SGX REIT screener, per-REIT financials, properties, tenants and trade mix, and property transactions",
+            "x-sidebar-icon": "city"
         },
         {
             "name": "SGX - Transaction Data",
