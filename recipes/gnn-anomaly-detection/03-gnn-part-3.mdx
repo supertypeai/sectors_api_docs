@@ -1,8 +1,10 @@
 ---
 title: "Part 3: Confirmation with Broker and Foreign Flow"
 sidebarTitle: "3. Confirmation with Broker and Foreign Flow"
-description: "By: [Alya Dwinanda](https://www.github.com/flytosevensky) · June 30, 2026"
+description: "Confirm GNN stock anomaly scores with broker flow and foreign flow from the Sectors API, then combine them into one risk score per IDX stock."
 ---
+
+By: [Alya Dwinanda](https://www.github.com/flytosevensky) · June 30, 2026
 
 This is Part 3 of a three-part recipe. Parts 1 and 2 built and trained the GVAE and produced anomaly scores. In this part, we validate those scores against two independent market signals from the Sectors API: broker flow and foreign flow. We then combine all three signals into a single adaptive risk score for each stock.
 

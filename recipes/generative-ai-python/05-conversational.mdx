@@ -1,9 +1,11 @@
 ---
 title: "Tool-Use ReAct Conversational Agents"
 sidebarTitle: "5. Tool-Use ReAct Agents w/ Streaming"
-description: "By: [Samuel Chan](https://www.github.com/onlyphantom) · October 10, 2024"
+description: "Build a ReAct conversational agent in Python with LangChain that calls the Sectors Financial API to answer questions about Indonesian stocks (IDX)."
 ---
 import {TOC} from '/snippets/generative-ai-toc.mdx';
+
+By: [Samuel Chan](https://www.github.com/onlyphantom) · October 10, 2024
 
 <TOC step={5}/>
 
@@ -286,7 +288,7 @@ also now the recommended way to create agents in LangChain. The `AgentExecutor` 
 but its official documentation now recommends the use of `ReAct` agents instead. 
 
 ## LangGraph pre-built ReAct agent
-![](images/react.png)
+![ReAct agent loop: reasoning and acting with tools](images/react.png)
 <small>Source: ReAct: Synergizing Reasoning and Acting in Language Models </small>
 
 An in-depth discussion of the ReAct paper is beyond the scope of this article, I have linked 
