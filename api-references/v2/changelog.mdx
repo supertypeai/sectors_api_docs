@@ -2,6 +2,20 @@
 title: v2 Changelog
 sidebarTitle: Changelog
 ---
+## 2026-11-04
+
+- **Breaking change to `pe`, `pb`, `ps`, and `pcf` in the [SGX Companies Screener](https://docs.sectors.app/api-references/v2/singapore/screener/sgx-companies)**: To match the IDX screener, these are now yearly fields (e.g., `pe[2025]`). The most recent figures are now accessed via `pe_ttm`, `pb_mrq`, and `ps_ttm`, while price-to-cash-flow uses the current year (e.g., `pcf[2026]`). Queries using the old format (like `where=pe > 10`) will now return a `400` error prompting for a year. Update these to `pe_ttm > 10` to keep your existing logic
+
+- **More fields in the [SGX Companies Screener](https://docs.sectors.app/api-references/v2/singapore/screener/sgx-companies)**: Yearly valuation is now available via `pe[YYYY]`, `pb[YYYY]`, `ps[YYYY]`, `pcf[YYYY]`, `peg[YYYY]`, `enterprise_to_ebitda[YYYY]`, and `enterprise_to_revenue[YYYY]`. We also added peer averages like `pe_peer_avg[YYYY]`, which SGX previously lacked. Filter the latest reported figures using `pe_ttm`, `pb_mrq`, `ps_ttm`, `roa_ttm`, `roe_ttm`, `dar_mrq`, `der_mrq`, `total_assets_mrq`, `total_equity_mrq`, `total_liabilities_mrq`, `total_revenue_mrq`, `earnings_mrq`, and `yearly_mcap_change` (note: `_ttm` fields currently hold the latest annual figure)
+
+- **Yearly valuation in the [SGX Company Report](https://docs.sectors.app/api-references/v2/singapore/report/company-report)**: The `valuation` section now includes `historical_valuation`, featuring yearly PE, PB, PS, PCF, PEG, and enterprise value ratios alongside peer averages. The `sankey_component` and `*_breakdown` chart blocks have been removed from `historical_financials`. The cost per section remains unchanged
+
+- **SGX REIT subsectors**: The `reit-specialty-healthcare` slug is retired. To match current SGX classifications, we added `reit-data-centre`, `reit-healthcare`, and `reit-hospitality`. Update any queries using the retired slug to one of the new options listed in [SGX Subsectors](https://docs.sectors.app/api-references/v2/singapore/helper-list/sgx-subsectors)
+
+- **Stricter sector filters in the [Companies Screener](https://docs.sectors.app/api-references/v2/indonesia/screener/companies) and [SGX Companies Screener](https://docs.sectors.app/api-references/v2/singapore/screener/sgx-companies)**: Using `=`, `!=`, `in`, or `not in` with invalid `sector`, `sub_sector`, `industry`, or `sub_industry` values will now return a `400` error linking to valid options, rather than an empty result. Slugs and labels are accepted in any letter case, and `like` patterns remain unaffected. Ensure your values match [Subsectors](https://docs.sectors.app/api-references/v2/indonesia/helper-list/subsectors), [Industries](https://docs.sectors.app/api-references/v2/indonesia/helper-list/industries), [Subindustries](https://docs.sectors.app/api-references/v2/indonesia/helper-list/subindustries), [SGX Sectors](https://docs.sectors.app/api-references/v2/singapore/helper-list/sgx-sectors), or [SGX Subsectors](https://docs.sectors.app/api-references/v2/singapore/helper-list/sgx-subsectors)
+
+- **[SGX Top Companies](https://docs.sectors.app/api-references/v2/singapore/ranking/top-companies) sector filter**: The `sector` parameter now strictly uses the slugs from [SGX Sectors](https://docs.sectors.app/api-references/v2/singapore/helper-list/sgx-sectors). It previously checked an older list containing 13 outdated slugs (like `real-estate` and `retailers`) that matched no companies; using these will now return a `400` error
+
 ## 2026-10-15
 
 - **Introduces SGX REITs**: All 38 REITs listed on SGX are now covered, with their financials, property portfolios, top tenants and property deals. Endpoints that report a single year take `financial_year`, default to the REIT's latest year and list the other years in `available_years`. Each call costs 1 credit, except a screener call with `q`, which costs 3
