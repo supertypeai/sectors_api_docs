@@ -96,7 +96,7 @@ Connect Claude, ChatGPT, Cursor or any MCP client to Sectors data with the [Sect
 
 ## Contributing to these docs
 
-This repository holds the source for [docs.sectors.app](https://docs.sectors.app), built with [Mintlify](https://mintlify.com). Endpoint pages under `api-references/` are generated from the backend OpenAPI schema by `scripts/generate_mdx_stubs.py`, so don't edit their frontmatter by hand.
+This repository holds the source for [docs.sectors.app](https://docs.sectors.app), built with [Mintlify](https://mintlify.com). Endpoint pages under `api-references/` are generated from the backend OpenAPI schema by `scripts/generate_mdx_stubs.py`, so don't edit them by hand.
 
 Preview locally:
 

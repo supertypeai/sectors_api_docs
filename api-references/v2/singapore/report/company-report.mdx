@@ -5,3 +5,17 @@ sidebarTitle: Full company report for an SGX-listed symbol
 description: "Get a full report on any SGX-listed company: overview, valuation, financials, dividends, management and ownership in one call. Fetch only what you need."
 ---
 
+<Note>SGX symbol: 3-4 characters (letters or digits), optionally followed by `.SI` (case-insensitive) on input. E.g. `D05`, `U11`, `Z74`. Output always carries the `.SI` suffix.</Note>
+
+Returns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.
+
+<Accordion title="Available sections">
+- **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d/1m/1y/3y/ytd), all-time price highs/lows, listing date, registered address and website
+- **valuation**: PE, PS, PCF, PB ratios, historical yearly valuation and peer averages
+- **financials**: Historical revenue and earnings by year, EPS along with its yearly history and growth, margins, ratios
+- **dividend**: Dividend yield, growth rate, payout ratio, historical dividends and any announced upcoming dividends
+- **management**: Current directors and executives with their position, age and appointment date, together with former officers and the date they stepped down
+- **ownership**: Major shareholders with their share count, ownership percentage and holding value in SGD
+</Accordion>
+
+<Info>Costs 1 API credit per requested section. Default behavior (all 6 sections) consumes 6 credits.</Info>

@@ -5,3 +5,10 @@ description: Get daily buy, sell and net value per broker for one IDX stock over
 sidebarTitle: Broker Activity Per Symbol
 ---
 
+Per-broker daily trading rows for one IDX ticker over a date range up to 14 days, grouped by date. Optionally filter to a single broker via `broker_code`. Each entry in `data` lists every broker active on that day with buy/sell/net values, lots, frequency, and weighted avg price per share.
+
+<Note>Each row also carries the foreign-investor split of that broker's trades: the `f_*` fields are the portion of the buy/sell frequency, lots, and value executed for foreign investors, and `d_bavg_per_share` / `d_savg_per_share` are the domestic-investor average prices. Domestic frequency, lots, and value are `total - foreign`. These fields are `null` when no foreign-investor participation was recorded for that broker on that day.</Note>
+
+<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `GOTO`.</Note>
+
+<Info>Costs 1 API credit.</Info>

@@ -4,3 +4,11 @@ openapi: GET /v2/filings/
 sidebarTitle: Company Filings
 description: Track insider and major-shareholder buy and sell transactions on the Indonesia Stock Exchange. Filter by ticker, sector, date, transaction and holder type.
 ---
+
+Returns IDX insider trading filings — buy/sell transactions by company insiders and major shareholders. Supports filtering by sector, subsector, tags, symbol, transaction type, holder_type, and date range.
+
+<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `BMRI`, `TLKM`.</Note>
+
+<Note>Date filters: both `start` and `end` are independent and optional — omit either side to leave that bound unconstrained. Future `end` dates return 400.</Note>
+
+<Info>Costs 1 API credit.</Info>

@@ -5,3 +5,14 @@ sidebarTitle: Daily Net Foreign Inflow
 description: Get daily net foreign investor inflow (IDR) and foreign share of trading for one IDX stock over up to 90 days. See when foreigners were net buyers or sellers.
 ---
 
+Daily net foreign-investor inflow (IDR) for one IDX ticker over a date range up to 90 days. Positive `net_foreign_inflow` means foreign investors were net buyers that day; negative means they were net sellers. `foreign_share` is the foreign fraction of the stock's two-sided turnover. Usually useful for tracking foreign sentiment and capital flow on a specific stock.
+
+<Note>Pass `IHSG` (any case, with or without `.JK`) for the market-wide series: every ticker summed, one point per day, `symbol` echoed as `IHSG`. For every ticker's flow on one day use the [Daily Full-Universe Foreign Flow](https://docs.sectors.app/api-references/v2/indonesia/brokers/foreign-flow) endpoint.</Note>
+
+<Note>Flow is attributed by the investor's origin, not the broker's. Every broker's daily activity on the stock is split into its foreign-investor and domestic-investor portions, and this endpoint sums the foreign portion across all brokers, so a foreign-owned broker's domestic clients count as domestic and a local broker's foreign clients count as foreign.</Note>
+
+<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `GOTO`.</Note>
+
+<Note>Only foreign flow is returned because the exchange is a closed market: for any `(symbol, date)`, foreign and domestic net values always sum to zero, so domestic flow is simply `-net_foreign_inflow`.</Note>
+
+<Info>Costs 1 API credit.</Info>

@@ -5,3 +5,10 @@ sidebarTitle: SGX REIT Performance
 description: "Get one S-REIT's yearly results: portfolio value, occupancy, net property income, distributions, gearing, interest cover and lease expiry. JSON REST API."
 ---
 
+One SGX REIT's results for a financial year: portfolio value and occupancy, revenue and net property income, distributions, debt (gearing, interest cover, cost of debt) and lease expiry.
+
+`market_cap`, `last_close_price`, `distribution_yield` and `price_to_nav` are today's numbers, so they stay the same whichever `financial_year` returned. Distribution yield is the latest distribution per unit divided by today's price, and price to NAV is today's price divided by the latest NAV per unit.
+
+<Note>REITs close their books in different months, so one REIT's FY2025 can end in March and another's in December. `period_end` gives the exact date. `properties_location` is written the way the REIT reports it. Money is in SGD, and ratios are fractions (0.4 means 40%).</Note>
+
+<Info>Costs 1 API credit.</Info>

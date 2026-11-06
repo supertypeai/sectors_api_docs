@@ -4,3 +4,13 @@ openapi: GET /v2/klse/companies/top/
 sidebarTitle: Top KLSE companies by classification
 description: Rank Bursa Malaysia (KLSE) companies by dividend yield, revenue, earnings, market cap or P/E, filterable by sector. JSON REST API for Malaysian stocks.
 ---
+
+Returns top KLSE-listed companies ranked by one or more classifications.
+
+<Accordion title="Available classifications">
+`dividend_yield`, `revenue`, `earnings`, `market_cap`, `pe`
+</Accordion>
+
+<Note>Get valid sector slugs from the [KLSE Sectors](https://docs.sectors.app/api-references/v2/malaysia/klse-sectors) endpoint.</Note>
+
+<Info>Costs 1 API credit per requested classification. Default behavior (all 5 classifications) consumes 5 credits.</Info>

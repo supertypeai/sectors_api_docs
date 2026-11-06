@@ -5,3 +5,8 @@ sidebarTitle: Top Brokers Daily Ranking
 description: Rank IDX brokers by trade value or net flow for any trading day. Filter by foreign or domestic origin and retail or institutional cohort. JSON REST API.
 ---
 
+Brokers ranked by gross trade value (default) or absolute net flow for a single date. Optionally filter by `origin` (foreign/domestic) and `cohort` (retail/mixed/institutional/unknown). Returns all matching brokers if `n_brokers` is omitted. Each row also reports the portion of the broker's turnover executed for foreign investors (`foreign_gross`, `foreign_net`); pass `foreign=true` to rank by those instead of the totals.
+
+<Note>Origin and cohort classifications come from the broker registry and describe the broker itself (a foreign- or domestic-owned member), not its clients. Use the `foreign_*` fields for investor-origin flow. Retrieve the full list with these classifications from the [Broker Registry](https://docs.sectors.app/api-references/v2/indonesia/brokers/broker-registry) endpoint.</Note>
+
+<Info>Costs 2 API credits.</Info>

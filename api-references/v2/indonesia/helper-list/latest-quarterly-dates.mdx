@@ -5,3 +5,12 @@ sidebarTitle: Latest Quarterly Financial Dates (Universe)
 description: Get the latest quarterly report date for every IDX company in one feed. Poll for newly released financial statements without per-ticker calls.
 ---
 
+Returns the **latest** available quarterly report date (and its quarter label) for **every** IDX company in one paginated feed — instead of calling the per-symbol [Quarterly Financial Dates](https://docs.sectors.app/api-references/v2/indonesia/helper-list/company-quarterly-dates) helper once per ticker.
+
+Built for **freshness polling**: store the dates you've seen, then re-poll with `?since=` to fetch only the companies that have since reported a new quarter, keeping repeat polls cheap.
+
+**Related:** [Quarterly Financials](https://docs.sectors.app/api-references/v2/indonesia/report/quarterly-financials) for the actual figures on a given `report_date`.
+
+<Note>One row per company (~950), sorted by symbol. Companies with no quarterly data are omitted.</Note>
+
+<Info>Costs 1 API credit per page. The full universe is ~32 pages at the maximum `limit` of 30 (~32 credits per full sweep). Use `since` to poll incrementally for far fewer credits.</Info>

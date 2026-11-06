@@ -4,3 +4,9 @@ openapi: GET /v2/most-traded/
 sidebarTitle: Most Traded Stocks
 description: Get the most actively traded IDX stocks by volume for each day over up to 90 days, filterable by subsector. Find the market's most active stocks fast.
 ---
+
+Returns the most traded IDX stocks by transaction volume over a date range of up to 90 days. Results are keyed by date.
+
+<Note>Date range: defaults to last 30 days. Max window 90 days; wider ranges are clamped to the most recent 90 days ending at `end`. Future `end` dates return 400.</Note>
+
+<Info>Costs 2 API credits.</Info>

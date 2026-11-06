@@ -4,3 +4,11 @@ openapi: GET /v2/mining/exports/
 sidebarTitle: Top Export Destinations
 description: Rank countries by Indonesia's export value of coal, gold or copper for a given year. See the top destinations for Indonesian commodity exports.
 ---
+
+Ranks countries by total export value for a given year and commodity, showing the top destinations for Indonesian commodity exports.
+
+<Note>Available `commodity_type` values: `Gold`, `Copper`, `Coal`.</Note>
+
+`export_usd` is in base USD. Volume unit is specified per row in `volume_unit` (typically `Mt`). Two volume sources are provided: **BPS** (Badan Pusat Statistik) and **ESDM** (Energi Sumber Daya Mineral) — values may differ due to methodology.
+
+<Info>Costs 1 API credit.</Info>

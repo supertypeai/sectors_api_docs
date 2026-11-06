@@ -5,3 +5,10 @@ sidebarTitle: SGX REIT Property Transactions
 description: Track completed property acquisitions and divestments by Singapore REITs, newest first. Filter by REIT, deal type, financial year or completion date.
 ---
 
+Completed property purchases and sales by SGX REITs, newest first. Filter by REIT, deal type, financial year or completion date.
+
+<Note>`transaction_price` is the price for the part of the property that changed hands, `interest_pct` (0.5 means half). `basis_value` is a reference price for that same part, so the two line up: a sale at 120m against a `basis_value` of 100m went for 20% above it. `basis` says what the reference is: the latest `valuation`, the `book_value` or the original `purchase_price`. It varies from deal to deal, so compare each price with its own `basis_value`, not with other deals.</Note>
+
+<Note>Amounts are in SGD. A few deals have no `completed_date`; they come last and drop out when you filter by `start` or `end`.</Note>
+
+<Info>Costs 1 API credit per page.</Info>

@@ -5,3 +5,10 @@ sidebarTitle: SGX Short Sell
 description: "Get the daily SGX short sell report as data: short sell volume and value per stock. Filter by ticker and date, and sort to find the most shorted stocks."
 ---
 
+Returns SGX short sell data. Supports filtering by symbol and date range, and sorting via `order_by` (e.g. `start=2025-05-02&end=2025-05-02&order_by=-value` lists the most shorted stocks that day).
+
+<Note>SGX symbol: 3-4 characters (letters or digits). E.g. `D05`, `U11`, `Z74`, `TCPD`. Output always carries the `.SI` suffix.</Note>
+
+<Note>Date filters: both `start` and `end` are independent and optional — omit either side to leave that bound unconstrained. Future `end` dates return 400.</Note>
+
+<Info>Costs 1 API credit.</Info>

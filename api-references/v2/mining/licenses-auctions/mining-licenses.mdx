@@ -4,3 +4,11 @@ openapi: GET /v2/mining/licenses/
 sidebarTitle: Mining Licenses
 description: Search Indonesian mining licenses (IUP/IUPK) from ESDM Minerba by province, commodity, company, status and expiry date. JSON REST API.
 ---
+
+Lists mining licenses (IUP/IUPK) from the ESDM Minerba portal with filters for status, commodity, location, and expiry date.
+
+<Note>Top `commodity_type` values: `Coal`, `Nickel`, `Non-Metallic Mineral`, `Sand/Stone/Gravel`, `Limestone`, `Gold`, `Tin`, `Iron`, `Bauxite`, `Clay`, `Copper`.</Note>
+
+Prefix `order_by` with `-` for descending order. Default sort: `license_expiry_date` (soonest expiring first).
+
+<Info>Costs 1 API credit.</Info>

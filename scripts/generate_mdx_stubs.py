@@ -6,18 +6,24 @@ Reads schema.json produced by `python manage.py spectacular --file schema.json`
 and creates/updates Mintlify MDX stub files for every operation that carries
 an `x-mdx-path` extension.
 
-Each stub contains only YAML frontmatter:
+Each stub contains YAML frontmatter followed by the operation's `description`
+as the page body:
 
     ---
     title: "<operation summary>"
     openapi: "<METHOD> <path>"
     ---
 
-String fields in the operation's `x-mint.metadata` (e.g. title, sidebarTitle,
-description) are merged in and override the summary-based title.
+    <operation description>
 
-Mintlify renders the full page (parameters, examples, response schemas) from
-the OpenAPI spec automatically; the stub is just a pointer.
+String fields in the operation's `x-mint.metadata` (e.g. title, sidebarTitle,
+description) are merged in and override the summary-based title. Because a
+frontmatter `description` replaces the operation description Mintlify would
+otherwise show under the title, the operation description is written to the
+body so it still renders.
+
+Mintlify renders the rest of the page (parameters, examples, response schemas)
+from the OpenAPI spec automatically.
 
 For existing files that still use the legacy `api:` format (hand-written MDX),
 only those metadata fields are updated; the rest of the file is left intact so
@@ -78,7 +84,7 @@ def render_frontmatter(fields: dict) -> str:
 
 
 def collect_operations(schema: dict) -> list[dict]:
-    """Return list of {method, path, fields, x_mdx_path} for ops with x-mdx-path."""
+    """Return list of {method, path, fields, body, x_mdx_path} for ops with x-mdx-path."""
     ops = []
     for path, path_item in schema.get("paths", {}).items():
         for method, operation in path_item.items():
@@ -88,14 +94,17 @@ def collect_operations(schema: dict) -> list[dict]:
             if not mdx_path:
                 continue
             metadata = (operation.get("x-mint") or {}).get("metadata") or {}
+            fields = {
+                "title": operation.get("summary", ""),
+                **{k: v for k, v in metadata.items() if isinstance(v, str) and v},
+            }
+            description = (operation.get("description") or "").strip()
             ops.append(
                 {
                     "method": method.upper(),
                     "path": path,
-                    "fields": {
-                        "title": operation.get("summary", ""),
-                        **{k: v for k, v in metadata.items() if isinstance(v, str) and v},
-                    },
+                    "fields": fields,
+                    "body": f"\n{description}\n" if description else "\n",
                     "x_mdx_path": mdx_path,
                 }
             )
@@ -106,6 +115,7 @@ def process_file(
     mdx_file: str,
     synced: dict,
     openapi: str,
+    stub_body: str,
     dry_run: bool,
 ) -> str:
     """
@@ -132,7 +142,11 @@ def process_file(
                 fields["openapi"] = openapi
                 changed = True
                 action_parts.append("openapi")
-        # Legacy `api:` files: leave the api field alone, only metadata was synced
+            if "description" in fields and body != stub_body:
+                body = stub_body
+                changed = True
+                action_parts.append("body")
+        # Legacy `api:` files: leave the api field and body alone, only metadata was synced
 
         if not changed:
             return "ok"
@@ -142,7 +156,7 @@ def process_file(
     else:
         # Create new stub
         fields = {**synced, "openapi": openapi}
-        new_content = render_frontmatter(fields) + "\n"
+        new_content = render_frontmatter(fields) + (stub_body if "description" in fields else "\n")
         action = "created"
 
     if not dry_run:
@@ -242,7 +256,7 @@ def main() -> None:
         mdx_file = os.path.join(args.mintlify_root, mdx_rel)
         expected_files.add(os.path.normpath(mdx_file))
         openapi_val = f"{op['method']} {op['path']}"
-        action = process_file(mdx_file, op["fields"], openapi_val, args.dry_run)
+        action = process_file(mdx_file, op["fields"], openapi_val, op["body"], args.dry_run)
 
         prefix = "[dry-run] " if args.dry_run else ""
         if action == "ok":

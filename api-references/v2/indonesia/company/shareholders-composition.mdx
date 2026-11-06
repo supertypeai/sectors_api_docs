@@ -5,3 +5,10 @@ sidebarTitle: Shareholders Composition
 description: "Get monthly shareholder composition for any IDX company: local vs foreign holdings by investor type, such as individuals, funds and insurers, from 2021."
 ---
 
+<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `BMRI`, `TLKM`.</Note>
+
+Returns monthly shareholder composition snapshots for a given IDX-listed company within a single calendar year, broken down by investor category (insurance, corporate, pension fund, financial institutions, individual, mutual fund, securities companies, foundation, other) for both local (`_l`) and foreign (`_f`) investors.
+
+<Note>Data is available from 2021 onwards. Querying earlier years returns an empty `data` array.</Note>
+
+<Info>Costs 1 API credit.</Info>

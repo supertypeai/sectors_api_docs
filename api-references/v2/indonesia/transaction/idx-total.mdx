@@ -4,3 +4,11 @@ openapi: GET /v2/idx-total/
 sidebarTitle: IDX Market Summary
 description: Get the total market capitalization of the Indonesia Stock Exchange by day over up to 90 days, with data from January 2021. JSON REST API.
 ---
+
+Returns historical total IDX market capitalization for a date range of up to 90 days.
+
+<Note>Earliest available data is from **January 1, 2021**. Requesting earlier dates returns 400.</Note>
+
+<Note>Date range: defaults to last 30 days. Max window 90 days; wider ranges are clamped to the most recent 90 days ending at `end`. Future `end` dates return 400.</Note>
+
+<Info>Costs 1 API credit.</Info>

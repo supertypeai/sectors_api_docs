@@ -5,3 +5,10 @@ sidebarTitle: Daily Full-Universe Foreign Flow
 description: Get daily net foreign buy and sell (IDR) for every IDX stock in one paginated feed, sorted by top foreign inflow. Pick any trading day. JSON REST API.
 ---
 
+Returns the net foreign-investor flow (IDR) of **every** IDX ticker on a single trading day, in one paginated feed — instead of calling the per-symbol [Daily Net Foreign Inflow](https://docs.sectors.app/api-references/v2/indonesia/brokers/foreign-flow-by-symbol) endpoint once per ticker. Sorted by `net_foreign_inflow` descending by default, so the first page is the day's top foreign buys; `order_by=net_foreign_inflow` puts the top foreign sells first.
+
+<Note>Defaults to the most recent trading day. Pass `date` (`YYYY-MM-DD`) to pull a specific day. Future dates return 400.</Note>
+
+<Note>Flow is attributed by the investor's origin, not the broker's. Tickers with no foreign-investor participation on the day are omitted.</Note>
+
+<Info>Costs 1 API credit per page. The full universe (typically 550-700 tickers with foreign activity on the day) is about 20-25 pages at the maximum `limit` of 30.</Info>

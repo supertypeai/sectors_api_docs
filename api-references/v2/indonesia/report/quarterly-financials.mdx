@@ -4,3 +4,11 @@ openapi: GET /v2/financials/quarterly/{symbol}/
 sidebarTitle: Company Quarterly Financials
 description: Get quarterly income statement and balance sheet data for any IDX company, plus bank metrics like net interest income, loans and deposits. JSON REST API.
 ---
+
+Returns quarterly financial data for a given IDX symbol. Fields vary by sector — financial-sector companies (banks, insurance) have additional metrics like `net_interest_income`, `gross_loan`, `total_deposit`.
+
+<Note>Use the [Quarterly Financial Dates](https://docs.sectors.app/api-references/v2/indonesia/helper-list/company-quarterly-dates) endpoint to get valid `report_date` values for a symbol.</Note>
+
+<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BMRI`, `BBCA`, `TLKM`.</Note>
+
+<Info>Costs 1 API credit per quarter returned.</Info>

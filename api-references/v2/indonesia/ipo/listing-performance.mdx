@@ -4,3 +4,11 @@ openapi: GET /v2/listing-performance/{symbol}/
 sidebarTitle: Company IPO & Listing Performance
 description: "See how any IDX stock performed after its IPO: price change over its first 7, 30, 90 and 365 days. Covers listings since May 2005. JSON REST API."
 ---
+
+Returns price change percentages since listing date for a given IDX-listed symbol, across 7, 30, 90, and 365-day windows.
+
+<Note>Listing performance data is only available for tickers listed **after May 2005**.</Note>
+
+<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `GOTO`, `BREN`, `BUKA`.</Note>
+
+<Info>Costs 1 API credit.</Info>
