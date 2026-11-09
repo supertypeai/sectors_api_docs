@@ -4,3 +4,11 @@ openapi: GET /v2/mining/commodities/{commodity_name}/price/
 sidebarTitle: Commodity Price History
 description: Get monthly price history for coal, nickel, gold, copper and other commodities, up to 3 years per call, with bi-weekly data for recent coal prices.
 ---
+
+Retrieves historical price data for a commodity by year range. Data is monthly (bi-weekly for recent Coal entries). Maximum range: 3 years.
+
+<Note>Use [List Commodities](https://docs.sectors.app/api-references/v2/mining/commodities-trade/commodities) to discover all available commodity names.</Note>
+
+<Warning>Requesting more than 3 years will return a 400 error.</Warning>
+
+<Info>Costs 1 API credit.</Info>

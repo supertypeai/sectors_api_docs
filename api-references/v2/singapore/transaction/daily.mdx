@@ -5,3 +5,10 @@ description: Get daily close price and volume for any SGX-listed stock over a da
 sidebarTitle: SGX Daily Price Data
 ---
 
+Returns daily close price and volume for a given SGX-listed company over a date range of up to 90 days.
+
+<Note>SGX symbol: 3-4 characters (letters or digits). E.g. `D05`, `U11`, `Z74`, `TCPD`. Output always carries the `.SI` suffix.</Note>
+
+<Note>Date range: defaults to last 30 days. Max window 90 days; wider ranges are clamped to the most recent 90 days ending at `end`. Future `end` dates return 400.</Note>
+
+<Info>Costs 1 API credit.</Info>

@@ -4,3 +4,15 @@ openapi: GET /v2/index-daily/{index_code}/
 sidebarTitle: Index Daily Transaction Data
 description: Get daily closing levels for IHSG (JCI), LQ45, IDX30, Kompas100 and other IDX indices over up to 90 days, with data from 2019 onward. JSON REST API.
 ---
+
+Returns daily closing price for a given IDX index over a date range of up to 90 days.
+
+<Note>Earliest available data is from **January 2, 2019**.</Note>
+
+<Accordion title="Available index codes">
+`ftse`, `idx30`, `idxbumn20`, `idxesgl`, `idxg30`, `idxhidiv20`, `idxq30`, `idxv30`, `ihsg`, `jii70`, `kompas100`, `lq45`, `sminfra18`, `srikehati`, `sti`, `economic30`, `idxvesta28`
+</Accordion>
+
+<Note>Date range: defaults to last 30 days. Max window 90 days; wider ranges are clamped to the most recent 90 days ending at `end`. Future `end` dates return 400.</Note>
+
+<Info>Costs 1 API credit.</Info>

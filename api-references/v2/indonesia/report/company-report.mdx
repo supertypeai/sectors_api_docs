@@ -4,3 +4,20 @@ openapi: GET /v2/company/report/{symbol}/
 sidebarTitle: Company Report
 description: "Get a full report on any IDX-listed company: overview, valuation, financials, dividends, management, ownership and peers in one call. Fetch only what you need."
 ---
+
+Returns a comprehensive company report organized into distinct sections. By default all sections are included. Use `sections` to request only the data you need and reduce response size.
+
+<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BREN`, `BBCA`, `TLKM`.</Note>
+
+<Accordion title="Available sections">
+- **overview**: Company identity, market cap, price history, ESG score, tags, indices, affiliates
+- **valuation**: Close price, forward PE, intrinsic value, historical valuation (PB, PE, PS, PCF, PEG by year)
+- **future**: Analyst forecasts, EPS growth estimates
+- **peers**: Peer comparison within the same subsector
+- **financials**: Historical annual financials (revenue, earnings, assets, equity, margins), plus year-over-year growth of the latest quarter and of trailing twelve month revenue and earnings
+- **dividend**: Dividend history, yield, payout ratio
+- **management**: Key executives and their shareholdings
+- **ownership**: Major shareholders and ownership structure
+</Accordion>
+
+<Info>Costs 1 API credit per requested section. Default behavior (all 8 sections) consumes 8 credits.</Info>

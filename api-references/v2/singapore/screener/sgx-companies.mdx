@@ -5,3 +5,220 @@ sidebarTitle: SGX Companies Screener
 description: Screen and sort Singapore Exchange (SGX) stocks by sector, market cap, valuation and dividend yield, using SQL-like filters or plain-English queries.
 ---
 
+High-performance API for filtering and sorting SGX-listed companies. Supports both structured SQL-like queries (`where`, `order_by`) and natural language queries (`q`). Returns a paginated list of companies.
+
+**Query modes** (mutually exclusive — `q` overrides all others):
+- `q`: Natural language, e.g. `top 5 SGX banks by market cap`
+- `where` + `order_by`: SQL-like structured query
+
+<Note>SGX symbol: 3-4 characters (letters or digits), optional `.SI` suffix on input. E.g. `D05`, `U11`, `Z74`, `TCPD`. Output always carries the `.SI` suffix.</Note>
+
+<Note>SGX sector column contains duplicate variants (e.g. `Consumer Cyclical` / `Consumer Cyclicals`, `Financial Services` / `Financials`, `Real Estate` / `Properties & Real Estate` / `REIT`) pending upstream cleanup. To capture all matching companies, query with `OR` (e.g. `sector = 'Real Estate' OR sector = 'Properties & Real Estate' OR sector = 'REIT'`).</Note>
+
+<Accordion title="Smart FY Handling">
+To account for reporting lags, 'latest year' queries made between January and April default to the previous audited year (e.g. a query in early 2026 uses 2024 data).
+</Accordion>
+
+<Accordion title="Syntax and Operators">
+**Operators:** `=`, `!=`, `>`, `>=`, `<`, `<=`, `like`, `in`
+
+**Logic:** combine conditions with `and` and `or`
+
+**String values:** use single or double quotes — `sector = 'Technology'`
+
+**Lists (for `in`):** `tags in ['blue-chip', 'dividend']`
+</Accordion>
+
+<Accordion title="Yearly Data">
+Access historical data using bracket notation: `field[YYYY]`
+
+Examples: `revenue[2023] > 1000000000` or `total_yield[2024] > 0.05`
+
+**Note:** SGX data is annual only — there is no quarterly data.
+</Accordion>
+
+<Accordion title="Arithmetic Expressions">
+Perform calculations within your query on both sides of a condition.
+
+Examples: `earnings[2024] > earnings[2023] * 1.25` or `revenue[2024] / revenue[2023] > 1.5`
+</Accordion>
+
+<Accordion title="SGX-Specific Limitations">
+Some IDX screener features are **not available** for SGX due to data scope:
+
+- **No affiliates or executive shareholdings**. Person and entity searches work through `management_name` and `major_shareholders_name` instead.
+- **No `free_float` field**.
+- **No quarterly data** — only annual fields like `revenue[2024]`.
+- **Coverage caveats**: yearly fields marked `[Big caps only]` are populated only for ~22 large-caps; fields marked `[Banks only]` are populated only for DBS / OCBC / UOB.
+</Accordion>
+
+<Accordion title="Available Fields">
+<AccordionGroup>
+
+<Accordion title="Direct Fields (Top-level columns)">
+**How to Use:** Query these fields directly using standard operators (`=`, `!=`, `>`, `<`, `LIKE`, `IN`). String comparisons are case-insensitive.
+
+<Accordion title="Examples">
+- `where=market_cap > 10000000000`
+- `where=company_name like '%bank%'`
+- `where=sector = 'REIT' and listing_date > '2010-01-01'`
+</Accordion>
+
+- **symbol**: SGX ticker symbol (3-4 characters, e.g. `D05`, `U11`, `Z74`, `TCPD`; accepts optional `.SI` suffix on input, always returned with it)
+- **company_name**: Full registered company name
+- **sector**: SGX sector classification. NB: source data contains duplicate labels (e.g. `Consumer Cyclical` vs `Consumer Cyclicals`, `Financial Services` vs `Financials`) — pending upstream cleanup.
+- **sub_sector**: SGX sub-sector classification (126 distinct values)
+- **market_cap**: Market capitalisation in SGD
+- **volume**: Recent average daily trading volume (shares)
+- **last_close_price**: Most recent close price in SGD
+- **employee_num**: Total number of employees
+- **listing_date**: Date the company was first listed on SGX
+- **eps_current**: Most recent earnings per share in SGD, which can differ from the reported annual figure in `eps[YYYY]`
+- **beta**: Beta vs SGX market
+- **gross_margin**: Gross profit margin (decimal, e.g. 0.45 = 45%)
+- **operating_margin**: Operating profit margin (decimal)
+- **net_profit_margin**: Net profit margin (decimal)
+- **quick_ratio**: Quick ratio (acid test)
+- **current_ratio**: Current ratio
+- **debt_to_equity**: Debt-to-equity ratio
+- **one_year_eps_growth**: 1-year EPS growth (decimal)
+- **one_year_sales_growth**: 1-year sales (revenue) growth (decimal)
+- **forward_dividend**: Forward annual dividend per share in SGD
+- **forward_dividend_yield**: Forward annual dividend yield (decimal)
+- **dividend_ttm**: Trailing-twelve-month dividend per share in SGD
+- **dividend_yield_5y_avg**: 5-year average dividend yield (decimal)
+- **dividend_growth_rate**: Year-over-year dividend growth rate (decimal)
+- **payout_ratio**: Dividend payout ratio (decimal)
+- **change_1d**: 1-day price change (decimal)
+- **change_7d**: 7-day price change (decimal)
+- **change_1m**: 1-month price change (decimal)
+- **change_ytd**: Year-to-date price change (decimal)
+- **change_1y**: 1-year price change (decimal)
+- **change_3y**: 3-year price change (decimal)
+</Accordion>
+
+<Accordion title="Array Fields">
+**How to Use:** Query using the `in` operator to check if any of the provided values exist in the array.
+
+<Accordion title="Examples">
+- `where=tags in ['dividend-yield-ttm-above-5-percent', '52-w-low']`
+</Accordion>
+
+- **tags**: Analyst sentiment / classification tags
+</Accordion>
+
+<Accordion title="JSON Object Fields (Most Recent Data)">
+**How to Use:** Query as if they were direct fields — the parser automatically extracts the value from the underlying JSON.
+
+<Accordion title="Examples">
+- `where=last_close_price < all_time_high_price * 0.5`
+- `where=ytd_low_date > '2026-06-01'`
+</Accordion>
+
+- **ytd_low_price**: Year-to-date lowest closing price in SGD
+- **ytd_low_date**: Date of the year-to-date lowest closing price
+- **ytd_high_price**: Year-to-date highest closing price in SGD
+- **ytd_high_date**: Date of the year-to-date highest closing price
+- **52_w_low_price**: 52-week lowest closing price in SGD
+- **52_w_low_date**: Date of the 52-week lowest closing price
+- **52_w_high_price**: 52-week highest closing price in SGD
+- **52_w_high_date**: Date of the 52-week highest closing price
+- **90_d_low_price**: 90-day lowest closing price in SGD
+- **90_d_low_date**: Date of the 90-day lowest closing price
+- **90_d_high_price**: 90-day highest closing price in SGD
+- **90_d_high_date**: Date of the 90-day highest closing price
+- **all_time_low_price**: All-time lowest closing price in SGD
+- **all_time_low_date**: Date of the all-time lowest closing price
+- **all_time_high_price**: All-time highest closing price in SGD
+- **all_time_high_date**: Date of the all-time highest closing price
+- **pe_ttm**: Price-to-earnings ratio. TTM label; upstream data is annual until fixed.
+- **pb_mrq**: Price-to-book ratio (most recent quarter)
+- **ps_ttm**: Price-to-sales ratio. TTM label; upstream data is annual until fixed.
+- **dar_mrq**: Debt-to-assets ratio (most recent quarter)
+- **der_mrq**: Debt-to-equity ratio (most recent quarter)
+- **roa_ttm**: Return on assets. TTM label; upstream data is annual until fixed.
+- **roe_ttm**: Return on equity. TTM label; upstream data is annual until fixed.
+- **total_assets_mrq**: Total assets in SGD (most recent quarter)
+- **total_equity_mrq**: Total shareholders equity in SGD (most recent quarter)
+- **total_revenue_mrq**: Total revenue in SGD (most recent quarter)
+- **earnings_mrq**: Net profit/loss in SGD (most recent quarter)
+- **total_liabilities_mrq**: Total liabilities in SGD (most recent quarter)
+- **yearly_mcap_change**: Year-over-year market cap change as a decimal
+</Accordion>
+
+<Accordion title="Yearly JSON Fields (Historical & Forecast Data)">
+**How to Use:** Must use bracket notation `field[YYYY]` to access data for a specific year. Supports all numeric operators, field-to-field comparisons, and arithmetic expressions.
+
+<Accordion title="Examples">
+- `where=revenue[2024] > revenue[2023] * 1.2`
+- `where=total_yield[2024] > 0.05 and eps_growth[2024] > 0.1`
+</Accordion>
+
+- **revenue**: Annual revenue in SGD. Use: `revenue[2024]`.
+- **earnings**: Annual net profit/loss in SGD. Use: `earnings[2024]`.
+- **total_dividend**: Total dividends paid per share for the year (SGD). Use: `total_dividend[2024]`.
+- **total_yield**: Total dividend yield for the year (decimal). Use: `total_yield[2024]`.
+- **eps**: Earnings per share for the year in SGD. Use: `eps[2024]`.
+- **eps_growth**: Year-over-year EPS growth rate (decimal). Use: `eps_growth[2024]`.
+- **pe**: Price-to-earnings ratio for the year. Use: `pe[2024]`.
+- **pb**: Price-to-book ratio for the year. Use: `pb[2024]`.
+- **ps**: Price-to-sales ratio for the year. Use: `ps[2024]`.
+- **pcf**: Price-to-cash-flow ratio for the year. Use: `pcf[2024]`.
+- **peg**: Price/earnings-to-growth ratio for the year. Use: `peg[2024]`.
+- **enterprise_to_ebitda**: Enterprise value to EBITDA for the year. Use: `enterprise_to_ebitda[2024]`.
+- **enterprise_to_revenue**: Enterprise value to revenue for the year. Use: `enterprise_to_revenue[2024]`.
+- **pb_peer_avg**: Peer average price-to-book ratio for the year. Use: `pb_peer_avg[2024]`.
+- **pe_peer_avg**: Peer average price-to-earnings ratio for the year. Use: `pe_peer_avg[2024]`.
+- **ps_peer_avg**: Peer average price-to-sales ratio for the year. Use: `ps_peer_avg[2024]`.
+- **operating_cash_flow**: Operating cash flow in SGD. Use: `operating_cash_flow[2024]`. _(coverage: Big caps only)_
+- **investing_cash_flow**: Investing cash flow in SGD. Use: `investing_cash_flow[2024]`. _(coverage: Big caps only)_
+- **financing_cash_flow**: Financing cash flow in SGD. Use: `financing_cash_flow[2024]`. _(coverage: Big caps only)_
+- **free_cash_flow**: Free cash flow in SGD. Use: `free_cash_flow[2024]`. _(coverage: Big caps only)_
+- **net_cash_flow**: Net cash flow in SGD. Use: `net_cash_flow[2024]`. _(coverage: Big caps only)_
+- **capital_expenditure**: Capital expenditure in SGD. Use: `capital_expenditure[2024]`. _(coverage: Big caps only)_
+- **ebit**: EBIT (earnings before interest and tax) in SGD. Use: `ebit[2024]`. _(coverage: Big caps only)_
+- **ebitda**: EBITDA in SGD. Use: `ebitda[2024]`. _(coverage: Big caps only)_
+- **gross_income**: Gross income in SGD. Use: `gross_income[2024]`. _(coverage: Big caps only)_
+- **cost_of_revenue**: Cost of revenue in SGD. Use: `cost_of_revenue[2024]`. _(coverage: Big caps only)_
+- **operating_income**: Operating income in SGD. Use: `operating_income[2024]`. _(coverage: Big caps only)_
+- **operating_expense**: Operating expense in SGD. Use: `operating_expense[2024]`. _(coverage: Big caps only)_
+- **pretax_income**: Pre-tax income in SGD. Use: `pretax_income[2024]`. _(coverage: Big caps only)_
+- **income_taxes**: Income taxes paid in SGD. Use: `income_taxes[2024]`. _(coverage: Big caps only)_
+- **total_asset**: Total assets in SGD. Use: `total_asset[2024]`. _(coverage: Big caps only)_
+- **total_equity**: Total equity in SGD. Use: `total_equity[2024]`. _(coverage: Big caps only)_
+- **total_liabilities**: Total liabilities in SGD. Use: `total_liabilities[2024]`. _(coverage: Big caps only)_
+- **working_capital**: Working capital in SGD. Use: `working_capital[2024]`. _(coverage: Big caps only)_
+- **total_current_asset**: Total current assets in SGD. Use: `total_current_asset[2024]`. _(coverage: Big caps only)_
+- **total_non_current_asset**: Total non-current assets in SGD. Use: `total_non_current_asset[2024]`. _(coverage: Big caps only)_
+- **net_interest_income**: Net interest income in SGD. Use: `net_interest_income[2024]`. _(coverage: Banks only)_
+- **interest_income**: Total interest income in SGD. Use: `interest_income[2024]`. _(coverage: Banks only)_
+- **interest_expense**: Total interest expense in SGD. Use: `interest_expense[2024]`. _(coverage: Banks only)_
+- **net_fee_and_commission_income**: Net fee and commission income in SGD. Use: `net_fee_and_commission_income[2024]`. _(coverage: Banks only)_
+- **net_trading_income**: Net trading income in SGD. Use: `net_trading_income[2024]`. _(coverage: Banks only)_
+- **net_loan**: Net loans outstanding in SGD. Use: `net_loan[2024]`. _(coverage: Banks only)_
+- **gross_loan**: Gross loans outstanding in SGD. Use: `gross_loan[2024]`. _(coverage: Banks only)_
+- **total_deposit**: Total customer deposits in SGD. Use: `total_deposit[2024]`. _(coverage: Banks only)_
+- **core_capital_tier1**: Core capital (Tier 1) in SGD. Use: `core_capital_tier1[2024]`. _(coverage: Banks only)_
+- **total_risk_weighted_asset**: Total risk-weighted assets in SGD. Use: `total_risk_weighted_asset[2024]`. _(coverage: Banks only)_
+</Accordion>
+
+<Accordion title="JSON List Fields">
+**How to Use:** The query checks if **any** object in the list matches the condition. Use `=` or `like` for strings, numeric operators for numbers.
+
+<Accordion title="Examples">
+- `where=major_shareholders_name like '%Temasek%' and major_shareholders_share_percentage > 0.1`
+- `where=management_position like '%Chief Executive%'`
+</Accordion>
+
+- **management_name**: Filter by the name of a current director or executive. Use `like` operator.
+- **management_position**: Filter by the position or title of a current director or executive. Use `like` operator.
+- **major_shareholders_name**: Filter by major shareholder name. Use `like` operator.
+- **major_shareholders_share_value**: Filter by major shareholder share value in SGD.
+- **major_shareholders_share_amount**: Filter by major shareholder number of shares.
+- **major_shareholders_share_percentage**: Filter by major shareholder ownership percentage.
+</Accordion>
+
+</AccordionGroup>
+</Accordion>
+
+<Info>Costs 1 API credit for structured queries. Using the natural-language `?q=` parameter costs 3 API credits.</Info>

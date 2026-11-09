@@ -5,3 +5,10 @@ sidebarTitle: Top Buyers and Sellers Per Symbol
 description: See which brokers are accumulating or distributing any IDX stock over a date range, ranked by net value (IDR). Filter by foreign, retail or institutional.
 ---
 
+Returns the brokers most actively accumulating and distributing a single IDX ticker over a date range. `top_buyers` ranks brokers by net buy value (largest positive net IDR first); `top_sellers` ranks brokers by net sell value (largest negative net IDR first). Each entry also reports how much of that broker's flow was executed for foreign investors (`foreign_net_idr`, `foreign_buy_idr`, `foreign_sell_idr`); pass `foreign=true` to rank by `foreign_net_idr` instead, i.e. the top foreign buyers and sellers of the stock. Useful for spotting institutional accumulation or distribution patterns on a specific stock.
+
+<Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BBCA`, `GOTO`.</Note>
+
+<Note>The `origin` filter uses the broker's registry classification (a foreign- or domestic-owned member), not the origin of its clients. Use the `foreign_*` fields for investor-origin flow.</Note>
+
+<Info>Costs 2 API credits.</Info>

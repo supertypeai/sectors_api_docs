@@ -5,3 +5,10 @@ sidebarTitle: SGX Insider Filings
 description: Track insider and substantial-shareholder buy and sell transactions in SGX-listed companies. Filter by ticker, date, transaction type and holder type.
 ---
 
+Returns SGX insider trading filings — buy/sell transactions by company insiders and major shareholders. Supports filtering by symbol, transaction type, holder type, and date range.
+
+<Note>SGX symbol: 3-4 characters (letters or digits). E.g. `D05`, `U11`, `Z74`, `TCPD`. Output always carries the `.SI` suffix.</Note>
+
+<Note>Date filters: both `start` and `end` are independent and optional — omit either side to leave that bound unconstrained. Future `end` dates return 400.</Note>
+
+<Info>Costs 1 API credit.</Info>

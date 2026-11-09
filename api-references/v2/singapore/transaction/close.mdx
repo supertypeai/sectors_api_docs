@@ -5,3 +5,10 @@ sidebarTitle: SGX Daily Full-Universe Close
 description: Get the closing price of every SGX stock for a trading day in one paginated feed. End-of-day Singapore stock data without per-ticker calls.
 ---
 
+Returns the daily closing price for **every** SGX ticker on a single trading day, in one paginated feed — instead of calling the per-symbol [SGX Daily Price Data](https://docs.sectors.app/api-references/v2/singapore/transaction/daily) endpoint once per ticker.
+
+<Note>Defaults to the most recent trading day. Pass `date` (`YYYY-MM-DD`) to pull a specific day. Future dates return 400.</Note>
+
+<Note>Tickers with no recorded close for the requested day are omitted. Output symbols always carry the `.SI` suffix; prices are in SGD.</Note>
+
+<Info>Costs 1 API credit per page. The full universe (roughly 560-600 tickers) is about 20 pages at the maximum `limit` of 30 (~20 credits per full pull).</Info>

@@ -5,3 +5,10 @@ sidebarTitle: Free Float Market Analysis
 description: Get the free float percentage (public shareholding) of every IDX-listed company, filterable by sector, subsector or industry, sorted highest first.
 ---
 
+Returns the free float percentage for IDX-listed companies, optionally filtered by one level of the sector taxonomy. Results are ordered by `free_float` descending.
+
+<Note>Free float is calculated as the `share_percentage` of the **Public** entry in a company's major shareholders list.</Note>
+
+<Warning>Query parameters are **mutually exclusive**. Provide at most one filter parameter per request.</Warning>
+
+<Info>Costs 1 API credit per 100 companies returned, rounded up.</Info>

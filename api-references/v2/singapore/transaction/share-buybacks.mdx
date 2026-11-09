@@ -5,3 +5,10 @@ sidebarTitle: SGX Share Buybacks
 description: "Track share buybacks by SGX-listed companies: purchase date, price range, total value, shares bought and treasury shares after each purchase."
 ---
 
+Returns SGX share buyback records. Each row includes the purchase date, buyback type, price range, total value, total shares purchased, treasury shares after purchase, and mandate details.
+
+<Note>SGX symbol: 3-4 characters (letters or digits). E.g. `D05`, `U11`, `Z74`, `TCPD`. Output always carries the `.SI` suffix.</Note>
+
+<Note>Date filters: both `start` and `end` are independent and optional — omit either side to leave that bound unconstrained. Future `end` dates return 400.</Note>
+
+<Info>Costs 1 API credit.</Info>

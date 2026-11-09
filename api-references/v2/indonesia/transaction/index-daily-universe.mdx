@@ -5,3 +5,10 @@ sidebarTitle: Daily Full-Universe Index Close
 description: Get the closing level of every IDX index, including IHSG, LQ45 and IDX30, for a trading day in one call. Defaults to the latest trading day.
 ---
 
+Returns the closing level of **every** IDX index on a single trading day in one call — instead of calling the per-index [Index Daily Transaction Data](https://docs.sectors.app/api-references/v2/indonesia/transaction/index-daily) endpoint once per index.
+
+<Note>Defaults to the most recent trading day. Pass `date` (`YYYY-MM-DD`) to pull a specific day. Future dates return 400.</Note>
+
+<Note>Indices with no recorded close for the requested day are omitted. </Note>
+
+<Info>Costs 1 API credit.</Info>

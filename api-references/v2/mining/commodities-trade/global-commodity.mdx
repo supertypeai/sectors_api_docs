@@ -4,3 +4,9 @@ openapi: GET /v2/mining/global-commodity/
 sidebarTitle: Global Commodity Data
 description: Get production, reserves and trade data by country for coal, gold, nickel, copper and bauxite. Compare commodity supply across countries. JSON API.
 ---
+
+Retrieves global commodity data including production, reserves, and trade information. At least one of `commodity_type` or `country` must be provided.
+
+<Note>Available `commodity_type` values: `Coal`, `Gold`, `Nickel`, `Copper`, `Bauxite`.</Note>
+
+<Info>Costs 1 API credit.</Info>

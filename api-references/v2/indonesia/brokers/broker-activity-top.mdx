@@ -5,3 +5,8 @@ sidebarTitle: Top Accumulations and Distributions Per Broker
 description: See which IDX stocks one broker has been accumulating or distributing over a date range, ranked by net buy and sell value. Bandarmology data as JSON.
 ---
 
+Returns the stocks a single broker has been most actively accumulating and distributing over a date range. `top_accumulations` ranks stocks the broker has net bought (largest positive net IDR first); `top_distributions` ranks stocks the broker has net sold (largest negative net IDR first). Each entry also reports how much of that flow was executed for foreign investors (`foreign_net_idr`, `foreign_buy_idr`, `foreign_sell_idr`); pass `foreign=true` to rank by `foreign_net_idr` instead, i.e. the stocks the broker's foreign clients are moving. Useful for tracking a specific broker's directional positioning across the IDX universe.
+
+<Note>Broker codes are the two-letter exchange-member identifiers (e.g. `MG`, `AK`, `CC`). Retrieve the full list of valid codes from the [Broker Registry](https://docs.sectors.app/api-references/v2/indonesia/brokers/broker-registry) endpoint.</Note>
+
+<Info>Costs 2 API credits.</Info>

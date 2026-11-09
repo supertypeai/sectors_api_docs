@@ -5,3 +5,113 @@ sidebarTitle: SGX REIT Screener
 description: Screen and sort Singapore REITs (S-REITs) by distribution yield, gearing, sector and more, using SQL-like filters or plain English. JSON REST API.
 ---
 
+Filter and sort SGX-listed REITs with a SQL-like `where` or a natural-language `q`. You get back the REITs that match; add `include_query_values=true` to also see the numbers each one was filtered and sorted on. To get REIT's full financials metrics, use [SGX REIT Performance](https://docs.sectors.app/api-references/v2/singapore/reits/reit-performance).
+
+**Query modes** (`q` overrides `where` and `order_by`):
+- `q`: natural language, e.g. `industrial REITs with gearing below 40%`
+- `where` + `order_by`: SQL-like structured query
+
+<Accordion title="Years and latest">
+Every metric is kept per year. Ask for a specific year with `aggregate_leverage[2025]`, or use `aggregate_leverage[latest]` to get each REIT's most recent year, since REITs close their books in different months. With `include_query_values=true`, every `field[latest]` also comes with `field[latest]_year` so you can see which year was used. `acquisition_count` and `divestment_count` need an actual year.
+</Accordion>
+
+<Accordion title="List fields">
+Some fields hold several names: `countries`, `property_categories`, `tenant_names`, `tenant_industries`, `trade_mix_categories` and the management fields (`sponsor`, `trustee`, ...). `countries[latest] = 'Japan'` finds REITs with a property in Japan, `in ['Japan', 'China']` finds either, and `sponsor like '%CapitaLand%'` matches part of a name.
+</Accordion>
+
+<Note>Money is in SGD, and ratios are fractions (0.4 means 40%). `market_cap`, `last_close_price`, `distribution_yield` and `price_to_nav` are today's numbers.</Note>
+
+<Accordion title="Available Fields">
+<AccordionGroup>
+
+<Accordion title="Direct Fields (Top-level columns)">
+**How to Use:** Query these fields directly using standard operators (`=`, `!=`, `>`, `<`, `LIKE`, `IN`). String comparisons are case-insensitive.
+
+<Accordion title="Examples">
+- `where=distribution_yield > 0.07`
+- `where=sub_sector = 'Industrial' and price_to_nav < 1`
+</Accordion>
+
+- **symbol**: SGX REIT symbol, e.g. `A17U`, `C38U` (optional `.SI` suffix).
+- **company_name**: REIT name.
+- **sub_sector**: REIT sub-sector: Data Centre, Diversified, Healthcare, Hospitality, Industrial, Office or Retail.
+- **market_cap**: Market capitalisation in SGD.
+- **last_close_price**: Latest closing price in SGD.
+- **distribution_yield**: Latest-year distribution per unit / latest price (fraction).
+- **price_to_nav**: Latest price / latest-year NAV per unit.
+</Accordion>
+
+<Accordion title="JSON Object Fields (Most Recent Data)">
+**How to Use:** Query as if they were direct fields — the parser automatically extracts the value from the underlying JSON.
+
+<Accordion title="Examples">
+- `where=sponsor like '%CapitaLand%'`
+</Accordion>
+
+- **sponsor**: Sponsor(s).
+- **trustee**: Trustee(s).
+- **reit_manager**: REIT manager(s).
+- **property_manager**: Property manager(s).
+- **master_lessee**: Master lessee(s), where the REIT has one.
+- **operator**: Operator(s), where the REIT has one.
+</Accordion>
+
+<Accordion title="Yearly JSON Fields (Historical & Forecast Data)">
+**How to Use:** Must use bracket notation `field[YYYY]` to access data for a specific year. Supports all numeric operators, field-to-field comparisons, and arithmetic expressions.
+
+<Accordion title="Examples">
+- `where=aggregate_leverage[latest] < 0.4`
+- `where=countries[latest] = 'Japan'`
+- `where=top_country[latest] = 'United Kingdom' and top_country_share[latest] > 0.5`
+- `where=divestment_count[2025] > 0`
+</Accordion>
+
+- **period_end**: Last day of the financial year.
+- **portfolio_value**: Portfolio valuation in SGD.
+- **gross_revenue**: Gross revenue in SGD.
+- **net_property_income**: Net property income in SGD.
+- **portfolio_occupancy**: Portfolio occupancy (fraction).
+- **distribution_per_unit**: Distribution per unit in SGD.
+- **distribution_paid**: Distributions paid in SGD.
+- **distribution_declared**: Distributions declared in SGD.
+- **distributable_income_opening**: Distributable income at the start of the year, SGD.
+- **income_for_year**: Distributable income for the year, SGD.
+- **other_additions**: Other additions to distributable income, SGD.
+- **amount_retained**: Distributable income retained, SGD.
+- **distributable_income_closing**: Distributable income at the end of the year, SGD.
+- **net_asset_value_per_unit**: NAV per unit in SGD.
+- **units_in_issue**: Units in issue.
+- **units_to_be_issued**: Units owed for manager and property-manager fees paid in units.
+- **number_of_unitholders**: Number of unitholders.
+- **aggregate_leverage**: Aggregate leverage (fraction; 0.4 = 40%).
+- **interest_coverage_ratio**: Interest coverage ratio (times).
+- **cost_of_debt**: Average cost of debt (fraction).
+- **weighted_average_debt_maturity**: Weighted average debt maturity in years.
+- **weighted_average_lease_expiry**: Weighted average lease expiry (WALE) in years.
+- **property_count**: Number of properties held.
+- **countries**: Countries where the REIT holds a property.
+- **property_categories**: Property categories held, e.g. `Data Centers`.
+- **top_country**: Country holding the largest share of portfolio value.
+- **top_country_share**: Share of portfolio value in top_country (fraction).
+- **tenant_names**: Names of the top tenants.
+- **tenant_industries**: Industries of the top tenants.
+- **trade_mix_categories**: Tenant trade categories in the income mix.
+- **acquisition_count**: Property acquisitions completed in the year.
+- **divestment_count**: Property divestments completed in the year.
+</Accordion>
+
+<Accordion title="JSON List Fields">
+**How to Use:** The query checks if **any** object in the list matches the condition. Use `=` or `like` for strings, numeric operators for numbers.
+
+<Accordion title="Examples">
+- `where=board_member_name like '%Tan%'`
+</Accordion>
+
+- **board_member_name**: Name of a board member of the REIT manager.
+- **board_member_position**: Position of a board member, e.g. `Chairman`.
+</Accordion>
+
+</AccordionGroup>
+</Accordion>
+
+<Info>Costs 1 API credit per page. A natural-language `q` costs 3.</Info>

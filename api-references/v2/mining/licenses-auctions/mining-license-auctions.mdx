@@ -4,3 +4,11 @@ openapi: GET /v2/mining/license-auctions/
 sidebarTitle: Mining License Auctions
 description: List Indonesian mining license (WIUP) auctions from the ESDM Minerba portal. Filter by province, commodity, status and participants. JSON REST API.
 ---
+
+Lists mining license auctions scraped from the ESDM Minerba portal. Phases and participants are omitted from list results — use the detail endpoint for the full auction record.
+
+<Note>Available `commodity_type` values: `Nickel`, `Coal`, `Gold`, `Copper`.</Note>
+
+Use `participant` + `qualified=true` to find auctions where a specific company passed pre-qualification.
+
+<Info>Costs 1 API credit.</Info>
