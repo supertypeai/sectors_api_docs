@@ -2,10 +2,10 @@
 title: SGX REIT Top Tenants API
 openapi: GET /v2/sgx/reits/tenants/{symbol}/
 sidebarTitle: SGX REIT Tenants
-description: Get a Singapore REIT's biggest tenants for a financial year, in rank order, with each tenant's share of rental income or revenue. JSON REST API.
+description: See which companies an S-REIT's rent depends on and how concentrated its income is among its top tenants, for one Singapore REIT over time.
 ---
 
-One SGX REIT's biggest tenants for a financial year, in rank order.
+Tenants are listed in rank order.
 
 <Note>`pct` is the tenant's share of whatever the REIT measures, named in `pct_basis`: usually gross rental income, sometimes gross revenue, headline rent or net property income. REITs measure differently, hence it's recommended to compare `pct` within one REIT rather than between REITs. A few REITs list tenants per segment, such as office and retail, in `basis_segment`. For those, `rank` runs across the whole list and `rank_in_segment` starts again at 1 in each segment.</Note>
 

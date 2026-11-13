@@ -2,10 +2,10 @@
 title: IDX Quarterly Report Dates API by Stock
 openapi: GET /v2/company/get_quarterly_financial_dates/{symbol}/
 sidebarTitle: Quarterly Financial Dates
-description: List all quarterly financial report dates available for one IDX company, grouped by year. Use them to request a specific quarter's financials.
+description: Look up IDX quarterly report dates for one company, so you can pull the exact Indonesian financial statement period you want to analyse.
 ---
 
-Returns all available quarterly financial report dates for a given symbol, grouped by year. Use the `report_date` values returned here as inputs to the `report_date` parameter in the Quarterly Financials endpoint.
+Dates are grouped by year. Use the `report_date` values returned here as inputs to the `report_date` parameter in the Quarterly Financials endpoint.
 
 **Used by:** [Company Quarterly Financials](https://docs.sectors.app/api-references/v2/indonesia/report/quarterly-financials)
 

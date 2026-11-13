@@ -2,10 +2,10 @@
 title: "IDX Company Report API: Financials & Valuation"
 openapi: GET /v2/company/report/{symbol}/
 sidebarTitle: Company Report
-description: "Get a full report on any IDX-listed company: overview, valuation, financials, dividends, management, ownership and peers in one call. Fetch only what you need."
+description: One IDX company report covering valuation, financials, analyst forecasts, peers and ownership, for researching a single Indonesian stock in one request.
 ---
 
-Returns a comprehensive company report organized into distinct sections. By default all sections are included. Use `sections` to request only the data you need and reduce response size.
+By default all sections are included. Use `sections` to request only the data you need and reduce response size.
 
 <Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BREN`, `BBCA`, `TLKM`.</Note>
 

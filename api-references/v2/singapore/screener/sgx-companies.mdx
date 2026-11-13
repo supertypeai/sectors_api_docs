@@ -2,10 +2,10 @@
 title: SGX Stock Screener API (Singapore Stocks)
 openapi: GET /v2/sgx/companies/
 sidebarTitle: SGX Companies Screener
-description: Screen and sort Singapore Exchange (SGX) stocks by sector, market cap, valuation and dividend yield, using SQL-like filters or plain-English queries.
+description: Screen SGX stocks by valuation, earnings growth or dividend yield, using a structured filter or a plain-English question about Singapore companies.
 ---
 
-High-performance API for filtering and sorting SGX-listed companies. Supports both structured SQL-like queries (`where`, `order_by`) and natural language queries (`q`). Returns a paginated list of companies.
+Supports both structured SQL-like queries (`where`, `order_by`) and natural language queries (`q`). Returns a paginated list of companies.
 
 **Query modes** (mutually exclusive — `q` overrides all others):
 - `q`: Natural language, e.g. `top 5 SGX banks by market cap`
