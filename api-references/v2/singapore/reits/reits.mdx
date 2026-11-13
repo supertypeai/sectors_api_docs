@@ -2,10 +2,10 @@
 title: SGX REIT Screener API (Singapore S-REITs)
 openapi: GET /v2/sgx/reits/
 sidebarTitle: SGX REIT Screener
-description: Screen and sort Singapore REITs (S-REITs) by distribution yield, gearing, sector and more, using SQL-like filters or plain English. JSON REST API.
+description: Screen SGX REITs by yield, gearing, sponsor or property location to find the S-REITs that match your income or risk criteria.
 ---
 
-Filter and sort SGX-listed REITs with a SQL-like `where` or a natural-language `q`. You get back the REITs that match; add `include_query_values=true` to also see the numbers each one was filtered and sorted on. To get REIT's full financials metrics, use [SGX REIT Performance](https://docs.sectors.app/api-references/v2/singapore/reits/reit-performance).
+Add `include_query_values=true` to also see the numbers each REIT was filtered and sorted on. To get REIT's full financials metrics, use [SGX REIT Performance](https://docs.sectors.app/api-references/v2/singapore/reits/reit-performance).
 
 **Query modes** (`q` overrides `where` and `order_by`):
 - `q`: natural language, e.g. `industrial REITs with gearing below 40%`

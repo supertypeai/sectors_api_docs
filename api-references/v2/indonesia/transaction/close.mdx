@@ -2,10 +2,10 @@
 title: "IDX Closing Prices API: All Stocks, One Call"
 openapi: GET /v2/close/
 sidebarTitle: Daily Full-Universe Close
-description: Get the closing price of every IDX stock for a trading day in one paginated feed. End-of-day (EOD) Indonesian stock data without per-ticker calls.
+description: Value a portfolio or build an end-of-day snapshot of the whole Indonesia Stock Exchange from IDX closing prices for all stocks on any trading day.
 ---
 
-Returns the daily closing price for **every** IDX ticker on a single trading day, in one paginated feed — instead of calling the per-symbol [Daily Transaction Data](https://docs.sectors.app/api-references/v2/indonesia/transaction/daily) endpoint once per ticker.
+Covers every ticker in one paginated feed, instead of calling the per-symbol [Daily Transaction Data](https://docs.sectors.app/api-references/v2/indonesia/transaction/daily) endpoint once per ticker.
 
 <Note>Defaults to the most recent trading day. Pass `date` (`YYYY-MM-DD`) to pull a specific day. Future dates return 400.</Note>
 

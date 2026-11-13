@@ -2,10 +2,10 @@
 title: SGX REIT Trade Mix API (Tenant Sectors)
 openapi: GET /v2/sgx/reits/trade-mix/{symbol}/
 sidebarTitle: SGX REIT Trade Mix
-description: See how a Singapore REIT's rental income splits by tenant business type, such as F&B or professional services, for a financial year. JSON REST API.
+description: See a Singapore REIT's trade mix by tenant industry, and how that S-REIT's share of rent from each industry shifts from year to year.
 ---
 
-How one SGX REIT's rental income splits by the kind of business its tenants run, such as Food & Beverages or Financial & Professional Services, for a financial year. Biggest share first.
+Categories are listed biggest share first.
 
 <Note>`pct` is a share of the measure named in `pct_basis`, usually gross rental income. A few REITs split their mix by segment (`basis_segment`), and they don't add up the same way: for some, each segment adds up to 100% on its own; for others, all segments together add up to 100%. So only compare `pct` within the same REIT and segment.</Note>
 

@@ -2,10 +2,10 @@
 title: IDX Sector Report API (Subsector Analysis)
 openapi: GET /v2/subsector/report/{sub_sector}/
 sidebarTitle: Subsector Report
-description: "Get a report on any IDX subsector: market cap, valuation, growth, stability, statistics and top companies, in sections. Analyze Indonesian sectors as JSON."
+description: Compare valuation, growth, volatility and market cap trends across Indonesian subsectors with an IDX sector report, and see the companies in each.
 ---
 
-Returns a comprehensive report for an IDX subsector, organized into distinct sections. Use `sections` to fetch only the data you need.
+Use `sections` to fetch only the data you need.
 
 <Note>The `sub_sector` path parameter must be in **kebab-case** format. Get valid values from the [Subsectors](https://docs.sectors.app/api-references/v2/indonesia/helper-list/subsectors) endpoint. E.g. `banks`, `utilities`, `food-beverage`.</Note>
 

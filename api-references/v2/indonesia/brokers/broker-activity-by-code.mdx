@@ -1,11 +1,11 @@
 ---
 title: IDX Broker Activity API by Broker Code
 openapi: GET /v2/broker-activity/{broker_code}/
-description: Track every stock one IDX broker traded each day, with buy, sell and net value, over up to 14 days. Look up any broker code, optionally for one stock.
+description: Track IDX broker activity by broker code, day by day across the stocks it trades, including how much was executed for foreign versus domestic investors.
 sidebarTitle: Broker Activity By Code
 ---
 
-All (stock, day) trading activity for one broker over a date range up to 14 days, grouped by date. Optionally filter to a single stock via `symbol`. Each entry in `data` lists every stock the broker touched that day with buy/sell/net values.
+The date range can be up to 14 days, and results are grouped by date. Optionally filter to a single stock via `symbol`. Each entry in `data` lists every stock the broker touched that day with buy/sell/net values.
 
 <Note>Each row also carries the foreign-investor split of that broker's trades: the `f_*` fields are the portion of the buy/sell frequency, lots, and value executed for foreign investors, and `d_bavg_per_share` / `d_savg_per_share` are the domestic-investor average prices. Domestic frequency, lots, and value are `total - foreign`. These fields are `null` when no foreign-investor participation was recorded for that broker on that day.</Note>
 

@@ -2,10 +2,10 @@
 title: Mining Company Sales by Country API
 openapi: GET /v2/mining/sales-destination/{slug}/
 sidebarTitle: Company Sales Destinations
-description: "See where an Indonesian mining company sells its output: revenue and volume by destination country for a given year. JSON REST API."
+description: Break down an Indonesian mining company's sales by country to see how much of its revenue depends on a few buyer countries, year by year.
 ---
 
-Retrieves sales destination breakdown for a specific mining company by its slug, showing revenue and volume distribution by country for a specific year. Defaults to the latest available year if none is specified.
+If no year is specified, the latest available year is used.
 
 `revenue_usd` is in base USD. Volume unit is specified per country entry in `unit` (e.g., `Mt`).
 

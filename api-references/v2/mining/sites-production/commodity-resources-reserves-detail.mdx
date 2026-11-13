@@ -2,10 +2,10 @@
 title: Indonesia Resources & Reserves API by Province
 openapi: GET /v2/mining/resources-reserves/{province}/
 sidebarTitle: Resources & Reserves Detail
-description: "Get mineral resources and reserves for an Indonesian province by year and commodity: exploration target, total inventory, resources and reserves."
+description: Size an Indonesian province's mineral resources and reserves over time, from exploration targets down to reserves, for each commodity.
 ---
 
-Returns resources and reserves data for a single province, nested by year then by commodity. Each commodity entry contains the full breakdown: `exploration_target`, `total_inventory`, `resources`, `reserves`, and `unit`.
+Data is nested by year, then by commodity. Each commodity entry contains the full breakdown: `exploration_target`, `total_inventory`, `resources`, `reserves`, and `unit`.
 
 <Note>Available `commodity_type` values: `Coal`, `Gold`, `Silver`, `Copper`, `Nickel`, `Cobalt`, `Tin`.</Note>
 

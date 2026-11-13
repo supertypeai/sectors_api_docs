@@ -2,10 +2,10 @@
 title: Revenue Segment API for IDX Companies
 openapi: GET /v2/company/get-segments/{symbol}/
 sidebarTitle: Company Revenue Segments
-description: Get revenue and cost by business segment for IDX-listed companies, per financial year, in a Sankey-ready format. See where each company makes its money.
+description: See which business lines drive an IDX company's revenue and costs in a given year, and compare revenue segment mix across Indonesian companies that disclose it.
 ---
 
-Returns a Sankey-graph-ready revenue and cost segment breakdown for a given company and financial year. Not all companies have segment data — use the [Companies with Revenue Segments](https://docs.sectors.app/api-references/v2/indonesia/helper-list/companies-segments-list) endpoint to check availability.
+Segment data is returned in a Sankey-graph-ready format. Not all companies have segment data — use the [Companies with Revenue Segments](https://docs.sectors.app/api-references/v2/indonesia/helper-list/companies-segments-list) endpoint to check availability.
 
 <Note>IDX symbol: 4 letters, optionally followed by `.jk` (case-insensitive). E.g. `BUMI`, `TLKM`, `ASII`.</Note>
 
