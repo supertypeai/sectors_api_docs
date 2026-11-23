@@ -2,10 +2,10 @@
 title: "IDX Foreign Flow API: Daily Net Buy/Sell"
 openapi: GET /v2/foreign-flow/
 sidebarTitle: Daily Full-Universe Foreign Flow
-description: Get daily net foreign buy and sell (IDR) for every IDX stock in one paginated feed, sorted by top foreign inflow. Pick any trading day. JSON REST API.
+description: Find where foreign money went on the Indonesia Stock Exchange on any trading day, and screen IDX stocks by the heaviest foreign flow buying or selling.
 ---
 
-Returns the net foreign-investor flow (IDR) of **every** IDX ticker on a single trading day, in one paginated feed — instead of calling the per-symbol [Daily Net Foreign Inflow](https://docs.sectors.app/api-references/v2/indonesia/brokers/foreign-flow-by-symbol) endpoint once per ticker. Sorted by `net_foreign_inflow` descending by default, so the first page is the day's top foreign buys; `order_by=net_foreign_inflow` puts the top foreign sells first.
+Flow is in IDR, covering every ticker in one paginated feed, instead of calling the per-symbol [Daily Net Foreign Inflow](https://docs.sectors.app/api-references/v2/indonesia/brokers/foreign-flow-by-symbol) endpoint once per ticker. Sorted by `net_foreign_inflow` descending by default, so the first page is the day's top foreign buys; `order_by=net_foreign_inflow` puts the top foreign sells first.
 
 <Note>Defaults to the most recent trading day. Pass `date` (`YYYY-MM-DD`) to pull a specific day. Future dates return 400.</Note>
 

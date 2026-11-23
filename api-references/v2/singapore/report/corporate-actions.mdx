@@ -2,11 +2,11 @@
 title: SGX Dividends & Corporate Actions API
 openapi: GET /v2/sgx/company/corporate-actions/{symbol}/
 sidebarTitle: SGX Corporate Actions
-description: Get an SGX-listed company's paid and announced dividends and AGM resolutions, grouped by type. Singapore corporate action history as JSON.
+description: Check an SGX stock's dividend record, which payouts are announced but not yet paid, and how shareholders voted on each resolution at its AGMs.
 ---
 
 <Note>SGX symbol: 3-4 characters (letters or digits), optionally followed by `.SI` (case-insensitive) on input. E.g. `D05`, `U11`, `Z74`. Output always carries the `.SI` suffix.</Note>
 
-Returns the corporate action history of an SGX-listed company grouped by type, in the same shape as the IDX [Corporate Actions](https://docs.sectors.app/api-references/v2/indonesia/company/corporate-actions) endpoint. SGX coverage includes paid dividends, dividends that have been announced but not yet paid, and annual general meetings along with their resolution results. A type with no recorded events for the company is returned as `null`.
+Events are grouped by type, in the same shape as the IDX [Corporate Actions](https://docs.sectors.app/api-references/v2/indonesia/company/corporate-actions) endpoint. SGX coverage includes paid dividends, dividends that have been announced but not yet paid, and annual general meetings along with their resolution results. A type with no recorded events for the company is returned as `null`.
 
 <Info>Costs 1 API credit.</Info>

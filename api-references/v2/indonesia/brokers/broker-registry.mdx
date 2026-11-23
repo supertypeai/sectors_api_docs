@@ -1,10 +1,10 @@
 ---
 title: IDX Broker Codes List API (Kode Broker)
 openapi: GET /v2/brokers/
-description: List every IDX broker code (kode broker) with broker name, foreign or domestic origin, retail or institutional cohort and license type. JSON REST API.
+description: Map every IDX kode broker to the securities firm behind it, so broker summary and bandarmology data on Indonesian stocks can be read in context.
 sidebarTitle: Broker Registry
 ---
 
-Curated registry of IDX exchange-member brokers with name, origin (foreign / domestic), cohort (retail / mixed / institutional / unknown), and license type. Use this as the authoritative source for valid broker codes when calling broker-scoped endpoints such as `/v2/broker-activity/{broker_code}/`.
+This curated registry lists each broker's name, origin (foreign / domestic), cohort (retail / mixed / institutional / unknown), and license type. Use this registry as the authoritative source for valid broker codes when calling broker-scoped endpoints such as `/v2/broker-activity/{broker_code}/`.
 
 <Info>Costs 1 API credit.</Info>

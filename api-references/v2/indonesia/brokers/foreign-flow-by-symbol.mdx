@@ -2,10 +2,10 @@
 title: IDX Net Foreign Buy/Sell API (Net Buy Asing)
 openapi: GET /v2/foreign-flow/{symbol}/
 sidebarTitle: Daily Net Foreign Inflow
-description: Get daily net foreign investor inflow (IDR) and foreign share of trading for one IDX stock over up to 90 days. See when foreigners were net buyers or sellers.
+description: Track net foreign buy/sell (net buy asing) for any IDX stock or the IHSG as a whole, to gauge foreign investor sentiment on Indonesian equities day by day.
 ---
 
-Daily net foreign-investor inflow (IDR) for one IDX ticker over a date range up to 90 days. Positive `net_foreign_inflow` means foreign investors were net buyers that day; negative means they were net sellers. `foreign_share` is the foreign fraction of the stock's two-sided turnover. Usually useful for tracking foreign sentiment and capital flow on a specific stock.
+Net inflow is in IDR, and the date range can be up to 90 days. Positive `net_foreign_inflow` means foreign investors were net buyers that day; negative means they were net sellers. `foreign_share` is the foreign fraction of the stock's two-sided turnover. Usually useful for tracking foreign sentiment and capital flow on a specific stock.
 
 <Note>Pass `IHSG` (any case, with or without `.JK`) for the market-wide series: every ticker summed, one point per day, `symbol` echoed as `IHSG`. For every ticker's flow on one day use the [Daily Full-Universe Foreign Flow](https://docs.sectors.app/api-references/v2/indonesia/brokers/foreign-flow) endpoint.</Note>
 

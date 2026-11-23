@@ -1,11 +1,11 @@
 ---
 title: IDX Stock Screener API for Indonesian Stocks
 openapi: GET /v2/companies/
-description: Screen and sort Indonesia Stock Exchange (IDX) stocks by sector, market cap, valuation, dividend yield and ratios, using SQL-like or plain-English queries.
+description: Build a shortlist of Indonesian stocks with an IDX stock screener, filtering on valuation, growth, dividends or ownership with a query or in plain English.
 sidebarTitle: Companies Screener
 ---
 
-High-performance API for filtering and sorting IDX-listed companies. Supports both structured SQL-like queries (`where`, `order_by`) and natural language queries (`q`). Returns a paginated list of companies.
+Supports both structured SQL-like queries (`where`, `order_by`) and natural language queries (`q`). Returns a paginated list of companies.
 
 **Query modes** (mutually exclusive — `q` overrides all others):
 - `q`: Natural language, e.g. `top 10 tech companies by revenue in 2023`

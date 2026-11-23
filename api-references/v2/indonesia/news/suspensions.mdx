@@ -2,10 +2,10 @@
 title: IDX Stock Suspensions API (Suspensi Saham)
 openapi: GET /v2/suspensions/
 sidebarTitle: Stock Suspensions
-description: List IDX stock suspensions with the date, official reason and a link to the IDX notice. Look up one company's suspension history or every suspended stock.
+description: Check whether an IDX stock has a history of trading halts, or monitor suspended stocks on the Indonesia Stock Exchange, as part of risk screening.
 ---
 
-Returns a paginated list of historical IDX-listed stock suspensions, including the date a stock was suspended, the official reason, and a link to the IDX PDF notice. Filter by `symbol` to look up a specific company's suspension history, or by `start` / `end` to scope to a date window.
+Each suspension record includes the date a stock was suspended, the official reason, and a link to the IDX PDF notice. Filter by `symbol` to look up a specific company's suspension history, or by `start` / `end` to scope to a date window.
 
 <Note>Date filters: both `start` and `end` are independent and optional — omit either side to leave that bound unconstrained. Future `end` dates return 400.</Note>
 

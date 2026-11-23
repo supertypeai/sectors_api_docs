@@ -2,10 +2,10 @@
 title: Latest IDX Quarterly Report Dates API
 openapi: GET /v2/companies/quarterly-financial-dates/
 sidebarTitle: Latest Quarterly Financial Dates (Universe)
-description: Get the latest quarterly report date for every IDX company in one feed. Poll for newly released financial statements without per-ticker calls.
+description: Detect which IDX companies have new quarterly report dates, to keep earnings models and alerts on Indonesian stocks current without checking each ticker.
 ---
 
-Returns the **latest** available quarterly report date (and its quarter label) for **every** IDX company in one paginated feed — instead of calling the per-symbol [Quarterly Financial Dates](https://docs.sectors.app/api-references/v2/indonesia/helper-list/company-quarterly-dates) helper once per ticker.
+Only each company's **latest** report date (with its quarter label) is returned, for every company in one paginated feed, instead of calling the per-symbol [Quarterly Financial Dates](https://docs.sectors.app/api-references/v2/indonesia/helper-list/company-quarterly-dates) helper once per ticker.
 
 Built for **freshness polling**: store the dates you've seen, then re-poll with `?since=` to fetch only the companies that have since reported a new quarter, keeping repeat polls cheap.
 
