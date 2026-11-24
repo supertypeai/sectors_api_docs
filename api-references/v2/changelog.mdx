@@ -2,6 +2,14 @@
 title: v2 Changelog
 sidebarTitle: Changelog
 ---
+## 2026-11-24
+
+- **Breaking change to coal reserves in [Global Commodity Data](https://docs.sectors.app/api-references/v2/mining/commodities-trade/global-commodity)**: For `Coal`, the two keys in `resources_reserves` and `resources_reserves_share` are renamed to match the categories of the Statistical Review of World Energy. `anthracite` is now `anthracite_and_bituminous` and `sub_bituminous_bituminous_lignite` is now `sub_bituminous_and_lignite`. The old names put bituminous coal in the wrong category. The values are unchanged, so only code that reads the old keys needs updating
+
+- **Corrected provinces in [Resources & Reserves Detail](https://docs.sectors.app/api-references/v2/mining/sites-production/commodity-resources-reserves-detail)**: Coal figures for 2019 to 2022 that belong to Sumatera Selatan and Sulawesi Selatan were filed under Sumatera Utara and Sulawesi Utara, so Sumatera Utara showed 24,859 Mt of coal resources for 2022 instead of about 26 Mt. They now appear under the right province, and Sulawesi Utara no longer lists coal
+
+- **Year-over-year change in [Total Commodity Production](https://docs.sectors.app/api-references/v2/mining/sites-production/commodity-production)**: `prev_year_volume` and `yoy_change_percent` now compare only with the year directly before. BPS publishes no 2016 figures for copper, gold or nickel, so their 2017 values are now `null` instead of a comparison with 2015, which had shown nickel up 167%
+
 ## 2026-11-04
 
 - **Breaking change to `pe`, `pb`, `ps`, and `pcf` in the [SGX Companies Screener](https://docs.sectors.app/api-references/v2/singapore/screener/sgx-companies)**: To match the IDX screener, these are now yearly fields (e.g., `pe[2025]`). The most recent figures are now accessed via `pe_ttm`, `pb_mrq`, and `ps_ttm`, while price-to-cash-flow uses the current year (e.g., `pcf[2026]`). Queries using the old format (like `where=pe > 10`) will now return a `400` error prompting for a year. Update these to `pe_ttm > 10` to keep your existing logic
