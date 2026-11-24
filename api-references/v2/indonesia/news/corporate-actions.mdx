@@ -2,10 +2,10 @@
 title: IDX Dividend & Corporate Actions Calendar API
 openapi: GET /v2/corporate-actions/
 sidebarTitle: Corporate Actions Calendar
-description: See dividends, stock splits, rights issues, warrants, bonus shares and AGMs across every IDX stock in a date window. Build a dividend or event calendar.
+description: Plan around upcoming IDX dividends, stock splits, rights issues and AGMs with a market-wide corporate actions calendar for Indonesian stocks, past and future.
 ---
 
-Corporate actions across every IDX ticker in a date window, grouped by type: the market-wide counterpart of the per-symbol [Corporate Actions](https://docs.sectors.app/api-references/v2/indonesia/company/corporate-actions) endpoint. Row keys match the per-symbol endpoint. `start`/`end` filter (and sort) each type on one key: `dividend`, `upcoming_dividend`, `bonus` and `right_issue` on `ex_date`, `stock_split` on `date` (its ex-date), `warrant` on `trading_period_start`, and `agm` on `agm_date`; ties sort by `symbol`.
+Results are grouped by type. Row keys match the per-symbol [Corporate Actions](https://docs.sectors.app/api-references/v2/indonesia/company/corporate-actions) endpoint. `start`/`end` filter (and sort) each type on one key: `dividend`, `upcoming_dividend`, `bonus` and `right_issue` on `ex_date`, `stock_split` on `date` (its ex-date), `warrant` on `trading_period_start`, and `agm` on `agm_date`; ties sort by `symbol`.
 
 <Note>`end` may be in the future, so the window works as a calendar. Default window: today - 30 days to today + 30 days. Wider ranges are clamped to the 90 days ending at `end`.</Note>
 

@@ -2,10 +2,10 @@
 title: "IDX Stock News API: Berita Saham Indonesia"
 openapi: GET /v2/news/
 sidebarTitle: News Articles
-description: Get news on Indonesian (IDX) stocks and mining companies. Filter by ticker, sector, tags, keyword and date. Paginated JSON for apps, alerts and AI agents.
+description: Feed IDX stock news (berita saham) and coal and nickel mining news into trading apps, alerts or AI agents, filtered to the Indonesian stocks you follow.
 ---
 
-Returns paginated news articles from either the IDX (Indonesian Stock Exchange) or mining news sources. Use the `extension` parameter to choose the data source — each extension has its own set of valid filter parameters.
+Use the `extension` parameter to choose between IDX and mining news sources — each extension has its own set of valid filter parameters.
 
 <Warning>Mixing IDX and mining parameters will return a 400 error. E.g. passing `sector` with `extension=mining` is invalid.</Warning>
 

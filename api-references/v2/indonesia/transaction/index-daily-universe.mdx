@@ -2,10 +2,10 @@
 title: All IDX Index Closing Levels API (Daily)
 openapi: GET /v2/index-daily/
 sidebarTitle: Daily Full-Universe Index Close
-description: Get the closing level of every IDX index, including IHSG, LQ45 and IDX30, for a trading day in one call. Defaults to the latest trading day.
+description: Pull the IHSG, LQ45, IDX30 and every other IDX index close for one trading day to build Indonesian market wraps and dashboards.
 ---
 
-Returns the closing level of **every** IDX index on a single trading day in one call — instead of calling the per-index [Index Daily Transaction Data](https://docs.sectors.app/api-references/v2/indonesia/transaction/index-daily) endpoint once per index.
+One call covers every index, instead of calling the per-index [Index Daily Transaction Data](https://docs.sectors.app/api-references/v2/indonesia/transaction/index-daily) endpoint once per index.
 
 <Note>Defaults to the most recent trading day. Pass `date` (`YYYY-MM-DD`) to pull a specific day. Future dates return 400.</Note>
 

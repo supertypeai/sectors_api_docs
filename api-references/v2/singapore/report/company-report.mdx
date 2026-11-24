@@ -2,12 +2,12 @@
 title: "SGX Company Report API: Singapore Stocks"
 openapi: GET /v2/sgx/company/report/{symbol}/
 sidebarTitle: Full company report for an SGX-listed symbol
-description: "Get a full report on any SGX-listed company: overview, valuation, financials, dividends, management and ownership in one call. Fetch only what you need."
+description: Build an SGX company report for any Singapore-listed stock, including its directors, its major shareholders and how its valuation compares with peers.
 ---
 
 <Note>SGX symbol: 3-4 characters (letters or digits), optionally followed by `.SI` (case-insensitive) on input. E.g. `D05`, `U11`, `Z74`. Output always carries the `.SI` suffix.</Note>
 
-Returns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.
+Use `sections` to fetch only the data you need and reduce response size.
 
 <Accordion title="Available sections">
 - **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d/1m/1y/3y/ytd), all-time price highs/lows, listing date, registered address and website

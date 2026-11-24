@@ -2,10 +2,8 @@
 title: KLSE Listed Companies by Sector API
 openapi: GET /v2/klse/companies/
 sidebarTitle: List KLSE companies filtered by sector
-description: List all Bursa Malaysia (KLSE) listed companies in a sector, with stock code and company name. JSON REST API for Malaysian stock data.
+description: Build a Malaysian stock universe one sector at a time, then feed the KLSE tickers into Bursa Malaysia company reports or a sector peer group.
 ---
-
-Returns all KLSE-listed companies in a given sector as `symbol` + `company_name` pairs.
 
 <Note>Get valid sector slugs from the [KLSE Sectors](https://docs.sectors.app/api-references/v2/malaysia/klse-sectors) endpoint. Format: **kebab-case** (lowercase, hyphen-separated). E.g. `financials`, `healthcare`, `consumer-cyclicals`.</Note>
 

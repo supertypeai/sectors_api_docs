@@ -2,12 +2,12 @@
 title: KLSE Company Report API (Bursa Malaysia)
 openapi: GET /v2/klse/company/report/{symbol}/
 sidebarTitle: Full company report for a KLSE-listed symbol
-description: "Get a report on any Bursa Malaysia (KLSE) company by stock code: overview, valuation, financials and dividends. Fetch only the sections you need."
+description: Pull a KLSE company report for any Bursa Malaysia stock by its stock code, with valuation history and dividend record in a single request.
 ---
 
 <Note>KLSE symbol: 4-digit numeric code. E.g. `1155`, `4197`, `5225`.</Note>
 
-Returns a comprehensive company report organized into distinct sections. Use `sections` to fetch only the data you need and reduce response size.
+Use `sections` to fetch only the data you need and reduce response size.
 
 <Accordion title="Available sections">
 - **overview**: Market cap, volume, sector, sub-sector, price changes (1d/7d)
