@@ -9,4 +9,8 @@ At least one of `commodity_type` or `country` must be provided.
 
 <Note>Available `commodity_type` values: `Coal`, `Gold`, `Nickel`, `Copper`, `Bauxite`.</Note>
 
+`production_volume` is in the row's `production_volume_unit`: `Mt` for coal and bauxite, `kt` for nickel and copper, `t` for gold. Nickel and copper are **contained metal** from mine production, so nickel here is not comparable with [Total Commodity Production](https://docs.sectors.app/api-references/v2/mining/sites-production/commodity-production), which reports nickel ore.
+
+`resources_reserves`, `resources_reserves_share` and `export_import_usd` are only filled for coal, and not for every coal country. Any field without data is `null`.
+
 <Info>Costs 1 API credit.</Info>

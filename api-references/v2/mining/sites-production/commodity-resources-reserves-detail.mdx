@@ -5,7 +5,10 @@ sidebarTitle: Resources & Reserves Detail
 description: Size an Indonesian province's mineral resources and reserves over time, from exploration targets down to reserves, for each commodity.
 ---
 
-Data is nested by year, then by commodity. Each commodity entry contains the full breakdown: `exploration_target`, `total_inventory`, `resources`, `reserves`, and `unit`.
+Data is nested by year, then by commodity. There is no `unit` field: each key ends in its unit, and the keys differ between coal and metals.
+
+- **Coal**, in million tonnes (`_Mt`): `exploration_target_Mt`, `total_inventory_Mt`, `inferred_resources_Mt`, `indicated_resources_Mt`, `measured_resources_Mt`, `total_resources_Mt`, `total_resources_verify_Mt`, `total_reserves_Mt` and `total_reserves_verify_Mt`. The `_verify` keys are the verified part of each total.
+- **Metals**, in thousand tonnes (`_kt`): `inferred_resources_kt`, `indicated_resources_kt`, `measured_resources_kt`, `total_resources_kt`, `probable_reserves_kt`, `proven_reserves_kt` and `total_reserves_kt` are the contained metal. Each has an `ore_` counterpart (e.g. `ore_total_resources_kt`) giving the tonnage of ore that metal is in.
 
 <Note>Available `commodity_type` values: `Coal`, `Gold`, `Silver`, `Copper`, `Nickel`, `Cobalt`, `Tin`.</Note>
 
