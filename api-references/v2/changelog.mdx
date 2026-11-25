@@ -2,6 +2,22 @@
 title: v2 Changelog
 sidebarTitle: Changelog
 ---
+## 2026-11-24
+
+- **Breaking change to coal reserves in [Global Commodity Data](https://docs.sectors.app/api-references/v2/mining/commodities-trade/global-commodity)**: For `Coal`, the two keys in `resources_reserves` and `resources_reserves_share` are renamed to match the categories of the Statistical Review of World Energy. `anthracite` is now `anthracite_and_bituminous` and `sub_bituminous_bituminous_lignite` is now `sub_bituminous_and_lignite`. The old names put bituminous coal in the wrong category. The values are unchanged, so only code that reads the old keys needs updating
+
+- **Breaking change to [Commodity Price](https://docs.sectors.app/api-references/v2/mining/commodities-trade/commodity-price)**: `price_usd_per_ton` is replaced by `price`, `currency` and `price_unit`. The old name was wrong for several commodities: gold and silver are priced per troy ounce (`troy_oz`) and chromium per dry metric tonne unit (`dmtu`), so read `price` together with `price_unit`. The aluminium series is now named `Aluminium` instead of `Aluminum`, and requests that use `Aluminum` still work. Every series except gold and silver comes from Minerba, whose price page is offline for maintenance, so those series currently end at 15 February 2026 and will be backfilled once it is back
+
+- **Corrected provinces in [Resources & Reserves Detail](https://docs.sectors.app/api-references/v2/mining/sites-production/commodity-resources-reserves-detail)**: Coal figures for 2019 to 2022 that belong to Sumatera Selatan and Sulawesi Selatan were filed under Sumatera Utara and Sulawesi Utara, so Sumatera Utara showed 24,859 Mt of coal resources for 2022 instead of about 26 Mt. They now appear under the right province, and Sulawesi Utara no longer lists coal
+
+- **Year-over-year change in [Total Commodity Production](https://docs.sectors.app/api-references/v2/mining/sites-production/commodity-production)**: `prev_year_volume` and `yoy_change_percent` now compare only with the year directly before. BPS publishes no 2016 figures for copper, gold or nickel, so their 2017 values are now `null` instead of a comparison with 2015, which had shown nickel up 167%
+
+- **Mining company financials are in US dollars**: Values in [Mining Company Financials](https://docs.sectors.app/api-references/v2/mining/companies/mining-companies-financials) were documented as USD millions but are whole US dollars, so a `revenue_usd` of `5915000000` is USD 5.9 billion. The values themselves are unchanged
+
+- **Fixed `cnc` and `qualified` filters**: In [Mining Licenses](https://docs.sectors.app/api-references/v2/mining/licenses-auctions/mining-licenses), `cnc=true` now returns Clear & Clean licenses, whose status is `CNC` or `CNC-<n>`, and `cnc=false` returns the rest, where both previously matched no license. In [Mining License Auctions](https://docs.sectors.app/api-references/v2/mining/licenses-auctions/mining-license-auctions), `qualified=true` and `qualified=false` now return auctions where the `participant` passed (`Lolos`) or failed (`Tidak Lolos`) pre-qualification, where `true` previously matched nothing and `false` matched every auction the participant entered. Both filters return a `400` for values other than `true` or `false`
+
+- **Choosing a record in [Mining Site Detail](https://docs.sectors.app/api-references/v2/mining/sites-production/mining-site-detail)**: A site can have several records, one per year and for a few sites one per commodity or company, such as Batu Hijau's copper and gold or Pomalaa's Antam and Vale. The endpoint now takes `year`, `commodity_type` and `company` to pick one, defaults to the latest year, and lists every record in `available_records`. It previously returned one of them in no fixed order
+
 ## 2026-11-04
 
 - **Breaking change to `pe`, `pb`, `ps`, and `pcf` in the [SGX Companies Screener](https://docs.sectors.app/api-references/v2/singapore/screener/sgx-companies)**: To match the IDX screener, these are now yearly fields (e.g., `pe[2025]`). The most recent figures are now accessed via `pe_ttm`, `pb_mrq`, and `ps_ttm`, while price-to-cash-flow uses the current year (e.g., `pcf[2026]`). Queries using the old format (like `where=pe > 10`) will now return a `400` error prompting for a year. Update these to `pe_ttm > 10` to keep your existing logic
