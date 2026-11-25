@@ -7,4 +7,8 @@ description: Place a single Indonesian mining site on the map and overlay it wit
 
 Use [Mining Sites](https://docs.sectors.app/api-references/v2/mining/sites-production/mining-sites) to discover site slugs.
 
+A slug can cover several records: one per year, and for a few sites one per commodity (Batu Hijau reports copper and gold) or per company (Pomalaa is mined by both Antam and Vale). Use `year`, `commodity_type` and `company` to pick one; they take the same values as the matching fields in Mining Sites. Without them you get the latest year, then the first commodity and company alphabetically. `available_records` lists every record under the slug.
+
+`production_volume` is in the site's `unit`. Keys inside `resources_reserves` carry their unit as a suffix: `_Mt` is million tonnes; for nickel sites (`limonite` / `saprolite`), `_wmt` / `_dmt` are **million** wet / dry metric tonnes of ore and `_Kt` is thousand tonnes of contained nickel or cobalt; `_koz` is thousand troy ounces.
+
 <Info>Costs 1 API credit.</Info>

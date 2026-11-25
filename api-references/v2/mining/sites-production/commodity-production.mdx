@@ -9,4 +9,17 @@ Results include all years, ordered by year descending.
 
 <Note>Available `commodity_type` values: `Coal`, `Nickel`, `Gold`, `Copper`.</Note>
 
+What each commodity measures (Indonesia, from BPS):
+
+| `commodity_type` | `unit` | Measure |
+| --- | --- | --- |
+| `Coal` | `Mt` | Coal mined |
+| `Nickel` | `Mt` | Nickel **ore** mined, not contained nickel |
+| `Copper` | `kt` | Copper **concentrate**, not contained copper |
+| `Gold` | `t` | Gold produced |
+
+Nickel here is ore tonnage, so it is not comparable with [Global Commodity Data](https://docs.sectors.app/api-references/v2/mining/commodities-trade/global-commodity), which reports contained nickel.
+
+BPS publishes no 2016 figures for copper, gold or nickel, so those years are absent and 2017's `prev_year_volume` and `yoy_change_percent` are `null`.
+
 <Info>Costs 1 API credit.</Info>

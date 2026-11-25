@@ -7,4 +7,12 @@ description: Benchmark the production and reserve depth of individual Indonesian
 
 When `year` is omitted, data for the latest available year is returned.
 
+Production and sales volumes are in the unit given by `commodity_stats.unit`. Keys inside `resources_reserves` carry their unit as a suffix:
+
+- `_Mt`: million tonnes (ore, or contained copper for `Cu_*_Mt`)
+- `_wmt` / `_dmt` (nickel ore): **million** wet / dry metric tonnes
+- `_Kt` (contained nickel and cobalt): thousand tonnes
+- `_koz`: thousand troy ounces
+- `_g_per_ton`: grams per tonne; `_pct`: percent
+
 <Info>Costs 1 API credit.</Info>

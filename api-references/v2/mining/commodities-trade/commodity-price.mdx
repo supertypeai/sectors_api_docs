@@ -7,6 +7,10 @@ description: Chart coal and nickel price history alongside gold, copper and othe
 
 Data is monthly (bi-weekly for recent Coal entries).
 
+Each record's `price` is in `currency` per `price_unit`, which differs by commodity: gold and silver are per troy ounce (`troy_oz`), most others per tonne (`t`).
+
+<Warning>Every series except `Gold` and `Silver` comes from Minerba (ESDM), whose price page has been offline for maintenance. Those series currently end at 15 February 2026 and will be backfilled once Minerba is back. `Gold` and `Silver` are World Bank monthly averages and are current.</Warning>
+
 <Note>Use [List Commodities](https://docs.sectors.app/api-references/v2/mining/commodities-trade/commodities) to discover all available commodity names.</Note>
 
 <Warning>Requesting more than 3 years will return a 400 error.</Warning>
